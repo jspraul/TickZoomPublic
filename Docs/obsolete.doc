@@ -1,0 +1,64 @@
+/*
+ * Copyright 2008 M. Wayne Walter
+ * Software: TickZoom Trading Platform
+ * User: Wayne Walter
+ * 
+ * You can use and modify this software under the terms of the
+ * TickZOOM General Public License Version 1.0 or (at your option)
+ * any later version.
+ * 
+ * Businesses are restricted to 30 days of use.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * TickZOOM General Public License for more details.
+ *
+ * You should have received a copy of the TickZOOM General Public
+ * License along with this program.  If not, see
+ * 
+ * 
+ *
+ * User: Wayne Walter
+ * Date: 12/6/2009
+ * Time: 1:48 AM
+ * <http://www.tickzoom.org/wiki/Licenses>.
+ */
+
+/*! @page obsolete Resolving Obsolete Errors
+<center>
+\htmlonly
+Version: $(VERSION)
+\endhtmlonly
+</center>
+
+@addindex obsolete
+
+This instructions help you resolve Obsolete errors and warnings quickly and easily in most cases.
+
+When you encounter obselete warnings and errors, please try to use the "refactor" tools in your
+IDE like Visual Studio or SharpDevelop to resolve them with the least effort.
+
+What makes this easy is TickZoom's policy of keeping both the obsolete entity and the renamed 
+entity instead of simply deleting the obsolete name entirely.  That plus the error message which 
+always gives you the new name to use instead keep this rather simple because it avoids forcing you
+to search through documentation to figure out how to migrate your code.
+
+@section using_refactor_rename Rename Obsoletes Using Refactor
+
+
+   -# In your IDE click on the obsolete error or warning messages.
+   -# That takes you to the line in your code that needs to be renamed.
+   -# Right click on the variable you need to fix and select an option that will take you to
+       the "declaration" of this entity.
+   -# There you you will see the obsolete declaration along with the Obsolute attribute and message.
+   -# Now, right click on the variable name and select "rename" or else "refactor -> rename" or similar.
+   -# Type in the new name by following the instructions in the obsolete error message and continue.
+   -# Once the refactor completes it has changes every reference to this variable in your solution to
+       the new name.
+   -# One last step is now to manually rename that one declaration back to the old name without using
+      the refactor tool. Why? It's because if you leave it and compile it will give you an error
+      saying you have a duplication declaration since it now conflicts with the actual new declaration.
+   -# So after refactoring and reverting the name on the obsolete declaration, your done.
+   
+*/

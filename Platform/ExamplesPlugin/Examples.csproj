@@ -1,0 +1,160 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{B1A8F8F4-F7C9-46DC-B4BE-F08394778EF4}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TickZoom.Examples</RootNamespace>
+    <AssemblyName>TickZoomPluginExamples</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Wayne Walter\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\bin\Release</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="..\..\TickZoom.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Indicators\Channel.cs" />
+    <Compile Include="Indicators\Channel2.cs" />
+    <Compile Include="Indicators\CustomPlot.cs" />
+    <Compile Include="Indicators\DailySMA.cs" />
+    <Compile Include="Indicators\DetrendOSC.cs" />
+    <Compile Include="Indicators\DOMRatio.cs" />
+    <Compile Include="Indicators\Line.cs" />
+    <Compile Include="Indicators\LRGraph.cs" />
+    <Compile Include="Indicators\LRLine.cs" />
+    <Compile Include="Indicators\MonthHigh.cs" />
+    <Compile Include="Indicators\MonthLow.cs" />
+    <Compile Include="Indicators\MonthMiddle.cs" />
+    <Compile Include="Indicators\NarrowChannel.cs" />
+    <Compile Include="Indicators\NarrowChannels.cs" />
+    <Compile Include="Indicators\Pace.cs" />
+    <Compile Include="Indicators\PivotHighVs.cs" />
+    <Compile Include="Indicators\PivotLowVS.cs" />
+    <Compile Include="Indicators\RegressionChannels.cs" />
+    <Compile Include="Indicators\Retrace.cs" />
+    <Compile Include="Indicators\Retrace2.cs" />
+    <Compile Include="Indicators\SCT.cs" />
+    <Compile Include="Indicators\SRHigh.cs" />
+    <Compile Include="Indicators\SRLow.cs" />
+    <Compile Include="Indicators\MQ_ValueChart.cs" />
+    <Compile Include="Indicators\Traversal.cs" />
+    <Compile Include="Indicators\TwelveMonthHigh.cs" />
+    <Compile Include="Indicators\TwelveMonthLow.cs" />
+    <Compile Include="Indicators\TwelveMonthMiddle.cs" />
+    <Compile Include="Indicators\WeekHigh.cs" />
+    <Compile Include="Indicators\WeekLow.cs" />
+    <Compile Include="Indicators\WeekMiddle.cs" />
+    <Compile Include="Indicators\WideChannel.cs" />
+    <Compile Include="Indicators\YearHigh.cs" />
+    <Compile Include="Indicators\YearLow.cs" />
+    <Compile Include="Indicators\YearMiddle.cs" />
+    <Compile Include="Loaders\BenchmarkSimpleLoader.cs" />
+    <Compile Include="Loaders\ExampleChartIndicator.cs" />
+    <Compile Include="Loaders\ExampleDataConverterLoader.cs" />
+    <Compile Include="Loaders\ExampleMixedLoader.cs" />
+    <Compile Include="Loaders\ExampleMultiSymbolLoader.cs" />
+    <Compile Include="Loaders\ExampleOrdersLoader.cs" />
+    <Compile Include="Loaders\ExampleMultiStrategyLoader.cs" />
+    <Compile Include="Loaders\ExampleScannerLoader.cs" />
+    <Compile Include="Loaders\ExampleReversalLoader.cs" />
+    <Compile Include="Loaders\ExampleReversalPortfolioLoader.cs" />
+    <Compile Include="Loaders\ExampleSimulatedLoader.cs" />
+    <Compile Include="Loaders\ExampleDualSymbolLoader.cs" />
+    <Compile Include="Loaders\MarketOrderLoader.cs" />
+    <Compile Include="Strategies\OldStuff\BreakoutTrend.cs" />
+    <Compile Include="Strategies\OldStuff\ChartIndicator.cs" />
+    <Compile Include="Strategies\OldStuff\DOMSmooth.cs" />
+    <Compile Include="Strategies\OldStuff\FractalStrategy.cs" />
+    <Compile Include="Strategies\OldStuff\Horizontal.cs" />
+    <Compile Include="Strategies\OldStuff\InverseFisherDemo.cs" />
+    <Compile Include="Strategies\OldStuff\LongBreakout.cs" />
+    <Compile Include="Strategies\OldStuff\MedianBreakout.cs" />
+    <Compile Include="Strategies\OldStuff\PercentRStrategy.cs" />
+    <Compile Include="Strategies\OldStuff\PivotHighTrend.cs" />
+    <Compile Include="Strategies\OldStuff\PivotLowTrend.cs" />
+    <Compile Include="Strategies\OldStuff\PivotTrend.cs" />
+    <Compile Include="Strategies\OldStuff\PointFigure.cs" />
+    <Compile Include="Strategies\OldStuff\RandomIntraday.cs" />
+    <Compile Include="Strategies\OldStuff\ShortBreakout.cs" />
+    <Compile Include="Strategies\OldStuff\SimpleStrategy.cs" />
+    <Compile Include="Strategies\OldStuff\SimpleStrategy2.cs" />
+    <Compile Include="Strategies\OldStuff\SimpleStrategy3.cs" />
+    <Compile Include="Strategies\OldStuff\SMAChopLong.cs" />
+    <Compile Include="Strategies\OldStuff\SMAChopShort.cs">
+    </Compile>
+    <Compile Include="Strategies\OldStuff\SRBreakoutSupport.cs" />
+    <Compile Include="Strategies\OldStuff\SRLongBreakout2.cs" />
+    <Compile Include="Strategies\OldStuff\SRLongChannel.cs" />
+    <Compile Include="Strategies\OldStuff\SRLongDayHigh.cs" />
+    <Compile Include="Strategies\OldStuff\SRLongHourly.cs" />
+    <Compile Include="Strategies\OldStuff\SRLongIntraday.cs" />
+    <Compile Include="Strategies\OldStuff\SRRetraceHourly.cs" />
+    <Compile Include="Strategies\OldStuff\SRRetraceMinutes.cs" />
+    <Compile Include="Strategies\OldStuff\SRShortBreakout.cs" />
+    <Compile Include="Strategies\OldStuff\SRShortBreakout2.cs" />
+    <Compile Include="Strategies\OldStuff\SRShortChannel.cs" />
+    <Compile Include="Strategies\OldStuff\SRShortDayLow.cs" />
+    <Compile Include="Strategies\OldStuff\SRShortIntraday.cs" />
+    <Compile Include="Strategies\OldStuff\SRTraverseMinutes.cs" />
+    <Compile Include="Strategies\OldStuff\TEMACounterDaily.cs" />
+    <Compile Include="Strategies\OldStuff\TEMATrendDaily.cs" />
+    <Compile Include="Strategies\OldStuff\TrendStrategy.cs" />
+    <Compile Include="Strategies\OldStuff\TrendStrategyMA.cs" />
+    <Compile Include="Strategies\ExampleDataChecker.cs" />
+    <Compile Include="Strategies\ExampleOrderStrategy.cs" />
+    <Compile Include="Strategies\ExampleMultiStrategy.cs" />
+    <Compile Include="Strategies\ExampleScannerStrategy.cs" />
+    <Compile Include="Strategies\ExampleReversalStrategy.cs" />
+    <Compile Include="Strategies\MarketOrderStrategy.cs" />
+    <Compile Include="Strategies\ExampleSMAStrategy.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="COPYING.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Indicators" />
+    <Folder Include="Loaders" />
+    <Folder Include="Strategies\OldStuff" />
+    <Folder Include="Strategies" />
+    <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
+      <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
+      <Name>API1.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomCommon\Common.csproj">
+      <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

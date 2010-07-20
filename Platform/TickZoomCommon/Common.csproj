@@ -1,0 +1,169 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TickZoom</RootNamespace>
+    <AssemblyName>TickZoomPluginCommon</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Wayne Walter\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <SignAssembly>False</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\TickZoom.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\bin\Release</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Obfuscate' ">
+    <OutputPath>..\bin\Obfuscate\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\DrawingCommon.cs" />
+    <Compile Include="Common\Formula.cs" />
+    <Compile Include="Common\IndicatorCommon.cs" />
+    <Compile Include="Common\Intervals.cs" />
+    <Compile Include="Common\Model.cs" />
+    <Compile Include="Common\ModelEvents.cs" />
+    <Compile Include="Common\ModelLoaderCommon.cs" />
+    <Compile Include="Common\Portfolio.cs" />
+    <Compile Include="Common\ProjectFileLoader.cs" />
+    <Compile Include="Common\RandomCommon.cs" />
+    <Compile Include="Common\PositionCommon.cs" />
+    <Compile Include="Common\Result.cs" />
+    <Compile Include="Common\Strategy.cs" />
+    <Compile Include="Common\StrategyWatcher.cs" />
+    <Compile Include="Data\TSTickConverter.cs" />
+    <Compile Include="Enums\Trend.cs" />
+    <Compile Include="Interceptors\FillSimulatorDefault.cs" />
+    <Compile Include="Reports\EquityStatsReport.cs" />
+    <Compile Include="Reports\IndexForReport.cs" />
+    <Compile Include="Reports\ReportHelper.cs" />
+    <Compile Include="Reports\TradeStatsReport.cs" />
+    <Compile Include="Indicators\ADX.cs" />
+    <Compile Include="Indicators\ATR.cs" />
+    <Compile Include="Indicators\AvgRange.cs" />
+    <Compile Include="Indicators\CCI.cs" />
+    <Compile Include="Indicators\ChartPoint.cs" />
+    <Compile Include="Indicators\DEMA.cs" />
+    <Compile Include="Indicators\DynamicSR.cs" />
+    <Compile Include="Indicators\EMA.cs" />
+    <Compile Include="Indicators\HMA.cs" />
+    <Compile Include="Indicators\IFT.cs" />
+    <Compile Include="Indicators\InverseFisherTransform.cs" />
+    <Compile Include="Indicators\LinearRegression.cs" />
+    <Compile Include="Indicators\PercentR.cs" />
+    <Compile Include="Indicators\Range.cs" />
+    <Compile Include="Indicators\RSI.cs" />
+    <Compile Include="Indicators\SMA.cs" />
+    <Compile Include="Indicators\T3Average.cs" />
+    <Compile Include="Indicators\TEMA.cs" />
+    <Compile Include="Indicators\Volume.cs" />
+    <Compile Include="Indicators\Wilder.cs" />
+    <Compile Include="Indicators\WilderRSI.cs" />
+    <Compile Include="Indicators\WMA.cs" />
+    <Compile Include="Interceptors\EnterCommon.cs" />
+    <Compile Include="Interceptors\ExitCommon.cs">
+    </Compile>
+    <Compile Include="Interceptors\ExitStrategy.cs" />
+    <Compile Include="Interceptors\Orders.cs" />
+    <Compile Include="Interceptors\ReverseCommon.cs" />
+    <Compile Include="Interceptors\StrategySupport.cs" />
+    <Compile Include="Optimization\Operator.cs" />
+    <Compile Include="Optimization\OptimizeRange.cs" />
+    <Compile Include="Optimization\OptimizerVar.cs" />
+    <Compile Include="Statistics\BaseStats.cs" />
+    <Compile Include="Statistics\Equity.cs" />
+    <Compile Include="Statistics\ProfitLossEquity.cs" />
+    <Compile Include="Statistics\EquityStats.cs" />
+    <Compile Include="Statistics\Performance.cs" />
+    <Compile Include="Statistics\ProfitLossCallback.cs" />
+    <Compile Include="Statistics\ProfitLossMBT.cs" />
+    <Compile Include="Statistics\ProfitLossIB.cs" />
+    <Compile Include="Statistics\StrategyStats.cs" />
+    <Compile Include="Statistics\TradeStats.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProviderUtilities\LogicalOrderHandlerDefault.cs" />
+    <Compile Include="ProviderUtilities\AssemblyAttributes.cs" />
+    <Compile Include="ProviderUtilities\CommandLine.cs" />
+    <Compile Include="ProviderUtilities\PhysicalOrderDefault.cs" />
+    <Compile Include="ProviderUtilities\ProjectInstaller.cs" />
+    <Compile Include="ProviderUtilities\BreakPoint.cs" />
+    <Compile Include="ProviderUtilities\SymbolHandlerDefault.cs" />
+    <Compile Include="ProviderUtilities\UtilityFactoryDefault.cs" />
+    <Compile Include="ProviderUtilities\VerifyFeedDefault.cs" />
+    <Compile Include="ProviderUtilities\WindowsService.cs" />
+    <Compile Include="Transactions\PagePool.cs" />
+    <Compile Include="Transactions\RoundTurn.cs" />
+    <Compile Include="Transactions\RoundTurnBinary.cs" />
+    <Compile Include="Transactions\RoundTurnImpl.cs" />
+    <Compile Include="Transactions\RoundTurnsBinary.cs" />
+    <Compile Include="Transactions\Transaction.cs" />
+    <Compile Include="Transactions\TransactionPairBinary.cs" />
+    <Compile Include="Transactions\TransactionPairs.cs" />
+    <Compile Include="Transactions\TransactionPairsBinary.cs" />
+    <Compile Include="Transactions\TransactionPairsPage.cs" />
+    <Compile Include="Transactions\TransactionPairsPages.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common" />
+    <Folder Include="Data" />
+    <Folder Include="Indicators" />
+    <Folder Include="Enums" />
+    <Folder Include="Interceptors" />
+    <Folder Include="Reports" />
+    <Folder Include="Transactions" />
+    <Folder Include="Statistics" />
+    <Folder Include="Optimization" />
+    <Folder Include="ProviderUtilities" />
+    <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
+      <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
+      <Name>API1.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZedGraph\ZedGraph.csproj">
+      <Project>{67EBC93F-0D47-4F6E-979F-E5622E1025E9}</Project>
+      <Name>ZedGraph</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

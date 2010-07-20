@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.1.0.4977
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API1.0", "..\..\Platform\TickZoomAPI1.0\API1.0.csproj", "{27D6C88D-52B6-432C-820B-CD38A299830C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TickUtil", "..\..\Platform\TickZoomTickUtil\TickUtil.csproj", "{44135BE2-CBA4-4041-8F31-91C480302C2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBTests", "IBTests\IBTests.csproj", "{2D25D6A7-2A7F-4DB1-9F29-88282F8CC5E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krs.Ats.IBNet", "Krs.Ats.IBNet\Krs.Ats.IBNet\Krs.Ats.IBNet.csproj", "{98672E16-97B1-4204-86CC-EA0009CA15F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBProviderService", "InteractiveBrokers\IBProviderService.csproj", "{6D1A9B7C-00EB-4F5F-AB65-A50E161AD84A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProviderUtilTests", "..\Common\ProviderUtilTests\ProviderUtilTests.csproj", "{FC143137-365B-420B-8832-FC8AE61EEC1C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{27D6C88D-52B6-432C-820B-CD38A299830C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27D6C88D-52B6-432C-820B-CD38A299830C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27D6C88D-52B6-432C-820B-CD38A299830C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27D6C88D-52B6-432C-820B-CD38A299830C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44135BE2-CBA4-4041-8F31-91C480302C2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44135BE2-CBA4-4041-8F31-91C480302C2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44135BE2-CBA4-4041-8F31-91C480302C2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44135BE2-CBA4-4041-8F31-91C480302C2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D25D6A7-2A7F-4DB1-9F29-88282F8CC5E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D25D6A7-2A7F-4DB1-9F29-88282F8CC5E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D25D6A7-2A7F-4DB1-9F29-88282F8CC5E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D25D6A7-2A7F-4DB1-9F29-88282F8CC5E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98672E16-97B1-4204-86CC-EA0009CA15F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98672E16-97B1-4204-86CC-EA0009CA15F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98672E16-97B1-4204-86CC-EA0009CA15F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98672E16-97B1-4204-86CC-EA0009CA15F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D1A9B7C-00EB-4F5F-AB65-A50E161AD84A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D1A9B7C-00EB-4F5F-AB65-A50E161AD84A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D1A9B7C-00EB-4F5F-AB65-A50E161AD84A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D1A9B7C-00EB-4F5F-AB65-A50E161AD84A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC143137-365B-420B-8832-FC8AE61EEC1C}.Debug|Any CPU.Build.0 = Debug|x86
+		{FC143137-365B-420B-8832-FC8AE61EEC1C}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{FC143137-365B-420B-8832-FC8AE61EEC1C}.Release|Any CPU.Build.0 = Release|x86
+		{FC143137-365B-420B-8832-FC8AE61EEC1C}.Release|Any CPU.ActiveCfg = Release|x86
+	EndGlobalSection
+EndGlobal

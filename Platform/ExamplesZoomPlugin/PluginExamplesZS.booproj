@@ -1,0 +1,150 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{3C2DE013-3A63-4E20-B442-B1585C3B76D4}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TickZoom.Examples</RootNamespace>
+    <AssemblyName>TickZoomPluginExamplesZS</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Wayne Walter\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\bin\Release</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Indicators\Channel.boo" />
+    <Compile Include="Indicators\Channel2.boo" />
+    <Compile Include="Indicators\CustomPlot.boo" />
+    <Compile Include="Indicators\DailySMA.boo" />
+    <Compile Include="Indicators\DetrendOSC.boo" />
+    <Compile Include="Indicators\DOMRatio.boo" />
+    <Compile Include="Indicators\Line.boo" />
+    <Compile Include="Indicators\LRGraph.boo" />
+    <Compile Include="Indicators\LRLine.boo" />
+    <Compile Include="Indicators\MonthHigh.boo" />
+    <Compile Include="Indicators\MonthLow.boo" />
+    <Compile Include="Indicators\MonthMiddle.boo" />
+    <Compile Include="Indicators\MQ_ValueChart.boo" />
+    <Compile Include="Indicators\NarrowChannel.boo" />
+    <Compile Include="Indicators\NarrowChannels.boo" />
+    <Compile Include="Indicators\Pace.boo" />
+    <Compile Include="Indicators\PivotHighVs.boo" />
+    <Compile Include="Indicators\PivotLowVS.boo" />
+    <Compile Include="Indicators\RegressionChannels.boo" />
+    <Compile Include="Indicators\Retrace.boo" />
+    <Compile Include="Indicators\Retrace2.boo" />
+    <Compile Include="Indicators\SCT.boo" />
+    <Compile Include="Indicators\SRHigh.boo" />
+    <Compile Include="Indicators\SRLow.boo" />
+    <Compile Include="Indicators\Traversal.boo" />
+    <Compile Include="Indicators\TwelveMonthHigh.boo" />
+    <Compile Include="Indicators\TwelveMonthLow.boo" />
+    <Compile Include="Indicators\TwelveMonthMiddle.boo" />
+    <Compile Include="Indicators\WeekHigh.boo" />
+    <Compile Include="Indicators\WeekLow.boo" />
+    <Compile Include="Indicators\WeekMiddle.boo" />
+    <Compile Include="Indicators\WideChannel.boo" />
+    <Compile Include="Indicators\YearHigh.boo" />
+    <Compile Include="Indicators\YearLow.boo" />
+    <Compile Include="Indicators\YearMiddle.boo" />
+    <Compile Include="Loaders\BenchmarkSimpleLoader.boo" />
+    <Compile Include="Loaders\ExampleDataConverterLoader.boo" />
+    <Compile Include="Loaders\ExampleDualSymbolLoader.boo" />
+    <Compile Include="Loaders\ExampleMixedLoader.boo" />
+    <Compile Include="Loaders\ExampleMultiStrategyLoader.boo" />
+    <Compile Include="Loaders\ExampleMultiSymbolLoader.boo" />
+    <Compile Include="Loaders\ExampleOrdersLoader.boo" />
+    <Compile Include="Loaders\ExampleScannerLoader.boo" />
+    <Compile Include="Loaders\ExampleSimpleLoader.boo" />
+    <Compile Include="Loaders\ExampleSimplePortfolioLoader.boo" />
+    <Compile Include="Loaders\ExampleSimulatedLoader.boo" />
+    <Compile Include="Macros\Class1.boo" />
+    <Compile Include="Properties\AssemblyInfo.boo" />
+    <Compile Include="Strategies\BenchmarkSimpleStrategy.boo" />
+    <Compile Include="Strategies\BreakoutTrend.boo" />
+    <Compile Include="Strategies\DOMSmooth.boo" />
+    <Compile Include="Strategies\ExampleDataChecker.boo" />
+    <Compile Include="Strategies\ExampleMultiStrategy.boo" />
+    <Compile Include="Strategies\ExampleOrderStrategy.boo" />
+    <Compile Include="Strategies\ExampleScannerStrategy.boo" />
+    <Compile Include="Strategies\ExampleSimpleStrategy.boo" />
+    <Compile Include="Strategies\ExampleSMAStrategy.boo" />
+    <Compile Include="Strategies\FractalStrategy.boo" />
+    <Compile Include="Strategies\Horizontal.boo" />
+    <Compile Include="Strategies\InverseFisherDemo.boo" />
+    <Compile Include="Strategies\LongBreakout.boo" />
+    <Compile Include="Strategies\MedianBreakout.boo" />
+    <Compile Include="Strategies\PercentRStrategy.boo" />
+    <Compile Include="Strategies\PivotHighTrend.boo" />
+    <Compile Include="Strategies\PivotLowTrend.boo" />
+    <Compile Include="Strategies\PivotTrend.boo" />
+    <Compile Include="Strategies\PointFigure.boo" />
+    <Compile Include="Strategies\RandomIntraday.boo" />
+    <Compile Include="Strategies\ShortBreakout.boo" />
+    <Compile Include="Strategies\SimpleStrategy.boo" />
+    <Compile Include="Strategies\SimpleStrategy2.boo" />
+    <Compile Include="Strategies\SimpleStrategy3.boo" />
+    <Compile Include="Strategies\SMAChopLong.boo" />
+    <Compile Include="Strategies\SMAChopShort.boo" />
+    <Compile Include="Strategies\SRBreakoutSupport.boo" />
+    <Compile Include="Strategies\SRLongBreakout2.boo" />
+    <Compile Include="Strategies\SRLongChannel.boo" />
+    <Compile Include="Strategies\SRLongDayHigh.boo" />
+    <Compile Include="Strategies\SRLongHourly.boo" />
+    <Compile Include="Strategies\SRLongIntraday.boo" />
+    <Compile Include="Strategies\SRRetraceHourly.boo" />
+    <Compile Include="Strategies\SRRetraceMinutes.boo" />
+    <Compile Include="Strategies\SRShortBreakout.boo" />
+    <Compile Include="Strategies\SRShortBreakout2.boo" />
+    <Compile Include="Strategies\SRShortChannel.boo" />
+    <Compile Include="Strategies\SRShortDayLow.boo" />
+    <Compile Include="Strategies\SRShortHourly.boo" />
+    <Compile Include="Strategies\SRShortIntraday.boo" />
+    <Compile Include="Strategies\SRTraverseMinutes.boo" />
+    <Compile Include="Strategies\TEMACounterDaily.boo" />
+    <Compile Include="Strategies\TEMATrendDaily.boo" />
+    <Compile Include="Strategies\TrendStrategy.boo" />
+    <Compile Include="Strategies\TrendStrategyMA.boo" />
+    <None Include="COPYING.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Indicators" />
+    <Folder Include="Loaders" />
+    <Folder Include="Macros" />
+    <Folder Include="Strategies" />
+    <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
+      <Name>API1.0</Name>
+      <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomCommon\PluginCommon.csproj">
+      <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
+      <Name>PluginCommon</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(BooBinPath)\Boo.Microsoft.Build.targets" />
+</Project>

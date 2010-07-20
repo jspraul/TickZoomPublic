@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+        <SkipPostSharp>true</SkipPostSharp>
+   </PropertyGroup>
+   <ItemGroup Condition=" '$(SkipPostSharp)' != 'true' ">
+       <Reference Include="PostSharp">
+           <HintPath>..\..\..\..\..\..\Program Files\PostSharp 2.0\Reference Assemblies\.NET Framework 2.0\PostSharp.dll</HintPath>
+       </Reference>
+       <Reference Include="PostSharp.Laos">
+           <HintPath>..\..\..\..\..\..\Program Files\PostSharp 2.0\Reference Assemblies\.NET Framework 2.0\PostSharp.Laos.dll</HintPath>
+       </Reference>
+   </ItemGroup>
+</Project>

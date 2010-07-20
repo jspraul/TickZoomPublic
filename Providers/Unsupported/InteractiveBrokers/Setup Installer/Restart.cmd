@@ -1,0 +1,2 @@
+net stop MBTradingService
+net start MBTradingService

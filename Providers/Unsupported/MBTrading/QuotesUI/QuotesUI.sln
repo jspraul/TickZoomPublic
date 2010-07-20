@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.0.0.3437
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuotesUI", "QuotesUI.csproj", "{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Obfuscate|Any CPU = Obfuscate|Any CPU
+		Profile|Any CPU = Profile|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Tick|Any CPU = Tick|Any CPU
+		Trace|Any CPU = Trace|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Obfuscate|Any CPU.Build.0 = Obfuscate|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Obfuscate|Any CPU.ActiveCfg = Obfuscate|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Tick|Any CPU.Build.0 = Tick|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Tick|Any CPU.ActiveCfg = Tick|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Trace|Any CPU.Build.0 = Trace|Any CPU
+		{0C044803-A5CB-48EF-AF37-DCC089BEDF7B}.Trace|Any CPU.ActiveCfg = Trace|Any CPU
+	EndGlobalSection
+EndGlobal

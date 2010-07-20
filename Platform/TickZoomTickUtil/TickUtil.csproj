@@ -1,0 +1,94 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{44135BE2-CBA4-4041-8F31-91C480302C2D}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TickUtil</RootNamespace>
+    <AssemblyName>TickZoomTickUtil</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Wayne Walter\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <SignAssembly>False</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\TickZoom.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;SkipPostSharp</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Obfuscate' ">
+    <OutputPath>..\bin\Obfuscate\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="..\..\TickZoom.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TickUtil\DataReceiverInternal.cs" />
+    <Compile Include="TickUtil\FastQueueImpl.cs" />
+    <Compile Include="TickUtil\Reader.cs" />
+    <Compile Include="TickUtil\TickMemoryStream.cs" />
+    <Compile Include="TickUtil\Pool.cs" />
+    <Compile Include="TickUtil\TickAggregator.cs" />
+    <Compile Include="TickUtil\BarWriter.cs" />
+    <Compile Include="TickUtil\BitArray.cs" />
+    <Compile Include="TickUtil\BitBuffer.cs" />
+    <Compile Include="TickUtil\ByteCount.cs" />
+    <Compile Include="TickUtil\ByteMemory.cs" />
+    <Compile Include="TickUtil\ProgressImpl.cs" />
+    <Compile Include="TickUtil\SignatureCompressor.cs" />
+    <Compile Include="TickUtil\SymbolQueue.cs" />
+    <Compile Include="TickUtil\ThreadTask.cs" />
+    <Compile Include="TickUtil\TaskQueue.cs" />
+    <Compile Include="TickUtil\TaskRunner.cs" />
+    <Compile Include="TickUtil\TickBox.cs" />
+    <Compile Include="TickUtil\TickBuffer.cs" />
+    <Compile Include="TickUtil\TickCompressor.cs" />
+    <Compile Include="TickUtil\TickImpl.cs" />
+    <Compile Include="TickUtil\TickQueueImpl.cs" />
+    <Compile Include="TickUtil\TickReader.cs" />
+    <Compile Include="TickUtil\TickUtilFactoryImpl.cs" />
+    <Compile Include="TickUtil\TickWriterDefault.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
+      <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
+      <Name>API1.0</Name>
+    </ProjectReference>
+    <Folder Include="TickUtil" />
+  </ItemGroup>
+</Project>

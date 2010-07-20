@@ -1,0 +1,108 @@
+/*
+ * Copyright 2008 M. Wayne Walter
+ * Software: TickZoom Trading Platform
+ * User: Wayne Walter
+ * 
+ * You can use and modify this software under the terms of the
+ * TickZOOM General Public License Version 1.0 or (at your option)
+ * any later version.
+ * 
+ * Businesses are restricted to 30 days of use.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * TickZOOM General Public License for more details.
+ *
+ * You should have received a copy of the TickZOOM General Public
+ * License along with this program.  If not, see
+ * 
+ * 
+ *
+ * User: Wayne Walter
+ * Date: 12/6/2009
+ * Time: 1:48 AM
+ * <http://www.tickzoom.org/wiki/Licenses>.
+ */
+
+/*! @page update How to Update
+<center>
+\htmlonly
+Version: $(VERSION)
+\endhtmlonly
+</center>
+
+@addindex update
+
+You can use these steps to update your local TickZoomPublic clone to another, usually, the latest
+version of TickZoom.
+
+@note
+Please ignore references to autosetuprebase in the previous version of this documentation since
+it turns out that does not apply to this situation.
+
+Okay. to update you need to open a Git Bash prompt on the folder that holds your local clone of
+the TickZoomPublic project and then enter these commands:
+
+Explanation of these follows.
+
+@verbatim 
+git stash
+git pull --rebase upstream integrate
+git push
+git stash apply
+@endverbatim
+
+@note
+You should consider creating a new branch on your local repository prior to updating. That way,
+you may easily check out your previous branch if you encounter any serious difficulty. But you 
+can also use "git rebase --abort" if you have problems to reset things back how they were.
+
+Here's the low down of each of these commands:
+
+-# git stash - "Stashes" any of your uncommitted changes which means that it extracts them
+from the code and stores them in a separate buffer so you can re-apply them later. For example,
+these might be changes you make to app.config files or other configuration which you never want to commit
+permanently.
+-# git pull --rebase - Pulls the latest version of code from the upstream repository. "integrate" may
+be replaced by another available branch name such as "stable" or "master".  For "upstream" you can 
+replace it with someone else's repository whose changes you wish to add to yours.
+@note See below about how to handle conflicts.
+-# git push - Pushes the update into your fork project on GitHub so that it
+remains current. it also pushes up any code which you have committed to make it available for others
+to includes in their projects and for committers to include in the official TickZoomPublic.
+-# git stash apply This recalls your changes that you previously stashed and merges them into the updated
+code. At this point you may find "conflicts" which are easiest to resolve using the TortoiseGit features
+called "Check for Modifications" and double click on the file that has conflicts to fix it using a 
+graphical side-by-side diff.
+
+@section update_conflicts How Resolve Pull Conflicts
+
+Since the git pull is using rebase, you need to understand how rebase works so as to easily resolve any issues.
+The git pull (using rebase) performs the following tasks:
+
+-# Rewinds your local branch to the most recent matching commit between your branch and the remote branch.
+-# Saves all your commits since that matching commit to a buffer.
+-# Recursively updates your branch with the latest commits from the remote branch. 
+   This particular step can never produce conflicts. That's one of benefits of using rebase instead of merge.
+-# Next, rebase begins applying your local commits one at a time on top of the latest. At this point you 
+   may or may not get conflicts for several reasons explained below.
+-# The git pull (using rebase) will stop at each of your commits that has a conflict and allow you to resolve it.
+   @note In many cases your commits will have zero conflicts because your commit was already absorbed into the
+   official branch or simply because it applied cleanly.
+ 
+@section conflict_reasons Possible Reasons for Conflict and How to Resolve
+
+-# You made a change that TickZoom committer absorbed it into the official branch but with minor modification.
+   -# In this case, git pull will stop and offer you to resolve the conflict.
+   -# You can then look at the conflict using TortoiseGit, Check for Modifications and double-click on the files in conflict.
+   -# If you see that this is the situation, then you should run the command "get rebase --skip" which will throw away
+      your commit in favor of keeping the official commit. 
+   -# However, this decision is up to you. So if you feel that your commit was applied to the official code improperly for some reason then contact support.
+-# You made a commit that has not yet been applied to the official branch or was rejected and now it conflicts with other changes to the official branch.
+   -# In this case, git pull will stop and offer you to resolve the conflict.
+   -# You can then look at the conflict using TortoiseGit, Check for Modifications and double-click on the files in conflict.
+   -# In this situation, you probably will want to actually resolve the conflicts using the side-by-side diff from TortoiseGit and
+      keep your modifications. If you feel your modification should have been added to the official branch already, contact support.
+
+*/

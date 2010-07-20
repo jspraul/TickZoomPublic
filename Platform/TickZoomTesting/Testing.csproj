@@ -1,0 +1,180 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{2183BC2B-A766-40DA-9A99-9EA5F8B428CA}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TickZoomTesting</RootNamespace>
+    <AssemblyName>TickZoomTesting</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Wayne Walter\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE;TESTING;SkipPostSharp</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\bin\Release</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TESTING</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildCommunityTasksPath Condition="'$(MSBuildCommunityTasksPath)' == ''">$(MSBuildExtensionsPath)\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
+    <MSBuildCommunityTasksLib>$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll</MSBuildCommunityTasksLib>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="..\..\TickZoom.CSharp.Targets" />
+  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.NUnit" Condition=" $(CommunityTasks) == 'true' " />
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>Lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BrokerageFramework\TradeTest.cs" />
+    <Compile Include="Common\DateTimeTest.cs" />
+    <Compile Include="Common\PerformanceTest.cs" />
+    <Compile Include="Common\PluginManagerTest.cs" />
+    <Compile Include="Indicators\EMATest.cs" />
+    <Compile Include="Indicators\IndicatorTest.cs" />
+    <Compile Include="Indicators\LinearRegressionTest.cs" />
+    <Compile Include="Indicators\SMATest.cs" />
+    <Compile Include="Indicators\TEMATest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\OrderHandlerTest.cs" />
+    <Compile Include="Startup\ChartThread.cs" />
+    <Compile Include="Startup\DictionaryTest.cs" />
+    <Compile Include="Startup\TestSimpleLoader.cs" />
+    <Compile Include="Startup\TestSimpleStrategy.cs" />
+    <Compile Include="Startup\InstrumentImpl.cs" />
+    <Compile Include="Startup\StarterTest.cs" />
+    <Compile Include="TickData\ConvertDataTest.cs" />
+    <Compile Include="TickData\CreateSignatureTest.cs" />
+    <Compile Include="TickData\BitBufferTest.cs" />
+    <Compile Include="TickData\TickQueueTest.cs" />
+    <Compile Include="TradingFramework\BaseStatsTest.cs" />
+    <Compile Include="TradingFramework\ChromosomeTest.cs" />
+    <Compile Include="TradingFramework\EquityStatsTest.cs" />
+    <Compile Include="TradingFramework\ExchangeTimeZoneTest.cs" />
+    <Compile Include="TradingFramework\ExitStrategyMiscTest.cs" />
+    <Compile Include="TradingFramework\ExitStrategyMock.cs" />
+    <Compile Include="TradingFramework\ChainTest.cs" />
+    <Compile Include="TradingFramework\ExitStrategyTickTest.cs" />
+    <Compile Include="TradingFramework\MoneyManagerRandomStrategy.cs" />
+    <Compile Include="TradingFramework\OptimizeVarTest.cs" />
+    <Compile Include="TradingFramework\RandomMock.cs" />
+    <Compile Include="TradingFramework\RandomStrategyTest.cs" />
+    <Compile Include="TradingFramework\StrategyStatsTest.cs" />
+    <Compile Include="TradingFramework\StrategySupportMock.cs" />
+    <Compile Include="TradingFramework\StrategyWeekTest.cs" />
+    <Compile Include="TradingFramework\StrategyTickTest.cs" />
+    <Compile Include="TradingFramework\StrategyTest.cs" />
+    <Compile Include="TradingFramework\TradeStatsTest.cs" />
+    <Compile Include="Utilities\AutoUpdateTest.cs" />
+    <Compile Include="Utilities\ISINTest.cs" />
+    <Compile Include="Utilities\SymbolTest.cs" />
+    <Compile Include="Utilities\tzdataTest.cs" />
+    <None Include="app.config" />
+    <None Include="Lib\nunit.framework.dll" />
+    <None Include="Startup\optimizeResults.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
+      <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
+      <Name>API1.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomCommon\Common.csproj">
+      <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomGui\GUI.csproj">
+      <Project>{2E2F67C6-8492-4034-A142-50872504D86D}</Project>
+      <Name>GUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomStarters\Starters.csproj">
+      <Project>{61D3BADE-512C-4AE3-8863-0B669ACFEA99}</Project>
+      <Name>Starters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomTickUtil\TickUtil.csproj">
+      <Project>{44135BE2-CBA4-4041-8F31-91C480302C2D}</Project>
+      <Name>TickUtil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\tzdata\tzdata.csproj">
+      <Project>{B5CA9174-96DB-43D8-B4AB-230E44227D59}</Project>
+      <Name>tzdata</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZedGraph\ZedGraph.csproj">
+      <Project>{67EBC93F-0D47-4F6E-979F-E5622E1025E9}</Project>
+      <Name>ZedGraph</Name>
+    </ProjectReference>
+    <COMReference Include="Accessibility">
+      <Guid>{1EA4DBF0-3C3B-11CF-810C-00AA00389B71}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <Folder Include="Lib" />
+    <Folder Include="Provider" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+</Project>

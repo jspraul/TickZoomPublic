@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<project name="TickZoom Engine Build" default="compile.all" >
+  <property name="base.dir" value="${directory::get-current-directory()}" />
+  <property name="tools.platform" value="${base.dir}\..\Tools\1.0" />
+  <property name="tools.nunit.process" value="nunit-console.exe" />
+  <property name="tools.nunit" value="${tools.platform}\NUnit\bin\net-2.0\${tools.nunit.process}" />
+  <property name="tools.doxygen" value="${tools.platform}\Doxygen\doxygen.exe" />
+  <property name="nant.contrib" value="${tools.platform}\nantcontrib-0.85/bin/NAnt.Contrib.Tasks.dll"/>
+  <property name="nant.settings.currentframework" value="net-3.5" />
+  <property name="target.assemblies" value="${base.dir}\bin" />
+  <property name="config.platform" value="Debug" />
+  
+  <target name="compile.all" >
+    <property name="config.platform" value="Debug" />
+    <call target="compile" />
+    <property name="config.platform" value="Release" />
+    <call target="compile" />
+  </target>
+  
+  <target name="compile" depends="compile.platform,compile.mbtfix"/>
+  
+  <target name="test" depends="test.platform"/>
+  
+  <target name="compile.mbtfix">
+    <loadtasks assembly="${nant.contrib}" />
+    
+    <echo message=""/>
+    <echo message=" === Compile MBTrading FIX ${config.platform} === "/>
+    <echo message=""/>
+    
+    <msbuild project="Providers\MBTFIX\MBTFIX.sln">
+      <property name="Configuration" value="${config.platform}"/>
+    </msbuild>    
+
+  </target>    
+  
+  <target name="test.mbtfix">
+  
+    <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
+      commandline='MBTFIXTests.dll /labels '/>
+      
+  </target>
+  
+  <target name="compile.platform">
+    <echo message="tools.platform = ${tools.platform}"/>
+    
+    <loadtasks assembly="${nant.contrib}" />
+	  
+    <echo message=""/>
+    <echo message=" === Compile Platform ${config.platform} === "/>
+    <echo message=""/>
+    
+    <msbuild project="Platform\TickZoom.sln">
+      <property name="Configuration" value="${config.platform}"/>
+    </msbuild>    
+    
+  </target>    
+    
+  <target name="test.platform">
+    <loadtasks assembly="${nant.contrib}" />
+  
+    <echo message=""/>
+    <echo message=" === Test Platform ${config.platform} === "/>
+    <echo message=""/>
+    
+    <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
+	  commandline='TickZoomTesting.dll /labels '/>
+    <kill processName="nunit-console.exe" />
+
+    <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
+          commandline='ExamplesTest.exe /labels '/>
+    <kill processName="nunit-console.exe" />
+    
+  </target>
+  
+</project>

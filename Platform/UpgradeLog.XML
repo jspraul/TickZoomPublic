@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="TickZoom">
+</Property><Property Name="Solution File" Value="C:\Local\TickZoomDev5\Main\TickZoom.sln">
+</Property><Property Name="Date" Value="Sunday, April 12, 2009">
+</Property><Property Name="Time" Value="18:40 PM">
+</Property></Properties><Event ErrorLevel="0" Project="ZedGraph" Source="ZedGraph\ZedGraph.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="ZedGraph" Source="ZedGraph\ZedGraph.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="TickZoomGUI" Source="TickZoomGui\TickZoomGUI.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="TickZoomGUI" Source="TickZoomGui\TickZoomGUI.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="TickZoomTesting" Source="TickZoomTesting\TickZoomTesting.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="TickZoomTesting" Source="TickZoomTesting\TickZoomTesting.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="TickZoomBlackBox" Source="TickZoomBlackBox\TickZoomBlackBox.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="TickZoomBlackBox" Source="TickZoomBlackBox\TickZoomBlackBox.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="TickZoomCommunication" Source="TickZoomCommunication\TickZoomCommunication.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="TickZoomCommunication" Source="TickZoomCommunication\TickZoomCommunication.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="TickZoomLogging" Source="TickZoomLogging\TickZoomLogging.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="TickZoomLogging" Source="TickZoomLogging\TickZoomLogging.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="TickZoomTickUtil" Source="TickZoomTickUtil\TickZoomTickUtil.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="TickZoomTickUtil" Source="TickZoomTickUtil\TickZoomTickUtil.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="TickZoomAPI1.0" Source="TickZoomAPI1.0\TickZoomAPI1.0.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="TickZoomAPI1.0" Source="TickZoomAPI1.0\TickZoomAPI1.0.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="TickZoomCommon" Source="TickZoomCommon\TickZoomCommon.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="TickZoomCommon" Source="TickZoomCommon\TickZoomCommon.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="CustomPlugin" Source="CustomPlugin\CustomPlugin.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="CustomPlugin" Source="CustomPlugin\CustomPlugin.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="TickZoomStarters" Source="TickZoomStarters\TickZoomStarters.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="TickZoomStarters" Source="TickZoomStarters\TickZoomStarters.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="WinFormsUI" Source="WinFormsUI\WinFormsUI.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="WinFormsUI" Source="WinFormsUI\WinFormsUI.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="TickZoomGui2" Source="TickZoomGui2\TickZoomGui2.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="TickZoomGui2" Source="TickZoomGui2\TickZoomGui2.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="" Source="TickZoom.sln" Description="The solution file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="" Source="TickZoom.sln" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="WinFormsUI" Source="WinFormsUI\WinFormsUI.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<category name="MB Trading">
+    <category name="Forex">
+        <property name="Level2LotSize" value="10000" />
+        <property name="Level2LotSizeMinimum" value="100" />
+        <property name="Level2Increment" value="10" />
+	<property name="FullPointValue" value="0.01" />
+	    <category name="4 Pip">
+		<property name="MinimumTick" value="0.00001" />
+		    <symbol name="USD/CHF"/>
+		    <symbol name="USD/CAD"/>
+		    <symbol name="AUD/USD"/>
+		    <symbol name="USD/NOK"/>
+		    <symbol name="EUR/USD"/>
+		    <symbol name="USD/SEK"/>
+		    <symbol name="USD/DKK"/>
+		    <symbol name="GBP/USD"/>
+		    <symbol name="EUR/CHF"/>
+		    <symbol name="EUR/GBP"/>
+		    <symbol name="EUR/NOK"/>
+		    <symbol name="EUR/SEK"/>
+		    <symbol name="GBP/CHF"/>
+		    <symbol name="NZD/USD"/>
+		    <symbol name="AUD/CHF"/>
+		    <symbol name="AUD/CAD"/>
+	    </category>
+	    <category name="2 Pip">
+		<property name="MinimumTick" value="0.001" />
+		    <symbol name="USD/JPY"/>
+		    <symbol name="CHF/JPY"/>
+		    <symbol name="EUR/JPY"/>
+		    <symbol name="GBP/JPY"/>
+		    <symbol name="AUD/JPY"/>
+		    <symbol name="CAD/JPY"/>
+	    </category>
+    </category>
+</category>

@@ -1,0 +1,138 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{E12CA83B-0ACF-4E59-8C6C-F4D51A3DDC3C}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ExamplesPluginTests</RootNamespace>
+    <AssemblyName>ExamplesTest</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Wayne Walter\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\bin\Release</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Target Name="BeforeBuild">
+    <CreateItem Include="..\Engine\TickZoomEngine.*">
+      <Output TaskParameter="Include" ItemName="EngineFilesToCopy" />
+    </CreateItem>
+    <Copy SourceFiles="@(EngineFilesToCopy)" DestinationFolder="$(OutputPath)" />
+  </Target>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>Lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GUI\GUITest.cs" />
+    <Compile Include="GUI\GUIThread.cs" />
+    <Compile Include="Loaders\ChartThread.cs" />
+    <Compile Include="Loaders\CompareSimulatedTest.cs" />
+    <Compile Include="Loaders\DualStrategyLimitOrder.cs" />
+    <Compile Include="Loaders\ExampleDualStrategyTest.cs" />
+    <Compile Include="Loaders\ExampleMixedTest.cs" />
+    <Compile Include="Loaders\ExampleMultiStrategyTest.cs" />
+    <Compile Include="Loaders\ExampleScannerTest.cs" />
+    <Compile Include="Loaders\ExampleSimpleTradeOnlyTest.cs" />
+    <Compile Include="Loaders\ExampleSimulatedTest.cs" />
+    <Compile Include="Loaders\ExampleSimpleTest.cs" />
+    <Compile Include="Loaders\ExampleDualSymbolTest.cs" />
+    <Compile Include="Loaders\LimitOrderTest.cs" />
+    <Compile Include="Loaders\LimitOrderTickBarTest.cs" />
+    <Compile Include="Loaders\LoopMixedTest.cs" />
+    <Compile Include="Loaders\MarketOrderTest.cs" />
+    <Compile Include="Loaders\PacketFailureTest.cs" />
+    <Compile Include="Loaders\StrategyTest.cs" />
+    <Compile Include="Loaders\TestDualStrategyLoader.cs" />
+    <Compile Include="Loaders\TestLimitOrderLoader.cs" />
+    <Compile Include="Loaders\TradeOnlyLimitOrderTest.cs" />
+    <Compile Include="Loaders\TradeOnlySimpleTest.cs" />
+    <Compile Include="MiscTest\DefectsTest.cs" />
+    <Compile Include="MiscTest\MQ_BadFakeTickLoader.cs" />
+    <Compile Include="MiscTest\MQ_BadFakeTick_0.cs" />
+    <Compile Include="MiscTest\MQ_BadFakeTick_1.cs" />
+    <Compile Include="MiscTest\MQ_BadFakeTick_2.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RealTime\BrokerDualLimitOrder.cs" />
+    <Compile Include="RealTime\BrokerLimitOrderTickBar.cs" />
+    <Compile Include="RealTime\BrokerMarketOrder.cs" />
+    <Compile Include="RealTime\BrokerTradeOnlyLimitOrderTest.cs" />
+    <Compile Include="RealTime\ExperimentWithEnums.cs" />
+    <Compile Include="RealTime\BrokerLimitOrderTest.cs" />
+    <Compile Include="RealTime\TestException.cs" />
+    <None Include="app.config" />
+    <None Include="Lib\nunit.framework.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GUI" />
+    <Folder Include="Loaders" />
+    <Folder Include="MiscTest" />
+    <Folder Include="Lib" />
+    <Folder Include="RealTime" />
+    <ProjectReference Include="..\ExamplesPlugin\Examples.csproj">
+      <Project>{B1A8F8F4-F7C9-46DC-B4BE-F08394778EF4}</Project>
+      <Name>Examples</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
+      <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
+      <Name>API1.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomCommon\Common.csproj">
+      <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomGui\GUI.csproj">
+      <Project>{2E2F67C6-8492-4034-A142-50872504D86D}</Project>
+      <Name>GUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomLogging\Logging.csproj">
+      <Project>{1B4F3283-33FC-4EB7-8A39-33D339672BE4}</Project>
+      <Name>Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomStarters\Starters.csproj">
+      <Project>{61D3BADE-512C-4AE3-8863-0B669ACFEA99}</Project>
+      <Name>Starters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomTickUtil\TickUtil.csproj">
+      <Project>{44135BE2-CBA4-4041-8F31-91C480302C2D}</Project>
+      <Name>TickUtil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZedGraph\ZedGraph.csproj">
+      <Project>{67EBC93F-0D47-4F6E-979F-E5622E1025E9}</Project>
+      <Name>ZedGraph</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<projectproperties name="" type="ProjectProperties">
+    <propertyset name="starter">
+        <property name="Symbols" value="USD/JPY" />
+        <property name="EndTime" value="7/23/2009" />
+        <property name="IntervalDefault" value="1 Hour Bars" />
+    </propertyset>
+    <propertyset name="chart">
+        <property name="IntervalChartDisplay" value="1 Hour Bars" />
+        <property name="IntervalChartBar" value="1 Hour Bars" />
+        <property name="IntervalChartUpdate" value="1 Hour Bars" />
+    </propertyset>
+    <propertyset name="engine">
+        <property name="IntervalDefault" value="1 Hour Bars" />
+    </propertyset>
+    <strategy name="PortfolioCommon" type="PortfolioCommon">
+        <propertyset name="exitstrategy" />
+        <propertyset name="positionsize" />
+        <propertyset name="performance" />
+        <strategy name="ExampleSMAStrategy" type="ExampleSMAStrategy">
+            <propertyset name="exitstrategy" />
+            <propertyset name="positionsize" />
+            <propertyset name="performance" />
+            <indicator name="SMA" type="SMA">
+                <property name="Period" value="10" />
+                <propertyset name="drawing" />
+            </indicator>
+            <indicator name="IndicatorCommon" type="IndicatorCommon">
+                <propertyset name="drawing" />
+            </indicator>
+        </strategy>
+    </strategy>
+</projectproperties>

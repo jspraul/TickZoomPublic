@@ -1,0 +1,104 @@
+/*
+ * Copyright 2008 M. Wayne Walter
+ * Software: TickZoom Trading Platform
+ * User: Wayne Walter
+ * 
+ * You can use and modify this software under the terms of the
+ * TickZOOM General Public License Version 1.0 or (at your option)
+ * any later version.
+ * 
+ * Businesses are restricted to 30 days of use.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * TickZOOM General Public License for more details.
+ *
+ * You should have received a copy of the TickZOOM General Public
+ * License along with this program.  If not, see
+ * 
+ * 
+ *
+ * User: Wayne Walter
+ * Date: 12/6/2009
+ * Time: 1:48 AM
+ * <http://www.tickzoom.org/wiki/Licenses>.
+ */
+
+/*! @page simple_example Simple Example
+<center>
+\htmlonly
+Version: $(VERSION)
+\endhtmlonly
+</center>
+
+@addindex simple_example
+
+@htmlonly The current version is $(VERSION). @endhtmlonly
+
+@section simple_example_strategy Simple ZoomScript Example
+
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent orci arcu, faucibus sed eleifend ac, eleifend eget lacus. 
+    Integer porttitor nisi ac metus blandit auctor. Vestibulum risus leo, iaculis nec malesuada vitae, condimentum id mi
+    Sed turpis lectus, auctor et ultrices sit amet, congue a augue. Pellentesque venenatis, neque vel porta lacinia, neque mauris volutpat lacus, eget mollis lacus neque a sem.
+    Donec porta, dui a pharetra sagittis, felis risus ornare tortor, a aliquet orci velit porttitor orci.
+    
+
+    \code    
+	public class MarketOrderStrategy : Strategy
+	{
+	    public override bool OnIntervalClose()
+	    {
+		if( !Position.IsLong && Bars.Close[0] > Bars.High[1]) {
+		    if( Position.IsShort) {
+			Orders.Exit.ActiveNow.GoFlat();
+		    }
+		    Orders.Enter.ActiveNow.BuyMarket(2);
+		}
+		if( !Position.IsShort && Bars.Close[0] < Bars.Low[1]) {
+		    if( Position.IsLong) {
+			Orders.Exit.ActiveNow.GoFlat();
+		    }
+		    Orders.Enter.ActiveNow.SellMarket(2);
+		}
+		return true;
+	    }
+	}
+    \endcode
+
+\msc
+
+@section simple_example_loader Simple ZoomScript Portfolio Loader
+StarterCommon (!) HistoricalStarter1
+StarterCommon (!) MarketOrderLoader1
+StarterCommon ==> HistoricalStarter1 Run(ModelLoaderInterface)
+HistoricalStarter1 ==> MarketOrderLoader1 OnInitialize(ProjectProperties)
+MarketOrderLoader1 <== MarketOrderLoader1 OnInitialize(ProjectProperties)
+HistoricalStarter1 ==> MarketOrderLoader1 OnLoad(ProjectProperties)
+MarketOrderLoader1 (!) MarketOrderStrategy1
+MarketOrderLoader1 <== MarketOrderLoader1 OnLoad(ProjectProperties)
+HistoricalStarter1 (!) EngineKernel1
+HistoricalStarter1 ==> EngineKernel1 Run()
+\endmsc
+
+    -# Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent orci arcu, faucibus sed eleifend ac, eleifend eget lacus. 
+    -# Integer porttitor nisi ac metus blandit auctor. Vestibulum risus leo, iaculis nec malesuada vitae, condimentum id mi
+    -# Sed turpis lectus, auctor et ultrices sit amet, congue a augue. Pellentesque venenatis, neque vel porta lacinia, neque mauris volutpat lacus, eget mollis lacus neque a sem.
+    -# Donec porta, dui a pharetra sagittis, felis risus ornare tortor, a aliquet orci velit porttitor orci.
+    -# Sed sit amet lacus vel libero molestie lacinia at eget tortor. Donec luctus, justo at vehicula commodo, sem libero consequat ante, vel gravida eros lectus sit amet elit.
+    -# Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce purus lorem, elementum et imperdiet sed, consectetur egestas lorem.
+    -# Nulla fermentum dapibus elit vitae imperdiet. Aenean sed purus mi. Curabitur velit ligula, suscipit sed mollis non, pharetra in diam.
+    -# Duis bibendum sodales suscipit. Pellentesque sollicitudin eros quis neque ullamcorper consequat adipiscing nulla mollis.
+
+@section simple_example_run What Happens When You Run
+
+    -# Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent orci arcu, faucibus sed eleifend ac, eleifend eget lacus. 
+    -# Integer porttitor nisi ac metus blandit auctor. Vestibulum risus leo, iaculis nec malesuada vitae, condimentum id mi
+    -# Sed turpis lectus, auctor et ultrices sit amet, congue a augue. Pellentesque venenatis, neque vel porta lacinia, neque mauris volutpat lacus, eget mollis lacus neque a sem.
+    -# Donec porta, dui a pharetra sagittis, felis risus ornare tortor, a aliquet orci velit porttitor orci.
+    -# Sed sit amet lacus vel libero molestie lacinia at eget tortor. Donec luctus, justo at vehicula commodo, sem libero consequat ante, vel gravida eros lectus sit amet elit.
+    -# Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce purus lorem, elementum et imperdiet sed, consectetur egestas lorem.
+    -# Nulla fermentum dapibus elit vitae imperdiet. Aenean sed purus mi. Curabitur velit ligula, suscipit sed mollis non, pharetra in diam.
+    -# Duis bibendum sodales suscipit. Pellentesque sollicitudin eros quis neque ullamcorper consequat adipiscing nulla mollis.
+   
+*/

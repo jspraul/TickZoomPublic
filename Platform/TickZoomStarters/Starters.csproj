@@ -1,0 +1,91 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{61D3BADE-512C-4AE3-8863-0B669ACFEA99}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TickZoomStarters</RootNamespace>
+    <AssemblyName>TickZoomStarters</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Wayne Walter\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\bin\Release</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ProjectProperties\ApplicationPropertiesCommon.cs" />
+    <Compile Include="ProjectProperties\ChartProperties.cs" />
+    <Compile Include="ProjectProperties\EngineProperties.cs" />
+    <Compile Include="ProjectProperties\ModelPropertiesCommon.cs" />
+    <Compile Include="ProjectProperties\ModelPropertyCommon.cs" />
+    <Compile Include="ProjectProperties\ProfitLossDefault.cs" />
+    <Compile Include="ProjectProperties\ProjectPropertiesCommon.cs" />
+    <Compile Include="ProjectProperties\PropertiesBase.cs" />
+    <Compile Include="ProjectProperties\StarterProperties.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Starters\Chromosome.cs" />
+    <Compile Include="Starters\StarterFactoryImpl.cs" />
+    <Compile Include="Starters\DesignStarter.cs" />
+    <Compile Include="Starters\MustUseLoaderException.cs" />
+    <Compile Include="Starters\GeneticStarter.cs" />
+    <Compile Include="Starters\HistoricalStarter.cs" />
+    <Compile Include="Starters\OptimizeStarter.cs" />
+    <Compile Include="Starters\RealTimeStarter.cs" />
+    <Compile Include="Starters\StarterCommon.cs" />
+    <Compile Include="Symbols\SymbolCategory.cs" />
+    <Compile Include="Symbols\SymbolDictionary.cs" />
+    <Compile Include="Symbols\SymbolFactoryImpl.cs" />
+    <Compile Include="Symbols\SymbolInfoCommon.cs" />
+    <Compile Include="Symbols\SymbolLibrary.cs" />
+    <Compile Include="Symbols\SymbolProperties.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
+      <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
+      <Name>API1.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomCommon\Common.csproj">
+      <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomTickUtil\TickUtil.csproj">
+      <Project>{44135BE2-CBA4-4041-8F31-91C480302C2D}</Project>
+      <Name>TickUtil</Name>
+    </ProjectReference>
+    <Folder Include="ProjectProperties" />
+    <Folder Include="Symbols" />
+    <Folder Include="Starters" />
+  </ItemGroup>
+</Project>

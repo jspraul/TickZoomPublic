@@ -1,0 +1,105 @@
+Interactive Brokers C# Socket API
+Karl Schulze - www.dinosaurtech.com
+
+Release Notes
+
+9.6.3.14 Bug Fix and Feature - 8/3/09
+* Added Overload to Request History to allow you to specify duration in a raw string
+* Further Fixed ReadDecimal Bug
+
+9.6.3.13 New Release - 7/20/09
+* Update to Ib's 9.63 api
+* Add shortable tickType
+* Fixes to ReadDecimal
+* Fix 1 second barsize enum.
+* Fixed Bug with IBClient.ReadDecimal()
+* 
+Fixed bug in ExecutionFilter
+
+9.6.0.11 New Release - 11/30/08
+* Made all event handlers thread safe
+* Brought up to API 9.6
+
+9.5.0.10 New Release - 5/4/08
+* Made all prices decimals
+* Brought up to API 9.5
+
+9.4.0.9 Bug Fix and Clean up - 2/10/08
+* Made all EventArgs Serializable as well as the new enumeration FATypes.
+* Fixed bug in OrderType.MarketOnClose - changed Description from "MKTCLS" to "MOC"
+* Fixed RequestExecution method to allow you to pass a null or empty filter to get all executions.
+* Changed HistoricalRequest Response. Added two parameters to the event args that lets the user know how far the download is. Also no longer calls function after download completed with null entries, since you can determine that the call is complete by the Record Number / Record Count properties.
+* Made EnumDescConverter Static, as all methods were static.
+
+
+9.4.0.8 Code Clean up - 1/31/08
+* Ran Vs2008 Code Analysis Wizard / FxCop and implemented cleanup
+	* Numerous Spelling Changes
+		* All Mkt references went to Market
+		* All Req references went to Request etc.
+		* All Lmt references went to Limit
+		* All Indice references went to index
+	* Added a lot of CultureInfo related fixes, making sure to provide invarient parsing
+* Fixed VB Client, used old contracts, and changed contract references to equity/future
+
+Please note - These are breaking changes, no functionality has been changes, but it will require
+you to modify your code to the new spellings.
+
+9.4.0.7 Bug Fix Release - 1/26/08
+* Changed FAMethod to Enumeration
+* Changed OrderState.Status to enumeration
+* Fixed several data parsing problems related to empty strings
+
+9.4.0.6 API and Bug Fix Release - 12/9/07
+* Updated to support 9.40 Interactive Brokers API Release
+	* What-If Order Support
+	* Commission Data
+	* Contract/Contract Details Refactored
+* Fixed Historical Request 1 day limitation
+* Changed TickSizeEvent Args to use TickType instead of TickerType
+* All Enums / Container classes are now marked serializable
+* Fixed bug on Stop Limit Orders "STPLMT" -> "STP LMT"
+
+9.3.0.5 Bug Fix Release -
+* Fixed Historical Data Requests (had improperly fomatted parameter and timestamps)
+* Fixed Disconnect call to properly kill the reader thread
+* Added support for additional contracts (forex, Futures, Indices)
+* Began Order Classes, incomplete for now, but started a Limit Order class.
+* Fixed Current Time call, it now returns a date time instead of a string.
+
+9.3.0.4 Bug Fix Release - 
+* Added Market On Open enumeration to Time in Force
+
+9.3.0.3 API and Feature Release - July 20th, 2007
+* Updated to support 9.30 Interactive Brokers API Release
+	* Added Support for Scale Orders
+	* Added Support to ComboLegs for Short Sales
+	* Added Support for Market Data Snap Shots
+* Thanks to RLaumeyer for the Contract Examples. Added a new namespace Krs.Ats.IBNet.Contracts and included his two examples, an Option Contract and an Equity Contract.
+* Rearranged this Release Notes File to be descending with each release.
+
+9.2.0.3 Bug Fix Release - July 20th, 2007
+* Fixed Order placement. Problem related to the castings of several enumerations, as well as a missing order status type.
+* Added a contract constructor for indices.
+* Updated C# App with a lot more default contracts, and a sample order placement.
+* Added ThrowExceptions property to IBClient to help in debugging
+
+9.2.0.2 Bug Fix Release - July 14th, 2007
+* Fixed RightType descriptions. Changed from "PUT" to "P" and "CALL" to "C".
+
+9.2.0.1 Second Release - July 12th, 2007
+* Updated to support 9.20 Interactive Brokers API Release
+	* ErrorMessage.cs added four new messages for real time bars, current time, and canceling a historical request.
+	* Updated Order Status Event and Event Arguments to support whyHeld parameter.
+	* Added Real Time Bar Event / Event Argument / Message Parser
+	* Added Current Time Event / Event Argument / Message Parser
+	* Added new outgoing messages for real time bars and current time
+	* Fixed Cancel Historical Data error Message
+* Added Visual Basic.Net Sample
+	* Module is CLR compliant
+
+9.1.0.1 Initial Release (Alpha) - July 8th, 2007
+ * Corresponds to Interactive Brokers API Release 9.10
+ * Considered an alpha release, as library has been mechanically converted and not yet rigorously tested.
+
+

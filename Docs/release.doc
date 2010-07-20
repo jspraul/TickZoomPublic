@@ -1,0 +1,75 @@
+/*
+ * Copyright 2008 M. Wayne Walter
+ * Software: TickZoom Trading Platform
+ * User: Wayne Walter
+ * 
+ * You can use and modify this software under the terms of the
+ * TickZOOM General Public License Version 1.0 or (at your option)
+ * any later version.
+ * 
+ * Businesses are restricted to 30 days of use.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * TickZOOM General Public License for more details.
+ *
+ * You should have received a copy of the TickZOOM General Public
+ * License along with this program.  If not, see
+ * 
+ * 
+ *
+ * User: Wayne Walter
+ * Date: 12/6/2009
+ * Time: 1:48 AM
+ * <http://www.tickzoom.org/wiki/Licenses>.
+ */
+
+/*! @page release_notes Release Notes
+<center>
+\htmlonly
+Version: $(VERSION)
+\endhtmlonly
+</center>
+
+@addindex release_notes
+
+
+@section latest_release_notes Latest Release Notes
+    @htmlonly The current version is $(VERSION). @endhtmlonly
+
+
+    -# Added static TimeStamp.UtcNow property to get the current time in a TimeStamp that is accurate to 1 millisecond instead of the DateTime.Now or DateTime.UtcNow which is only accurate to 10 to 15 millisecond granularity.
+    -# Fixed ActiveNow to fill orders on the same tick that the order is created where appropriate and for faster processing during real time trading.
+    -# Added TimeAndSales and QuoteType property in the symbol dictionary and MBTrading provider. TimeAndSales options are ActualTrades, Extrapolated, or None. QuoteType options are Level1, Level2, or None.
+    -# MBTrading updated for new Tick api
+    -# Also made RunUpdate parameter obsolete so to avoid issues for users during updates.
+    -# Optimized handling of BarSeries, Circular, TimeStamp, Position copying, and cleaned up references to custom profiler.
+    -# Performance improvement due to optimizing time zones calculations to updated every Saturday night during historical tests.
+    -# Refactored tick API for creating ticks to replace init() with SetTime(), SetQuote(), SetTrade(), and SetDepth(). 
+    -# Fixed link in Statistics reports. Made optimized statistics reports to do subfolders numbered for each pass of optimization. Fixed defects found in using order price for simulated fill orders.
+    -# Optimized Performance object for 30% speedup plus faster exception handling in the data engine.
+    -# Improving appearance of the online documentation including prettier html header, footer and layout for documentation.
+
+@section version_0_6_0_735 Version 0.6.0.735 Release Notes -- December 17, 2009
+
+    -# Added documentation for updating with Git, and handling obsolete errors.
+    -# Added ChartGroup property to SymbolInfo as read only and also to SymbolProperties which is read/write from within the loaders only.  Also, changed the type of Symbol on Chart interface to SymbolInfo so charts can access the ChartGroup property.
+    -# Entry orders now use order price for fills in the case of the market trading 'through' the order.
+    -# ExitStrategy and Performance now use the price propogated via the Position object from the filled order.
+    -# Added Copy() to Position. Propogated signal amount among support objects.
+    -# Removed TransactionPairs from Performance object and Statistics object.
+    -# Refactored Position to allow setting the price at which the position changes. Also renamed properties and methods to Current, Change()
+    -# Renumbered to 0.6.x version.
+    -# Improved performance of charting and improved scrolling for real time charting. Especially, seperated drawing background only on resize instead of every timer ticker on real time.  Fixed ZedGraph to copy instead of reallocate backing buffer and added faster Bitmap copy method for ZedGraph.
+    -# SymbolManager now both reads and writes to the ServerCache folder rather than separate folders so it can properly send the latest back fill data.
+    -# Misc fixes. Fixed bug in TickQueue where it block restarting because of a 0 for binary symbol id. Make TickWriter ensure it was initialized properly before calling Add() or Close().
+    -# Fixed performance of engine/kernel to all throttling the parallel manager for low usage of cpu. The engine now properly reports work completed to parallel manager for better CPU throttling.
+    -# Fixed real time scaling issue so that none of the bars run off the top or bottom of the chart.
+    -# Handled next bar property setup on order creation. Removed 'immediate' fills from EnterCommon, ExitCommon. Orders that are specified as NextBar now become active only at the open of the next bar.
+    -# Setup fluent interface for orders i.e. Orders.Enter.NextBar.GoFlat()
+    -# Renamed most user objects to remove 'Common' suffix.
+    -# Made package push the stable or master branch to TickZoomPublic.
+    -# Fixed to build scripts. Uncommented push to TickZoomPublic. Fixed deploy to take a parameter of which branch to deploy on the build server. Added package command for testint the packaging of branches like stable and master.
+   
+*/
