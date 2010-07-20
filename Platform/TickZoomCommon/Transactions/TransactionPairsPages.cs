@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 using TickZoom.Api;
@@ -38,9 +39,9 @@ namespace TickZoom.Transactions
 		PagePool<TransactionPairsPage> pagePool = new PagePool<TransactionPairsPage>();
 		private PageStore tradeData;
 		
-		private object unwrittenLocker = new object();
+		private object dirtyLocker = new object();
 		private volatile int pageCount = 0;
-		List<TransactionPairsPage> unwrittenPages = new List<TransactionPairsPage>();
+		List<TransactionPairsPage> dirtyPages = new List<TransactionPairsPage>();
 		
 		private object offsetsLocker = new object();
 		Dictionary<int,long> offsets = new Dictionary<int,long>();
@@ -52,8 +53,8 @@ namespace TickZoom.Transactions
 		
 		public void TryRelease(TransactionPairsPage page) {
 			bool contains = false;
-			lock( unwrittenLocker) {
-				contains = unwrittenPages.Contains(page);
+			lock( dirtyLocker) {
+				contains = dirtyPages.Contains(page);
 			}
 			if( page != null && !contains) {
 				pagePool.Free(page);
@@ -61,14 +62,36 @@ namespace TickZoom.Transactions
 		}
 		
 		public TransactionPairsPage GetPage(int pageNumber) {
-			lock( unwrittenLocker) {
+			lock( dirtyLocker) {
 				if( pageNumber >= pageCount) {
-					foreach( var unwrittenPage in unwrittenPages) {
+					foreach( var unwrittenPage in dirtyPages) {
 						if( unwrittenPage.PageNumber == pageNumber) {
 							return unwrittenPage;
 						}
 					}
-					throw new ApplicationException("Page number " + pageNumber + " was out side number of pages: " + pageCount + " and not found in unwritten page list.");
+					StringBuilder sb = new StringBuilder();
+					sb.Append("Unwritten page numbers: " );
+					bool first = true;
+					foreach( var temp in dirtyPages) {
+						if( !first) {
+							sb.Append(",");
+						}
+						first = false;
+						sb.Append(temp.PageNumber);
+					}
+					sb.AppendLine();
+					sb.Append("Pages in the queue:");
+					first = true;
+					lock( writeLocker) {
+						foreach( var temp in writeQueue) {
+							if( !first) {
+								sb.Append(",");
+							}
+							first = false;
+							sb.Append(temp.PageNumber);
+						}
+					}
+					throw new ApplicationException("Page number " + pageNumber + " was out side number of pages: " + pageCount + " and not found in unwritten page list.\n" + sb);
 				}
 			}
 			long offset = 0L;
@@ -90,8 +113,8 @@ namespace TickZoom.Transactions
 			TransactionPairsPage page = pagePool.Create();
 			page.SetCapacity(capacity);
 			page.PageNumber = pageNumber;
-			lock( unwrittenLocker) {
-				unwrittenPages.Add(page);
+			lock( dirtyLocker) {
+				dirtyPages.Add(page);
 			}
 			return page;
 		}
@@ -115,11 +138,31 @@ namespace TickZoom.Transactions
 				// Go to end of file.
 				long offset = tradeData.Write(page.Buffer,0,page.Buffer.Length);
 				lock( offsetsLocker) {
-					offsets.Add(page.PageNumber,offset);
+					try {
+						offsets.Add(page.PageNumber,offset);
+					} catch( Exception ex) {
+						lock( dirtyLocker) {
+							StringBuilder sb = new StringBuilder();
+							sb.AppendLine("Page Count: " + pageCount);
+							sb.Append("Dirty Pages: ");
+							foreach( var temp in dirtyPages) {
+								sb.Append( temp.PageNumber);
+								sb.Append( "  ");
+							}
+							sb.AppendLine();
+							sb.Append("Pages Queue to Write: ");
+							foreach( var temp in writeQueue) {
+								sb.Append( temp.PageNumber);
+								sb.Append( "  ");
+							}
+							sb.AppendLine();
+							throw new ApplicationException("Error added page in page writer: " + ex.Message + "\n" + sb, ex);
+						}
+					}
 				}
-				lock( unwrittenLocker) {
+				lock( dirtyLocker) {
 					pageCount++;
-					unwrittenPages.Remove(page);
+					dirtyPages.Remove(page);
 				}
 				pagePool.Free(page);
 			}
