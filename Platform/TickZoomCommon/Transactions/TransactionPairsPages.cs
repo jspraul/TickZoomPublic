@@ -49,7 +49,9 @@ namespace TickZoom.Transactions
 		
 		public TransactionPairsPages(PageStore tradeData) {
 			this.tradeData = tradeData;
-			this.tradeData.AddPageWriter( PageWriter);
+			if( asynchronous) {
+				this.tradeData.AddPageWriter( PageWriter);
+			}
 		}
 		
 		public void TryRelease(TransactionPairsPage page) {
@@ -120,11 +122,17 @@ namespace TickZoom.Transactions
 			return page;
 		}
 		
+		private bool asynchronous = false;
+		
 		private object writeLocker = new object();
 		private Queue<TransactionPairsPage> writeQueue = new Queue<TransactionPairsPage>();
 		public void WritePage(TransactionPairsPage page) {
-			lock( writeLocker) {
-				writeQueue.Enqueue(page);
+			if( asynchronous) {
+				lock( writeLocker) {
+					writeQueue.Enqueue(page);
+				}
+			} else {
+				WritePageInternal(page);
 			}
 		}
 		
@@ -136,45 +144,49 @@ namespace TickZoom.Transactions
 				lock( writeLocker) {
 					page = writeQueue.Dequeue();
 				}
-				// Go to end of file.
-				long offset = tradeData.Write(page.Buffer,0,page.Buffer.Length);
-				lock( offsetsLocker) {
-					try {
-						offsets.Add(page.PageNumber,offset);
-					} catch( Exception ex) {
-						string message = "Detail of error while adding PageNumber " + page.PageNumber + ": " + ex.Message;
-						log.Error(message, ex);
-						lock( dirtyLocker) {
-							StringBuilder sb = new StringBuilder();
-							sb.AppendLine("Page Count: " + pageCount);
-							sb.Append("Dirty Pages: ");
-							foreach( var temp in dirtyPages) {
-								sb.Append( temp.PageNumber);
-								sb.Append( "  ");
-							}
-							sb.AppendLine();
-							sb.Append("Pages Queue to Write: ");
-							lock(writeLocker) {
-								foreach( var temp in writeQueue) {
-									sb.Append( temp.PageNumber);
-									sb.Append( "  ");
-								}
-							}
-							sb.AppendLine();
-							log.Error( message + "\n" + sb, ex);
-							throw new ApplicationException(message + "\n" + sb, ex);
-						}
-					}
-				}
-				lock( dirtyLocker) {
-					pageCount++;
-					dirtyPages.Remove(page);
-				}
-				pagePool.Free(page);
+				WritePageInternal(page);
 			}
 			return result;
 		}
-	    
+
+		private void WritePageInternal( TransactionPairsPage page) {
+			// Go to end of file.
+			long offset = tradeData.Write(page.Buffer,0,page.Buffer.Length);
+			lock( offsetsLocker) {
+				try {
+					offsets.Add(page.PageNumber,offset);
+				} catch( Exception ex) {
+					string message = "Detail of error while adding PageNumber " + page.PageNumber + ": " + ex.Message;
+					log.Error(message, ex);
+					lock( dirtyLocker) {
+						StringBuilder sb = new StringBuilder();
+						sb.AppendLine("Page Count: " + pageCount);
+						sb.Append("Dirty Pages: ");
+						foreach( var temp in dirtyPages) {
+							sb.Append( temp.PageNumber);
+							sb.Append( "  ");
+						}
+						sb.AppendLine();
+						sb.Append("Pages Queue to Write: ");
+						lock(writeLocker) {
+							foreach( var temp in writeQueue) {
+								sb.Append( temp.PageNumber);
+								sb.Append( "  ");
+							}
+						}
+						sb.AppendLine();
+						log.Error( message + "\n" + sb, ex);
+						throw new ApplicationException(message + "\n" + sb, ex);
+					}
+				}
+			}
+			lock( dirtyLocker) {
+				pageCount++;
+				dirtyPages.Remove(page);
+			}
+			pagePool.Free(page);
+		}
+					
 		public PageStore TradeData {
 			get { return tradeData; }
 		}
