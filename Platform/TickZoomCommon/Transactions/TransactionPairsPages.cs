@@ -36,6 +36,7 @@ using TickZoom.Common;
 namespace TickZoom.Transactions
 {
 	public class TransactionPairsPages {
+		private static readonly Log log = Factory.Log.GetLogger(typeof(TransactionPairsPages));
 		PagePool<TransactionPairsPage> pagePool = new PagePool<TransactionPairsPage>();
 		private PageStore tradeData;
 		
@@ -141,6 +142,8 @@ namespace TickZoom.Transactions
 					try {
 						offsets.Add(page.PageNumber,offset);
 					} catch( Exception ex) {
+						string message = "Detail of error while adding PageNumber " + page.PageNumber + ": " + ex.Message;
+						log.Error(message, ex);
 						lock( dirtyLocker) {
 							StringBuilder sb = new StringBuilder();
 							sb.AppendLine("Page Count: " + pageCount);
@@ -151,12 +154,15 @@ namespace TickZoom.Transactions
 							}
 							sb.AppendLine();
 							sb.Append("Pages Queue to Write: ");
-							foreach( var temp in writeQueue) {
-								sb.Append( temp.PageNumber);
-								sb.Append( "  ");
+							lock(writeLocker) {
+								foreach( var temp in writeQueue) {
+									sb.Append( temp.PageNumber);
+									sb.Append( "  ");
+								}
 							}
 							sb.AppendLine();
-							throw new ApplicationException("Error added page in page writer: " + ex.Message + "\n" + sb, ex);
+							log.Error( message + "\n" + sb, ex);
+							throw new ApplicationException(message + "\n" + sb, ex);
 						}
 					}
 				}
