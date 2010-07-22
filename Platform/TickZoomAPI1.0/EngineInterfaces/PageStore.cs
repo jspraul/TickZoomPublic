@@ -28,7 +28,7 @@ using System;
 
 namespace TickZoom.Api
 {
-	public interface PageStore : IDisposable
+	public interface BinaryStore : IDisposable
 	{
 		int GetPageSize(long pageOffset);
 		void Read(long pageOffset, byte[] buffer, int offset, int length);

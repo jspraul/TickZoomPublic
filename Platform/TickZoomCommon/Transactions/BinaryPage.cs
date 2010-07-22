@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -26,17 +26,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading;
+
 using TickZoom.Api;
 
 namespace TickZoom.Transactions
 {
-
-	
-	[Obsolete("Please use TransactionPairsBinary instead.")]
-	public class RoundTurnsBinary : TransactionPairsBinary
+	public interface BinaryPage
 	{
-		public RoundTurnsBinary(BinaryStore tradeData) : base(tradeData) {
-			
-		}
+		void SetCapacity(int capacity);
+		void SetPageSize(int pageSize);
+		int PageNumber { get; set; }
+		byte[] Buffer { get; }
+		int Id { get; }
 	}
 }

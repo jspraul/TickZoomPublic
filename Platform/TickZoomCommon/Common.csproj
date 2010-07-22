@@ -134,6 +134,7 @@
     <Compile Include="ProviderUtilities\UtilityFactoryDefault.cs" />
     <Compile Include="ProviderUtilities\VerifyFeedDefault.cs" />
     <Compile Include="ProviderUtilities\WindowsService.cs" />
+    <Compile Include="Transactions\BinaryPage.cs" />
     <Compile Include="Transactions\PagePool.cs" />
     <Compile Include="Transactions\RoundTurn.cs" />
     <Compile Include="Transactions\RoundTurnBinary.cs" />
@@ -143,7 +144,7 @@
     <Compile Include="Transactions\TransactionPairBinary.cs" />
     <Compile Include="Transactions\TransactionPairs.cs" />
     <Compile Include="Transactions\TransactionPairsBinary.cs" />
-    <Compile Include="Transactions\TransactionPairsPage.cs" />
+    <Compile Include="Transactions\TransactionsDataPage.cs" />
     <Compile Include="Transactions\TransactionPairsPages.cs" />
   </ItemGroup>
   <ItemGroup>

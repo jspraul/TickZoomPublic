@@ -74,6 +74,6 @@ namespace TickZoom.Api
 		
 		TimeSyncGenerator TimeSyncGenerator(SymbolInfo symbol);
 		
-		PageStore PageStore(string baseName);
+		BinaryStore PageStore(string baseName);
 	}
 }

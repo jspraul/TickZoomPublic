@@ -37,12 +37,12 @@ namespace TickZoom.Transactions
 {
 	internal class TransactionPairsPages {
 		private static readonly Log log = Factory.Log.GetLogger(typeof(TransactionPairsPages));
-		PagePool<TransactionPairsPage> pagePool = new PagePool<TransactionPairsPage>();
-		private PageStore tradeData;
+		PagePool<BinaryPage> pagePool;
+		private BinaryStore tradeData;
 		
 		private object dirtyLocker = new object();
 		private volatile int pageCount = 0;
-		List<TransactionPairsPage> dirtyPages = new List<TransactionPairsPage>();
+		List<BinaryPage> dirtyPages = new List<BinaryPage>();
 		public struct Page {
 			public long Offset;
 			public int Id;
@@ -53,14 +53,15 @@ namespace TickZoom.Transactions
 		}
 		Dictionary<int,Page> offsets = new Dictionary<int,Page>();
 		
-		internal TransactionPairsPages(PageStore tradeData) {
+		internal TransactionPairsPages(BinaryStore tradeData, Func<BinaryPage> constructor) {
 			this.tradeData = tradeData;
+			this.pagePool = new PagePool<BinaryPage>(constructor);
 			if( asynchronous) {
 				this.tradeData.AddPageWriter( PageWriter);
 			}
 		}
 		
-		internal void TryRelease(TransactionPairsPage page) {
+		internal void TryRelease(BinaryPage page) {
 			bool contains = false;
 			lock( dirtyLocker) {
 				contains = dirtyPages.Contains(page);
@@ -70,7 +71,7 @@ namespace TickZoom.Transactions
 			}
 		}
 		
-		internal TransactionPairsPage GetPage(int pageNumber) {
+		internal BinaryPage GetPage(int pageNumber) {
 			lock( dirtyLocker) {
 				if( pageNumber >= pageCount) {
 					foreach( var unwrittenPage in dirtyPages) {
@@ -85,7 +86,7 @@ namespace TickZoom.Transactions
 			lock( dirtyLocker) {
 				offset = offsets[pageNumber].Offset;
 			}
-			TransactionPairsPage page = pagePool.Create();
+			BinaryPage page = pagePool.Create();
 			int pageSize = tradeData.GetPageSize(offset);
 			page.SetPageSize(pageSize);
 			page.PageNumber = pageNumber;
@@ -96,11 +97,11 @@ namespace TickZoom.Transactions
 		private volatile int maxPageNumber = 0;
 		private volatile int maxPageId = 0;
 		
-		internal TransactionPairsPage CreatePage(int pageNumber, int capacity) {
+		internal BinaryPage CreatePage(int pageNumber, int capacity) {
 			if( pageNumber < pageCount) {
 				throw new ApplicationException("Page number " + pageNumber + " already exists.");
 			}
-			TransactionPairsPage page = pagePool.Create();
+			BinaryPage page = pagePool.Create();
 			lock( dirtyLocker) {
 				page.SetCapacity(capacity);
 				page.PageNumber = pageNumber;
@@ -203,7 +204,7 @@ namespace TickZoom.Transactions
 			return sb.ToString();
 		}
 
-		internal PageStore TradeData {
+		internal BinaryStore TradeData {
 			get { return tradeData; }
 		}
 	

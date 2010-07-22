@@ -38,7 +38,7 @@ namespace TickZoom.Transactions
 		ProfitLoss profitLossCalculation;
 		Func<double,double> currentPrice;
 		
-		public PageStore TradeData {
+		public BinaryStore TradeData {
 			get { return transactionPairs.TradeData; }
 		}
 		

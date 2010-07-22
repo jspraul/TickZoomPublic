@@ -36,7 +36,7 @@ namespace TickZoom.Api
 	/// </summary>
 	public interface Context
 	{
-		PageStore TradeData {
+		BinaryStore TradeData {
 			get;
 		}
 	}

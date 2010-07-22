@@ -32,11 +32,16 @@ using TickZoom.Api;
 
 namespace TickZoom.Transactions
 {
-	internal class PagePool<T> where T : new()
+	internal class PagePool<T>
 	{
 		private static readonly Log log = Factory.Log.GetLogger(typeof(PagePool<>));
 		private Stack<T> stack = new Stack<T>();
 	    private object locker = new object(); 
+	    private Func<T> constructor;
+	    
+	    public PagePool(Func<T> constructor) {
+	    	this.constructor = constructor;
+	    }
 	
 	    public T Create()
 	    {
@@ -44,7 +49,7 @@ namespace TickZoom.Transactions
 	        {
 	            if (stack.Count == 0)
 	            {
-	            	return new T();
+	            	return constructor();
 	            }
 	            else
 	            {

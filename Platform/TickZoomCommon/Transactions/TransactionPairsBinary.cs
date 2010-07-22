@@ -42,13 +42,17 @@ namespace TickZoom.Transactions
 		TransactionPairsPage tail = null;
 		TransactionPairsPage current = null;
 		
-		public PageStore TradeData {
+		public BinaryStore TradeData {
 			get { return pages.TradeData; }
 		}
 		
-		public TransactionPairsBinary(PageStore tradeData)
+		private BinaryPage CreatePage() {
+			return new TransactionPairsPage();
+		}
+		
+		public TransactionPairsBinary(BinaryStore tradeData)
 		{
-			pages = new TransactionPairsPages(tradeData);
+			pages = new TransactionPairsPages(tradeData,CreatePage);
 			pageSize = 1 << pageBits;
 			pageMask = pageSize - 1;
 		}
@@ -59,7 +63,7 @@ namespace TickZoom.Transactions
 					pages.WritePage(tail);
 				}
 				int pageNumber = count >> pageBits;
-				tail = pages.CreatePage(pageNumber,pageSize);
+				tail = (TransactionPairsPage) pages.CreatePage(pageNumber,pageSize);
 				current = tail;
 				capacity += pageSize;
 			}
@@ -108,7 +112,7 @@ namespace TickZoom.Transactions
 			int pageIndex = index & pageMask;
 			if( current == null || current.PageNumber != pageNumber) {
 				pages.TryRelease(current);
-				current = pages.GetPage(pageNumber);
+				current = (TransactionPairsPage) pages.GetPage(pageNumber);
 			}
 			return pageIndex;
 		}

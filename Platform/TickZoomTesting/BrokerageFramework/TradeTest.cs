@@ -92,7 +92,7 @@ namespace TickZoom.BrokerageFramework
 		{
 			Constructor();
 			pair.Direction = 0;
-			using( PageStore tradeData = Factory.Engine.PageStore("TradeData")) {
+			using( BinaryStore tradeData = Factory.Engine.PageStore("TradeData")) {
 				TransactionPairsBinary tradesBinary = new TransactionPairsBinary(tradeData);
 				tradesBinary.Add(pair);
 				TransactionPairs trades = new TransactionPairs(null,new ProfitLossCallback(),tradesBinary);
@@ -130,7 +130,7 @@ namespace TickZoom.BrokerageFramework
 			pair.EntryPrice = 123440;
 			pair.ExitPrice = 134500;
 			double ProfitLoss = (pair.ExitPrice - pair.EntryPrice) * 1;
-			using( PageStore tradeData = Factory.Engine.PageStore("TradeData")) {
+			using( BinaryStore tradeData = Factory.Engine.PageStore("TradeData")) {
 				TransactionPairsBinary tradesBinary = new TransactionPairsBinary(tradeData);
 				tradesBinary.Add(pair);
 				TransactionPairs trades = new TransactionPairs(null,new ProfitLossCallback(),tradesBinary);

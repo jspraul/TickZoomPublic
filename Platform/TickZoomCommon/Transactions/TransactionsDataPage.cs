@@ -32,8 +32,8 @@ using System.Threading;
 using TickZoom.Api;
 
 namespace TickZoom.Transactions
-{	
-	public class TransactionPairsPage
+{
+	public class TransactionPairsPage : BinaryPage
 	{
 		volatile int pageNumber;
 		byte[] buffer;
@@ -41,74 +41,78 @@ namespace TickZoom.Transactions
 		int count = 0;
 		int id = 0;
 		int structSize = Marshal.SizeOf(typeof(TransactionPairBinary));
-		
+
 		private static int idCount = 0;
-		
-		public TransactionPairsPage() {
+
+		public TransactionPairsPage()
+		{
 			id = Interlocked.Increment(ref idCount);
 		}
-		
-		public void SetCapacity(int capacity) {
-			int bufferLength = structSize*capacity;
-			if( buffer == null || buffer.Length != bufferLength) {
+
+		public void SetCapacity(int capacity)
+		{
+			int bufferLength = structSize * capacity;
+			if (buffer == null || buffer.Length != bufferLength) {
 				buffer = new byte[bufferLength];
 			}
 			this.capacity = capacity;
 			this.count = 0;
 		}
-		
+
 		public void SetPageSize(int pageSize)
 		{
-			if( buffer == null || buffer.Length != pageSize) {
+			if (buffer == null || buffer.Length != pageSize) {
 				buffer = new byte[pageSize];
 			}
 			this.capacity = pageSize / structSize;
 			this.count = capacity;
 		}
-		
-		public unsafe void Add(TransactionPairBinary trade) {
-			if( count >= capacity) {
+
+		unsafe public void Add(TransactionPairBinary trade)
+		{
+			if (count >= capacity) {
 				throw new ApplicationException("Only " + capacity + " items allows per transaction page.");
 			}
-			fixed( byte *bptr = buffer) {
-				TransactionPairBinary *tptr = (TransactionPairBinary *) bptr;
-				*(tptr+count) = trade;
+			fixed (byte* bptr = buffer) {
+				TransactionPairBinary* tptr = (TransactionPairBinary*)bptr;
+				*(tptr + count) = trade;
 			}
 			count++;
 		}
-		
-		private void CheckIndex(int index) {
-			if( index >= count || index < 0) {
+
+		private void CheckIndex(int index)
+		{
+			if (index >= count || index < 0) {
 				throw new ApplicationException("Index " + index + " must be greater than zero and less than " + count + ".");
 			}
 		}
-		
-		public unsafe TransactionPairBinary this [int index] {
-		    get { 
+
+		unsafe public TransactionPairBinary this[int index] {
+			get {
 				CheckIndex(index);
-				fixed( byte *bptr = buffer) {
-					TransactionPairBinary *tptr = (TransactionPairBinary *) bptr;
-					return *(tptr+index);
+				fixed (byte* bptr = buffer) {
+					TransactionPairBinary* tptr = (TransactionPairBinary*)bptr;
+					return *(tptr + index);
 				}
 			}
-		    set {
+			set {
 				CheckIndex(index);
-				fixed( byte *bptr = buffer) {
-					TransactionPairBinary *tptr = (TransactionPairBinary *) bptr;
-					*(tptr+index) = value;
+				fixed (byte* bptr = buffer) {
+					TransactionPairBinary* tptr = (TransactionPairBinary*)bptr;
+					*(tptr + index) = value;
 				}
 			}
 		}
-		
-		public unsafe int PageNumber {
+
+		unsafe public int PageNumber {
 			get { return pageNumber; }
 			set { pageNumber = value; }
 		}
-		
+
 		public byte[] Buffer {
 			get { return buffer; }
 		}
-		
+
 		public int Id {
 			get { return id; }
 		}
