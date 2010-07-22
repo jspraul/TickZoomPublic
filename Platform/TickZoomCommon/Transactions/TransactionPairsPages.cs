@@ -94,6 +94,7 @@ namespace TickZoom.Transactions
 		}
 		
 		internal BinaryPage GetPage(int pageNumber) {
+			pageNumber++;
 			BinaryPage page;
 			if( !TryGetPage(pageNumber, out page)) {
 				throw new ApplicationException("Page number " + pageNumber + " was found neither in dirty page list nor in written pages: \n" + this);
@@ -106,14 +107,21 @@ namespace TickZoom.Transactions
 		private volatile int maxPageId = 0;
 		
 		internal BinaryPage CreatePage(int pageNumber, int capacity) {
+			pageNumber++;
 			BinaryPage page;
 			if( TryGetPage(pageNumber,out page)) {
 				throw new ApplicationException("Page number " + pageNumber + " already exists.");
 			}
-			page = pagePool.Create();
 			lock( dirtyLocker) {
+				page = pagePool.Create();
 				page.SetCapacity(capacity);
 				page.PageNumber = pageNumber;
+				if( page.PageNumber == 0 ) {
+					throw new ApplicationException("Found page.PageNumber == 0 :\n" + this);
+				}
+				if( pageNumber == 0 ) {
+					throw new ApplicationException("Found pageNumber == 0 :\n" + this);
+				}
 				dirtyPages.Add(page);
 				if( pageNumber > maxPageNumber) {
 					maxPageNumber = pageNumber;
@@ -142,6 +150,9 @@ namespace TickZoom.Transactions
 			long offset = tradeData.Write(page.Buffer,0,page.Buffer.Length);
 			lock( dirtyLocker) {
 				try {
+					if( page.PageNumber == 0) {
+						throw new ApplicationException("Found page.pageNumber == 0:\n" + this);
+					}
 					offsets.Add(page.PageNumber,new Page(offset,page.Id));
 				} catch( Exception ex) {
 					string message = "Error while adding PageNumber " + page.PageNumber + ": " + ex.Message;

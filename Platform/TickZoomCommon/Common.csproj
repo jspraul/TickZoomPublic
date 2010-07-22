@@ -144,7 +144,7 @@
     <Compile Include="Transactions\TransactionPairBinary.cs" />
     <Compile Include="Transactions\TransactionPairs.cs" />
     <Compile Include="Transactions\TransactionPairsBinary.cs" />
-    <Compile Include="Transactions\TransactionsDataPage.cs" />
+    <Compile Include="Transactions\TransactionPairsPage.cs" />
     <Compile Include="Transactions\TransactionPairsPages.cs" />
   </ItemGroup>
   <ItemGroup>

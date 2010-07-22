@@ -477,12 +477,10 @@ namespace TickZoom.TickUtil
 		}
 		
 		void progressCallback( string text, Int64 current, Int64 final) {
-			if( !quietMode) {
-				if( backgroundWorker != null && !backgroundWorker.CancellationPending &&
-				    backgroundWorker.WorkerReportsProgress) {
-	    			progress.UpdateProgress(text,current,final);
-					backgroundWorker.ReportProgress(0, progress);
-				}
+			if( backgroundWorker != null && !backgroundWorker.CancellationPending &&
+			    backgroundWorker.WorkerReportsProgress) {
+    			progress.UpdateProgress(text,current,final);
+				backgroundWorker.ReportProgress(0, progress);
 			}
 		}
 		
