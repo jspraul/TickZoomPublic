@@ -43,8 +43,6 @@ namespace TickZoom.Transactions
 		private object dirtyLocker = new object();
 		private volatile int pageCount = 0;
 		List<TransactionPairsPage> dirtyPages = new List<TransactionPairsPage>();
-		
-		private object offsetsLocker = new object();
 		Dictionary<int,long> offsets = new Dictionary<int,long>();
 		
 		internal TransactionPairsPages(PageStore tradeData) {
@@ -76,7 +74,7 @@ namespace TickZoom.Transactions
 				}
 			}
 			long offset = 0L;
-			lock( offsetsLocker) {
+			lock( dirtyLocker) {
 				offset = offsets[pageNumber];
 			}
 			TransactionPairsPage page = pagePool.Create();
@@ -120,7 +118,7 @@ namespace TickZoom.Transactions
 		private void WritePageInternal( TransactionPairsPage page) {
 			// Go to end of file.
 			long offset = tradeData.Write(page.Buffer,0,page.Buffer.Length);
-			lock( offsetsLocker) {
+			lock( dirtyLocker) {
 				try {
 					offsets.Add(page.PageNumber,offset);
 				} catch( Exception ex) {
@@ -129,8 +127,6 @@ namespace TickZoom.Transactions
 					log.Error( message + "\n" + this, ex);
 					throw new ApplicationException(message + "\n" + this, ex);
 				}
-			}
-			lock( dirtyLocker) {
 				pageCount++;
 				dirtyPages.Remove(page);
 			}
@@ -156,17 +152,15 @@ namespace TickZoom.Transactions
 			sb.AppendLine("Page Count: " + pageCount);
 			sb.AppendLine("Max Page Number: " + maxPageNumber);
 			sb.Append("Page Offsets: ");
-			lock( offsetsLocker) {
+			lock( dirtyLocker) {
 				foreach( var kvp in offsets) {
 					sb.Append( kvp.Key);
 					sb.Append( ", ");
 					sb.Append( kvp.Value);
 					sb.Append( "  ");
 				}
-			}
-			sb.AppendLine();
-			sb.Append("Dirty Pages: ");
-			lock( dirtyLocker) {
+				sb.AppendLine();
+				sb.Append("Dirty Pages: ");
 				foreach( var temp in dirtyPages) {
 					sb.Append( temp.PageNumber);
 					sb.Append( "  ");
