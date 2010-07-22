@@ -26,8 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using TickZoom.Api;
 using System.Runtime.InteropServices;
+using System.Threading;
+
+using TickZoom.Api;
 
 namespace TickZoom.Transactions
 {	
@@ -37,10 +39,13 @@ namespace TickZoom.Transactions
 		byte[] buffer;
 		int capacity = 0;
 		int count = 0;
+		int id = 0;
 		int structSize = Marshal.SizeOf(typeof(TransactionPairBinary));
 		
+		private static int idCount = 0;
+		
 		public TransactionPairsPage() {
-			
+			id = Interlocked.Increment(ref idCount);
 		}
 		
 		public void SetCapacity(int capacity) {
@@ -102,6 +107,10 @@ namespace TickZoom.Transactions
 		
 		public byte[] Buffer {
 			get { return buffer; }
+		}
+		
+		public int Id {
+			get { return id; }
 		}
 	}
 }

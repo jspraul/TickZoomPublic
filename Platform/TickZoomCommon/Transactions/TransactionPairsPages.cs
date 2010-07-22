@@ -122,9 +122,13 @@ namespace TickZoom.Transactions
 				try {
 					offsets.Add(page.PageNumber,offset);
 				} catch( Exception ex) {
-					string message = "Detail of error while adding PageNumber " + page.PageNumber + ": " + ex.Message;
+					string message = "Error while adding PageNumber " + page.PageNumber + ": " + ex.Message;
 					log.Error(message, ex);
-					log.Error( message + "\n" + this, ex);
+					try { 
+						log.Error( message + "\n" + this, ex);
+					} catch( Exception ex2) {
+						log.Error("Exception while logging ToString of PairsPages: " + ex.Message, ex2);
+					}
 					throw new ApplicationException(message + "\n" + this, ex);
 				}
 				pageCount++;
@@ -163,6 +167,9 @@ namespace TickZoom.Transactions
 				sb.Append("Dirty Pages: ");
 				foreach( var temp in dirtyPages) {
 					sb.Append( temp.PageNumber);
+					sb.Append( "(");
+					sb.Append( temp.Id);
+					sb.Append( ")");
 					sb.Append( "  ");
 				}
 			}
@@ -171,6 +178,9 @@ namespace TickZoom.Transactions
 			lock(writeLocker) {
 				foreach( var temp in writeQueue) {
 					sb.Append( temp.PageNumber);
+					sb.Append( "(");
+					sb.Append( temp.Id);
+					sb.Append( ")");
 					sb.Append( "  ");
 				}
 			}
