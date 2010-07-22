@@ -420,7 +420,12 @@ namespace TickZoom.Symbols
         <property name=""UseSyntheticStops"" value=""false"" />
         <property name=""UseSyntheticMarkets"" value=""false"" />
       </symbol>
-      <symbol name=""/ESZ9"" />
+      <symbol name=""/ESZ9"">
+        <property name=""Commission"" value=""CustomCommission"" />
+        <property name=""Fees"" value=""CustomFees"" />
+        <property name=""Slippage"" value=""CustomSlippage"" />
+        <property name=""Destination"" value=""CustomDestination"" />
+      </symbol>
       <symbol name=""/ESU0"" />
       <symbol name=""/NQU0"" />
       <symbol name=""TestException"" />
