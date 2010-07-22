@@ -210,5 +210,43 @@ namespace TickZoom.Api
  		ProfitLoss ProfitLoss {
  			get;
  		}
+ 		
+ 		/// <summary>
+ 		/// Defines the formula for calculating commission for this symbol.
+ 		/// This property is a text type which can be used either as a name
+ 		/// for the "type" of commission calculation to use or a specific
+ 		/// numeric value of commission to use.
+ 		/// </summary>
+ 		string Commission {
+ 			get;
+ 		}
+ 		
+ 		/// <summary>
+ 		/// Serves as a parameter into the formula for calculating commission
+ 		/// specified by Commission.  This property is a text type which can
+ 		/// be used either as a name for the "type" of fees or a numerical
+ 		/// value of the fees.
+ 		/// </summary>
+ 		string Fees {
+ 			get;
+ 		}
+ 		
+ 		/// <summary>
+ 		/// Serves as a parameter into the formula for calculating commission
+ 		/// specified by Commission.  This property is a text type which can
+ 		/// be used either as a name for the "type" of slippage calculation
+ 		/// or else a numerical	value to use for slippage.
+ 		/// </summary>
+ 		string Slippage {
+ 			get;
+ 		}
+ 		
+ 		/// <summary>
+ 		/// Used by brokers to determine how to route the orders. Is a text
+ 		/// property which may be used differently by different brokers.
+ 		/// </summary>
+ 		string Destination {
+ 			get;
+ 		}
 	}
 }

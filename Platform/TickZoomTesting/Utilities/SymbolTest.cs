@@ -41,9 +41,26 @@ namespace TickZoom.Utilities
 			ulong uSymbol = ExtensionMethods.SymbolToULong(symbol);
 			string symbolConverted = ExtensionMethods.ULongToSymbol(uSymbol);
 			Assert.AreEqual(symbol,symbolConverted);
-//			Assert.AreEqual(1515607893785,uSymbol);
 		}
 		
+        [Test]
+        public void TestDefaultProperties() {
+        	SymbolInfo symbol = Factory.Symbol.LookupSymbol("USD/JPY");
+        	Assert.AreEqual("default",symbol.Commission);
+        	Assert.AreEqual("default",symbol.Fees);
+        	Assert.AreEqual("default",symbol.Slippage);
+        	Assert.AreEqual("default",symbol.Destination);
+        }
+        
+        [Test]
+        public void TestAlternateProperties() {
+        	SymbolInfo symbol = Factory.Symbol.LookupSymbol("ESZ9");
+        	Assert.AreEqual("CustomCommission",symbol.Commission);
+        	Assert.AreEqual("CustomFees",symbol.Fees);
+        	Assert.AreEqual("CustomSlippage",symbol.Slippage);
+        	Assert.AreEqual("CustomDestination",symbol.Destination);
+        }
+        
 		[Test]
 		public void TestSpecific()
 		{

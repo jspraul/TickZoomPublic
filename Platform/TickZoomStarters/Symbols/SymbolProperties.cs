@@ -59,6 +59,11 @@ namespace TickZoom.Symbols
 		private bool useSyntheticStops = true;
 		InstrumentType instrumentType = InstrumentType.None;
 		private ProfitLoss profitLoss = new ProfitLossDefault();
+		private string commission = "default";
+		private string fees = "default";
+		private string slippage = "default";
+		private string destination = "default";
+		
 		
 		public TimeAndSales TimeAndSales {
 			get { return timeAndSales; }
@@ -196,6 +201,26 @@ namespace TickZoom.Symbols
 		public ProfitLoss ProfitLoss {
 			get { return profitLoss; }
 			set { profitLoss = value; }
+		}
+		
+		public string Destination {
+			get { return destination; }
+			set { destination = value; }
+		}
+
+		public string Fees {
+			get { return fees; }
+			set { fees = value; }
+		}
+		
+		public string Commission {
+			get { return commission; }
+			set { commission = value; }
+		}
+		
+		public string Slippage {
+			get { return slippage; }
+			set { slippage = value; }
 		}
 	}
 }
