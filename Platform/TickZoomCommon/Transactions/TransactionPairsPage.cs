@@ -35,7 +35,7 @@ namespace TickZoom.Transactions
 {
 	public class TransactionPairsPage : BinaryPage
 	{
-		volatile int pageNumber;
+		int pageNumber;
 		byte[] buffer;
 		int capacity = 0;
 		int count = 0;
@@ -106,7 +106,7 @@ namespace TickZoom.Transactions
 
 		unsafe public int PageNumber {
 			get { return pageNumber; }
-			set { pageNumber = value; }
+			set { Interlocked.Exchange(ref pageNumber, value); }
 		}
 
 		public byte[] Buffer {
