@@ -43,7 +43,15 @@ namespace TickZoom.Transactions
 		private object dirtyLocker = new object();
 		private volatile int pageCount = 0;
 		List<TransactionPairsPage> dirtyPages = new List<TransactionPairsPage>();
-		Dictionary<int,long> offsets = new Dictionary<int,long>();
+		public struct Page {
+			public long Offset;
+			public int Id;
+			public Page(long offset, int id) {
+				this.Offset = offset;
+				this.Id = id;
+			}
+		}
+		Dictionary<int,Page> offsets = new Dictionary<int,Page>();
 		
 		internal TransactionPairsPages(PageStore tradeData) {
 			this.tradeData = tradeData;
@@ -75,7 +83,7 @@ namespace TickZoom.Transactions
 			}
 			long offset = 0L;
 			lock( dirtyLocker) {
-				offset = offsets[pageNumber];
+				offset = offsets[pageNumber].Offset;
 			}
 			TransactionPairsPage page = pagePool.Create();
 			int pageSize = tradeData.GetPageSize(offset);
@@ -86,6 +94,7 @@ namespace TickZoom.Transactions
 		}
 		
 		private volatile int maxPageNumber = 0;
+		private volatile int maxPageId = 0;
 		
 		internal TransactionPairsPage CreatePage(int pageNumber, int capacity) {
 			if( pageNumber < pageCount) {
@@ -97,7 +106,10 @@ namespace TickZoom.Transactions
 			lock( dirtyLocker) {
 				dirtyPages.Add(page);
 			}
-			maxPageNumber = Math.Max(maxPageNumber,pageNumber);
+			if( pageNumber > maxPageNumber) {
+				maxPageNumber = pageNumber;
+				maxPageId = page.Id;
+			}
 			return page;
 		}
 		
@@ -120,7 +132,7 @@ namespace TickZoom.Transactions
 			long offset = tradeData.Write(page.Buffer,0,page.Buffer.Length);
 			lock( dirtyLocker) {
 				try {
-					offsets.Add(page.PageNumber,offset);
+					offsets.Add(page.PageNumber,new Page(offset,page.Id));
 				} catch( Exception ex) {
 					string message = "Error while adding PageNumber " + page.PageNumber + ": " + ex.Message;
 					log.Error(message, ex);
@@ -154,13 +166,16 @@ namespace TickZoom.Transactions
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("Page Count: " + pageCount);
-			sb.AppendLine("Max Page Number: " + maxPageNumber);
+			sb.AppendLine("Max Page Number: " + maxPageNumber + "(" + maxPageId + ")");
 			sb.Append("Page Offsets: ");
 			lock( dirtyLocker) {
 				foreach( var kvp in offsets) {
 					sb.Append( kvp.Key);
+					sb.Append( "(");
+					sb.Append( kvp.Value.Id);
+					sb.Append( ")");
 					sb.Append( ", ");
-					sb.Append( kvp.Value);
+					sb.Append( kvp.Value.Offset);
 					sb.Append( "  ");
 				}
 				sb.AppendLine();
