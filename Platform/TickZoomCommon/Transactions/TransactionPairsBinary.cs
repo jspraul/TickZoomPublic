@@ -62,7 +62,7 @@ namespace TickZoom.Transactions
 				if( tail!=null) {
 					pages.WritePage(tail);
 				}
-				int pageNumber = (count >> pageBits) + 1;
+				int pageNumber = count >> pageBits;
 				tail = (TransactionPairsPage) pages.CreatePage(pageNumber,pageSize);
 				current = tail;
 				capacity += pageSize;
@@ -108,7 +108,7 @@ namespace TickZoom.Transactions
 		}
 
 		private int GetPageIndex( int index) {
-			int pageNumber = (index >> pageBits)+1;
+			int pageNumber = index >> pageBits;
 			int pageIndex = index & pageMask;
 			if( current == null || current.PageNumber != pageNumber) {
 				pages.TryRelease(current);

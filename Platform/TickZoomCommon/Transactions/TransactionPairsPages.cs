@@ -41,7 +41,6 @@ namespace TickZoom.Transactions
 		private BinaryStore tradeData;
 		
 		private object dirtyLocker = new object();
-		private volatile int pageCount = 0;
 		List<BinaryPage> dirtyPages = new List<BinaryPage>();
 		public struct Page {
 			public long Offset;
@@ -71,37 +70,47 @@ namespace TickZoom.Transactions
 			}
 		}
 		
-		internal BinaryPage GetPage(int pageNumber) {
+		private bool TryGetPage(int pageNumber, out BinaryPage binaryPage) {
+			Page page;
 			lock( dirtyLocker) {
-				if( pageNumber >= pageCount) {
-					foreach( var unwrittenPage in dirtyPages) {
-						if( unwrittenPage.PageNumber == pageNumber) {
-							return unwrittenPage;
-						}
+				foreach( var dirtyPage in dirtyPages) {
+					if( dirtyPage.PageNumber == pageNumber) {
+						binaryPage = dirtyPage;
+						return true;
 					}
-					throw new ApplicationException("Page number " + pageNumber + " was out side number of pages: " + pageCount + " and not found in unwritten page list.\n" + this);
+				}
+				if( !offsets.TryGetValue(pageNumber,out page)) {
+					binaryPage = null;
+					return false;
 				}
 			}
-			long offset = 0L;
-			lock( dirtyLocker) {
-				offset = offsets[pageNumber].Offset;
-			}
-			BinaryPage page = pagePool.Create();
+			long offset = page.Offset;
+			binaryPage = pagePool.Create();
 			int pageSize = tradeData.GetPageSize(offset);
-			page.SetPageSize(pageSize);
-			page.PageNumber = pageNumber;
-			tradeData.Read(offset,page.Buffer,0,page.Buffer.Length);
+			binaryPage.SetPageSize(pageSize);
+			binaryPage.PageNumber = pageNumber;
+			tradeData.Read(offset,binaryPage.Buffer,0,binaryPage.Buffer.Length);
+			return true;
+		}
+		
+		internal BinaryPage GetPage(int pageNumber) {
+			BinaryPage page;
+			if( !TryGetPage(pageNumber, out page)) {
+				throw new ApplicationException("Page number " + pageNumber + " was found neither in dirty page list nor in written pages: \n" + this);
+			}
 			return page;
 		}
+			   
 		
 		private volatile int maxPageNumber = 0;
 		private volatile int maxPageId = 0;
 		
 		internal BinaryPage CreatePage(int pageNumber, int capacity) {
-			if( pageNumber < pageCount) {
+			BinaryPage page;
+			if( TryGetPage(pageNumber,out page)) {
 				throw new ApplicationException("Page number " + pageNumber + " already exists.");
 			}
-			BinaryPage page = pagePool.Create();
+			page = pagePool.Create();
 			lock( dirtyLocker) {
 				page.SetCapacity(capacity);
 				page.PageNumber = pageNumber;
@@ -144,7 +153,6 @@ namespace TickZoom.Transactions
 					}
 					throw new ApplicationException(message + "\n" + this, ex);
 				}
-				pageCount++;
 				dirtyPages.Remove(page);
 			}
 			pagePool.Free(page);
@@ -166,7 +174,6 @@ namespace TickZoom.Transactions
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine("Page Count: " + pageCount);
 			sb.AppendLine("Max Page Number: " + maxPageNumber + "(" + maxPageId + ")");
 			sb.Append("Page Offsets: ");
 			lock( dirtyLocker) {
