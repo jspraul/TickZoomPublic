@@ -87,10 +87,15 @@ namespace TickZoom.Starters
 			
 //			ReportProgress( "Optimizing...", 0, totalTasks);
 			
+			log.Notice("Found " + Environment.ProcessorCount + " processors.");
+			
 			int tasksPerEngine = Math.Max(totalTasks / Environment.ProcessorCount, 1);
 			int maxParallelPasses = 1000;
 			string maxParallelPassesStr = null;
 			maxParallelPassesStr = Factory.Settings["MaxParallelPasses"];
+			
+			log.Notice("Starting " + Environment.ProcessorCount + " engines per iteration.");
+			
 			if( !string.IsNullOrEmpty(maxParallelPassesStr)) {
 				maxParallelPasses = int.Parse(maxParallelPassesStr);
 				if( maxParallelPasses <= 0) {
@@ -101,6 +106,16 @@ namespace TickZoom.Starters
 			}
 			tasksPerEngine = Math.Min(tasksPerEngine,maxParallelPasses/Environment.ProcessorCount);
 
+			log.Notice("Assigning " + tasksPerEngine + " passes to each engine per iteration.");
+			
+			int iterations = totalTasks / maxParallelPasses;
+			int leftOverPasses = totalTasks % maxParallelPasses;
+			if( totalTasks % maxParallelPasses > 0) {
+				log.Notice("Planning " + iterations + " iterations with " + maxParallelPasses + " passes plus 1 pass with " + leftOverPasses + " iterations.");
+			} else {
+				log.Notice("Planning " + iterations + " iterations with " + maxParallelPasses + " passes each.");
+			}
+			
             ModelInterface topModel = new Portfolio();
 
 			passCount = 0;
