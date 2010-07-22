@@ -57,7 +57,8 @@ namespace Test
 		
 		[Test]
 		public void ForexQuotePOSTTest() {
-			PostSubmitter post=new PostSubmitter();
+			ProgressImpl progress = new ProgressImpl();
+			PostSubmitter post=new PostSubmitter(progress);
 			post.Url="https://www.mbtrading.com/secure/getquoteserverxml.asp";
 			post.PostItems.Add("username","DEMOYZPS");
 			post.PostItems.Add("password","1step2wax");

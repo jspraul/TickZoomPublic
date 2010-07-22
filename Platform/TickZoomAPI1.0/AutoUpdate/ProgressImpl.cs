@@ -25,23 +25,31 @@
 #endregion
 
 using System;
+using System.Threading;
 
 namespace TickZoom.Api
 {
 	/// <summary>
 	/// Description of Progress.
 	/// </summary>
-	internal struct ProgressImpl : Progress
+	public struct ProgressImpl : Progress
 	{
-		string text; // this is just an example member, replace it with your own struct members!
+		int id;
+		string text;
 		Int64 current;
 		Int64 final;
 		
-		internal ProgressImpl( string text, Int64 current, Int64 final) {
+		private static int staticId = 0;
+		
+		public void UpdateProgress( string text, Int64 current, Int64 final) {
+			if( id == 0) {
+				this.id = Interlocked.Increment(ref staticId);
+			}
 			this.text = text;
 			this.current = current;
 			this.final = final;
 		}
+		
 		public string Text {
 			get { return text; }
 		}
@@ -52,6 +60,10 @@ namespace TickZoom.Api
 		
 		public long Final {
 			get { return final; }
+		}
+		
+		public int Id {
+			get { return id; }
 		}
 	}
 }

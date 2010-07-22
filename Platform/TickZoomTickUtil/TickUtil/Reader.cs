@@ -60,6 +60,7 @@ namespace TickZoom.TickUtil
 		string storageFolder;
 		MemoryStream memory;
 		byte[] buffer;
+		ProgressImpl progress = new ProgressImpl();
 		
 		public Reader()
 		{
@@ -479,7 +480,8 @@ namespace TickZoom.TickUtil
 			if( !quietMode) {
 				if( backgroundWorker != null && !backgroundWorker.CancellationPending &&
 				    backgroundWorker.WorkerReportsProgress) {
-					backgroundWorker.ReportProgress(0, (object) new ProgressImpl(text,current,final));
+	    			progress.UpdateProgress(text,current,final);
+					backgroundWorker.ReportProgress(0, progress);
 				}
 			}
 		}

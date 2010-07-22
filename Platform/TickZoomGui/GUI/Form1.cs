@@ -53,6 +53,7 @@ namespace TickZoom
 	    public delegate Chart CreateChartDelegate();
    		DateTime startTime = new DateTime(2003,1,1); 
    		DateTime endTime = DateTime.Now;
+		Dictionary<int,Progress> progressChildren = new Dictionary<int,Progress>();
 // 		ProviderProxy provider = null;
 		Log log;
 		
@@ -384,6 +385,7 @@ namespace TickZoom
         {
         	BackgroundWorker bw = sender as BackgroundWorker;
             int arg = (int)e.Argument;
+            progressChildren = new Dictionary<int,Progress>();
             if( log.IsTraceEnabled) log.Trace("Started thread to do work.");
             if( Thread.CurrentThread.Name == null) {
             	Thread.CurrentThread.Name = "ProcessWorker";
@@ -474,9 +476,19 @@ namespace TickZoom
        		delegate(object state)
        	    {
 	        	Progress progress = (Progress) e.UserState;
+	        	progressChildren[progress.Id] = progress;
+	        	
+	        	long final = 0;
+	        	long current = 0;
+	        	foreach( var kvp in progressChildren) {
+					Progress child = kvp.Value;	        		
+	        		final += child.Final;
+	        		current += child.Current;
+	        	}
+	        	
 	            // Calculate the task progress in percentages
-	            if( progress.Final > 0) {
-	            	PercentProgress = Convert.ToInt32((progress.Current * 100) / progress.Final);
+	            if( final > 0) {
+	            	PercentProgress = Convert.ToInt32((current * 100) / final);
 	            } else {
 	            	PercentProgress = 0;
 	            }

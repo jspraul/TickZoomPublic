@@ -33,6 +33,10 @@ namespace TickZoom.Api
 	/// </summary>
 	public interface Progress
 	{
+		int Id {
+			get;
+		}
+		
 		string Text {
 			get;
 		}

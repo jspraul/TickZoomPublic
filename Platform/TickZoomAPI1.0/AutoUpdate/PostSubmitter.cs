@@ -105,30 +105,13 @@ namespace TickZoom.Api
 		private string m_url=string.Empty;
 		private NameValueCollection m_values=new NameValueCollection();
 		private PostTypeEnum m_type=PostTypeEnum.Get;
+		private ProgressImpl progress;
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
-		public PostSubmitter()
+		public PostSubmitter(ProgressImpl progress)
 		{
-		}
-		
-		/// <summary>
-		/// Constructor that accepts a url as a parameter
-		/// </summary>
-		/// <param name="url">The url where the post will be submitted to.</param>
-		internal PostSubmitter(string url):this()
-		{
-			m_url=url;
-		}
-		
-		/// <summary>
-		/// Constructor allowing the setting of the url and items to post.
-		/// </summary>
-		/// <param name="url">the url for the post.</param>
-		/// <param name="values">The values for the post.</param>
-		internal PostSubmitter(string url, NameValueCollection values):this(url)
-		{
-			m_values=values;
+			this.progress = progress;
 		}
 		
 		/// <summary>
@@ -263,7 +246,8 @@ namespace TickZoom.Api
 								fileStream.Write(buffer, 0, bytes);
 								current += bytes;
 					    		if( backgroundWorker!=null && !backgroundWorker.CancellationPending) {
-									backgroundWorker.ReportProgress(0, new ProgressImpl(text,current,final));
+									progress.UpdateProgress(text,current,final);
+									backgroundWorker.ReportProgress(0, progress);
 								}
 							}
 						}

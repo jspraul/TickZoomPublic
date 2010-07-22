@@ -69,7 +69,6 @@
     <Compile Include="TickUtil\BitBuffer.cs" />
     <Compile Include="TickUtil\ByteCount.cs" />
     <Compile Include="TickUtil\ByteMemory.cs" />
-    <Compile Include="TickUtil\ProgressImpl.cs" />
     <Compile Include="TickUtil\SignatureCompressor.cs" />
     <Compile Include="TickUtil\SymbolQueue.cs" />
     <Compile Include="TickUtil\ThreadTask.cs" />

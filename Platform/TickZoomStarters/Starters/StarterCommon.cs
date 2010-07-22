@@ -66,6 +66,7 @@ namespace TickZoom.Starters
 	    string storageFolder;
 		Dictionary<ModelInterface,Dictionary<string,object>> optimizeValueMap = new Dictionary<ModelInterface, Dictionary<string, object>>();
 		int taskCount=0;
+		ProgressImpl progress = new ProgressImpl();
 		
 		public StarterCommon() : this(true) {
     		storageFolder = Factory.Settings["AppDataFolder"];
@@ -103,7 +104,8 @@ namespace TickZoom.Starters
 		public void ReportProgress( string text, Int64 current, Int64 final) {
 			lock( callBackLocker) {
 	    		if( backgroundWorker!= null && !backgroundWorker.CancellationPending) {
-	    			backgroundWorker.ReportProgress(0, new ProgressImpl(text,current,final));
+					progress.UpdateProgress(text,current,final);
+	    			backgroundWorker.ReportProgress(0, progress);
 	    		}
 	    	}
 		}

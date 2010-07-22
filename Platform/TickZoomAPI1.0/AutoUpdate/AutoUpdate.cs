@@ -23,6 +23,7 @@ namespace TickZoom.Api
 		private string autoUpdateDirectory;
 		private BackgroundWorker backgroundWorker;
 		private PostSubmitter post;
+		private ProgressImpl progress = new ProgressImpl();
 		
 		private string DownloadDirectory {
 			get { return autoUpdateDirectory + Path.DirectorySeparatorChar + currentVersion; }
@@ -79,7 +80,8 @@ namespace TickZoom.Api
 			}
 			if( !retVal && backgroundWorker != null) {
 				string text = "AutoUpdate Complete."; 
-				backgroundWorker.ReportProgress(0, new ProgressImpl(text,0,0));
+				progress.UpdateProgress(text,0,0);
+				backgroundWorker.ReportProgress(0, progress);
 				log.Notice("AutoUpdate Complete. Zero files updated.");
 			}
 
@@ -122,7 +124,7 @@ namespace TickZoom.Api
 			
 			string url = remoteCgi + currentVersion + "/" + remotePage;
 			try {
-				post=new PostSubmitter();
+				post=new PostSubmitter(progress);
 				post.BackgroundWorker = backgroundWorker;
 				post.Url=url;
 				post.PostItems.Add("key",userKey);
