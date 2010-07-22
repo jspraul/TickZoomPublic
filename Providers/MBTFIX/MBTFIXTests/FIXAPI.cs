@@ -223,6 +223,8 @@ namespace Test
 				long end = Factory.Parallel.TickCount + 5000;
 				while( !socket.TryGetPacket(out packet)) {
 					if( Factory.Parallel.TickCount > end) {
+						// If it times out here. Then return with success
+						// for the test.
 						return;
 					}
 					Factory.Parallel.Yield();

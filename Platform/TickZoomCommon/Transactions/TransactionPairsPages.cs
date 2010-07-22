@@ -72,29 +72,7 @@ namespace TickZoom.Transactions
 							return unwrittenPage;
 						}
 					}
-					StringBuilder sb = new StringBuilder();
-					sb.Append("Unwritten page numbers: " );
-					bool first = true;
-					foreach( var temp in dirtyPages) {
-						if( !first) {
-							sb.Append(",");
-						}
-						first = false;
-						sb.Append(temp.PageNumber);
-					}
-					sb.AppendLine();
-					sb.Append("Pages in the queue:");
-					first = true;
-					lock( writeLocker) {
-						foreach( var temp in writeQueue) {
-							if( !first) {
-								sb.Append(",");
-							}
-							first = false;
-							sb.Append(temp.PageNumber);
-						}
-					}
-					throw new ApplicationException("Page number " + pageNumber + " was out side number of pages: " + pageCount + " and not found in unwritten page list.\n" + sb);
+					throw new ApplicationException("Page number " + pageNumber + " was out side number of pages: " + pageCount + " and not found in unwritten page list.\n" + this);
 				}
 			}
 			long offset = 0L;
@@ -148,7 +126,7 @@ namespace TickZoom.Transactions
 			}
 			return result;
 		}
-
+		
 		private void WritePageInternal( TransactionPairsPage page) {
 			// Go to end of file.
 			long offset = tradeData.Write(page.Buffer,0,page.Buffer.Length);
@@ -158,26 +136,8 @@ namespace TickZoom.Transactions
 				} catch( Exception ex) {
 					string message = "Detail of error while adding PageNumber " + page.PageNumber + ": " + ex.Message;
 					log.Error(message, ex);
-					lock( dirtyLocker) {
-						StringBuilder sb = new StringBuilder();
-						sb.AppendLine("Page Count: " + pageCount);
-						sb.Append("Dirty Pages: ");
-						foreach( var temp in dirtyPages) {
-							sb.Append( temp.PageNumber);
-							sb.Append( "  ");
-						}
-						sb.AppendLine();
-						sb.Append("Pages Queue to Write: ");
-						lock(writeLocker) {
-							foreach( var temp in writeQueue) {
-								sb.Append( temp.PageNumber);
-								sb.Append( "  ");
-							}
-						}
-						sb.AppendLine();
-						log.Error( message + "\n" + sb, ex);
-						throw new ApplicationException(message + "\n" + sb, ex);
-					}
+					log.Error( message + "\n" + this, ex);
+					throw new ApplicationException(message + "\n" + this, ex);
 				}
 			}
 			lock( dirtyLocker) {
@@ -187,8 +147,33 @@ namespace TickZoom.Transactions
 			pagePool.Free(page);
 		}
 					
+		public override string ToString()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("Page Count: " + pageCount);
+			sb.Append("Dirty Pages: ");
+			lock( dirtyLocker) {
+				foreach( var temp in dirtyPages) {
+					sb.Append( temp.PageNumber);
+					sb.Append( "  ");
+				}
+			}
+			sb.AppendLine();
+			sb.Append("Pages in Queue: ");
+			lock(writeLocker) {
+				foreach( var temp in writeQueue) {
+					sb.Append( temp.PageNumber);
+					sb.Append( "  ");
+				}
+			}
+			sb.AppendLine();
+			return sb.ToString();
+		}
+
 		public PageStore TradeData {
 			get { return tradeData; }
 		}
+	
+		
 	}
 }
