@@ -101,14 +101,14 @@ namespace TickZoom.Transactions
 				throw new ApplicationException("Page number " + pageNumber + " already exists.");
 			}
 			TransactionPairsPage page = pagePool.Create();
-			page.SetCapacity(capacity);
-			page.PageNumber = pageNumber;
 			lock( dirtyLocker) {
+				page.SetCapacity(capacity);
+				page.PageNumber = pageNumber;
 				dirtyPages.Add(page);
-			}
-			if( pageNumber > maxPageNumber) {
-				maxPageNumber = pageNumber;
-				maxPageId = page.Id;
+				if( pageNumber > maxPageNumber) {
+					maxPageNumber = pageNumber;
+					maxPageId = page.Id;
+				}
 			}
 			return page;
 		}
