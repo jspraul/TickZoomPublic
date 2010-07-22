@@ -33,7 +33,7 @@ namespace TickZoom.Transactions
 {	
 	public class TransactionPairsPage
 	{
-		int pageNumber;
+		volatile int pageNumber;
 		byte[] buffer;
 		int capacity = 0;
 		int count = 0;
