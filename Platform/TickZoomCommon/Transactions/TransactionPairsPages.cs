@@ -35,7 +35,7 @@ using TickZoom.Common;
 
 namespace TickZoom.Transactions
 {
-	public class TransactionPairsPages {
+	internal class TransactionPairsPages {
 		private static readonly Log log = Factory.Log.GetLogger(typeof(TransactionPairsPages));
 		PagePool<TransactionPairsPage> pagePool = new PagePool<TransactionPairsPage>();
 		private PageStore tradeData;
@@ -47,14 +47,14 @@ namespace TickZoom.Transactions
 		private object offsetsLocker = new object();
 		Dictionary<int,long> offsets = new Dictionary<int,long>();
 		
-		public TransactionPairsPages(PageStore tradeData) {
+		internal TransactionPairsPages(PageStore tradeData) {
 			this.tradeData = tradeData;
 			if( asynchronous) {
 				this.tradeData.AddPageWriter( PageWriter);
 			}
 		}
 		
-		public void TryRelease(TransactionPairsPage page) {
+		internal void TryRelease(TransactionPairsPage page) {
 			bool contains = false;
 			lock( dirtyLocker) {
 				contains = dirtyPages.Contains(page);
@@ -64,7 +64,7 @@ namespace TickZoom.Transactions
 			}
 		}
 		
-		public TransactionPairsPage GetPage(int pageNumber) {
+		internal TransactionPairsPage GetPage(int pageNumber) {
 			lock( dirtyLocker) {
 				if( pageNumber >= pageCount) {
 					foreach( var unwrittenPage in dirtyPages) {
@@ -87,7 +87,9 @@ namespace TickZoom.Transactions
 			return page;
 		}
 		
-		public TransactionPairsPage CreatePage(int pageNumber, int capacity) {
+		private volatile int maxPageNumber = 0;
+		
+		internal TransactionPairsPage CreatePage(int pageNumber, int capacity) {
 			if( pageNumber < pageCount) {
 				throw new ApplicationException("Page number " + pageNumber + " already exists.");
 			}
@@ -97,14 +99,15 @@ namespace TickZoom.Transactions
 			lock( dirtyLocker) {
 				dirtyPages.Add(page);
 			}
+			maxPageNumber = Math.Max(maxPageNumber,pageNumber);
 			return page;
 		}
 		
-		private bool asynchronous = false;
+		private bool asynchronous = true;
 		
 		private object writeLocker = new object();
 		private Queue<TransactionPairsPage> writeQueue = new Queue<TransactionPairsPage>();
-		public void WritePage(TransactionPairsPage page) {
+		internal void WritePage(TransactionPairsPage page) {
 			if( asynchronous) {
 				lock( writeLocker) {
 					writeQueue.Enqueue(page);
@@ -112,19 +115,6 @@ namespace TickZoom.Transactions
 			} else {
 				WritePageInternal(page);
 			}
-		}
-		
-		private bool PageWriter() {
-			bool result = false;
-			while( writeQueue.Count > 0) {
-				result = true;
-				TransactionPairsPage page;
-				lock( writeLocker) {
-					page = writeQueue.Dequeue();
-				}
-				WritePageInternal(page);
-			}
-			return result;
 		}
 		
 		private void WritePageInternal( TransactionPairsPage page) {
@@ -147,10 +137,34 @@ namespace TickZoom.Transactions
 			pagePool.Free(page);
 		}
 					
+		private bool PageWriter() {
+			bool result = false;
+			while( writeQueue.Count > 0) {
+				result = true;
+				TransactionPairsPage page;
+				lock( writeLocker) {
+					page = writeQueue.Dequeue();
+				}
+				WritePageInternal(page);
+			}
+			return result;
+		}
+		
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("Page Count: " + pageCount);
+			sb.AppendLine("Max Page Number: " + maxPageNumber);
+			sb.Append("Page Offsets: ");
+			lock( offsetsLocker) {
+				foreach( var kvp in offsets) {
+					sb.Append( kvp.Key);
+					sb.Append( ", ");
+					sb.Append( kvp.Value);
+					sb.Append( "  ");
+				}
+			}
+			sb.AppendLine();
 			sb.Append("Dirty Pages: ");
 			lock( dirtyLocker) {
 				foreach( var temp in dirtyPages) {
@@ -170,7 +184,7 @@ namespace TickZoom.Transactions
 			return sb.ToString();
 		}
 
-		public PageStore TradeData {
+		internal PageStore TradeData {
 			get { return tradeData; }
 		}
 	
