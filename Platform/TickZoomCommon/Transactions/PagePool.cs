@@ -38,9 +38,16 @@ namespace TickZoom.Transactions
 		private Stack<T> stack = new Stack<T>();
 	    private object locker = new object(); 
 	    private Func<T> constructor;
+	    private Dictionary<T,int> references = new Dictionary<T, int>();
 	    
 	    public PagePool(Func<T> constructor) {
 	    	this.constructor = constructor;
+	    }
+	    
+	    public void AddReference(T item) {
+	    	lock( locker) {
+		    	references[item] ++;
+	    	}
 	    }
 	
 	    public T Create()
@@ -49,11 +56,15 @@ namespace TickZoom.Transactions
 	        {
 	            if (stack.Count == 0)
 	            {
-	            	return constructor();
+	            	T result = constructor();
+	            	references[result] = 1;
+	            	return result;
 	            }
 	            else
 	            {
-	            	return stack.Pop();
+	            	T result = stack.Pop();
+	            	references[result] = 1;
+	            	return result;
 	            }
 	        }
 	    }
@@ -62,10 +73,19 @@ namespace TickZoom.Transactions
 	    {
 	        lock (locker)
 	        {
-	        	if( stack.Contains(item)) {
-	        		throw new ApplicationException("Object has already been freed.");
+	        	int refs;
+	        	if( references.TryGetValue(item,out refs)) {
+	        		if( refs == 1) {
+	        			references.Remove(item);
+	            		stack.Push(item);
+	        		} else if( refs == 0) {
+		        		throw new ApplicationException("Fatal error. Reference count was already zero.");
+	        		} else {
+	        			references[item] --;
+	        		}
+	        	} else {
+	        		throw new ApplicationException("Item was already freed with reference count zero.");
 	        	}
-            	stack.Push(item);
 	        }
 	    }
 	}

@@ -65,7 +65,11 @@ namespace TickZoom.Transactions
 			lock( dirtyLocker) {
 				contains = dirtyPages.Contains(page);
 				if( page != null && !contains) {
-					pagePool.Free(page);
+					try { 
+						pagePool.Free(page);
+					} catch( Exception ex) {
+						throw new ApplicationException("Failure while freeing page: " + page.PageNumber + "(" + page.Id +") :\n" + this, ex);
+					}
 				}
 			}
 		}
@@ -76,6 +80,7 @@ namespace TickZoom.Transactions
 				foreach( var dirtyPage in dirtyPages) {
 					if( dirtyPage.PageNumber == pageNumber) {
 						binaryPage = dirtyPage;
+						pagePool.AddReference(binaryPage);
 						return true;
 					}
 				}
@@ -169,7 +174,11 @@ namespace TickZoom.Transactions
 					}
 					throw new ApplicationException(message + "\n" + this, ex);
 				}
-				pagePool.Free(page);
+				try { 
+					pagePool.Free(page);
+				} catch( Exception ex) {
+					throw new ApplicationException("Failure while freeing page: " + page.PageNumber + "(" + page.Id +") :\n" + this, ex);
+				}
 				dirtyPages.Remove(page);
 			}
 		}
