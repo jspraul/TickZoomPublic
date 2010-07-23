@@ -64,9 +64,9 @@ namespace TickZoom.Transactions
 			bool contains = false;
 			lock( dirtyLocker) {
 				contains = dirtyPages.Contains(page);
-			}
-			if( page != null && !contains) {
-				pagePool.Free(page);
+				if( page != null && !contains) {
+					pagePool.Free(page);
+				}
 			}
 		}
 		
@@ -158,8 +158,8 @@ namespace TickZoom.Transactions
 					throw new ApplicationException(message + "\n" + this, ex);
 				}
 				dirtyPages.Remove(page);
+				pagePool.Free(page);
 			}
-			pagePool.Free(page);
 		}
 					
 		private bool PageWriter() {

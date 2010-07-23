@@ -62,11 +62,15 @@ namespace TickZoom.Transactions
 				if( tail!=null) {
 					pages.WritePage(tail);
 				}
-				int pageNumber = count >> pageBits;
+				int pageNumber = HashPageNumber(count);
 				tail = (TransactionPairsPage) pages.CreatePage(pageNumber,pageSize);
 				current = tail;
 				capacity += pageSize;
 			}
+		}
+		
+		private int HashPageNumber(int index) {
+			return (index >> pageBits) + 1;
 		}
 		
 		public void Add(TransactionPairBinary trade) {
@@ -74,6 +78,7 @@ namespace TickZoom.Transactions
 			AssureTail();
 			tail.Add(trade);
 		}
+		
 		public TransactionPairsBinary GetCompletedList(TimeStamp time, double price, int bar) {
 			if( count > 0) {
 				TransactionPairBinary pair = this[count-1];
@@ -108,7 +113,7 @@ namespace TickZoom.Transactions
 		}
 
 		private int GetPageIndex( int index) {
-			int pageNumber = index >> pageBits;
+			int pageNumber = HashPageNumber(index);
 			int pageIndex = index & pageMask;
 			if( current == null || current.PageNumber != pageNumber) {
 				pages.TryRelease(current);
