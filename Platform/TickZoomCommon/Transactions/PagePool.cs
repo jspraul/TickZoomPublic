@@ -62,6 +62,9 @@ namespace TickZoom.Transactions
 	    {
 	        lock (locker)
 	        {
+	        	if( stack.Contains(item)) {
+	        		throw new ApplicationException("Object has already been freed.");
+	        	}
             	stack.Push(item);
 	        }
 	    }
