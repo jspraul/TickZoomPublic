@@ -77,6 +77,7 @@
     <Compile Include="Data\TSTickConverter.cs" />
     <Compile Include="Enums\Trend.cs" />
     <Compile Include="Interceptors\FillSimulatorDefault.cs" />
+    <Compile Include="ProviderUtilities\ServiceInstaller.cs" />
     <Compile Include="Reports\EquityStatsReport.cs" />
     <Compile Include="Reports\IndexForReport.cs" />
     <Compile Include="Reports\ReportHelper.cs" />

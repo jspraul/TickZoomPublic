@@ -25,13 +25,19 @@
 #endregion
 
 using System;
+using System.IO;
+using System.Reflection;
+
 using TickZoom.Api;
+using TickZoom.Native;
 
 namespace TickZoom.Common
 {
 	public class CommandLineProcess : ProviderService
 	{
 		ServiceConnection connection;
+		ServiceInstaller serviceInstaller;
+		string assemblyName = Assembly.GetEntryAssembly().GetName().Name;
 		
 		public CommandLineProcess()
 		{
@@ -42,11 +48,49 @@ namespace TickZoom.Common
 		/// </summary>
 		public void Run(string[] args)
 		{
+			
         	if( args.Length != 1) {
         		throw new ApplicationException("Command line must have one argument of the port number on which to listen.");
         	}
-        	connection.SetAddress("127.0.0.1",Convert.ToUInt16(args[0]));
-        	connection.OnRun();
+			switch( args[0]) {
+				case "--start":
+		        	serviceInstaller = new ServiceInstaller(assemblyName);
+		        	string codeBase = Assembly.GetEntryAssembly().Location;
+		        	string fullPath = Path.GetFullPath( codeBase );
+		        	serviceInstaller.InstallAndStart(assemblyName,fullPath);
+		        	break;
+				case "--stop":
+		        	serviceInstaller = new ServiceInstaller(assemblyName);
+		        	serviceInstaller.StopAndUninstall();
+		        	break;
+				case "-h":
+				case "-?":
+				case "--help":
+		        	Help();
+		        	break;
+		        default:
+		        	try {
+		        		connection.SetAddress("127.0.0.1",ushort.Parse(args[0]));
+		        		connection.OnRun();
+		        	} catch( FormatException) {
+			        	Console.WriteLine("Unknown command line argument. Try --help.");
+		        	}
+					break;
+			}
+		}
+		
+		private void Help() {
+			Console.WriteLine("Usage: " + assemblyName + " [--start] [--stop] [{port}]");
+			Console.WriteLine();
+			Console.WriteLine("{port}: Run from command line using the port given on local host.");
+			Console.WriteLine("--start : Create as a Service Process so it will auto start at boot up.");
+			Console.WriteLine("--stop : Remove the Service Process.");
+			Console.WriteLine();
+			Console.WriteLine("On Windows, --start both installs and starts the process unlesss already installed or started.");
+			Console.WriteLine("And --stop stops and uninstalls unlesss already stopped or uninstalled.");
+			Console.WriteLine();
+			Console.WriteLine("The operating system starts " + assemblyName + " with zero arguments when installed");
+			Console.WriteLine("as a service process. Running it without arguments from the command lines gives an error.");
 		}
 		
 		public ServiceConnection Connection {
