@@ -73,6 +73,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="GUI\ChartControl.Designer.cs" />
+    <Compile Include="GUI\ServiceInstaller.cs" />
     <Compile Include="GUI\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
