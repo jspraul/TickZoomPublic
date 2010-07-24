@@ -48,11 +48,13 @@ namespace TickZoom.Common
 		/// </summary>
 		public void Run(string[] args)
 		{
-			
         	if( args.Length != 1) {
-        		throw new ApplicationException("Command line must have one argument of the port number on which to listen.");
+	        	Console.WriteLine("Unknown command line arguments. Try --help.");
         	}
 			switch( args[0]) {
+				case "--run":
+	        		connection.OnRun();
+	        		break;
 				case "--start":
 		        	serviceInstaller = new ServiceInstaller(assemblyName);
 		        	string codeBase = Assembly.GetEntryAssembly().Location;
@@ -80,9 +82,10 @@ namespace TickZoom.Common
 		}
 		
 		private void Help() {
-			Console.WriteLine("Usage: " + assemblyName + " [--start] [--stop] [{port}]");
+			Console.WriteLine("Usage: " + assemblyName + " [--start | --stop | --run | {port}]");
 			Console.WriteLine();
 			Console.WriteLine("{port}: Run from command line using the port given on local host.");
+			Console.WriteLine("--run : Create as a Service Process so it will auto start at boot up.");
 			Console.WriteLine("--start : Create as a Service Process so it will auto start at boot up.");
 			Console.WriteLine("--stop : Remove the Service Process.");
 			Console.WriteLine();
