@@ -27,12 +27,10 @@
 
 using System;
 using NUnit.Framework;
-using TickZoom;
 using TickZoom.Api;
 using TickZoom.Common;
 using TickZoom.Examples;
 using TickZoom.Starters;
-using TickZoom.TickUtil;
 using TickZoom.Transactions;
 
 namespace Loaders

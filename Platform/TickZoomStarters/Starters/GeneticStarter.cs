@@ -27,13 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
 
 using TickZoom.Api;
 using TickZoom.Common;
-using TickZoom.TickUtil;
 
 namespace TickZoom.Starters
 {

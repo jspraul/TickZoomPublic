@@ -186,7 +186,6 @@
     <Compile Include="Factories\StarterFactory.cs" />
     <Compile Include="Factories\SymbolFactory.cs" />
     <Compile Include="Factories\TickUtilFactory.cs" />
-    <Compile Include="Factories\TickWriter.cs" />
     <Compile Include="Factories\UtilityFactory.cs" />
     <Compile Include="HTTP\HTTPResponse.cs" />
     <Compile Include="HTTP\HTTPMessage.cs" />
@@ -195,6 +194,8 @@
     <Compile Include="HTTP\HTTPStatus.cs" />
     <Compile Include="HTTP\HTTPSession.cs" />
     <Compile Include="HTTP\HTTPRequestHandler.cs" />
+    <Compile Include="PlatformInterfaces\TickReader.cs" />
+    <Compile Include="PlatformInterfaces\TickWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\BreakPointInterface.cs" />
     <Compile Include="Provider\FillSimulator.cs" />

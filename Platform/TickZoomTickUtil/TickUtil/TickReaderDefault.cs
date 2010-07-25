@@ -36,75 +36,84 @@ namespace TickZoom.TickUtil
 	/// <summary>
 	/// Description of TickArray.
 	/// </summary>
-	public class TickReader : Reader<TickImpl>, Provider {
-   		static readonly Log log = Factory.Log.GetLogger(typeof(TickReader));
-   		static readonly bool debug = log.IsDebugEnabled;
-   		int startCount = 0;
-   		TimeStamp startTime = TimeStamp.MinValue; 
-   		TimeStamp endTime = TimeStamp.MaxValue;
-   		double startDouble = double.MinValue;
-   		double endDouble = double.MaxValue;
+	public class TickReaderDefault : Reader, TickReader
+	{
+		static readonly Log log = Factory.Log.GetLogger(typeof(TickReader));
+		static readonly bool debug = log.IsDebugEnabled;
+		int startCount = 0;
+		TimeStamp startTime = TimeStamp.MinValue;
+		TimeStamp endTime = TimeStamp.MaxValue;
+		double startDouble = double.MinValue;
+		double endDouble = double.MaxValue;
 		DataReceiverDefault receiverInternal;
-   		
+
 		public TickQueue ReadQueue {
 			get {
-				if( receiverInternal == null) {
-					if( debug) log.Debug("ReadQueue was called. Setting up internal data receiver.");
+				if (receiverInternal == null) {
+					if (debug)
+						log.Debug("ReadQueue was called. Setting up internal data receiver.");
 					receiverInternal = new DataReceiverDefault(this);
 				}
 				return receiverInternal.ReadQueue;
 			}
 		}
-		
-		public sealed override bool IsAtEnd(TickBinary tick) {
+
+		public override sealed bool IsAtEnd(TickBinary tick)
+		{
 			return tick.UtcTime >= endTime.Internal;
 		}
-		
-		public sealed override bool IsAtStart(TickBinary tick) {
+
+		public override sealed bool IsAtStart(TickBinary tick)
+		{
 			return tick.UtcTime > startTime.Internal && tickCount >= startCount;
 		}
-		
+
 		public int StartCount {
 			get { return startCount; }
 			set { startCount = value; }
 		}
-		
+
 		public TimeStamp StartTime {
 			get { return startTime; }
-			set { startTime = value;
-			      startDouble = startTime.Internal; }
-		}
-   		
-		public TimeStamp EndTime {
-			get { return endTime; }
-			set { endTime = value;
-			      endDouble = endTime.Internal; }
+			set {
+				startTime = value;
+				startDouble = startTime.Internal;
+			}
 		}
 
-        public void StartSymbol(Receiver receiver, SymbolInfo symbol, object eventDetail)
-		{
-        	StartSymbolDetail detail = (StartSymbolDetail) eventDetail;
-        	
-        	if( !symbol.Equals(Symbol)) {
-				throw new ApplicationException( "Mismatching symbol.");
-			}
-			if( detail.LastTime != StartTime) {
-				throw new ApplicationException( "Mismatching start time. Expected: " + StartTime + " but was " + detail.LastTime);
+		public TimeStamp EndTime {
+			get { return endTime; }
+			set {
+				endTime = value;
+				endDouble = endTime.Internal;
 			}
 		}
-		
+
+		public void StartSymbol(Receiver receiver, SymbolInfo symbol, object eventDetail)
+		{
+			StartSymbolDetail detail = (StartSymbolDetail)eventDetail;
+
+			if (!symbol.Equals(Symbol)) {
+				throw new ApplicationException("Mismatching symbol.");
+			}
+			if (detail.LastTime != StartTime) {
+				throw new ApplicationException("Mismatching start time. Expected: " + StartTime + " but was " + detail.LastTime);
+			}
+		}
+
 		public void StopSymbol(Receiver receiver, SymbolInfo symbol)
 		{
-			
+
 		}
-		
+
 		public void PositionChange(Receiver receiver, SymbolInfo symbol, double position, IList<LogicalOrder> orders)
 		{
 			throw new NotImplementedException();
 		}
-		
-		public void SendEvent( Receiver receiver, SymbolInfo symbol, int eventType, object eventDetail) {
-			switch( (EventType) eventType) {
+
+		public void SendEvent(Receiver receiver, SymbolInfo symbol, int eventType, object eventDetail)
+		{
+			switch ((EventType)eventType) {
 				case EventType.Connect:
 					Start(receiver);
 					break;
@@ -118,14 +127,14 @@ namespace TickZoom.TickUtil
 					StopSymbol(receiver, symbol);
 					break;
 				case EventType.PositionChange:
-					PositionChangeDetail positionChange = (PositionChangeDetail) eventDetail;
-					PositionChange(receiver,symbol,positionChange.Position,positionChange.Orders);
+					PositionChangeDetail positionChange = (PositionChangeDetail)eventDetail;
+					PositionChange(receiver, symbol, positionChange.Position, positionChange.Orders);
 					break;
 				case EventType.Terminate:
 					Dispose();
 					break;
 				default:
-					throw new ApplicationException("Unexpected event type: " + (EventType) eventType);
+					throw new ApplicationException("Unexpected event type: " + (EventType)eventType);
 			}
 		}
 	}

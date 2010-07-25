@@ -25,12 +25,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 using TickZoom.Api;
 using TickZoom.Common;
 using TickZoom.Starters;
-using TickZoom.TickUtil;
 
 #if TESTING
 namespace TickZoom.TradingFramework

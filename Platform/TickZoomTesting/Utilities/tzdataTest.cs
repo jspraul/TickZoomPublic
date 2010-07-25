@@ -49,7 +49,9 @@ namespace TickZoom.Utilities
 				storageFolder + @"\TestData\Daily4Ticks.tck",
 				storageFolder + @"\TestData\Daily4Sim.tck",
 			};
-			Filter filter = new Filter(args);
+	       	Filter filter = new Filter();
+	       	filter.AssemblyName = "tzdata";
+	       	filter.Run(args);
 		}
 		
 		[Test]
@@ -72,7 +74,8 @@ namespace TickZoom.Utilities
 	       	
 	       	string[] args = { "USD/JPY", storageFolder + @"\TestData\Migrate.tck" };
 	       	
-	       	Migrate migrate = new Migrate(args);
+	       	Migrate migrate = new Migrate();
+	       	migrate.Run(args);
 			Assert.IsTrue( File.Exists( origFile));
 			Assert.IsTrue( File.Exists( backupFile));
 			Assert.IsFalse( File.Exists( tempFile));
@@ -82,7 +85,8 @@ namespace TickZoom.Utilities
 		public void TestQuery()
 		{
 			string[] args = { @"C:\TickZoom\TestData\ESH0.tck" };
-			Query query = new Query(args);
+			Query query = new Query();
+			query.Run(args);
 			string expectedOutput = @"Symbol: /ESH0
 Ticks: 15683
 Trade Only: 15683
@@ -97,28 +101,19 @@ Prices duplicates: 14489
 		[Test]
 		public void TestRegister()
 		{
-	       	Register register = new Register(null);
-
-	       	string expectedExtension = ".tck";
-	       	string expectedProgId = "TZData";
-	       	string expectedDescription = "TickZoom Tick Data";
-	       	string expectedExecutable = "tzdata.exe\" \"open\" \"%1\"";
-	        using (RegistryKey extKey = Registry.ClassesRoot.OpenSubKey(expectedExtension, true))
-	        {
-	        	Assert.AreEqual(expectedProgId,extKey.GetValue(string.Empty));
-	        }
+	       	Register register = new Register();
+	       	register.Directory = Path.GetFullPath(".");
+	       	register.Run(null);
+	       	
+			RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Environment",true);
+			string variable = "TickZoom";
+			string tickZoom = (string) key.GetValue(variable);
+			string path = (string) key.GetValue("Path");
 			
-	        using (RegistryKey progIdKey = Registry.ClassesRoot.OpenSubKey(expectedProgId,true))
-	        {
-	        	object description = progIdKey.GetValue(string.Empty);
-	        	Assert.AreEqual(expectedDescription,description);
-				
-	            using (RegistryKey command = progIdKey.OpenSubKey("shell\\open\\command",true))
-	            {
-	            	string executable = (string) command.GetValue(string.Empty);
-	            	Assert.IsTrue(executable.Contains(expectedExecutable),executable + " contains " + expectedExecutable);
-	            }
-	        }
+			Assert.NotNull(tickZoom);
+			Assert.NotNull(path);
+			Assert.AreEqual(register.Directory,tickZoom,"TickZoom environment variable equals directory.");
+			Assert.IsTrue(path.Contains(tickZoom),"path has directory");
 		}
 	}
 }

@@ -25,21 +25,22 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 
 using TickZoom.Api;
-using TickZoom.TickUtil;
 
 namespace TickZoom.TZData
 {
-	public class Query
+	public class Query : Command
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		TickReader reader = new TickReader();
+		TickReader reader = Factory.TickUtil.TickReader();
 		
-		public Query(string[] args)
+		public void Run(string[] args)
 		{
 			if( args.Length != 2 && args.Length !=1 ) {
 				stringBuilder.AppendLine("Query Usage:");
@@ -61,15 +62,15 @@ namespace TickZoom.TZData
 		
 		public void ReadFile() {
 			TickQueue queue = reader.ReadQueue;
-			TickImpl firstTick = new TickImpl();
-			TickImpl lastTick = new TickImpl();
-			TickImpl prevTick = new TickImpl();
+			TickIO firstTick = Factory.TickUtil.TickIO();
+			TickIO lastTick = Factory.TickUtil.TickIO();
+			TickIO prevTick = Factory.TickUtil.TickIO();
 			long count = 0;
 			long dups = 0;
 			long quotes = 0;
 			long trades = 0;
 			long quotesAndTrades = 0;
-			TickIO tickIO = new TickImpl();
+			TickIO tickIO = Factory.TickUtil.TickIO();
 			TickBinary tickBinary = new TickBinary();
 			try { 
 				while(true) {
@@ -127,7 +128,7 @@ namespace TickZoom.TZData
 			if( dups > 0) {
 				stringBuilder.AppendLine("Prices duplicates: " + dups);
 			}
-			TickReader.CloseAll();
+			Factory.TickUtil.TickReader().CloseAll();
 		}
 		
 		private bool TryGetNextTick(TickQueue queue, ref TickBinary binary) {
@@ -148,6 +149,14 @@ namespace TickZoom.TZData
 		public override string ToString()
 		{
 			return stringBuilder.ToString();
+		}
+		
+		public string[] Usage() {
+			List<string> lines = new List<string>();
+			string name = Assembly.GetEntryAssembly().GetName().Name;
+			lines.Add( name + " query <symbol> <file>");
+			lines.Add( name + " query <file>");
+			return lines.ToArray();
 		}
 	}
 }

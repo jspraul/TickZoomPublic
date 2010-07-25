@@ -28,7 +28,6 @@ using System;
 using NUnit.Framework;
 using TickZoom.Api;
 using TickZoom.Common;
-using TickZoom.TickUtil;
 
 #if REFACTORED
 

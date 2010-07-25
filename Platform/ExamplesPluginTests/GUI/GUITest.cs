@@ -26,7 +26,6 @@
 
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -35,7 +34,6 @@ using System.Windows.Forms;
 using NUnit.Framework;
 using TickZoom;
 using TickZoom.Api;
-using TickZoom.TickUtil;
 
 namespace MiscTest
 {
@@ -163,7 +161,7 @@ namespace MiscTest
 				string appData = Factory.Settings["AppDataFolder"];
 				string compareFile1 = appData + @"\MockProviderData\ESZ9.tck";
 				string compareFile2 = appData + @"\TestServerCache\ESZ9.tck";
-				using ( TickReader reader1 = new TickReader()) {
+				using ( TickReader reader1 = Factory.TickUtil.TickReader()) {
 					reader1.Initialize(compareFile1,form.TxtSymbol.Text);
 					TickBinary tick1 = new TickBinary();
 					try {
@@ -178,8 +176,8 @@ namespace MiscTest
 						Assert.AreEqual(ex.EntryType,EventType.EndHistorical);
 					}
 				}
-				using ( TickReader reader1 = new TickReader())
-				using ( TickReader reader2 = new TickReader()) {
+				using ( TickReader reader1 = Factory.TickUtil.TickReader())
+				using ( TickReader reader2 = Factory.TickUtil.TickReader()) {
 					reader1.Initialize(compareFile1,form.TxtSymbol.Text);
 					reader2.Initialize(compareFile2,form.TxtSymbol.Text);
 					TickBinary tick1 = new TickBinary();

@@ -26,22 +26,28 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 
 using TickZoom.Api;
-using TickZoom.TickUtil;
 
 namespace TickZoom.TZData
 {
-
-	
-	public class Filter
+	public class Filter : Command
 	{
-		public Filter(string[] args)
+		string assemblyName;
+		public Filter() {
+			Assembly assembly = Assembly.GetEntryAssembly();
+			if( assembly != null) {
+				assemblyName = assembly.GetName().Name;
+			}
+		}
+		
+		public void Run(string[] args)
 		{
 			if( args.Length != 3 && args.Length != 5) {
 				Console.Write("Filter Usage:");
-				Console.Write("tzdata filter <symbol> <fromfile> <tofile> [<starttimestamp> <endtimestamp>]");
+				Console.Write("tzdata " + Usage()); 
 				return;
 			}
 			string symbol = args[0];
@@ -60,19 +66,19 @@ namespace TickZoom.TZData
 		}
 		
 		private void FilterFile(string symbol, string inputPath, string outputPath, TimeStamp startTime, TimeStamp endTime) {
-			TickReader reader = new TickReader();
+			TickReader reader = Factory.TickUtil.TickReader();
 			TickWriter writer = Factory.TickUtil.TickWriter(true);
 			writer.KeepFileOpen = true;
 			writer.Initialize( outputPath, symbol);
 			reader.Initialize( inputPath, symbol);
 			TickQueue inputQueue = reader.ReadQueue;
-			TickImpl firstTick = new TickImpl();
-			TickImpl lastTick = new TickImpl();
-			TickImpl prevTick = new TickImpl();
+			TickIO firstTick = Factory.TickUtil.TickIO();
+			TickIO lastTick = Factory.TickUtil.TickIO();
+			TickIO prevTick = Factory.TickUtil.TickIO();
 			long count = 0;
 			long fast = 0;
 			long dups = 0;
-			TickIO tickIO = new TickImpl();
+			TickIO tickIO = Factory.TickUtil.TickIO();
 			TickBinary tickBinary = new TickBinary();
 			inputQueue.Dequeue(ref tickBinary);
 			tickIO.Inject(tickBinary);
@@ -117,8 +123,17 @@ namespace TickZoom.TZData
 			}
 			lastTick.Copy( tickIO);
 			Console.WriteLine(reader.Symbol + ": " + count + " ticks from " + firstTick.Time + " to " + lastTick.Time + " " + dups + " duplicates, " + fast + " less than 50 ms");
-			TickReader.CloseAll();
+			Factory.TickUtil.TickReader().CloseAll();
 			writer.Close();
+		}
+
+		public string[] Usage() {
+			return new string[] { assemblyName + " filter <symbol> <fromfile> <tofile> [<starttimestamp> <endtimestamp>]" };
+		}
+		
+		public string AssemblyName {
+			get { return assemblyName; }
+			set { assemblyName = value; }
 		}
 	}
 }

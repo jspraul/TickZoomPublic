@@ -80,10 +80,6 @@
       <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TickZoomTickUtil\TickUtil.csproj">
-      <Project>{44135BE2-CBA4-4041-8F31-91C480302C2D}</Project>
-      <Name>TickUtil</Name>
-    </ProjectReference>
     <Folder Include="ProjectProperties" />
     <Folder Include="Symbols" />
     <Folder Include="Starters" />

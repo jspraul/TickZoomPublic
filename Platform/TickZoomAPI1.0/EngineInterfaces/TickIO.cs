@@ -117,6 +117,7 @@ namespace TickZoom.Api
 		
 		bool IsSimulateTicks {
 			get;
+			set;
 		}
 		
 #region Obsolete

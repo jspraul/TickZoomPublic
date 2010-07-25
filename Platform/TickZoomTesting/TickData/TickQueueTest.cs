@@ -28,7 +28,6 @@
 using System;
 using NUnit.Framework;
 using TickZoom.Api;
-using TickZoom.TickUtil;
 
 namespace TickZoom.TickData
 {
@@ -47,7 +46,7 @@ namespace TickZoom.TickData
 		public void EnQueueItemTest()
 		{
 			TickBinary tick = new TickBinary();
-			TickIO tickIO = new TickImpl();
+			TickIO tickIO = Factory.TickUtil.TickIO();
 			long start = Factory.TickCount;
 			for(int i=0; i<10; i++) {
 				Assert.IsTrue(queue.TryEnQueue(ref tick));

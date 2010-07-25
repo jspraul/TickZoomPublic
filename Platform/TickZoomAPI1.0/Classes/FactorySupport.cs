@@ -103,6 +103,8 @@ namespace TickZoom.Api
             return obj;
 		}
 		
+
+		
 		private string GetExecutablePath() {
 			return Path.GetDirectoryName( Assembly.GetExecutingAssembly().CodeBase).Replace(@"file:\","");
 		}

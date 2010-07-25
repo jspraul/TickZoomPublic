@@ -26,12 +26,7 @@
 
 
 using System;
-using System.Collections.Generic;
 using NUnit.Framework;
-using TickZoom;
-using TickZoom.Api;
-using TickZoom.Common;
-using TickZoom.TickUtil;
 
 #if LOOPTEST
 namespace Loaders

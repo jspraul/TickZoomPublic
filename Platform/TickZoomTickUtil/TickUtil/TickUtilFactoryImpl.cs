@@ -57,5 +57,9 @@ namespace TickZoom.TickUtil
 		public TickWriter TickWriter(bool overwriteFile) {
 			return new TickWriterDefault(overwriteFile);
 		}
+		
+		public TickReader TickReader() {
+			return new TickReaderDefault();
+		}
 	}
 }

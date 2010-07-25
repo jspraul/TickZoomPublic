@@ -27,16 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Drawing;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Xml;
 
 using TickZoom.Api;
 using TickZoom.Properties;
-using TickZoom.TickUtil;
 
 namespace TickZoom.Starters
 {
@@ -115,7 +109,7 @@ namespace TickZoom.Starters
 			SymbolInfo[] symbols = ProjectProperties.Starter.SymbolProperties;
 			string[] symbolFiles = projectProperties.Starter.SymbolArray;
 			for(int i=0; i<symbols.Length; i++) {
-	    		TickReader tickReader = new TickReader();
+	    		TickReader tickReader = Factory.TickUtil.TickReader();
 	    		tickReader.MaxCount = EndCount;	
 	    		tickReader.StartTime = ProjectProperties.Starter.StartTime;
 	    		tickReader.EndTime = ProjectProperties.Starter.EndTime;

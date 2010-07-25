@@ -48,14 +48,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Drawing;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading;
 
 using TickZoom.Api;
-using TickZoom.TickUtil;
 
 namespace TickZoom.Starters
 {
@@ -116,23 +110,23 @@ namespace TickZoom.Starters
 		
 		public void StartSymbol(Receiver receiver, SymbolInfo symbol, object eventDetail)
 		{
-			TickImpl tickImpl = new TickImpl();
-			tickImpl.Initialize();
-			tickImpl.SetSymbol( symbol.BinaryIdentifier);
-			tickImpl.SetTime( new TimeStamp(2000,1,1));
-			tickImpl.SetQuote(100D, 100D);
-			TickBinary tickBinary = tickImpl.Extract();
+			TickIO tickIO = Factory.TickUtil.TickIO();
+			tickIO.Initialize();
+			tickIO.SetSymbol( symbol.BinaryIdentifier);
+			tickIO.SetTime( new TimeStamp(2000,1,1));
+			tickIO.SetQuote(100D, 100D);
+			TickBinary tickBinary = tickIO.Extract();
 			while( !receiver.OnEvent(symbol,(int)EventType.StartHistorical,symbol)) {
 				Factory.Parallel.Yield();
 			}
 			while( !receiver.OnEvent(symbol,(int)EventType.Tick, tickBinary )) {
 				Factory.Parallel.Yield();
 			}
-			tickImpl.Initialize();
-			tickImpl.SetSymbol( symbol.BinaryIdentifier);
-			tickImpl.SetTime( new TimeStamp(2000,1,2));
-			tickImpl.SetQuote(101D, 101D);
-			tickBinary = tickImpl.Extract();
+			tickIO.Initialize();
+			tickIO.SetSymbol( symbol.BinaryIdentifier);
+			tickIO.SetTime( new TimeStamp(2000,1,2));
+			tickIO.SetQuote(101D, 101D);
+			tickBinary = tickIO.Extract();
 			while( !receiver.OnEvent(symbol,(int)EventType.Tick, tickBinary )) {
 				Factory.Parallel.Yield();
 			}

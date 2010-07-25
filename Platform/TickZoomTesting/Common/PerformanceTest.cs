@@ -28,11 +28,9 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using TickZoom.Api;
-using TickZoom.Common;
 using TickZoom.Properties;
 using TickZoom.Starters;
 using TickZoom.Statistics;
-using TickZoom.TickUtil;
 using TickZoom.Transactions;
 
 #if TESTING

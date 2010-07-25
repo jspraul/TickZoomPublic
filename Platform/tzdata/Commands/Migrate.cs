@@ -25,21 +25,22 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 
 using TickZoom.Api;
-using TickZoom.TickUtil;
 
 namespace TickZoom.TZData
 {
-	public class Migrate
+	public class Migrate : Command
 	{
-		public Migrate(string[] args)
+		public void Run(string[] args)
 		{
 			if( args.Length != 2) {
 				Console.Write("Migrate Usage:");
-				Console.Write("tzdata migrate <symbol> <file>");
+				Console.Write("tzdata " + Usage());
 				return;
 			}
 			MigrateFile(args[1],args[0]);
@@ -50,16 +51,15 @@ namespace TickZoom.TZData
 				Console.WriteLine("A backup file already exists. Please delete it first at: " + file + ".back");
 				return;
 			}
-			TickReader reader = new TickReader();
-//			reader.BulkFileLoad = true;
+			TickReader reader = Factory.TickUtil.TickReader();
 			reader.Initialize( file, symbol);
 			
 			TickWriter writer = Factory.TickUtil.TickWriter(true);
 			writer.KeepFileOpen = true;
 			writer.Initialize( file + ".temp", symbol);
 			
-			TickImpl firstTick = new TickImpl();
-			TickIO tickIO = new TickImpl();
+			TickIO firstTick = Factory.TickUtil.TickIO();
+			TickIO tickIO = Factory.TickUtil.TickIO();
 			TickBinary tickBinary = new TickBinary();
 			int count = 0;
 			bool first = false;
@@ -84,10 +84,17 @@ namespace TickZoom.TZData
 				}
 			}
 			Console.WriteLine(reader.Symbol + ": Migrated " + count + " ticks from " + firstTick.Time + " to " + tickIO.Time );
-			TickReader.CloseAll();
+			Factory.TickUtil.TickReader().CloseAll();
 			writer.Close();
 			File.Move( file, file + ".back");
 			File.Move( file + ".temp", file);
+		}
+		
+		public string[] Usage() {
+			List<string> lines = new List<string>();
+			string name = Assembly.GetEntryAssembly().GetName().Name;
+			lines.Add( name + " migrate <symbol> <file>");
+			return lines.ToArray();
 		}
 	}
 }

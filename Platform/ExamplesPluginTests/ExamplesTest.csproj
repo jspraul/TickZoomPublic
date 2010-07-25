@@ -126,10 +126,6 @@
       <Project>{61D3BADE-512C-4AE3-8863-0B669ACFEA99}</Project>
       <Name>Starters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TickZoomTickUtil\TickUtil.csproj">
-      <Project>{44135BE2-CBA4-4041-8F31-91C480302C2D}</Project>
-      <Name>TickUtil</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ZedGraph\ZedGraph.csproj">
       <Project>{67EBC93F-0D47-4F6E-979F-E5622E1025E9}</Project>
       <Name>ZedGraph</Name>

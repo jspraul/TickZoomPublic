@@ -81,10 +81,6 @@
       <Project>{61D3BADE-512C-4AE3-8863-0B669ACFEA99}</Project>
       <Name>Starters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TickZoomTickUtil\TickUtil.csproj">
-      <Project>{44135BE2-CBA4-4041-8F31-91C480302C2D}</Project>
-      <Name>TickUtil</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">

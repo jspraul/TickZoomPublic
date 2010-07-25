@@ -46,15 +46,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Drawing;
-using System.IO;
-using System.Runtime.InteropServices;
-
 using TickZoom.Api;
-using TickZoom.TickUtil;
 
 namespace TickZoom.Starters
 {

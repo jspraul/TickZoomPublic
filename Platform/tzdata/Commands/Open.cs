@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -32,16 +33,25 @@ using TickZoom.Api;
 
 namespace TickZoom.TZData
 {
-	public class Open {
+	public class Open : Command {
 		string currentDir = System.Environment.CurrentDirectory;
-		public Open(string[] args) {
+		public void Run(string[] args) {
 			try { 
-				Console.Write( new Query(args).ToString());
+				Command cmd = new Query();
+				cmd.Run(args);
+				Console.Write( cmd.ToString());
 			} catch( Exception ex) {
 				Console.WriteLine(ex.Message);
 			}
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
+		}
+		
+		public string[] Usage() {
+			List<string> lines = new List<string>();
+			string name = Assembly.GetEntryAssembly().GetName().Name;
+			lines.Add( name + " open <file>");
+			return lines.ToArray();
 		}
 	}
 }

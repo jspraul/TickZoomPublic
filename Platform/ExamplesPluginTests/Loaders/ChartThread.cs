@@ -26,16 +26,11 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using NUnit.Framework;
+
 using TickZoom;
 using TickZoom.Api;
-using TickZoom.Common;
-using TickZoom.TickUtil;
-using ZedGraph;
 
 namespace Loaders
 {

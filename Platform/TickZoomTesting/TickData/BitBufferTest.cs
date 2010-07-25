@@ -26,8 +26,8 @@
 
 
 using System;
-using NUnit.Framework;
 using System.Collections.Generic;
+using NUnit.Framework;
 using TickZoom.Api;
 using TickZoom.TickUtil;
 
@@ -59,6 +59,7 @@ namespace TickZoom.TickData
 				return converted;
 			}
 		}
+		
 		[Test]
 		public void BufferTest()
 		{

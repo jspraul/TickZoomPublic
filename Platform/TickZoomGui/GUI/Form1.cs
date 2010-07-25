@@ -33,10 +33,6 @@ using System.Windows.Forms;
 
 using TickZoom.Api;
 using TickZoom.Starters;
-using TickZoom.TickUtil;
-
-//using TickZoom.Provider;
-
 
 namespace TickZoom
 {
@@ -536,7 +532,7 @@ namespace TickZoom
             commandWorker.CancelAsync();
             Factory.Engine.Dispose();
             Factory.Provider.Release();
-            TickReader.CloseAll();
+            Factory.TickUtil.TickReader().CloseAll();
         }
         
         private bool stopMessages = false;

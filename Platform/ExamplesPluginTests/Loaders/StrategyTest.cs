@@ -30,14 +30,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 
 using NUnit.Framework;
 using TickZoom;
 using TickZoom.Api;
 using TickZoom.Common;
 using TickZoom.Starters;
-using TickZoom.TickUtil;
 using TickZoom.Transactions;
 using ZedGraph;
 
@@ -53,7 +51,6 @@ namespace Loaders
 		string dataFolder = "TestData";
 		string symbols;
 		List<ChartThread> chartThreads = new List<ChartThread>();
-		List<TickAggregator> aggregators = new List<TickAggregator>();
 		Dictionary<string,List<StatsInfo>> goodStatsMap = new Dictionary<string,List<StatsInfo>>();
 		Dictionary<string,List<StatsInfo>> testStatsMap = new Dictionary<string,List<StatsInfo>>();
 		Dictionary<string,List<BarInfo>> goodBarDataMap = new Dictionary<string,List<BarInfo>>();

@@ -34,11 +34,25 @@ namespace TickZoom.TZData
 {
 	class Program
 	{
+		public static Dictionary<string,Command> commands = new Dictionary<string,Command>();
+		
 		public static void Main(string[] args)
 		{
+			commands["migrate"] = new Migrate();
+			commands["filter"] = new Filter();
+			commands["query"] = new Query();
+			commands["register"] = new Register();
+			commands["open"] = new Open();
+			
 			if( args.Length == 0) {
-				Console.Write("tzdata Usage:");
-				Console.Write("tzdata migrate <symbol> <file>");
+				Console.WriteLine("tzdata Usage:");
+				Console.WriteLine();
+				foreach( var kvp in commands) {
+					Command command = kvp.Value;
+					foreach( var line in command.Usage()) {
+						Console.WriteLine("  " + line);
+					}
+				}
 				return;
 			}
 			List<string> taskArgs = new List<string>(args);
@@ -52,21 +66,7 @@ namespace TickZoom.TZData
 			taskArgs.Remove("-d");
 			taskArgs.Remove("--debug");
 
-			if( args[0] == "migrate") {
-				new Migrate(taskArgs.ToArray());
-			}
-			if( args[0] == "filter") {
-				new Filter(taskArgs.ToArray());
-			}
-			if( args[0] == "query") {
-				Console.Write(new Query(taskArgs.ToArray()));
-			}
-			if( args[0] == "register") {
-				new Register(taskArgs.ToArray());
-			}
-			if( args[0] == "open") {
-				new Open(taskArgs.ToArray());
-			}
+			commands[args[0]].Run(taskArgs.ToArray());
 		}
 	}
 }

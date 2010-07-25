@@ -168,7 +168,7 @@ namespace TickZoom
         {
         	processWorker.CancelAsync();
         	Factory.Engine.Dispose();
-        	TickReader.CloseAll();
+        	Factory.TickUtil.TickReader().CloseAll();
             // Close the web response and the streams
             // Set the progress bar back to 0 and the label
             UpdateProgressBar( 0, "Execute Stopped");
@@ -296,9 +296,7 @@ namespace TickZoom
         
         public void Close() {
             processWorker.CancelAsync();
-            TickReader.CloseAll();
-//        	if( proxy != null) { proxy.Stop(); }
-//        	if( stub != null) { stub.Stop(); }
+            Factory.TickUtil.TickReader().CloseAll();
         }
     }
 }
