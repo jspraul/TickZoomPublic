@@ -1,9 +1,9 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{1B4F3283-33FC-4EB7-8A39-33D339672BE4}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <TickZoomTools Condition=" '$(TickZoomTools)' == '' ">C:\TickZoom\Tools\1.0</TickZoomTools>
+    <TickZoomTools Condition=" '$(TickZoomTools)' == '' ">..\Tools\1.0</TickZoomTools>
     <OutputType>Library</OutputType>
     <RootNamespace>Logging</RootNamespace>
     <AssemblyName>TickZoomLogging</AssemblyName>
