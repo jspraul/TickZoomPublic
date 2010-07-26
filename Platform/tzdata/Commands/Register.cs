@@ -59,17 +59,28 @@ namespace TickZoom.TZData
 			string tickZoom = (string) key.GetValue(variable);
 			string path = (string) key.GetValue("Path");
 			
+			bool broadcastChange = false;
 			if( path == null) {
 				key.SetValue("Path",directory);
 				key.SetValue(variable,directory);
-				BroadCastPathChange();
-			} else if(!path.Contains(directory)) {
-				if( !string.IsNullOrEmpty(tickZoom) && path.Contains(tickZoom)) {
-					path.Replace(tickZoom,directory);
-				} else {
-					path += ";" + directory;
-				}
-				key.SetValue("Path",path);
+				broadcastChange = true;
+			}
+			// Does it have an old path?
+			if(path.Contains(tickZoom) && tickZoom != directory) {
+				// Strip out the old path.
+				// Try first with semi-colons, then without.
+				path = path.Replace(";"+tickZoom,"");
+				if( path.Contains(tickZoom)) path = path.Replace(tickZoom+";","");
+				if( path.Contains(tickZoom)) path = path.Replace(tickZoom,"");
+				broadcastChange = true;
+			}
+			// Does it have the current path?
+			if(!path.Contains(directory)) {
+				path += ";" + directory;
+				broadcastChange = true;
+			}
+			if( broadcastChange) {
+				key.SetValue("Path",directory);
 				key.SetValue(variable,directory);
 				BroadCastPathChange();
 			}

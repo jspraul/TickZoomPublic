@@ -240,7 +240,7 @@ namespace TickZoom.TickUtil
 				throw new ApplicationException("Please initialized TickWriter first.");
 			}
 			TickBinary tick = tickIO.Extract();
-			return writeQueue.TryEnQueue(ref tick);
+			return writeQueue.TryEnqueue(ref tick);
 		}
 		
 		[Obsolete("Please discontinue use of CanReceive() and simple check the return value of TryAdd() instaed to find out if the add was succesful.",true)]
@@ -256,7 +256,7 @@ namespace TickZoom.TickUtil
 			}
 			if( debug) log.Debug("Entering Close()");
     		if( appendThread != null && writeQueue != null) {
-				while( !writeQueue.TryEnQueue(EventType.Terminate, symbol)) {
+				while( !writeQueue.TryEnqueue(EventType.Terminate, symbol)) {
 					Thread.Sleep(1);
 				}
 				appendThread.Join();

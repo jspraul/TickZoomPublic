@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -25,22 +25,15 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace TickZoom.Api
 {
-    public delegate void StartEnqueue();
-    public delegate void PauseEnqueue();
-    public delegate void ResumeEnqueue();
-
-    public interface TickQueue : FastQueue<QueueItem> {
-    	void Dequeue(ref TickBinary binary);
-    	bool TryDequeue(ref TickBinary binary);
-    	void Enqueue(ref TickBinary binary);
-    	bool TryEnqueue(ref TickBinary binary);
-	    bool TryEnqueue(EventType entryType, SymbolInfo symbol);
-    	void LogStats();
-	    bool IsFull {
-	    	get;
-	    }
-    }
+	public interface Pool<T>
+	{
+		T Create();
+		void Free(T item);
+		void Clear();
+	}
 }

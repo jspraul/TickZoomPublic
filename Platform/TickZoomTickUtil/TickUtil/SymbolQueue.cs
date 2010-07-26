@@ -83,28 +83,28 @@ namespace TickZoom.TickUtil
 				switch( (EventType) eventType) {
 					case EventType.Tick:
 						TickBinary binary = (TickBinary) eventDetail;
-						result = tickQueue.TryEnQueue(ref binary);
+						result = tickQueue.TryEnqueue(ref binary);
 						break;
 					case EventType.EndHistorical:
-						result = tickQueue.TryEnQueue(EventType.EndHistorical, symbol);
+						result = tickQueue.TryEnqueue(EventType.EndHistorical, symbol);
 						break;
 					case EventType.StartRealTime:
-						result = tickQueue.TryEnQueue(EventType.StartRealTime, symbol);
+						result = tickQueue.TryEnqueue(EventType.StartRealTime, symbol);
 						break;
 					case EventType.EndRealTime:
-						result = tickQueue.TryEnQueue(EventType.EndRealTime, symbol);
+						result = tickQueue.TryEnqueue(EventType.EndRealTime, symbol);
 						break;
 					case EventType.StartBroker:
-						result = tickQueue.TryEnQueue(EventType.StartBroker, symbol);
+						result = tickQueue.TryEnqueue(EventType.StartBroker, symbol);
 						break;
 					case EventType.EndBroker:
-						result = tickQueue.TryEnQueue(EventType.EndBroker, symbol);
+						result = tickQueue.TryEnqueue(EventType.EndBroker, symbol);
 						break;
 					case EventType.Error:
-			    		result = tickQueue.TryEnQueue(EventType.Error, symbol);
+			    		result = tickQueue.TryEnqueue(EventType.Error, symbol);
 			    		break;
 					case EventType.Terminate:
-			    		result = tickQueue.TryEnQueue(EventType.Terminate, symbol);
+			    		result = tickQueue.TryEnqueue(EventType.Terminate, symbol);
 			    		break;
 					case EventType.LogicalFill:
 					case EventType.StartHistorical:

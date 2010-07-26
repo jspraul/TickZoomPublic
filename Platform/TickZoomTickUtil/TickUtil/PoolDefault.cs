@@ -25,22 +25,40 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
+using TickZoom.Api;
 
-namespace TickZoom.Api
+namespace TickZoom.TickUtil
 {
-    public delegate void StartEnqueue();
-    public delegate void PauseEnqueue();
-    public delegate void ResumeEnqueue();
+	public class PoolDefault<T> : Pool<T> where T : new()
+	{
+		private Stack<T> _items = new Stack<T>();
+		private object _sync = new object();
 
-    public interface TickQueue : FastQueue<QueueItem> {
-    	void Dequeue(ref TickBinary binary);
-    	bool TryDequeue(ref TickBinary binary);
-    	void Enqueue(ref TickBinary binary);
-    	bool TryEnqueue(ref TickBinary binary);
-	    bool TryEnqueue(EventType entryType, SymbolInfo symbol);
-    	void LogStats();
-	    bool IsFull {
-	    	get;
-	    }
-    }
+		public T Create()
+		{
+			lock (_sync) {
+				if (_items.Count == 0) {
+					return new T();
+				} else {
+					return _items.Pop();
+				}
+			}
+		}
+
+		public void Free(T item)
+		{
+			lock (_sync) {
+				_items.Push(item);
+			}
+		}
+
+		public void Clear()
+		{
+			lock (_sync) {
+				_items.Clear();
+			}
+		}
+	}
 }

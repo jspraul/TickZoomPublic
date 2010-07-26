@@ -99,6 +99,7 @@
     <Compile Include="PlatformInterfaces\ModelInterface.cs" />
     <Compile Include="PlatformInterfaces\ModelLoaderInterface.cs" />
     <Compile Include="PlatformInterfaces\OrderManager.cs" />
+    <Compile Include="PlatformInterfaces\Pool.cs" />
     <Compile Include="PlatformInterfaces\PortfolioInterface.cs" />
     <Compile Include="PlatformInterfaces\PositionInterface.cs" />
     <Compile Include="PlatformInterfaces\ProfitLoss.cs" />

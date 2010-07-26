@@ -117,11 +117,11 @@ namespace TickZoom.TickUtil
         	spinLock.Unlock();
 	    }
 	    
-        public bool EnQueueStruct(ref T tick) {
-        	return TryEnQueueStruct(ref tick);
+        public bool EnqueueStruct(ref T tick) {
+        	return TryEnqueueStruct(ref tick);
         }
         
-	    public bool TryEnQueueStruct(ref T tick)
+	    public bool TryEnqueueStruct(ref T tick)
 	    {
             if( terminate) {
 	    		if( exception != null) {
@@ -300,7 +300,7 @@ namespace TickZoom.TickUtil
 	    	get { if( queuePool == null) {
 	    			lock(locker) {
 	    				if( queuePool == null) {
-	    					queuePool = new Pool<Queue<T>>();
+	    					queuePool = Factory.TickUtil.Pool<Queue<T>>();
 	    				}
 	    			}
 				}

@@ -61,5 +61,13 @@ namespace TickZoom.TickUtil
 		public TickReader TickReader() {
 			return new TickReaderDefault();
 		}
+		
+		public FastQueue<T> FastQueue<T>(string name) {
+			return new FastQueueImpl<T>(name);
+		}
+		
+		public Pool<T> Pool<T>() where T : new() {
+			return new PoolDefault<T>();
+		}
 	}
 }

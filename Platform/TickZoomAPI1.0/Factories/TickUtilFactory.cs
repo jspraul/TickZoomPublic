@@ -41,5 +41,7 @@ namespace TickZoom.Api
 		FastEventQueue FastEventQueue(string name, int maxSize);
 		TickWriter TickWriter(bool overwriteFile);
 		TickReader TickReader();
+		FastQueue<T> FastQueue<T>(string name);
+		Pool<T> Pool<T>() where T : new();
 	}
 }

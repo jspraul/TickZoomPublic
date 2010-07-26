@@ -354,7 +354,7 @@ namespace TickZoom.Common
 		public bool OnHistorical(SymbolInfo symbol)
 		{
 			try {
-				return tickQueue.TryEnQueue(EventType.StartHistorical, symbol);
+				return tickQueue.TryEnqueue(EventType.StartHistorical, symbol);
 			} catch (QueueException) {
 				// Queue was already ended.
 			}
@@ -364,7 +364,7 @@ namespace TickZoom.Common
 		public bool OnSend(ref TickBinary o)
 		{
 			try {
-				return tickQueue.TryEnQueue(ref o);
+				return tickQueue.TryEnqueue(ref o);
 			} catch (QueueException) {
 				// Queue already terminated.
 			}
@@ -427,7 +427,7 @@ namespace TickZoom.Common
 		public bool OnEndHistorical(SymbolInfo symbol)
 		{
 			try {
-				return tickQueue.TryEnQueue(EventType.EndHistorical, symbol);
+				return tickQueue.TryEnqueue(EventType.EndHistorical, symbol);
 			} catch (QueueException) {
 				// Queue was already ended.
 			}
@@ -437,7 +437,7 @@ namespace TickZoom.Common
 		public bool OnRealTime(SymbolInfo symbol)
 		{
 			try {
-				return tickQueue.TryEnQueue(EventType.StartRealTime, symbol);
+				return tickQueue.TryEnqueue(EventType.StartRealTime, symbol);
 			} catch (QueueException) {
 				// Queue was already ended.
 			}
@@ -448,7 +448,7 @@ namespace TickZoom.Common
 		public bool OnEndRealTime(SymbolInfo symbol)
 		{
 			try {
-				return tickQueue.TryEnQueue(EventType.EndRealTime, symbol);
+				return tickQueue.TryEnqueue(EventType.EndRealTime, symbol);
 			} catch (QueueException) {
 				// Queue was already ended.
 			}
@@ -459,7 +459,7 @@ namespace TickZoom.Common
 		public bool OnStartBroker(SymbolInfo symbol)
 		{
 			try {
-				return tickQueue.TryEnQueue(EventType.StartBroker, symbol);
+				return tickQueue.TryEnqueue(EventType.StartBroker, symbol);
 			} catch (QueueException) {
 				// Queue was already ended.
 			}
@@ -470,7 +470,7 @@ namespace TickZoom.Common
 		public bool OnEndBroker(SymbolInfo symbol)
 		{
 			try {
-				return tickQueue.TryEnQueue(EventType.EndBroker, symbol);
+				return tickQueue.TryEnqueue(EventType.EndBroker, symbol);
 			} catch (QueueException) {
 				// Queue was already ended.
 			}

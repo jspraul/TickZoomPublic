@@ -49,7 +49,7 @@ namespace TickZoom.TickData
 			TickIO tickIO = Factory.TickUtil.TickIO();
 			long start = Factory.TickCount;
 			for(int i=0; i<10; i++) {
-				Assert.IsTrue(queue.TryEnQueue(ref tick));
+				Assert.IsTrue(queue.TryEnqueue(ref tick));
 			}
 			long stop = Factory.TickCount;
 			log.Notice("Enqueue elapsed time is "+(stop-start)+"ms");

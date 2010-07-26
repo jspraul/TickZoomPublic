@@ -120,6 +120,10 @@ namespace TickZoom.Api
 			set;
 		}
 		
+		bool HasDepthOfMarket {
+			get;
+		}
+		
 #region Obsolete
 		/// <summary>
 		/// Obsolete: Please use Copy instead.

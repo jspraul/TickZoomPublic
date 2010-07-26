@@ -44,50 +44,50 @@ namespace TickZoom.TickUtil
 	    	
 	    }
 		
-	    public void EnQueue(ref TickBinary o)
+	    public void Enqueue(ref TickBinary o)
 	    {
-	    	if( !TryEnQueue(ref o)) {
+	    	if( !TryEnqueue(ref o)) {
 	    		throw new ApplicationException("Enqueue failed.");
 	    	}
 	    }
 	    
-	    public bool TryEnQueue(ref TickBinary o)
+	    public bool TryEnqueue(ref TickBinary o)
 	    {
         	QueueItem item = new QueueItem();
         	item.EventType = (int) EventType.Tick;
     		item.Tick = o;
-    		return TryEnQueueStruct(ref item);
+    		return TryEnqueueStruct(ref item);
 	    }
 	    
-	    public void EnQueue(EventType entryType, SymbolInfo symbol)
+	    public void Enqueue(EventType entryType, SymbolInfo symbol)
 	    {
-	    	if( !TryEnQueue(entryType, symbol)) {
+	    	if( !TryEnqueue(entryType, symbol)) {
 	    		throw new ApplicationException("Enqueue failed.");
 	    	}
 	    }
 	    
-	    public bool TryEnQueue(EventType entryType, SymbolInfo symbol)
+	    public bool TryEnqueue(EventType entryType, SymbolInfo symbol)
 	    {
         	QueueItem item = new QueueItem();
 	    	item.EventType = (int) entryType;
 	    	if( symbol != null) {
 	    		item.Symbol = symbol.BinaryIdentifier;
 	    	}
-	    	return TryEnQueueStruct(ref item);
+	    	return TryEnqueueStruct(ref item);
 	    }
 	    
-	    public void EnQueue(EventType entryType, string error)
+	    public void Enqueue(EventType entryType, string error)
 	    {
-	    	if( !TryEnQueue(entryType, error)) {
+	    	if( !TryEnqueue(entryType, error)) {
 	    		throw new ApplicationException("Enqueue failed.");
 	    	}
 	    }
 	    
-	    public bool TryEnQueue(EventType entryType, string error)
+	    public bool TryEnqueue(EventType entryType, string error)
 	    {
         	QueueItem item = new QueueItem();
 	    	item.EventType = (int) entryType;
-	    	return TryEnQueueStruct(ref item);
+	    	return TryEnqueueStruct(ref item);
 	    }
 	    
 	    public void Dequeue(ref TickBinary tick)

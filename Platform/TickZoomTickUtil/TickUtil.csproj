@@ -62,7 +62,7 @@
     <Compile Include="TickUtil\FastQueueImpl.cs" />
     <Compile Include="TickUtil\Reader.cs" />
     <Compile Include="TickUtil\TickMemoryStream.cs" />
-    <Compile Include="TickUtil\Pool.cs" />
+    <Compile Include="TickUtil\PoolDefault.cs" />
     <Compile Include="TickUtil\TickAggregator.cs" />
     <Compile Include="TickUtil\BarWriter.cs" />
     <Compile Include="TickUtil\BitArray.cs" />
@@ -74,7 +74,6 @@
     <Compile Include="TickUtil\ThreadTask.cs" />
     <Compile Include="TickUtil\TaskQueue.cs" />
     <Compile Include="TickUtil\TaskRunner.cs" />
-    <Compile Include="TickUtil\TickBox.cs" />
     <Compile Include="TickUtil\TickBuffer.cs" />
     <Compile Include="TickUtil\TickCompressor.cs" />
     <Compile Include="TickUtil\TickImpl.cs" />
