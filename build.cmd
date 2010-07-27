@@ -1,1 +1,1 @@
-C:\TickZoom\Tools\1.0\NAnt\bin\nant.exe %*
+..\Tools\1.0\NAnt\bin\nant.exe %*
