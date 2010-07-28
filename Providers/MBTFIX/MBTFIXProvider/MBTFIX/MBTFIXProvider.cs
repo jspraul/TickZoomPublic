@@ -438,7 +438,7 @@ namespace TickZoom.MBTFIX
 						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						break;
 					case "4": // Canceled
-						RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						break;
 					case "5": // Replaced
 						UpdateOrder( packetFIX, true, null);
