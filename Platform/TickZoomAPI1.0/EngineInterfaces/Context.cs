@@ -39,5 +39,6 @@ namespace TickZoom.Api
 		BinaryStore TradeData {
 			get;
 		}
+		void AddOrder(LogicalOrder order);
 	}
 }

@@ -296,6 +296,7 @@ namespace TickZoom.Common
 		[Diagram(AttributeExclude=true)]
 		public void AddOrder(LogicalOrder order)
 		{
+			Context.AddOrder(order);
 			allOrders.Add(order);
 		}
 		
