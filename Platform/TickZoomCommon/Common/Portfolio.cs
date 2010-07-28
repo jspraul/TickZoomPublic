@@ -42,7 +42,8 @@ namespace TickZoom.Common
 		private static readonly bool debug = log.IsDebugEnabled;
 		private List<Strategy> strategies = new List<Strategy>();
 		private List<Portfolio> portfolios = new List<Portfolio>();
-		private List<StrategyWatcher> watchers = new List<StrategyWatcher>();
+		private Dictionary<ModelInterface,StrategyWatcher> watchers = new Dictionary<ModelInterface,StrategyWatcher>();
+		private List<StrategyWatcher> activeWatchers = new List<StrategyWatcher>();
 		private PortfolioType portfolioType = PortfolioType.None;
 		private double closedEquity = 0;
 		private Result result;
@@ -130,10 +131,29 @@ namespace TickZoom.Common
 			
 			// Create strategy watchers
 			foreach( var strategy in strategies) {
-				watchers.Add( new StrategyWatcher(strategy));
+				strategy.IsActiveChange = OnActiveChange;
+				StrategyWatcher watcher = new StrategyWatcher(strategy);
+				watchers.Add( strategy, watcher);
+				if( strategy.IsActive) {
+					activeWatchers.Add( watcher);
+				}
 			}
 			foreach( var portfolio in portfolios) {
-				watchers.Add( new StrategyWatcher(portfolio));
+				activeWatchers.Add( new StrategyWatcher(portfolio));
+			}
+		}
+		
+		public void OnActiveChange(ModelInterface model) {
+			StrategyWatcher watcher;
+			if( watchers.TryGetValue(model,out watcher)) {
+				if( watcher.IsActive && !activeWatchers.Contains(watcher)) {
+					activeWatchers.Add(watcher);
+				}
+				if( !watcher.IsActive && activeWatchers.Contains(watcher)) {
+					activeWatchers.Remove(watcher);
+				}
+			} else {
+				throw new ApplicationException("ActiveChange event occured but watcher was not found for the strategy.");
 			}
 		}
 		
@@ -167,9 +187,9 @@ namespace TickZoom.Common
 			double internalSignal = 0;
 			double totalPrice = 0;
 			int changeCount = 0;
-			int count = watchers.Count;
+			int count = activeWatchers.Count;
 			for(int i=0; i<count; i++) {
-				var watcher = watchers[i];
+				var watcher = activeWatchers[i];
 				if( !watcher.IsActive) continue;
 				internalSignal += watcher.Position.Current;
 				if (watcher.PositionChanged) {
@@ -189,7 +209,7 @@ namespace TickZoom.Common
 			if( mergeOrders) { 
 				activeOrders.Clear();
 				for(int i=0; i<count; i++) {
-					var watcher = watchers[i];
+					var watcher = activeWatchers[i];
 					if( !watcher.IsActive) continue;
 					activeOrders.AddRange(watcher.ActiveOrders);
 				}
