@@ -44,6 +44,12 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.Core">
+      <HintPath>..\..\..\SODA\bin\ICSharpCode.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop.Sda">
+      <HintPath>..\..\..\SODA\bin\ICSharpCode.SharpDevelop.Sda.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
@@ -60,6 +66,9 @@
     <EmbeddedResource Include="Resources\BitmapResources.resources">
       <LogicalName>Resources.BitmapResources.resources</LogicalName>
     </EmbeddedResource>
+    <None Include="AddIns\TickZoomGUI.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="app.manifest">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
@@ -81,26 +90,7 @@
     <Content Include="app.template.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SODA\src\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
-      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
-      <Name>ICSharpCode.SharpDevelop</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\SODA\src\Main\Core\Project\ICSharpCode.Core.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\SODA\src\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
-      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
-      <Name>ICSharpCode.Core.WinForms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\SODA\src\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\SODA\src\Main\ICSharpCode.SharpDevelop.Sda\ICSharpCode.SharpDevelop.Sda.csproj">
-      <Project>{80318B5F-A25D-45AB-8A95-EF31D2370A4C}</Project>
-      <Name>ICSharpCode.SharpDevelop.Sda</Name>
-    </ProjectReference>
+    <Folder Include="AddIns" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

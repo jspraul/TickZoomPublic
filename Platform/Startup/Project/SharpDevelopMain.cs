@@ -13,8 +13,8 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
+//using ICSharpCode.SharpDevelop.Gui;
+//using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Sda;
 
 namespace ICSharpCode.SharpDevelop
@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			LoggingService.Fatal(ex);
 			try {
-				Application.Run(new ExceptionBox(ex, "Unhandled exception terminated SharpDevelop", true));
+				Application.Run(new ExceptionBox(ex, "Unhandled exception terminated TickZoomGUI", true));
 			} catch {
 				MessageBox.Show(ex.ToString(), "Critical error (cannot use ExceptionBox)");
 			}
@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 			#endif
 			
-			LoggingService.Info("Starting SharpDevelop...");
+			LoggingService.Info("Starting TickZoomGUI...");
 			try {
 				StartupSettings startup = new StartupSettings();
 				#if DEBUG
@@ -148,7 +148,9 @@ namespace ICSharpCode.SharpDevelop
 					startup.DomPersistencePath = null;
 				}
 				
-				startup.AddAddInsFromDirectory(Path.Combine(startup.ApplicationRootPath, @"AddIns"));
+//				startup.AddAddInFile("AddIns/TickZoomGUI.addin");
+//				startup.AddAddInsFromDirectory(Path.Combine(startup.ApplicationRootPath, @"AddIns\AddIns"));
+				startup.AddAddInsFromDirectory(Path.Combine(startup.ApplicationRootPath, "AddIns"));
 				
 				// allows testing addins without having to install them
 				foreach (string parameter in SplashScreenForm.GetParameterList()) {
@@ -187,17 +189,18 @@ namespace ICSharpCode.SharpDevelop
 		
 		static bool LoadFilesInPreviousInstance(string[] fileList)
 		{
-			try {
-				foreach (string file in fileList) {
-					if (ProjectService.HasProjectLoader(file)) {
-						return false;
-					}
-				}
-				return SingleInstanceHelper.OpenFilesInPreviousInstance(fileList);
-			} catch (Exception ex) {
-				LoggingService.Error(ex);
-				return false;
-			}
+			return false;
+//			try {
+//				foreach (string file in fileList) {
+//					if (ProjectService.HasProjectLoader(file)) {
+//						return false;
+//					}
+//				}
+//				return SingleInstanceHelper.OpenFilesInPreviousInstance(fileList);
+//			} catch (Exception ex) {
+//				LoggingService.Error(ex);
+//				return false;
+//			}
 		}
 	}
 }
