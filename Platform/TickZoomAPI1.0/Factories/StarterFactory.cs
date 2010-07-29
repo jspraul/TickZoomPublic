@@ -34,7 +34,12 @@ namespace TickZoom.Api
 	public interface StarterFactory
 	{
 		ModelProperty ModelProperty(string name,string value,double start,double end,double increment,bool isActive);
+		Starter DesignStarter();
+		Starter GeneticStarter();
+		Starter OptimizeStarter();
+		Starter RealTimeStarter();
 		Starter HistoricalStarter();
 		ISymbolProperties SymbolProperties();
+		ProjectProperties ProjectProperties(string path);
 	}
 }

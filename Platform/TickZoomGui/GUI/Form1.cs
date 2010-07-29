@@ -32,7 +32,6 @@ using System.Threading;
 using System.Windows.Forms;
 
 using TickZoom.Api;
-using TickZoom.Starters;
 
 namespace TickZoom
 {
@@ -411,14 +410,14 @@ namespace TickZoom
         
         public void Optimize(BackgroundWorker bw)
         {
-        	Starter starter = new OptimizeStarter();
+        	Starter starter = Factory.Starter.OptimizeStarter();
         	starter.ProjectProperties.Starter.EndTime = (TimeStamp) endTime;
 			SetupStarter(starter,bw);
         }
         
         public void GeneticOptimize(BackgroundWorker bw)
         {
-        	Starter starter = new GeneticStarter();
+        	Starter starter = Factory.Starter.GeneticStarter();
         	starter.ProjectProperties.Starter.EndTime = (TimeStamp) endTime;
 			SetupStarter(starter,bw);
         }
@@ -433,7 +432,7 @@ namespace TickZoom
     		if( replaySpeedTextBox.Text.Length > 0) {
     			replaySpeed = System.Convert.ToInt32(replaySpeedTextBox.Text,10);
     		}
-    		Starter starter = new HistoricalStarter();
+    		Starter starter = Factory.Starter.HistoricalStarter();
     		starter.ProjectProperties.Engine.TickReplaySpeed = replaySpeed;
 			starter.ProjectProperties.Engine.BreakAtBar = breakAtBar;
         	starter.ProjectProperties.Starter.EndTime = (TimeStamp) endTime;
@@ -462,7 +461,7 @@ namespace TickZoom
         
 		public void RealTime(BackgroundWorker bw)
 		{
-        	Starter starter = new RealTimeStarter();
+        	Starter starter = Factory.Starter.RealTimeStarter();
     		SetupStarter(starter,bw);
 		}
 		

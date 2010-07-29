@@ -78,9 +78,12 @@
     <Compile Include="AboutDialog.Designer.cs">
       <DependentUpon>AboutDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Project\ChartControl.Designer.cs" />
     <Compile Include="Project\ChartProperties.cs" />
     <Compile Include="Project\EngineProperties.cs" />
+    <Compile Include="Project\ProjectDoc.cs" />
+    <Compile Include="Project\ProjectDoc.Designer.cs">
+      <DependentUpon>ProjectDoc.cs</DependentUpon>
+    </Compile>
     <Compile Include="Project\ProjectProperties.cs" />
     <Compile Include="Project\RunManager.cs" />
     <Compile Include="MainForm2.cs">
@@ -145,9 +148,6 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Project\ChartControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Project\ChartNode.cs" />
     <Compile Include="Project\EngineNode.cs" />
     <Compile Include="Project\PortfolioNode.cs" />
@@ -157,10 +157,6 @@
     <Compile Include="Project\PortfolioControl.Designer.cs">
       <DependentUpon>PortfolioControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Project\ProjectDoc.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Project\ProjectDoc.Designer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Project\StarterProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -196,14 +192,11 @@
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Project\ChartControl.resx">
-      <DependentUpon>ChartControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Project\PortfolioControl.resx">
       <DependentUpon>PortfolioControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Project\ProjectDoc.resx">
-      <DependentUpon>ProjectDoc.Designer.cs</DependentUpon>
+      <DependentUpon>ProjectDoc.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -265,25 +258,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Charting\Charting.csproj">
+      <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
+      <Name>Charting</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TickZoomStarters\Starters.csproj">
-      <Project>{61D3BADE-512C-4AE3-8863-0B669ACFEA99}</Project>
-      <Name>Starters</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TickZoomTickUtil\TickUtil.csproj">
-      <Project>{44135BE2-CBA4-4041-8F31-91C480302C2D}</Project>
-      <Name>TickUtil</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WinFormsUI\WinFormsUI.csproj">
       <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
       <Name>WinFormsUI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ZedGraph\ZedGraph.csproj">
-      <Project>{67EBC93F-0D47-4F6E-979F-E5622E1025E9}</Project>
-      <Name>ZedGraph</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

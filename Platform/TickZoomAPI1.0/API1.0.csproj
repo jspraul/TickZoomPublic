@@ -91,6 +91,7 @@
     <Compile Include="Classes\TimeStamp.cs" />
     <Compile Include="Classes\TaskLock.cs" />
     <Compile Include="Classes\TimeSyncDetail.cs" />
+    <Compile Include="Exceptions\MustUseLoaderException.cs" />
     <Compile Include="PlatformInterfaces\DrawingInterface.cs" />
     <Compile Include="PlatformInterfaces\EventType.cs" />
     <Compile Include="PlatformInterfaces\IndicatorInterface.cs" />

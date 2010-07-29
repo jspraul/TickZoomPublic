@@ -31,13 +31,6 @@ using System.Threading;
 using System.Windows.Forms;
 
 using TickZoom.Api;
-using TickZoom.Starters;
-using TickZoom.TickUtil;
-
-//using TickZoom.Provider;
-
-
-//using TickZoom.Engine;
 
 namespace TickZoom
 {
@@ -119,7 +112,7 @@ namespace TickZoom
         
         public void Optimize(BackgroundWorker bw)
         {
-        	Starter starter = new OptimizeStarter();
+        	Starter starter = Factory.Starter.OptimizeStarter();
 //			starter.StartTime = (TimeStamp) startTime;
 //    		starter.EndTime = (TimeStamp) endTime;
 //    		starter.BackgroundWorker = bw;
@@ -137,7 +130,7 @@ namespace TickZoom
         
         public void GeneticOptimize(BackgroundWorker bw)
         {
-        	Starter starter = new GeneticStarter();
+        	Starter starter = Factory.Starter.GeneticStarter();
 //			starter.StartTime = (TimeStamp) startTime;
 //    		starter.EndTime = (TimeStamp) endTime;
 //    		starter.BackgroundWorker = bw;
@@ -155,7 +148,7 @@ namespace TickZoom
         public void StartHistorical(BackgroundWorker bw)
         {
         	projectDoc.PortfolioControl.WriteProject();
-    		Starter starter = new HistoricalStarter();
+    		Starter starter = Factory.Starter.HistoricalStarter();
     		string appData = Factory.Settings["AppDataFolder"];
     		starter.ProjectFile = appData + @"\portfolio.tzproj";
     		starter.BackgroundWorker = bw;
@@ -224,7 +217,7 @@ namespace TickZoom
         
 		public void OrderServer(BackgroundWorker bw)
 		{
-    		Starter starter = new RealTimeStarter();
+    		Starter starter = Factory.Starter.RealTimeStarter();
 //    		proxy = new TickZoomProxy();
 //    		proxy.BackgroundWorker = bw;
 //    		

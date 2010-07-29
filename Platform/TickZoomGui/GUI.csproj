@@ -120,10 +120,6 @@
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TickZoomStarters\Starters.csproj">
-      <Project>{61D3BADE-512C-4AE3-8863-0B669ACFEA99}</Project>
-      <Name>Starters</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">

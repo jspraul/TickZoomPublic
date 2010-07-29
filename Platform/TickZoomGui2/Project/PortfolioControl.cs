@@ -30,7 +30,6 @@ using System.Windows.Forms;
 using System.Xml;
 
 using TickZoom.Api;
-using TickZoom.Properties;
 
 namespace TickZoom
 {
@@ -60,7 +59,7 @@ namespace TickZoom
 				projectProperties = new ProjectProperties();
 				treeView.LabelEdit = true;
 				string appData = Factory.Settings["AppDataFolder"];
-				TickZoom.Api.ProjectProperties loadProjectProperties = ProjectPropertiesCommon.Create(new StreamReader(appData + @"\portfolio.xml"));
+				TickZoom.Api.ProjectProperties loadProjectProperties = Factory.Starter.ProjectProperties(appData + @"\portfolio.xml");
 				ReloadProjectModels(loadProjectProperties);
 			}
 		}

@@ -26,7 +26,7 @@
 
 using System;
 
-namespace TickZoom.Starters
+namespace TickZoom.Api
 {
 	/// <summary>
 	/// Description of Class1.

@@ -27,7 +27,6 @@
 using System;
 using System.Windows.Forms;
 using TickZoom.Api;
-using TickZoom.Starters;
 
 namespace TickZoom
 {
@@ -67,7 +66,7 @@ namespace TickZoom
 		private object GetModel(string name,ModelProperties properties) {
 			ModelInterface model = Plugins.Instance.GetModel(name);
 			PropertyTable propertyTable = new PropertyTable(model);
-			Starter starter = new DesignStarter();
+			Starter starter = Factory.Starter.DesignStarter();
 			starter.Run(model);
 			starter.Wait();
 			propertyTable.UpdateAfterInitialize();

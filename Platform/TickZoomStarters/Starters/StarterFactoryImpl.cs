@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.IO;
 using TickZoom.Api;
 using TickZoom.Properties;
 using TickZoom.Symbols;
@@ -68,6 +69,26 @@ namespace TickZoom.Starters
 		
 		public ISymbolProperties SymbolProperties() {
 			return new SymbolProperties();
+		}
+		
+		public ProjectProperties ProjectProperties(string path) {
+			return ProjectPropertiesCommon.Create(new StreamReader(path));
+		}
+		
+		public Starter DesignStarter() {
+			return new DesignStarter();
+		}
+		
+		public Starter GeneticStarter() {
+			return new GeneticStarter();
+		}
+		
+		public Starter RealTimeStarter() {
+			return new RealTimeStarter();
+		}
+		
+		public Starter OptimizeStarter() {
+			return new OptimizeStarter();
 		}
 	}
 }

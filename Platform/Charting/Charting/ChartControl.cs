@@ -107,35 +107,12 @@ namespace TickZoom
 		public void ChartLoad(object sender, EventArgs e)
 		{
 			if( debug) log.Debug("ChartLoad()");
-		   DrawChart();
-		   // Size the control to fill the form with a margin
-		   SetSize();			
+		    DrawChart();
 		}
 		
 		public void ChartResize(object sender, EventArgs e)
 		{
 			if( debug) log.Debug("ChartResize()");
-			SetSize();
-		}
-		
-		private void SetSize()
-		{
-//			int width = ClientRectangle.Width - 25;
-//			int height = ClientRectangle.Height - toolStripStatusXY.Height - logTextBox.Height - 40;
-//			if( dataGraph.Size.Width == width &&
-//			   dataGraph.Size.Height == height) {
-//				// Size has already been set.
-//				return;
-//			}
-//			    
-//			// Leave a small margin around the outside of the control
-//			
-//			logTextBox.Location = new Point( 10, ClientRectangle.Height - logTextBox.Height - toolStripStatusXY.Height - 10);
-//			logTextBox.Width = width;
-//			checkBoxOnTop.Location = new Point(width - 55,5);
-//			audioNotify.Location = new Point(width - 145,5);
-//			dataGraph.Location = new System.Drawing.Point( 10, 30 );
-//			dataGraph.Size = new Size( width, height);
 		}
 		
 		private delegate void WriteLineDelegate(string text);		

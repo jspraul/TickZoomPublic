@@ -58,7 +58,6 @@
     <Compile Include="Starters\Chromosome.cs" />
     <Compile Include="Starters\StarterFactoryImpl.cs" />
     <Compile Include="Starters\DesignStarter.cs" />
-    <Compile Include="Starters\MustUseLoaderException.cs" />
     <Compile Include="Starters\GeneticStarter.cs" />
     <Compile Include="Starters\HistoricalStarter.cs" />
     <Compile Include="Starters\OptimizeStarter.cs" />

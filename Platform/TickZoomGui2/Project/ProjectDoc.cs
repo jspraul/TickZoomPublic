@@ -63,7 +63,7 @@ namespace TickZoom
 			}
 			if( this.tabControl.SelectedTab == this.tabPage2) {
 				chartControl.Size = new Size( tabControl.ClientRectangle.Width, tabControl.ClientRectangle.Height);
-				chartControl.ChartResizeEvent(sender,e);
+				chartControl.ChartResize(sender,e);
 			}
 		}
 		
@@ -75,7 +75,7 @@ namespace TickZoom
 			}
 			if( this.tabControl.SelectedTab == this.tabPage2) {
 				chartControl.Size = new Size( tabControl.ClientRectangle.Width, tabControl.ClientRectangle.Height);
-				chartControl.ChartResizeEvent(sender, e);
+				chartControl.ChartResize(sender, e);
 			}
 		}
 		
@@ -128,8 +128,7 @@ namespace TickZoom
 				this.tabControl.Controls.Add(this.tabPage2);
         	}
 			this.tabControl.SelectTab(this.tabPage2);
-			this.chartControl.ChartLoad();
-			this.chartControl.SetSize();
+			this.chartControl.Show();
 			this.chartControl.Invalidate();
 		}
 		
