@@ -17,7 +17,11 @@
     <call target="compile" />
   </target>
   
-  <target name="compile" depends="compile.platform,compile.mbtfix"/>
+  <target name="compile">
+    <call target="compile.SODA" />
+    <call target="compile.platform" />
+    <call target="compile.mbtfix" />
+  </target>
   
   <target name="test" depends="test.platform"/>
   
@@ -56,6 +60,14 @@
     
   </target>    
     
+  <target name="compile.SODA">
+    <echo message=""/>
+    <echo message=" === Compiling SODA === "/>
+    <echo message=""/>
+    
+    <exec program="cmd.exe" workingdir="SODA\src" commandline='/c releasebuild.bat'/>
+  </target>    
+  
   <target name="test.platform">
     <loadtasks assembly="${nant.contrib}" />
   
