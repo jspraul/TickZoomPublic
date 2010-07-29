@@ -285,6 +285,7 @@ namespace TickZoom.MBTFIX
 				message.AppendLine("  target = " + packetFIX.Target);
 				message.AppendLine("  encryption = " + packetFIX.Encryption);
 				message.AppendLine("  heartbeat interval = " + packetFIX.HeartBeatInterval);
+				message.AppendLine(packetFIX.ToString());
 				log.Error(message);
 				throw new ApplicationException(message.ToString());
 			}

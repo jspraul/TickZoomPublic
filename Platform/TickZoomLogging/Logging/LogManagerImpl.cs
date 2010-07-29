@@ -33,17 +33,20 @@ using System.Reflection;
 using System.Threading;
 
 using log4net.Core;
-using TickZoom.Api;
 using log4net.Filter;
+using log4net.Repository;
+using TickZoom.Api;
 
 namespace TickZoom.Logging
 {
 	public class LogManagerImpl : LogManager {
 		private static Log exceptionLog;
 		private static object locker = new object();
+		private ILoggerRepository repository;
 		Dictionary<string,LogImpl> map = new Dictionary<string,LogImpl>();
 		public void Configure() {
-			log4net.Config.XmlConfigurator.Configure();
+			repository = LoggerManager.CreateRepository("TickZoom");
+			log4net.Config.XmlConfigurator.Configure(repository);
 			lock( locker) {
 				if( exceptionLog == null) {
 					exceptionLog = GetLogger("TickZoom.AppDomain");
@@ -78,7 +81,7 @@ namespace TickZoom.Logging
 			if( map.TryGetValue(type.FullName, out log)) {
 				return log;
 			} else {
-				ILogger logger = LoggerManager.GetLogger(Assembly.GetCallingAssembly(),type);
+				ILogger logger = repository.GetLogger(type.FullName);
 				log = new LogImpl(logger);
 				map[type.FullName] = log;
 			}
@@ -89,7 +92,7 @@ namespace TickZoom.Logging
 			if( map.TryGetValue(name, out log)) {
 				return log;
 			} else {
-				ILogger logger = LoggerManager.GetLogger(Assembly.GetCallingAssembly(),name);
+				ILogger logger = repository.GetLogger(name);
 				log = new LogImpl(logger);
 				map[name] = log;
 			}

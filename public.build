@@ -18,7 +18,7 @@
   </target>
   
   <target name="compile">
-    <call target="compile.SODA" />
+    <!--call target="compile.SODA" /-->
     <call target="compile.platform" />
     <call target="compile.mbtfix" />
   </target>
