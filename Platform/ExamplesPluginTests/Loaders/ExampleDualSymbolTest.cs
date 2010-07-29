@@ -38,7 +38,7 @@ namespace Loaders
 	public class ExampleDualSymbolTest : StrategyTest
 	{
 		#region SetupTest
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		ExampleOrderStrategy fourTicksStrategy;
 		ExampleOrderStrategy fullTicksStrategy;
 		Portfolio portfolio;

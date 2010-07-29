@@ -37,7 +37,7 @@ namespace Loaders
 	[TestFixture]
 	public class MarketOrderTest : StrategyTest
 	{
-		Log log = Factory.Log.GetLogger(typeof(MarketOrderTest));
+		Log log = Factory.SysLog.GetLogger(typeof(MarketOrderTest));
 		Strategy strategy;
 		public MarketOrderTest() {
 			Symbols = "USD/JPY";

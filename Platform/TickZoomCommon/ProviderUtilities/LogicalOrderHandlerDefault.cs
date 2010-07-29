@@ -36,7 +36,7 @@ using TickZoom.Api;
 namespace TickZoom.Common
 {
 	public class LogicalOrderHandlerDefault : LogicalOrderHandler {
-		private static readonly Log log = Factory.Log.GetLogger(typeof(LogicalOrderHandlerDefault));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(LogicalOrderHandlerDefault));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		SymbolInfo symbol;

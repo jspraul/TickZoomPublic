@@ -34,7 +34,7 @@ namespace TickZoom.TickData
 	[TestFixture]
 	public class TickQueueTest
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(TickQueueTest));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TickQueueTest));
 		TickQueue queue;
 		
 		[SetUp]

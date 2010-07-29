@@ -37,7 +37,7 @@ namespace Loaders
 	[TestFixture]
 	public class TradeOnlyLimitOrderTest : StrategyTest
 	{
-		Log log = Factory.Log.GetLogger(typeof(LimitOrderTest));
+		Log log = Factory.SysLog.GetLogger(typeof(LimitOrderTest));
 		ExampleOrderStrategy strategy;
 		public TradeOnlyLimitOrderTest() {
 			Symbols = "/ESH0TradeBar";

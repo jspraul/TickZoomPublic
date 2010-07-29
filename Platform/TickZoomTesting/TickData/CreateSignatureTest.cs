@@ -36,7 +36,7 @@ namespace TickZoom.TickData
 //	[TestFixture]
 	public class CreateSignatureTest
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		
 		[SetUp]
 		public void SetUp() {

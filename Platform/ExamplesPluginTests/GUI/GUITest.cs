@@ -40,7 +40,7 @@ namespace MiscTest
 	[TestFixture]
 	public class GUITest
 	{
-		private static Log log = Factory.Log.GetLogger(typeof(GUITest));
+		private static Log log = Factory.SysLog.GetLogger(typeof(GUITest));
 		private static bool debug = log.IsDebugEnabled;
 		private Form1 form;
 		[SetUp]

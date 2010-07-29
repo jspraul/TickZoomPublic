@@ -44,7 +44,7 @@ namespace TickZoom.TradingFramework
 		ExitStrategy exits;
 		RandomCommon random;
 		Starter  starter;
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		
 		[TestFixtureSetUp]
 		public void Setup() 

@@ -35,7 +35,7 @@ namespace TickZoom.TickUtil
 	/// </summary>
 	public class TaskRunner
 	{
-   		static readonly Log log = Factory.Log.GetLogger(typeof(TickReader));
+   		static readonly Log log = Factory.SysLog.GetLogger(typeof(TickReader));
    		static readonly bool debug = log.IsDebugEnabled;
 		private TaskQueue waitingQueue;
 		private bool cancel = false;

@@ -162,7 +162,7 @@ namespace TickZoom.Api
 		/// <returns>a string containing the result of the post.</returns>
 		public string Post()
 		{
-			Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+			Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 			this.m_type=PostSubmitter.PostTypeEnum.Post;
 			StringBuilder parameters=new StringBuilder();
 			for (int i=0;i < m_values.Count;i++)

@@ -37,7 +37,7 @@ namespace Loaders
 	public class ExampleDualStrategyTest : StrategyTest
 	{
 		#region SetupTest
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		ExampleReversalStrategy exampleReversal;
 		ExampleOrderStrategy fourTicksStrategy;
 		Portfolio portfolio;

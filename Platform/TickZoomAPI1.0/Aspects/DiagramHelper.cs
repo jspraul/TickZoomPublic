@@ -36,7 +36,7 @@ namespace TickZoom.Api
 {
 	public class DiagramHelper
 	{
-		private static readonly Log Logger = Factory.Log.GetLogger("Diagram");
+		private static readonly Log Logger = Factory.SysLog.GetLogger("Diagram");
 		public static readonly bool Debug = Logger.IsDebugEnabled;
 		private static readonly bool Trace = Logger.IsTraceEnabled;
 		private static List<DiagramAttribute> diagramAspects = new List<DiagramAttribute>();

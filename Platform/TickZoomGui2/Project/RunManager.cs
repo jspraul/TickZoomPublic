@@ -46,7 +46,7 @@ namespace TickZoom
 	    public delegate void ShowChartDelegate();
 // 		ProviderProxy proxy = null;
 //		ProviderStub2 stub = null;
-		private static readonly Log log = Factory.Log.GetLogger(typeof(RunManager));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(RunManager));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
         BackgroundWorker processWorker;

@@ -43,7 +43,7 @@ namespace Loaders
 		List<StrategyInterface> strategies = new List<StrategyInterface>();
 		
 		#region SetupTest
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		ExampleOrderStrategy fourTicksPerBar;
 		ExampleOrderStrategy fullTickData;
 		

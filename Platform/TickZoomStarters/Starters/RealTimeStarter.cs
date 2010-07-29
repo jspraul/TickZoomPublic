@@ -34,7 +34,7 @@ namespace TickZoom.Starters
 	/// </summary>
 	public class RealTimeStarter : HistoricalStarter
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		public override Provider[] SetupProviders(bool quietMode, bool singleLoad)
 		{

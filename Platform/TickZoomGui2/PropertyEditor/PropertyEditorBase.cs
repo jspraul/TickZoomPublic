@@ -18,7 +18,7 @@ using TickZoom.Api;
 /// </summary>
 public abstract class PropertyEditorBase : UITypeEditor
 {
-	Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     protected IWindowsFormsEditorService IEditorService;
     private Control m_EditControl;
     private bool m_EscapePressed;

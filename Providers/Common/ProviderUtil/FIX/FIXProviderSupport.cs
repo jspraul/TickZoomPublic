@@ -69,7 +69,7 @@ namespace TickZoom.MBTFIX
 		
 		public FIXProviderSupport()
 		{
-			log = Factory.Log.GetLogger(typeof(FIXProviderSupport)+"."+GetType().Name);
+			log = Factory.SysLog.GetLogger(typeof(FIXProviderSupport)+"."+GetType().Name);
 			debug = log.IsDebugEnabled;
 			trace = log.IsTraceEnabled;
         	log.Info(providerName+" Startup");

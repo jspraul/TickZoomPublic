@@ -45,7 +45,7 @@ namespace ZedGraph
 	[Serializable]
 	public class MasterPane : PaneBase, ICloneable, ISerializable, IDeserializationCallback
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 	#region Fields
 
@@ -638,7 +638,7 @@ namespace ZedGraph
 
 		public override void DrawBackground( Graphics g )
 		{
-			Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+			Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 			// Save current AntiAlias mode
 			SmoothingMode sModeSave = g.SmoothingMode;
 			TextRenderingHint sHintSave = g.TextRenderingHint;

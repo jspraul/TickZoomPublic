@@ -35,7 +35,7 @@ namespace TickZoom.Starters
 	/// </summary>
 	public class Chromosome : IComparable
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		int[] genome;
 		bool fitnessAssigned = false;
 		double fitness=0;

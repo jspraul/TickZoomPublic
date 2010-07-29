@@ -49,7 +49,7 @@ namespace MiscTest
 	public class DefectsTest : StrategyTest
 	{
 	    string storageFolder;
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	    public delegate void ShowChartDelegate(ChartControl chart);
 		
 	    public DefectsTest() {

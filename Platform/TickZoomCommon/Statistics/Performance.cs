@@ -38,13 +38,13 @@ namespace TickZoom.Statistics
 {
 	public class Performance : StrategyInterceptor
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(Performance));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Performance));
 		private static readonly bool debug = log.IsDebugEnabled;
-		private static readonly Log barDataLog = Factory.Log.GetLogger("BarDataLog");
+		private static readonly Log barDataLog = Factory.SysLog.GetLogger("BarDataLog");
 		private static readonly bool barDataDebug = barDataLog.IsDebugEnabled;
-		private static readonly Log tradeLog = Factory.Log.GetLogger("TradeLog");
+		private static readonly Log tradeLog = Factory.SysLog.GetLogger("TradeLog");
 		private static readonly bool tradeInfo = tradeLog.IsInfoEnabled;
-		private static readonly Log statsLog = Factory.Log.GetLogger("StatsLog");
+		private static readonly Log statsLog = Factory.SysLog.GetLogger("StatsLog");
 		private static readonly bool statsDebug = statsLog.IsDebugEnabled;
 		TransactionPairs comboTrades;
 		TransactionPairsBinary comboTradesBinary;

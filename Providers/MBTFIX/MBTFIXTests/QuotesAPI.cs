@@ -38,7 +38,7 @@ namespace Test
 	[TestFixture]
 	public class QuotesAPI 
 	{
-		private static Log log = Factory.Log.GetLogger(typeof(QuotesAPI));
+		private static Log log = Factory.SysLog.GetLogger(typeof(QuotesAPI));
 
 		public QuotesAPI()
 		{

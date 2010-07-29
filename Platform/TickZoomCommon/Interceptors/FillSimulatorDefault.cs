@@ -33,7 +33,7 @@ namespace TickZoom.Interceptors
 {
 	public class FillSimulatorDefault : FillSimulator
 	{
-		private static readonly Log Log = Factory.Log.GetLogger(typeof(FillSimulatorDefault));
+		private static readonly Log Log = Factory.SysLog.GetLogger(typeof(FillSimulatorDefault));
 		private static readonly bool IsTrace = Log.IsTraceEnabled;
 		private static readonly bool IsDebug = Log.IsDebugEnabled;
 		private static readonly bool IsNotice = Log.IsNoticeEnabled;
@@ -234,7 +234,6 @@ namespace TickZoom.Interceptors
                      break;
                  default:
                      throw new ApplicationException("Unexpected order type: " + order.Type);
-                     break;
              }
 		}
 		

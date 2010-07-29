@@ -55,7 +55,7 @@ namespace TickZoom
 		{
 			this.projectDoc = (ProjectDoc) this.Parent.Parent.Parent;
 			if( !DesignMode && !isInitialized) {
-				log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+				log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 				projectProperties = new ProjectProperties();
 				treeView.LabelEdit = true;
 				string appData = Factory.Settings["AppDataFolder"];

@@ -25,7 +25,7 @@ namespace TickZoom
 		void DummyOutputWindowLoad(object sender, EventArgs e)
 		{
 			if( !DesignMode) {
-				log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+				log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	            thread_ProcessMessages = new Thread(new ThreadStart(ProcessMessages));
 	            thread_ProcessMessages.Name = "ProcessMessages";
 	            thread_ProcessMessages.Priority = ThreadPriority.Lowest;

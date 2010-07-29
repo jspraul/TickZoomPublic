@@ -51,7 +51,7 @@ namespace TickZoom.Interceptors
 
 		public StrategySupport(Strategy strategy)
 		{
-			instanceLog = Factory.Log.GetLogger(this.GetType()+"."+strategy.Name);
+			instanceLog = Factory.SysLog.GetLogger(this.GetType()+"."+strategy.Name);
 			instanceNotice = instanceLog.IsNoticeEnabled;
 			instanceDebug = instanceLog.IsDebugEnabled;
 			instanceTrace = instanceLog.IsTraceEnabled;

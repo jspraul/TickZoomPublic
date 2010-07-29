@@ -41,7 +41,7 @@ namespace TickZoom.Common
 	/// </summary>
 	public abstract class ModelLoaderCommon : ModelLoaderInterface
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		IList<Model> models = new List<Model>();
 		List<ModelProperty> variables = new List<ModelProperty>();
 		List<OptimizeRange> rules = new List<OptimizeRange>();

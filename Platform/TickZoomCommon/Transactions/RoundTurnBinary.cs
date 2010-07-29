@@ -35,7 +35,7 @@ namespace TickZoom.Transactions
 	[Obsolete("Please use TransactionPairBinary instead.",true)]
 	public struct RoundTurnBinary 
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(TransactionPair));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TransactionPair));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		public static readonly string TIMEFORMAT = "yyyy-MM-dd HH:mm:ss.fff";

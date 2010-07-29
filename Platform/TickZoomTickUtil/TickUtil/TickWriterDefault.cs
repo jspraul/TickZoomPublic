@@ -45,7 +45,7 @@ namespace TickZoom.TickUtil
 		string fileName = null;
 		Thread appendThread = null;
 		protected TickQueue writeQueue;
-		private static readonly Log log = Factory.Log.GetLogger(typeof(TickWriter));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TickWriter));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		bool keepFileOpen = false;

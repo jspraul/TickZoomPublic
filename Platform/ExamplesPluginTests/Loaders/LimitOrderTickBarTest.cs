@@ -37,7 +37,7 @@ namespace Loaders
 	[TestFixture]
 	public class LimitOrderTickBarTest : StrategyTest
 	{
-		Log log = Factory.Log.GetLogger(typeof(LimitOrderTickBarTest));
+		Log log = Factory.SysLog.GetLogger(typeof(LimitOrderTickBarTest));
 		ExampleOrderStrategy strategy;
 		public LimitOrderTickBarTest() {
 			Symbols = "USD/JPY";

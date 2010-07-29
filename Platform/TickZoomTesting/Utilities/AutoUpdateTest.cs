@@ -35,7 +35,7 @@ namespace TickZoom.Utilities
 	[TestFixture]
 	public class AutoUpdateTest
 	{
-		private static readonly Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private string testVersion = "0.9.3.381";
 		private string appData;
 		private string dllFolder;

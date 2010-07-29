@@ -57,7 +57,7 @@ namespace TickZoom
 		void ProjectDocLoad(object sender, System.EventArgs e)
 		{
 			if( !DesignMode) {
-				log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+				log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 				runManager = new RunManager(this);
 				this.simulationMenuItem.Click += new System.EventHandler(runManager.SimulationMenuItemClick);
 			}

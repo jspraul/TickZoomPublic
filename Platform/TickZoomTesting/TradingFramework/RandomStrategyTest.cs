@@ -37,7 +37,7 @@ namespace TickZoom.TradingFramework
 	[TestFixture]
 	public class RandomStrategyTest 
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		RandomTestInner strategy;
 		
     	[SetUp]
@@ -53,7 +53,7 @@ namespace TickZoom.TradingFramework
 		}
 
 		public class RandomTestInner : RandomCommon {
-			Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+			Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 			public List<Tick> signalChanges = new List<Tick>();
 			public List<double> signalDirection = new List<double>();
 			public double prevSignal = 0;

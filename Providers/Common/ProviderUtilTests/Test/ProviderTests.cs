@@ -37,7 +37,7 @@ namespace TickZoom.Test
 {
 	public abstract class ProviderTests
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(TimeAndSales));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TimeAndSales));
 		private static readonly bool debug = log.IsDebugEnabled;		
 		private List<LogicalOrder> orders = new List<LogicalOrder>();
 		protected SymbolInfo symbol;
@@ -60,8 +60,8 @@ namespace TickZoom.Test
 		public void Init()
 		{
 			string appData = Factory.Settings["AppDataFolder"];
-			File.Delete( Factory.Log.LogFolder + @"\" + providerAssembly+"Tests.log");
-			File.Delete( Factory.Log.LogFolder + @"\" + providerAssembly+".log");
+			File.Delete( Factory.SysLog.LogFolder + @"\" + providerAssembly+"Tests.log");
+			File.Delete( Factory.SysLog.LogFolder + @"\" + providerAssembly+".log");
 			
 		}
 		

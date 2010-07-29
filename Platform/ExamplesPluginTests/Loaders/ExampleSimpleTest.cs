@@ -40,7 +40,7 @@ namespace Loaders
 	{
 		
 		#region SetupTest
-		Log log = Factory.Log.GetLogger(typeof(ExampleReversalTest));
+		Log log = Factory.SysLog.GetLogger(typeof(ExampleReversalTest));
 		protected Strategy strategy;
 		
 		public ExampleReversalTest() {

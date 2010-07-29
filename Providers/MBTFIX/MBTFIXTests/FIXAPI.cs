@@ -41,7 +41,7 @@ namespace Test
 	[TestFixture]
 	public class FIXAPI 
 	{
-		private static Log log = Factory.Log.GetLogger(typeof(FIXAPI));
+		private static Log log = Factory.SysLog.GetLogger(typeof(FIXAPI));
 	
 		public FIXAPI()
 		{ 

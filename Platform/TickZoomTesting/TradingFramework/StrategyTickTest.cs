@@ -40,7 +40,7 @@ namespace TickZoom.TradingFramework
 	{
 		protected string symbol = "USD_JPY";
 		StrategySupportMock logic;
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		
 	    	[TestFixtureSetUp]
 	    	public virtual void Init() {

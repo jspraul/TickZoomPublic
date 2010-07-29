@@ -39,7 +39,7 @@ namespace TickZoom.Common
 	[TestFixture]
 	public class PerformanceTest
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(PerformanceTest));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(PerformanceTest));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		PerformanceInner performance;
@@ -53,7 +53,7 @@ namespace TickZoom.Common
 		}
 		
 		public class PerformanceInner : Performance {
-			Log log = Factory.Log.GetLogger(typeof(PerformanceInner));
+			Log log = Factory.SysLog.GetLogger(typeof(PerformanceInner));
 			public List<Tick> signalChanges = new List<Tick>();
 			public List<double> signalDirection = new List<double>();
 			double prevSignal = 0;

@@ -44,7 +44,7 @@ namespace TickZoom.Api
 		public DiagramInstance(string displayName, string fullName) {
 			this.Name = displayName;
 			this.FullName = fullName;
-			Logger = Factory.Log.GetLogger("Diagram."+fullName);
+			Logger = Factory.SysLog.GetLogger("Diagram."+fullName);
 			Debug = Logger.IsDebugEnabled;
 			Trace = Logger.IsTraceEnabled;
 		}

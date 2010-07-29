@@ -40,7 +40,7 @@ namespace Loaders
 	[TestFixture]
 	public class ExampleSimulatedTest : StrategyTest
 	{
-		Log log = Factory.Log.GetLogger(typeof(ExampleSimulatedTest));
+		Log log = Factory.SysLog.GetLogger(typeof(ExampleSimulatedTest));
 		#region SetupTest
 		ExampleOrderStrategy strategy;
 		

@@ -35,7 +35,7 @@ namespace TickZoom.MBTFIX
 {
 	public class MBTQuotesProvider : MBTQuoteProviderSupport
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(MBTQuotesProvider));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(MBTQuotesProvider));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
         private Dictionary<ulong,SymbolHandler> symbolHandlers = new Dictionary<ulong,SymbolHandler>();

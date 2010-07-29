@@ -55,7 +55,7 @@ namespace TickZoom.Logging
                 try
                 {
                     // get the log file name from the config file.
-                    string logFileName = value.Replace("LogFolder",Factory.Log.LogFolder);
+                    string logFileName = value.Replace("LogFolder",Factory.SysLog.LogFolder);
 
                     base.File = logFileName;
                 }

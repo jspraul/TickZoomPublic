@@ -47,7 +47,7 @@ namespace TickZoom.Common
 		protected int orderId = 0;
 		protected ModelInterface model;
 		protected string symbol = "default";
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		public PositionCommon(ModelInterface model)
 		{

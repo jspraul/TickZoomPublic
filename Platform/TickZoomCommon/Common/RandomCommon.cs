@@ -42,7 +42,7 @@ namespace TickZoom.Common
 		int sessionHours = 4;
 		bool firstSession = false;
 		Elapsed sessionStart = new Elapsed(8,0,0);
-		private static readonly Log log = Factory.Log.GetLogger(typeof(RandomCommon));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(RandomCommon));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;		
 		

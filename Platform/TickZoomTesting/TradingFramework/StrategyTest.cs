@@ -36,7 +36,7 @@ namespace TickZoom.EngineTests
 	/// </summary>
 	public class StrategyTest : Model
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(StrategyTest));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(StrategyTest));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		string name;

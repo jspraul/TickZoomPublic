@@ -44,7 +44,7 @@ namespace TickZoom.Starters
 		int tasksRemaining=0;
 		List<Chromosome> generation;
 		List<Chromosome> alreadyTried;
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		List<TickEngine> engineIterations = new List<TickEngine>();
 		ModelLoaderInterface loader;
 		List<ModelProperty> optimizeVariables;

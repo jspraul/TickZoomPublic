@@ -36,7 +36,7 @@ namespace TickZoom.TickData
 	[TestFixture]
 	public class BitBufferTest
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		[TestFixtureTearDown]
 		public void TearDown() {

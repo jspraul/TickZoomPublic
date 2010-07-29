@@ -34,7 +34,7 @@ using TickZoom.Api;
 namespace TickZoom.MBTFIX
 {
 	public class PacketFIX4_4 : PacketFIXT1_1 {
-		private static readonly Log log = Factory.Log.GetLogger(typeof(PacketFIX4_4));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(PacketFIX4_4));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		int heartBeatInterval = 0;

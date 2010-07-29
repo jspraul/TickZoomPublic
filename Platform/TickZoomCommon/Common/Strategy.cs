@@ -38,7 +38,7 @@ namespace TickZoom.Common
 	public class Strategy : Model, StrategyInterface 
 	{
 		PositionInterface position;
-		private static readonly Log log = Factory.Log.GetLogger(typeof(Strategy));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Strategy));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		private readonly Log instanceLog;
@@ -65,7 +65,7 @@ namespace TickZoom.Common
 		
 		public Strategy()
 		{
-			instanceLog = Factory.Log.GetLogger(this.GetType()+"."+Name);
+			instanceLog = Factory.SysLog.GetLogger(this.GetType()+"."+Name);
 			instanceDebug = instanceLog.IsDebugEnabled;
 			instanceTrace = instanceLog.IsTraceEnabled;
 			position = new PositionCommon(this);

@@ -35,7 +35,7 @@ namespace TickZoom.Common
 	/// </summary>
 	public class ProjectFileLoader : ModelLoaderCommon
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		
 		public ProjectFileLoader() {
 			category = "TickZOOM";

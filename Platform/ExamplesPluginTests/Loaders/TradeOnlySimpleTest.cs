@@ -40,7 +40,7 @@ namespace Loaders
 	[TestFixture]
 	public class TradeOnlySimpleTest : StrategyTest
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(TradeOnlySimpleTest));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TradeOnlySimpleTest));
 		#region SetupTest
 		Strategy strategy;
 			

@@ -37,7 +37,7 @@ namespace TickZoom.MBTFIX
 {
 	public class MBTFIXProvider : FIXProviderSupport, PhysicalOrderHandler
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(MBTFIXProvider));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(MBTFIXProvider));
 		private static readonly bool info = log.IsDebugEnabled;
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;

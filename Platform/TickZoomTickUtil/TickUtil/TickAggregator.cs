@@ -39,7 +39,7 @@ namespace TickZoom.TickUtil
 	public class TickAggregator : Provider {
 		List<SymbolQueue> symbolQueues = new List<SymbolQueue>();
 		Receiver receiver;
-		static readonly Log log = Factory.Log.GetLogger(typeof(TickAggregator));
+		static readonly Log log = Factory.SysLog.GetLogger(typeof(TickAggregator));
 		static readonly bool debug = log.IsDebugEnabled;
 		static readonly bool trace = log.IsTraceEnabled;
 		private int id;

@@ -32,7 +32,7 @@ namespace TickZoom.Api
 	/// Description of Log.
 	/// </summary>
 	public interface LogManager {
-		void Configure();
+		void Configure(string repository);
 		Log GetLogger(Type type);
 		Log GetLogger(string name);
 		string LogFolder { get; } 

@@ -38,7 +38,7 @@ namespace Loaders
 	[TestFixture]
 	public class DualStrategyLimitOrder : StrategyTest
 	{
-		Log log = Factory.Log.GetLogger(typeof(DualStrategyLimitOrder));
+		Log log = Factory.SysLog.GetLogger(typeof(DualStrategyLimitOrder));
 		Portfolio portfolio;
 		Strategy strategy1;
 		Strategy strategy2;

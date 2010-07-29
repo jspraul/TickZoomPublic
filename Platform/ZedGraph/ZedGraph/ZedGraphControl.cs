@@ -510,7 +510,7 @@ namespace ZedGraph
 			InitializeComponent();
 			
 			try {
- 				log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+ 				log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
  				debug = log.IsDebugEnabled;
 			} catch( Exception) {
 				// This means we're running inside the Windows Forms Designer.

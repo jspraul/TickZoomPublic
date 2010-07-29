@@ -34,7 +34,7 @@ using TickZoom.Interceptors;
 namespace TickZoom.TradingFramework
 {
 	public class ExitStrategyMock : ExitStrategy {
-		private static readonly Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private static readonly bool trace = log.IsTraceEnabled;
 		public List<TimeStamp> signalChanges = new List<TimeStamp>();
 		public List<double> signalDirection = new List<double>();

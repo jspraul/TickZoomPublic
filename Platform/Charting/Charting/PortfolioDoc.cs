@@ -38,7 +38,7 @@ namespace TickZoom
 	/// </summary>
 	public partial class PortfolioDoc : Form
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private SynchronizationContext context;
         
 		public PortfolioDoc()

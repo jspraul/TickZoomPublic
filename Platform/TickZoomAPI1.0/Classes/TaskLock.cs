@@ -30,7 +30,7 @@ using System.Threading;
 namespace TickZoom.Api
 {
 	public class TaskLock : IDisposable {
-		private static readonly Log log = Factory.Log.GetLogger(typeof(TaskLock));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TaskLock));
 	    private int isLocked = 0;
 	    private int lockCount = 0;
 	    

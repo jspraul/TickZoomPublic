@@ -40,7 +40,7 @@ using TickZoom.Common;
 namespace TickZoom.TradingFramework
 {
 	public class RandomMock : RandomCommon {
-	Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		public double LongStop = 0;
 		public double ShortStop = 99999999;
 		public override bool OnProcessTick(Tick tick)

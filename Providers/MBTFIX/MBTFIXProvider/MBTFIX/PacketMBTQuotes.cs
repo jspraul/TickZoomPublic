@@ -38,7 +38,7 @@ namespace TickZoom.MBTFIX
 		private const byte DecimalPoint = 46;
 		private const byte EqualSign = 61;
 		private const byte ZeroChar = 48;
-		private static readonly Log log = Factory.Log.GetLogger(typeof(PacketMBTQuotes));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(PacketMBTQuotes));
 		private static readonly bool trace = log.IsTraceEnabled;
 		private MemoryStream data = new MemoryStream();
 		private BinaryReader dataIn;

@@ -34,7 +34,7 @@ using TickZoom.Api;
 namespace MiscTest
 {
 	public class GUIThread {
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private Form mainForm;
 		public Thread thread;
 		public Type type;

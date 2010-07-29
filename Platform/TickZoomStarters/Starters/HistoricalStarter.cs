@@ -56,7 +56,7 @@ namespace TickZoom.Starters
 	/// </summary>
 	public class HistoricalStarter : StarterCommon
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		TickEngine engine;
 		protected RunMode runMode = RunMode.Historical;
    		

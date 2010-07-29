@@ -39,7 +39,7 @@ namespace TickZoom.Properties
 	/// </summary>
 	public class ApplicationPropertiesCommon
 	{
-		TickZoom.Api.Log log = TickZoom.Api.Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		TickZoom.Api.Log log = TickZoom.Api.Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private Dictionary<string,string> properties = new Dictionary<string,string>();
 
 		private ApplicationPropertiesCommon()

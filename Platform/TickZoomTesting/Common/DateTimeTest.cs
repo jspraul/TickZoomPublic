@@ -37,7 +37,7 @@ namespace TickZoom.Common
 		[Test]
 		public void TestDateTime()
 		{
-			Log log = Factory.Log.GetLogger(typeof(DateTimeTest));
+			Log log = Factory.SysLog.GetLogger(typeof(DateTimeTest));
 			TimeStamp normalUtcNow = TimeStamp.UtcNow;
 			TimeStamp adjustedUtcNow = TimeStamp.UtcNow;
 			log.Info( "normal = " + normalUtcNow + ", adjusted = " + adjustedUtcNow);

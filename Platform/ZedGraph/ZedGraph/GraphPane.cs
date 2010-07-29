@@ -54,7 +54,7 @@ namespace ZedGraph
 	[Serializable]
 	public class GraphPane : PaneBase, ICloneable, ISerializable
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 	#region Events
 
@@ -716,7 +716,7 @@ namespace ZedGraph
 		/// </param>
 		public override void Draw( Graphics g )
 		{
-			Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+			Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 			
 			// Calculate the chart rect, deducting the area for the scales, titles, legend, etc.
 			//int		hStack;

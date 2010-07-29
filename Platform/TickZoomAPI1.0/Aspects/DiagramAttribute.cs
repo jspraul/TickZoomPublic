@@ -47,7 +47,7 @@ namespace TickZoom.Api
 		public bool Trace;
 		public MethodState( MethodBase method, string fullName) {
 			this.Method = method;
-			Logger = Factory.Log.GetLogger("Diagram."+fullName);
+			Logger = Factory.SysLog.GetLogger("Diagram."+fullName);
 			Debug = Logger.IsDebugEnabled;
 			Trace = Logger.IsTraceEnabled;
 		}

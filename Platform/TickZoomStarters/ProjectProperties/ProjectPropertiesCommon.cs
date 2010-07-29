@@ -41,7 +41,7 @@ namespace TickZoom.Properties
 	/// </summary>
 	public class ProjectPropertiesCommon : TickZoom.Api.ProjectProperties
 	{
-		TickZoom.Api.Log log = TickZoom.Api.Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		TickZoom.Api.Log log = TickZoom.Api.Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 			
 		ChartProperties chartProperties = new ChartProperties();
 		EngineProperties engineProperties = new EngineProperties();

@@ -261,7 +261,7 @@ namespace TickZoom
 		private void MainFormLoad(object sender, System.EventArgs e)
 		{
 			if( !DesignMode) {
-				log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+				log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 			}
 			string configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.config");
 

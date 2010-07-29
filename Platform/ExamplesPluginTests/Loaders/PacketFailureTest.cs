@@ -39,7 +39,7 @@ namespace Loaders
 	public class PacketFailureTest
 	{
 		StrategyTest strategyTest = new StrategyTest();
-		Log log = Factory.Log.GetLogger(typeof(MarketOrderTest));
+		Log log = Factory.SysLog.GetLogger(typeof(MarketOrderTest));
 		
 		public PacketFailureTest() {
 			strategyTest.Symbols = "USDJPYBenchMark";

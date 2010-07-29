@@ -69,7 +69,7 @@ namespace TickZoom.Common
 		/// </summary>
 		public IndicatorCommon()
 		{
-			instanceLog = Factory.Log.GetLogger(this.GetType());
+			instanceLog = Factory.SysLog.GetLogger(this.GetType());
 			instanceDebug = instanceLog.IsDebugEnabled;
 			instanceTrace = instanceLog.IsTraceEnabled;
 			isIndicator = true;

@@ -34,7 +34,7 @@ namespace TickZoom.Transactions
 {
 	internal class PagePool<T>
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(PagePool<>));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(PagePool<>));
 		private Stack<T> stack = new Stack<T>();
 	    private object locker = new object(); 
 	    private Func<T> constructor;

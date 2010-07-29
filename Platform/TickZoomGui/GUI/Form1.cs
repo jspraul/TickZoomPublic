@@ -68,7 +68,7 @@ namespace TickZoom
    		
         public Form1()
         {
-        	log = Factory.Log.GetLogger(typeof(Form1));
+        	log = Factory.SysLog.GetLogger(typeof(Form1));
 			context = SynchronizationContext.Current;
             if(context == null)
             {

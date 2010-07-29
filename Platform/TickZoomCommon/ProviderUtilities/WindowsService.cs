@@ -40,7 +40,7 @@ namespace TickZoom.Common
 		{
 			this.ServiceName = AssemblyAttributes.GetTitle();
 			try { 
-				log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+				log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 			} catch( Exception problem) {
 	        	System.Diagnostics.EventLog.WriteEntry(ServiceName, "Exception while starting service: " + problem.ToString());
 			}

@@ -36,7 +36,7 @@ using TickZoom.Common;
 namespace TickZoom.Transactions
 {
 	internal class TransactionPairsPages {
-		private static readonly Log log = Factory.Log.GetLogger(typeof(TransactionPairsPages));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TransactionPairsPages));
 		PagePool<BinaryPage> pagePool;
 		private BinaryStore tradeData;
 		

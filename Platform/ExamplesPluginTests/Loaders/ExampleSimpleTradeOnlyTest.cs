@@ -39,7 +39,7 @@ namespace Loaders
 	public class ExampleReversalTradeOnlyTest : StrategyTest
 	{
 		#region SetupTest
-		Log log = Factory.Log.GetLogger(typeof(ExampleReversalTest));
+		Log log = Factory.SysLog.GetLogger(typeof(ExampleReversalTest));
 		protected Strategy strategy;
 		public ExampleReversalTradeOnlyTest() {
 			Symbols = "/ESH0";

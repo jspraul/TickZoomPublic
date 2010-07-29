@@ -34,7 +34,7 @@ namespace TickZoom.Common
 	[TestFixture]
 	public class PluginManagerTest
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		[SetUp]
 		public void TestSetup() {
 		}

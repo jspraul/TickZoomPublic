@@ -37,7 +37,7 @@ namespace Loaders
 
 	
 	public class ChartThread {
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private PortfolioDoc portfolioDoc;
 		public Thread thread;
 		public ChartThread() {

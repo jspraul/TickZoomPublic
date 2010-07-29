@@ -45,7 +45,7 @@ namespace Loaders
 	
 	public class StrategyTest
 	{
-		static readonly Log log = Factory.Log.GetLogger(typeof(StrategyTest));
+		static readonly Log log = Factory.SysLog.GetLogger(typeof(StrategyTest));
 		static readonly bool debug = log.IsDebugEnabled;
 		private string testFileName;
 		string dataFolder = "TestData";
@@ -72,11 +72,11 @@ namespace Loaders
 		
 		[TestFixtureSetUp]
 		public virtual void RunStrategy() {
-			string filePath = Factory.Log.LogFolder + @"\Trades.log";
+			string filePath = Factory.SysLog.LogFolder + @"\Trades.log";
 			File.Delete(filePath);
-			filePath = Factory.Log.LogFolder + @"\BarData.log";
+			filePath = Factory.SysLog.LogFolder + @"\BarData.log";
 			File.Delete(filePath);
-			filePath = Factory.Log.LogFolder + @"\Stats.log";
+			filePath = Factory.SysLog.LogFolder + @"\Stats.log";
 			File.Delete(filePath);
 			SyncTicks.MockTradeCount = 0;
 		}
@@ -130,7 +130,7 @@ namespace Loaders
 		public void LoadTrades() {
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
 			string knownGoodPath = fileDir + testFileName + "Trades.log";
-			string newPath = Factory.Log.LogFolder + @"\Trades.log";
+			string newPath = Factory.SysLog.LogFolder + @"\Trades.log";
 			if( !File.Exists(newPath)) return;
 			if( StoreKnownGood) {
 				File.Copy(newPath,knownGoodPath,true);
@@ -171,7 +171,7 @@ namespace Loaders
 		
 		public void LoadBarData() {
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
-			string newPath = Factory.Log.LogFolder + @"\BarData.log";
+			string newPath = Factory.SysLog.LogFolder + @"\BarData.log";
 			string knownGoodPath = fileDir + testFileName + "BarData.log";
 			if( !File.Exists(newPath)) return;
 			if( StoreKnownGood) {
@@ -213,7 +213,7 @@ namespace Loaders
 		
 		public void LoadStats() {
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
-			string newPath = Factory.Log.LogFolder + @"\Stats.log";
+			string newPath = Factory.SysLog.LogFolder + @"\Stats.log";
 			string knownGoodPath = fileDir + testFileName + "Stats.log";
 			if( File.Exists(newPath)) {
 				if( StoreKnownGood) {

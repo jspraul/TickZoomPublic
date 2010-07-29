@@ -88,7 +88,7 @@ namespace TickZoom
 		    lineList = new List<PointPairList>();
 		    indicators = new List<IndicatorInterface>();
 		    try {
-				log = Factory.Log.GetLogger(typeof(ChartControl));
+				log = Factory.SysLog.GetLogger(typeof(ChartControl));
 				debug = log.IsDebugEnabled;
 				trace = log.IsTraceEnabled;
 				Interval intervalChartDisplay = Factory.Engine.DefineInterval(BarUnit.Day,1);

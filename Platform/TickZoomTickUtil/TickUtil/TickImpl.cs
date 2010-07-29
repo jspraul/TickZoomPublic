@@ -49,7 +49,7 @@ namespace TickZoom.TickUtil
 		
 		// Older formats were already multiplied by 1000.
 		public const long OlderFormatConvertToLong = 1000000;
-		private static Log log = Factory.Log.GetLogger(typeof(TickImpl));
+		private static Log log = Factory.SysLog.GetLogger(typeof(TickImpl));
 //		public static double UtcOffset = TimeStamp.UtcOffset;
 
 		byte dataVersion;

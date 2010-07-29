@@ -12,7 +12,7 @@ namespace TickZoom.Api
 {
 	public class AutoUpdate
 	{
-		private static readonly Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private string remoteCgi = "http://tickzoom.wnmh.net/cgi-bin/";
 		private string remotePage = "versioncheck.py";
 		private string userKey;

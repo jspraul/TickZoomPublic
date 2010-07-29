@@ -35,7 +35,7 @@ namespace TickZoom.Properties
 {
 	public class ModelPropertiesCommon : ModelProperties
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		Dictionary<string, ModelProperty> properties = new Dictionary<string, ModelProperty>();
 		Dictionary<string, ModelProperties> models = new Dictionary<string, ModelProperties>();
 		ModelType modelType = ModelType.None;

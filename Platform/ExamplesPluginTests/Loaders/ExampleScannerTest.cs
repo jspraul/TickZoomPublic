@@ -40,7 +40,7 @@ namespace Loaders
 	public class ExampleScannerTest
 	{
 		#region SetupTest
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		Strategy strategy;
 		ExampleScannerStrategy scanner;
 			

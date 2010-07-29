@@ -37,7 +37,7 @@ namespace TickZoom
 	/// </summary>
 	public class Channel 
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		Bars bars;
 		int interceptBar = 0;
 		int x1;

@@ -40,7 +40,7 @@ namespace TickZoom.TickUtil
 		long maxCount = long.MaxValue;
 		SymbolInfo symbol = null;
 		ulong lSymbol = 0;
-		static readonly Log log = Factory.Log.GetLogger("TickZoom.TickUtil.Reader<" + typeof(TickBinary).Name + ">");
+		static readonly Log log = Factory.SysLog.GetLogger("TickZoom.TickUtil.Reader<" + typeof(TickBinary).Name + ">");
 		static readonly bool debug = log.IsDebugEnabled;
 		static readonly bool trace = log.IsDebugEnabled;
 		bool quietMode = false;

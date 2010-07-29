@@ -46,7 +46,7 @@ namespace TickZoom.TickUtil
 	
 	public class FastQueueImpl<T> : FastQueue<T> // where T : struct
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(FastQueueImpl<T>));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(FastQueueImpl<T>));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		private readonly Log instanceLog;
@@ -85,7 +85,7 @@ namespace TickZoom.TickUtil
         }
 
 	    public FastQueueImpl(object name, int maxSize) {
-			instanceLog = Factory.Log.GetLogger("TickZoom.TickUtil.FastQueue."+name);
+			instanceLog = Factory.SysLog.GetLogger("TickZoom.TickUtil.FastQueue."+name);
 			if( debug) log.Debug("Created with capacity " + maxSize);
             if( name is string)
             {

@@ -36,7 +36,7 @@ namespace TickZoom.TickUtil
 {
 	public class SignatureCompressor
 	{
-		Log log = Factory.Log.GetLogger(typeof(SignatureCompressor));
+		Log log = Factory.SysLog.GetLogger(typeof(SignatureCompressor));
 		ByteMemory current = new ByteMemory("current");
 		ByteMemory previous = new ByteMemory("previous");
 		Dictionary<int,ByteCount> byteCounts;

@@ -46,7 +46,7 @@ namespace TickZoom.TradingFramework
 	[TestFixture]
 	public class ExitStrategyTickTest : MarshalByRefObject
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(ExitStrategyTickTest));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(ExitStrategyTickTest));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		ExitStrategyMock exitStrategy;

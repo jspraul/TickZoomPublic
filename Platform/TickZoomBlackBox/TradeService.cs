@@ -38,7 +38,7 @@ namespace TickZoom.BlackBox
 {
 	public class TradeService : ServiceBase
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		public const string MyServiceName = "TradeService";
        	BackgroundWorker processWorker = new BackgroundWorker();
         

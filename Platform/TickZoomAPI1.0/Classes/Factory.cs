@@ -39,7 +39,7 @@ namespace TickZoom.Api
 	public static class Factory
 	{
 		private static EngineFactory engineFactory;
-		private static readonly Log log = Factory.Log.GetLogger(typeof(Factory));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Factory));
 		private static object locker;
 		private static LogManager logManager;
 		private static TickUtilFactory tickUtilFactory;		
@@ -103,13 +103,28 @@ namespace TickZoom.Api
 			}
 		}
 		
+		public static LogManager SysLog {
+			get { 
+				if( logManager == null) {
+					lock(Locker) {
+						if( logManager == null) {
+							logManager = (LogManager) FactorySupport.Load(typeof(LogManager), "TickZoomLogging" );
+							logManager.Configure("TickZoom");
+						}
+						
+					}
+				}
+				return logManager;
+			}
+		}
+		
 		public static LogManager Log {
 			get { 
 				if( logManager == null) {
 					lock(Locker) {
 						if( logManager == null) {
 							logManager = (LogManager) FactorySupport.Load(typeof(LogManager), "TickZoomLogging" );
-							logManager.Configure();
+							logManager.Configure("Default");
 						}
 						
 					}

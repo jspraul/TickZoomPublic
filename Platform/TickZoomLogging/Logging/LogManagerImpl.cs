@@ -30,6 +30,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 
 using log4net.Core;
@@ -44,9 +45,23 @@ namespace TickZoom.Logging
 		private static object locker = new object();
 		private ILoggerRepository repository;
 		Dictionary<string,LogImpl> map = new Dictionary<string,LogImpl>();
-		public void Configure() {
-			repository = LoggerManager.CreateRepository("TickZoom");
-			log4net.Config.XmlConfigurator.Configure(repository);
+		public void Configure(string repositoryName) {
+			repository = LoggerManager.CreateRepository(repositoryName);
+			if( repositoryName == "TickZoom" ) {
+				log4net.Config.XmlConfigurator.Configure(repository);
+			} else {
+				string storageFolder = Factory.Settings["AppDataFolder"];
+				string configPath = Path.Combine(storageFolder,"Config");
+				Directory.CreateDirectory(configPath);
+				string configFile = Path.Combine(configPath,repositoryName+".Log.config");
+				if( !File.Exists(configFile)) {
+					StringBuilder sb = new StringBuilder();
+					sb.AppendLine("Cannot find logging configuration file: " + configFile);
+					sb.AppendLine("Please create the file and put your custom log4net configuration in it.");
+					throw new ApplicationException(sb.ToString());
+				}
+				log4net.Config.XmlConfigurator.Configure(repository,new FileInfo(configFile));
+			}
 			lock( locker) {
 				if( exceptionLog == null) {
 					exceptionLog = GetLogger("TickZoom.AppDomain");
@@ -65,14 +80,7 @@ namespace TickZoom.Logging
 			get {
                 // get the log directory
                 string logDirectory = Factory.Settings["AppDataFolder"];
-				string uniqueFolder = Environment.CurrentDirectory;
-				uniqueFolder = uniqueFolder.Replace(Path.DirectorySeparatorChar,'_');
-				uniqueFolder = uniqueFolder.Replace(":","");
-				logDirectory = logDirectory +
-					Path.DirectorySeparatorChar +
-					uniqueFolder + 
-					Path.DirectorySeparatorChar +
-					"Logs";
+                logDirectory =	Path.Combine(logDirectory,"Logs");
 				return logDirectory;
 			}
 		}

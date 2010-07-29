@@ -40,7 +40,7 @@ namespace TickZoom.Api
 		
 		[Obsolete("Use Log property in a portfolio, strategy or indicator and Factory.Log.GetLogger() anywhere else.")]
 		public static Log Log {
-			get { return TickZoom.Api.Factory.Log.GetLogger("MainLogger"); }
+			get { return TickZoom.Api.Factory.SysLog.GetLogger("MainLogger"); }
 		}
 
 	}

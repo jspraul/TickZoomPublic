@@ -42,7 +42,7 @@ namespace TickZoom
 	}
 	public class LRLine 
 	{
-		Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		Bars bars;
 		int interceptBar = 0;
 		int breakoutBar = 0;

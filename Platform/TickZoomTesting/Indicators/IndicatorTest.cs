@@ -33,7 +33,7 @@ namespace TickZoom.Indicators
 {
 	public abstract class IndicatorTest
 	{
-		private static readonly Log log = Factory.Log.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		IndicatorCommon indicator;
 		TestBars bars;
 		
