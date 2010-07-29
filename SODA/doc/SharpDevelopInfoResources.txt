@@ -1,0 +1,28 @@
+++ DISCUSSION FORUM ++
+
+http://community.sharpdevelop.net/forums/
+
+
+++ WIKI ++
+
+http://wiki.sharpdevelop.net/ (HOME)
+http://wiki.sharpdevelop.net/SharpDevelopSites.ashx (sites and servers)
+http://wiki.sharpdevelop.net/ScreenRecordingsForDevelopers.ashx
+
+
+++ ROADMAPS ++
+
+http://wiki.sharpdevelop.net/RoadmapVersion3x.ashx
+http://wiki.sharpdevelop.net/RoadmapVersion4x.ashx
+
+
+++ HELPING ++
+
+http://wiki.sharpdevelop.net/JoiningTheTeam.ashx
+http://wiki.sharpdevelop.net/FeaturesWeSolicitHelpFor.ashx
+
+
+++ WISH LIST ++
+
+http://wiki.sharpdevelop.net/Wishlist.ashx
+

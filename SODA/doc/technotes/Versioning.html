@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+	<TITLE>Assembly Versioning</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Win32)">
+	<META NAME="AUTHOR" CONTENT="Daniel Grunwald">
+	<META NAME="CREATED" CONTENT="20051129;18411803">
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<H1>Assembly Versioning in SharpDevelop</H1>
+<H2>How the versions are set</H2>
+<P>The assemblyInfo.cs files are updated by the tool
+&quot;UpdateAssemblyInfo&quot;. UpdateAssemblyInfo
+runs as pre-compile target and always sets the number in GlobalAssemblyInfo.cs
+to the subversion revision number. That number is displayed
+in the splash screen, error dialog and about dialog.
+It is also used as assembly version.
+</P>
+<p>
+The revision number is retrieved by running a function in NSvn.Core.dll equivalent to "svn info"
+in the "src" folder.
+When this doesn't work (e.g. in an exported tree like the source code download on the build server), the
+content of the file src/REVISION is used as revision number.
+When even this fails, the revision '9999' is used.
+</p>
+<H2>Publisher Policy</H2>
+<P>While the assembly versioning schema is not so important inside
+SharpDevelop, it is important for 3rd party addins because the main
+libraries like ICSharpCode.Core are strong-named. Normally, an
+assembly compiled against a strong-named assembly can only be used
+with exactly the version of the library it was compiled with. 
+</P>
+<P>This means if a 3rd-party addin was compiled against version
+2.1.0.a, it cannot bind to version 2.0.0.b or 2.0.1.c; even if it
+would run without problems. Therefore, SharpDevelop.exe.config
+contains binding redirects for the strong-named libraries that addins
+would want to reference. 
+</P>
+<P>The binding redirects always redirect requests of a version in the range
+from some past version containing large breaking changes to the current version.
+We will not do such changes anymore after the first release candidate of a SharpDevelop version,
+so after the release of SharpDevelop x.y RC1, all future SharpDevelop x.y.*.* versions will be
+in large parts binary compatible.
+<br>
+For example, SharpDevevelop 2.1.0.1708 uses this redirection:</P>
+<pre>&lt;bindingRedirect oldVersion="2.1.0.1661-2.1.0.1708" newVersion="2.1.0.1708"/&gt;</pre>
+<P>
+That means if you want to release a 3rd-party AddIn (AddIn that is not shipped with SharpDevelop),
+compile it against the oldest SharpDevelop version you want your AddIn to run with.<br>
+An AddIn compiled against 2.1.0.1800 will run with 2.1.0.1801 (and hopefully even with 2.1.23.45678),
+but an AddIn compiled against 2.1.0.1801 will fail to load in SharpDevelop 2.1.0.1800.
+</P>
+</BODY>
+</HTML>

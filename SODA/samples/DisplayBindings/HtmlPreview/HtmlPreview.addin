@@ -1,0 +1,14 @@
+﻿<AddIn name        = "HtmlPreview"
+       author      = "Daniel Grunwald">
+	
+	<Runtime>
+		<Import assembly = "HtmlPreview.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+      <DisplayBinding id  = "HtmlPreview"
+                      type  = "Secondary"
+                      class = "HtmlPreview.PreviewDisplayBinding"
+                      fileNamePattern = "\.html?$" />
+    </Path>
+</AddIn>

@@ -1,0 +1,6 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SetupProductBuildVersion>$INSERTPRODUCTBUILDVERSION$</SetupProductBuildVersion>
+    <DefineConstants>PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
+  </PropertyGroup>
+</Project>

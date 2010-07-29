@@ -1,0 +1,173 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.40607</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4980B743-B32F-4aba-AABD-45E2CAD3568D}</ProjectGuid>
+    <RootNamespace>ICSharpCode.SharpDevelop.Tests</RootNamespace>
+    <AssemblyName>ICSharpCode.SharpDevelop.Tests</AssemblyName>
+    <OutputTarget>Library</OutputTarget>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <OutputType>Library</OutputType>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <OutputPath>..\..\..\..\bin\UnitTests</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <Optimize>False</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DebugType>Full</DebugType>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="ConsoleApp">
+      <HintPath>ConsoleApp\bin\ConsoleApp.exe</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbstractEntityIsOverridableTestFixture.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CheckAssemblyFlags.cs" />
+    <Compile Include="CodeConverterTests.cs" />
+    <Compile Include="CSharpExpressionFinderTests.cs" />
+    <Compile Include="ExceptionClassOverridesTestFixture.cs" />
+    <Compile Include="GenerateOverrideMethodTests.cs" />
+    <Compile Include="GetElementByReflectionNameTests.cs" />
+    <Compile Include="NRefactoryResolverTests.cs" />
+    <Compile Include="CollectionClassOverridesTestFixture.cs" />
+    <Compile Include="OverridableMethodsTestFixture.cs" />
+    <Compile Include="OverridablePropertiesTestFixture.cs" />
+    <Compile Include="PropertyPadSortingTests.cs" />
+    <Compile Include="ReflectionLayerTests.cs" />
+    <Compile Include="GenericResolverTests.cs" />
+    <Compile Include="InnerClassesResolverTests.cs" />
+    <Compile Include="RefactoringTests.cs" />
+    <Compile Include="SearchClassTests.cs" />
+    <Compile Include="OverloadFinding.cs" />
+    <Compile Include="SearchGenericClassTests.cs" />
+    <Compile Include="MemberLookupHelperTests.cs" />
+    <Compile Include="StringTagProvider\MockProjectForTagProvider.cs" />
+    <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />
+    <Compile Include="StringTagProvider\ProjectTagsTestFixture.cs" />
+    <Compile Include="Utils\MockAmbience.cs" />
+    <Compile Include="Utils\MockClass.cs" />
+    <Compile Include="Utils\MockComponent.cs" />
+    <Compile Include="Utils\MockEntity.cs" />
+    <Compile Include="Utils\MockDefaultReturnType.cs" />
+    <Compile Include="Utils\MockMethod.cs" />
+    <Compile Include="Utils\MockProject.cs" />
+    <Compile Include="Utils\MockProperty.cs" />
+    <Compile Include="Utils\MockSite.cs" />
+    <Compile Include="VBExpressionFinderTests.cs" />
+    <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
+    <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />
+    <Compile Include="WebReferences\WebReferenceProjectItemsTest.cs" />
+    <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
+    <Compile Include="WebReferences\VBNetWebReferenceTest.cs" />
+    <Compile Include="WebReferences\WebReferenceTestHelper.cs" />
+    <Compile Include="WebReferences\UnsupportedLanguageTest.cs" />
+    <Compile Include="WebReferences\WebReferenceFolderAlreadyExistsTest.cs" />
+    <Compile Include="WebReferences\RenamedWebReferencesFolderTest.cs" />
+    <Compile Include="WebReferences\IsWebReferencesFolderTests.cs" />
+    <Compile Include="WebReferences\WebReferenceProjectItemsCachedTest.cs" />
+    <Compile Include="WebReferences\DirectoryNodeFactoryTests.cs" />
+    <Compile Include="WebReferences\WebReferenceUrlTests.cs" />
+    <Compile Include="WebReferences\WebServicesReferenceExistsTests.cs" />
+    <Compile Include="WebReferences\ProjectWebReferenceItemsTests.cs" />
+    <Compile Include="WebReferences\WebReferenceChangesTest.cs" />
+    <Compile Include="Templates\ProjectTemplateCategoryComparerTests.cs" />
+    <Compile Include="Templates\CategorySortOrderTests.cs" />
+    <Compile Include="Templates\FileTemplateCategoryComparerTests.cs" />
+    <Compile Include="WebReferences\HttpAuthenticationHeaderTests.cs" />
+    <Compile Include="OutputTextLineParserTestFixture.cs" />
+    <Compile Include="StandardOutputFromProcessTestFixture.cs" />
+    <Compile Include="CancelLongRunningAppTestFixture.cs" />
+    <Compile Include="ExitCodeTestFixture.cs" />
+    <Compile Include="LineReceivedFromProcessTestFixture.cs" />
+    <Compile Include="NoSuchExecutableTestFixture.cs" />
+    <Compile Include="ProcessExitedTestFixture.cs" />
+    <Compile Include="ProcessRunnerNotStartedTestFixture.cs" />
+    <Compile Include="ConsoleAppTestFixtureBase.cs" />
+    <Compile Include="Services_Navigation\INavigationPointTextFixture.cs" />
+    <Compile Include="Services_Navigation\TestNavigationPoint.cs" />
+    <Compile Include="Services_Navigation\NavigationServiceTestFixture.cs" />
+    <Compile Include="SharpDevelopColorDialogTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <Content Include="..\..\..\..\bin\ICSharpCode.SharpDevelop.dll">
+      <Link>ICSharpCode.SharpDevelop.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\..\bin\log4net.dll">
+      <Link>log4net.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\..\bin\ICSharpCode.Core.dll">
+      <Link>ICSharpCode.Core.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\..\bin\WeifenLuo.WinFormsUI.Docking.dll">
+      <Link>WeifenLuo.WinFormsUI.Docking.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\..\bin\ICSharpCode.TextEditor.dll">
+      <Link>ICSharpCode.TextEditor.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Folder Include="StringTagProvider" />
+    <Folder Include="Utils" />
+    <Folder Include="WebReferences" />
+    <Folder Include="Templates" />
+    <Folder Include="Services_Navigation" />
+    <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
+    <Content Include="..\..\..\Libraries\Mono.Cecil\Mono.Cecil.dll">
+      <Link>Mono.Cecil.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

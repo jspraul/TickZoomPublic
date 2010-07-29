@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<Template originator="Mike Krueger">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Console Application</Name>
+		<Category>C#</Category>
+		<Subcategory>Mono</Subcategory>
+		<Icon>C#.Project.DOSProject</Icon>
+		<Description>Console project for Mono.</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Program.cs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language = "C#">
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+		</PropertyGroup>
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
+		<Imports clear="True">
+			<Import Project="$(MonoBuildTasksPath)\Mono.Build.CSharp.targets" />
+		</Imports>
+		<Files>
+			<File name="Program.cs"><![CDATA[${StandardHeader.C#}
+
+using System;
+
+namespace ${StandardNamespace}
+{
+	class Program
+	{
+		public static void Main(string[] args)
+		{
+			Console.WriteLine("Hello World!");
+			
+			// TODO: Implement Functionality Here
+		}
+	}
+}]]></File>
+			<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+		</Files>
+	</Project>
+</Template>

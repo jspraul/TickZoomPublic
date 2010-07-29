@@ -1,0 +1,69 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<ItemGroup>
+		<WixFiles Include="wix\*"/>
+		<WixBitmapFiles Include="wix\Bitmaps\*"/>
+		<WixLibFiles Include="wix\lib\*"/>
+		<NUnitFiles Include="NUnit\*.dll;NUnit\*.exe"/>
+		<NUnitConfigFiles Include="NUnit\nunit-console.exe.config;NUnit\nunit-console-x86.exe.config"/>
+		<NUnitLibFiles Include="NUnit\lib\*.dll"/>
+		<HelpToolFiles Include="Help\*"/>
+		<PartCoverFiles Include="PartCover\*"/>
+		<PartCoverXsltFiles Include="PartCover\xslt\*"/>
+	</ItemGroup>
+	
+	<Target Name="Build">
+		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(WixBitmapFiles)" DestinationFolder="..\..\bin\Tools\Wix\Bitmaps" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(NUnitConfigFiles)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(NUnitLibFiles)" DestinationFolder="..\..\bin\Tools\NUnit\lib" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(PartCoverFiles)" DestinationFolder="..\..\bin\Tools\PartCover" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(PartCoverXsltFiles)" DestinationFolder="..\..\bin\Tools\PartCover\Xslt" SkipUnchangedFiles="true"/>
+		
+		<!--
+		<MSBuild Projects="@(ToolProject)" Targets="Build">
+			<Output TaskParameter="TargetOutputs" ItemName="CompiledToolFiles" />
+		</MSBuild>
+		<Copy SourceFiles="@(CompiledToolFiles)" DestinationFolder="..\..\bin\Tools"/>
+		-->
+		
+		<!--
+		<CreateProperty Condition = "!Exists('..\..\bin\setup\help\register.bat')" Value="yes">
+			<Output TaskParameter="Value" PropertyName="NeedToRunRegister" />
+		</CreateProperty>
+		<Copy SourceFiles="@(HelpToolFiles)" DestinationFolder="..\..\bin\setup\help"/>
+		<Exec Command="register.bat" WorkingDirectory = "..\..\bin\setup\help" Timeout = "60000" IgnoreExitCode = "true" Condition = "'$(NeedToRunRegister)' == 'yes'" />
+		-->
+	</Target>
+	
+	<Target Name="Rebuild" DependsOnTargets="Build"/>
+	
+	<ItemGroup>
+		<PrepareReleaseProject Include="SVNChangeLogToXml\SVNChangeLogToXml.csproj" />
+	</ItemGroup>
+	
+	<Target Name="PrepareRelease">
+		<MSBuild Projects="@(PrepareReleaseProject)" Targets="Build"/>
+		<Exec Command="SVNChangelogToXml.exe --REVISION --START 3800" WorkingDirectory = "SVNChangeLogToXml\bin\Release" Timeout = "60000" IgnoreExitCode = "false"/>
+		<RemoveDir Directories="SVNChangeLogToXml\bin" />
+		<RemoveDir Directories="SVNChangeLogToXml\obj" />
+	</Target>
+	
+	<ItemGroup>
+		<CleanupFiles Include="..\..\bin\*"/>
+		<CleanupDirectories Include="..\..\bin\UnitTests"/>
+		<CleanupDirectories Include="..\..\bin\Tools"/>
+		<CleanupDirectories Include="..\..\bin\setup\help"/>
+		<CleanupDirectories Include="..\..\AddIns\Addins"/>
+		<CleanupDirectories Include="..\setup\bin"/>
+	</ItemGroup>
+	
+	<Target Name="Clean">
+		<!-- <Exec Command="unregister.bat" WorkingDirectory="..\..\bin\setup\help" IgnoreExitCode = "true" Condition = "Exists('..\..\bin\setup\help\unregister.bat')"/> -->
+		<RemoveDir Directories="@(SpecialObjCleanupDirectories->'%(RelativeDir)')" />
+		<RemoveDir Directories="@(CleanupDirectories)" />
+		<Delete Files="@(CleanupFiles)" />
+	</Target>
+</Project>
