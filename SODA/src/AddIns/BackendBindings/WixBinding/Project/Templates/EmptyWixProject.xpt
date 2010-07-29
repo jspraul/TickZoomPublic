@@ -1,0 +1,36 @@
+﻿<?xml version="1.0"?>
+<Template originator="Matt Ward">
+	<TemplateConfiguration>
+		<Name>${res:Templates.File.Wix.WixProject.Name}</Name>
+		<Category>${res:Templates.File.Categories.Setup}</Category>
+		<Icon>Icons.32x32.EmptyProjectIcon</Icon>
+		<Description>${res:Templates.File.Wix.WixProject.Description}</Description>
+	</TemplateConfiguration>
+	<!-- Actions -->
+	<Actions>
+		<Open filename="Setup.wxs" />
+	</Actions>
+	<!-- Template Content -->
+	<Project language="Wix">
+		<Files>
+			<File name="Setup.wxs">
+<![CDATA[<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*"
+		Name=""
+		Language="1033"
+		Version="1.0.0.0"
+		UpgradeCode="${GUID}"
+		Manufacturer="">
+		<Package Description=""
+			Comments= "Comments"
+			InstallerVersion="200"
+			Compressed="yes"
+		/>
+	</Product>
+</Wix>
+]]>
+</File>
+		</Files>
+	</Project>
+</Template>

@@ -1,0 +1,121 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.CodeCoverage.Tests</RootNamespace>
+    <AssemblyName>CodeCoverage.Tests</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A5C0E8F8-9D04-46ED-91D6-1DEF1575313B}</ProjectGuid>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="nunit.uikit">
+      <HintPath>..\..\..\..\Tools\NUnit\lib\nunit.uikit.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CodeCoveragePropertyCollectionWithGetterAndSetterTestFixture.cs" />
+    <Compile Include="CodeCoveragePropertyTestFixture.cs" />
+    <Compile Include="CodeCoverageResultsMissingFileIdTestFixture.cs" />
+    <Compile Include="CodeCoverageResultsPropertyFlagsTestFixture.cs" />
+    <Compile Include="CodeCoverageResultsTestFixture.cs" />
+    <Compile Include="CodeCoverageResultsWithEmptyMethodElementTestFixture.cs" />
+    <Compile Include="CodeCoverageTreeViewTestFixture.cs" />
+    <Compile Include="DerivedCodeCoverageTreeView.cs" />
+    <Compile Include="ListViewSortingTestFixture.cs" />
+    <Compile Include="ModuleVisitedSequencePointsTestFixture.cs" />
+    <Compile Include="AddCodeCoverageMarkersTestFixture.cs" />
+    <Compile Include="MockDocument.cs" />
+    <Compile Include="PartCoverCommandLineTests.cs" />
+    <Compile Include="PartCoverExitEventArgsTestFixture.cs" />
+    <Compile Include="PartCoverSettingsMissingRulePrefixTestFixture.cs" />
+    <Compile Include="PartCoverSettingsTestFixture.cs" />
+    <Compile Include="PropertiesInCodeCoverageTreeView.cs" />
+    <Compile Include="RemoveCodeCoverageMarkersTestFixture.cs" />
+    <Compile Include="CodeCoverageMarkersCoverTwoLinesTestFixture.cs" />
+    <Compile Include="CodeCoverageMarkersCoverMultipleLinesTestFixture.cs" />
+    <Compile Include="GetSequencePointsForFileNameTestFixture.cs" />
+    <Compile Include="CodeCoverageMarkersInvalidStartLineTestFixture.cs" />
+    <Compile Include="CodeCoverageMarkersInvalidEndLineTestFixture.cs" />
+    <Compile Include="CodeCoverageMarkersInvalidStartColumnTestFixture.cs" />
+    <Compile Include="CodeCoverageMarkersInvalidEndColumnTestFixture.cs" />
+    <None Include="Strings.resources" />
+    <Compile Include="SimilarRootNamespaceTestFixture.cs" />
+    <Compile Include="TreeViewAfterSelectTestFixture.cs" />
+    <Compile Include="TreeViewSortingTestFixture.cs" />
+    <Compile Include="ZeroCodeCoverageTreeViewTestFixture.cs" />
+    <Compile Include="InvalidSequencePointDataTestFixture.cs" />
+    <Compile Include="MethodHasNoNamespaceTestFixture.cs" />
+    <Compile Include="DisplayItemTestFixture.cs" />
+    <Compile Include="CodeCoverageNamespaceTestFixture.cs" />
+    <Compile Include="ClassWithNoNamespaceInTreeViewTestFixture.cs" />
+    <Compile Include="ExcludedModuleTestFixture.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\CodeCoverage.csproj">
+      <Project>{08CE9972-283B-44F4-82FA-966F7DFA6B7A}</Project>
+      <Name>CodeCoverage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UnitTesting\UnitTesting.csproj">
+      <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
+      <Name>UnitTesting</Name>
+    </ProjectReference>
+    <Content Include="..\..\..\..\..\AddIns\AddIns\Misc\UnitTesting\UnitTesting.dll">
+      <Link>UnitTesting.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

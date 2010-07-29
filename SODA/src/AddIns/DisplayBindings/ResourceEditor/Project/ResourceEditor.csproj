@@ -1,0 +1,118 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50215</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CBC6C247-747B-4908-B09A-4D2E0F640B6B}</ProjectGuid>
+    <AssemblyName>ResourceEditor</AssemblyName>
+    <OutputTarget>Library</OutputTarget>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <OutputType>Library</OutputType>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <RootNamespace>ResourceEditor</RootNamespace>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>109576192</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\ResourceEditor\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\ResourceEditor\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Design" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Commands\AddNewFileCommand.cs" />
+    <Compile Include="Src\Commands\AddStringEntryCommand.cs" />
+    <Compile Include="Src\Commands\ClipboardCommands.cs" />
+    <Compile Include="Src\Commands\CopyResourceNameCommand.cs" />
+    <Compile Include="Src\Commands\RenameEntryCommand.cs" />
+    <Compile Include="Src\Commands\SaveEntryAsCommand.cs" />
+    <Compile Include="Src\DisplayDefinition.cs" />
+    <Compile Include="Src\ResourceEdit\AbstractImageView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\BinaryView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\BitmapView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\BooleanView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\CursorView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\IconView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\IResourceView.cs" />
+    <Compile Include="Src\ResourceEdit\ResourceEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\ResourceItem.cs" />
+    <Compile Include="Src\ResourceEdit\ResourceList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\TextView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <None Include="ResourceEditor.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Src\ResourceCodeGeneratorTool.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

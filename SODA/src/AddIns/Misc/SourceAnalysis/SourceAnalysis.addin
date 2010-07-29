@@ -1,0 +1,53 @@
+﻿<AddIn name        = "SourceAnalysis"
+       author      = "Matt Everson"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Integrates StyleCop code analysis"
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name = "MattEverson.SourceAnalysis"/>
+		<Dependency addin = "SharpDevelop"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "SourceAnalysis.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles">
+		<String id="SourceAnalysis" text = "${AddInPath:MattEverson.SourceAnalysis}/SharpDevelop.SourceAnalysis.targets"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalProperties">
+		<String id="StyleCopDir" text = "${property:SourceAnalysis.StyleCopPath}"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
+		<DialogPanel id          = "SourceAnalysis"
+		             label       = "${res:AddIns.SourceAnalysis.Title}"
+		             class       = "MattEverson.SourceAnalysis.AnalysisProjectOptionsPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
+		<MenuItem id    = "CheckWithStyleCop"
+		          label = "${res:AddIns.SourceAnalysis.CheckWithStyleCop}"
+		          class = "MattEverson.SourceAnalysis.CheckCurrentProjectCommand"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/MainMenu/Analysis">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name = "ProjectActive" activeproject="*" />
+			</And>
+			<MenuItem id    = "CheckWithStyleCop"
+			          label = "Check current project with StyleCop"
+			          class = "MattEverson.SourceAnalysis.CheckCurrentProjectCommand"/>
+		</ComplexCondition>
+	</Path>
+	
+	<!-- Options panel -->
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id    = "SourceAnalysisOptionPanel"
+		             label = "${res:AddIns.SourceAnalysis.Title}"
+		             class = "MattEverson.SourceAnalysis.AnalysisIdeOptionsPanel"/>
+	</Path>
+</AddIn>

@@ -1,0 +1,36 @@
+<AddIn name        = "Start Page"
+       author      = "Georg Brandl"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "VS like Start Page for #develop"
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.StartPage"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="StartPage.dll"/>
+	</Runtime>
+
+	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
+		<MenuItem id = "ShowStartPage"
+		          insertafter  = "ViewItemsSeparator"
+		          insertbefore = "StartPageSeparator"
+		          label = "${res:XML.MainMenu.ViewMenu.ShowStartPage}" 
+		          icon  = "Icons.16x16.BrowserWindow"
+		          class = "ICSharpCode.StartPage.ShowStartPageCommand"/>
+		<MenuItem id = "StartPageSeparator"
+				  insertbefore = "FullScreen"
+				  type = "Separator"/>
+	</Path>
+	
+	<Path name = "/Workspace/AutostartNothingLoaded">
+		<Class id = "ShowStartPageCommand"
+		       class = "ICSharpCode.StartPage.ShowStartPageCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Views/Browser/SchemeExtensions">
+		<BrowserSchemeExtension id    = "startpage"
+		                        class = "ICSharpCode.StartPage.StartPageScheme"/>
+	</Path>
+</AddIn>

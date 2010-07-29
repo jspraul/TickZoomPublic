@@ -1,0 +1,159 @@
+﻿<AddIn name        = "Hornung.ResourceToolkit"
+       author      = "Christian Hornung"
+       copyright   = "2006-2008 Christian Hornung"
+       description = "Provides tooltips and code completion for resource entries to simplify working with localizable resources using the standard .NET framework classes or ICSharpCode.Core."
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name="Hornung.ResourceToolkit"/>
+		<Dependency addin="SharpDevelop"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "Hornung.ResourceToolkit.dll">
+			<ConditionEvaluator name="SolutionContainsProjectOrReference" class="Hornung.ResourceToolkit.Conditions.SolutionContainsProjectOrReferenceConditionEvaluator"/>
+		</Import>
+	</Runtime>
+	
+	<!-- Code completion -->
+	
+	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+		<CodeCompletionBinding
+			id = "CSharpResources"
+			extensions = ".cs"
+			class = "Hornung.ResourceToolkit.CodeCompletion.CSharpResourceCodeCompletionBinding"
+			insertbefore = "CSharp"
+		/>
+		<CodeCompletionBinding
+			id = "VBNetResources"
+			extensions = ".vb"
+			class = "Hornung.ResourceToolkit.CodeCompletion.VBNetResourceCodeCompletionBinding"
+			insertbefore = "VBNet"
+		/>
+		<CodeCompletionBinding
+			id = "ICSharpCodeCoreResources"
+			class = "Hornung.ResourceToolkit.CodeCompletion.ICSharpCodeCoreResourceCodeCompletionBinding"
+		/>
+	</Path>
+	
+	<!-- Context menus -->
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+		<MenuItem id = "StringResources" insertbefore = "Refactoring" type = "Builder" class = "Hornung.ResourceToolkit.Commands.TextEditorContextMenuBuilder" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/XmlEditor/ContextMenu">
+		<Include id = "StringResources" item = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu/StringResources" insertbefore = "Cut" />
+	</Path>
+	
+	<!-- Tools menu -->
+	
+	<Path name="/Workspace/Tools">
+		<MenuItem id="ResourceToolkit" label="${res:Hornung.ResourceToolkit.ToolsMenuLabel}" type="Menu">
+			
+			<MenuItem id="FindMissingResourceKeys" label="${res:Hornung.ResourceToolkit.FindMissingResourceKeys}" type="Menu">
+				
+				<Condition name="SolutionOpen" action="Disable">
+					<MenuItem id    = "FindMissingResourceKeysWholeSolution"
+					          label = "${res:Dialog.NewProject.SearchReplace.LookIn.WholeSolution}"
+					          class = "Hornung.ResourceToolkit.Commands.FindMissingResourceKeysWholeSolutionCommand" />
+				</Condition>
+ 				
+				<Condition name="ProjectActive" activeproject="*" action="Disable">
+					<MenuItem id    = "FindMissingResourceKeysCurrentProject"
+					          label = "${res:Dialog.NewProject.SearchReplace.LookIn.WholeProject}"
+					          class = "Hornung.ResourceToolkit.Commands.FindMissingResourceKeysCurrentProjectCommand" />
+				</Condition>
+				
+				<Condition name="WindowOpen" openwindow="*" action="Disable">
+					<MenuItem id    = "FindMissingResourceKeysOpenFiles"
+					          label = "${res:Dialog.NewProject.SearchReplace.LookIn.AllOpenDocuments}"
+					          class = "Hornung.ResourceToolkit.Commands.FindMissingResourceKeysOpenFilesCommand" />
+				</Condition>
+				
+				<Condition name="WindowActive" activewindow="*" action="Disable">
+					<MenuItem id    = "FindMissingResourceKeysCurrentFile"
+					          label = "${res:Dialog.NewProject.SearchReplace.LookIn.CurrentDocument}"
+					          class = "Hornung.ResourceToolkit.Commands.FindMissingResourceKeysCurrentFileCommand" />
+				</Condition>
+				
+			</MenuItem>
+			
+			<Condition name="SolutionOpen" action="Disable">
+				<MenuItem id    = "FindUnusedResourceKeys"
+				          label = "${res:Hornung.ResourceToolkit.FindUnusedResourceKeys}"
+				          class = "Hornung.ResourceToolkit.Commands.FindUnusedResourceKeysCommand" />
+			</Condition>
+			
+		</MenuItem>
+	</Path>
+	
+	<!-- Unused resource keys toolbar -->
+	
+	<Path name="/AddIns/ResourceToolkit/ViewContent/UnusedResourceKeys/Toolbar">
+		<Condition name="SolutionContainsProjectOrReference" itemName="ICSharpCode.Core" action="Exclude">
+			<ToolbarItem id      = "HideICSharpCodeCoreHostResources"
+			             type    = "CheckBox"
+			             label   = "${res:Hornung.ResourceToolkit.UnusedResourceKeys.HideICSharpCodeCoreHostResourcesTitle}"
+			             tooltip = "${res:Hornung.ResourceToolkit.UnusedResourceKeys.HideICSharpCodeCoreHostResourcesTooltip}"
+			             class   = "Hornung.ResourceToolkit.Gui.UnusedResourceKeysHideICSharpCodeCoreHostResourcesCommand" />
+		</Condition>
+	</Path>
+	
+	<!-- Unused resource keys context menu -->
+	
+	<Path name="/AddIns/ResourceToolkit/ViewContent/UnusedResourceKeys/ListViewContextMenu">
+		<Include id="Delete" item="/SharpDevelop/Workbench/MainMenu/Edit/Delete"/>
+		
+		<MenuItem id="Separator1" type="Separator"/>
+		
+		<Include id="SelectAll" item="/SharpDevelop/Workbench/MainMenu/Edit/SelectAll"/>
+	</Path>
+	
+	<!-- Tooltips -->
+	
+	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ToolTips">
+		<Class id="ResourceToolTips" class="Hornung.ResourceToolkit.ToolTips.ResourceToolTipProvider" insertafter="DefaultDebuggerToolTips"/>
+	</Path>
+	
+	<!-- Resource file content factories -->
+	
+	<Path name="/AddIns/ResourceToolkit/ResourceFileContentFactories">
+		<Class id="DefaultBclResourceFileContentFactory" class="Hornung.ResourceToolkit.ResourceFileContent.DefaultBclResourceFileContentFactory"/>
+	</Path>
+	
+	<!-- Resource resolvers -->
+	
+	<Path name="/AddIns/ResourceToolkit/Resolvers">
+		<Class id="DefaultICSharpCodeCoreResourceResolver" class="Hornung.ResourceToolkit.Resolver.ICSharpCodeCoreResourceResolver"/>
+		<Class id="DefaultNRefactoryResourceResolver" class="Hornung.ResourceToolkit.Resolver.NRefactoryResourceResolver"/>
+	</Path>
+	
+	<Path name="/AddIns/ResourceToolkit/ICSharpCodeCoreResourceResolver/HostResourcesLocations">
+		<String id="SharpDevelop" text="..\src\Main\StartUp\Project\Resources"/>
+		<String id="Alternative1" text="..\Startup\Project\Resources"/>
+		<String id="Alternative2" text="..\Startup\Resources"/>
+		<String id="ICSharpCodeCoreDemo" text="..\Startup"/>
+	</Path>
+	
+	<Path name="/AddIns/ResourceToolkit/ICSharpCodeCoreResourceResolver/LocalResourcesLocations">
+		<String id="ProjectDir" text="."/>
+		<String id="ProjectResourcesDir" text="Resources"/>
+	</Path>
+	
+	<Path name="/AddIns/ResourceToolkit/ICSharpCodeCoreResourceResolver/ResourceFileNames">
+		<String id="SharpDevelop" text="StringResources"/>
+	</Path>
+	
+	<Path name="/AddIns/ResourceToolkit/NRefactoryResourceResolver/Resolvers">
+		<Class id="BclNRefactoryResourceResolver" class="Hornung.ResourceToolkit.Resolver.BclNRefactoryResourceResolver"/>
+		<Class id="ICSharpCodeCoreNRefactoryResourceResolver" class="Hornung.ResourceToolkit.Resolver.ICSharpCodeCoreNRefactoryResourceResolver"/>
+	</Path>
+	
+	<!-- Localized resources finders -->
+	
+	<Path name="/AddIns/ResourceToolkit/LocalizedResourcesFinders">
+		<Class id="DefaultFileLocalizedResourcesFinder" class="Hornung.ResourceToolkit.ResourceFileContent.DefaultFileLocalizedResourcesFinder"/>
+	</Path>
+	
+</AddIn>

@@ -1,0 +1,312 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WixBinding.Tests</RootNamespace>
+    <AssemblyName>WixBinding.Tests</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{388E7B64-0393-4EB4-A3E3-5C474F141853}</ProjectGuid>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build.Framework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Diff\MissingDirectoryTestFixture.cs" />
+    <Compile Include="Document\DuplicateBinaryIdTestFixture.cs" />
+    <Compile Include="Document\GenerateComponentIdFromDirectoryWithDotsTestFixture.cs" />
+    <Compile Include="Document\NewWixFileElementTests.cs" />
+    <Compile Include="Gui\AddDialogsToSetupDialogListTestFixture.cs" />
+    <Compile Include="Gui\DeleteWixExtensionNodeTestFixture.cs" />
+    <Compile Include="Gui\WixFileTreeNodeTestFixture.cs" />
+    <Compile Include="Gui\WixProjectWithWixExtensionItemsTestFixture.cs" />
+    <Compile Include="PackageFiles\AddFilesToDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\NoRootDirectoryFoundTestFixture.cs" />
+    <Compile Include="Project\AddWixExtensionTestFixture.cs" />
+    <Compile Include="Project\AddWixLibraryTestFixture.cs" />
+    <Compile Include="Gui\AddWixProjectNodeTestFixture.cs" />
+    <Compile Include="Gui\CanAttachToFileNameTests.cs" />
+    <Compile Include="Project\CloneWixLibraryTests.cs" />
+    <Compile Include="Project\CreateNewWixProjectObjectTestFixture.cs" />
+    <Compile Include="Project\CreateWixProjectItemTests.cs" />
+    <Compile Include="Gui\DeleteWixLibraryNodeTestFixture.cs" />
+    <Compile Include="Gui\GetWixDesignerFromViewTests.cs" />
+    <Compile Include="Project\GetWixExtensionsTestFixture.cs" />
+    <Compile Include="Project\GetWixFileProjectItemsTestFixture.cs" />
+    <Compile Include="Project\WixBuilderCannotBuildNonWixProjectTestFixture.cs" />
+    <Compile Include="Gui\WixProjectWithUnexpandedLibraryItemsTestFixture.cs" />
+    <Compile Include="Utils\WixBindingTestsHelper.cs" />
+    <Compile Include="Utils\MockViewContent.cs" />
+    <Compile Include="Utils\MockTextEditorViewContent.cs" />
+    <Compile Include="Project\WixNodeBuilderCanBuildWixProjectTestFixture.cs" />
+    <Compile Include="Utils\WixExtensionFolderNodeTester.cs" />
+    <Compile Include="Utils\WixLibraryFolderNodeTester.cs" />
+    <Compile Include="Gui\WixProjectWithLibraryItemsTestFixture.cs" />
+    <Compile Include="Utils\WixProjectWithOverriddenSave.cs" />
+    <Compile Include="Project\WixProjectOutputTypeFileExtensionTests.cs" />
+    <Compile Include="DialogLoading\SimpleDialogTestFixture.cs" />
+    <Compile Include="DialogLoading\SimpleDialogUsingObjectCreatorTestFixture.cs" />
+    <Compile Include="Gui\LoaderProviderTests.cs" />
+    <Compile Include="Gui\NoDialogIdSpecifiedForDesignerLoaderTestFixture.cs" />
+    <Compile Include="Utils\MockDesignerLoaderHost.cs" />
+    <Compile Include="Gui\DialogIdSpecifiedForDesignerLoaderTestFixture.cs" />
+    <Compile Include="Utils\CreatedComponent.cs" />
+    <Compile Include="Gui\MissingDialogIdDesignerLoaderTestFixture.cs" />
+    <Compile Include="DialogLoading\DialogTitleTestFixture.cs" />
+    <Compile Include="DialogLoading\InstallerUnitTestFixture.cs" />
+    <Compile Include="DialogLoading\ButtonsTestFixture.cs" />
+    <Compile Include="DialogLoading\DisabledButtonTestFixture.cs" />
+    <Compile Include="DialogLoading\ButtonTextTestFixture.cs" />
+    <Compile Include="DialogLoading\DialogMinimizeBoxTestFixture.cs" />
+    <Compile Include="DialogLoading\LabelTestFixture.cs" />
+    <Compile Include="DialogLoading\LineTestFixture.cs" />
+    <Compile Include="DialogLoading\LabelFontFromPropertyTestFixture.cs" />
+    <Compile Include="DialogLoading\ButtonFontTestFixture.cs" />
+    <Compile Include="DialogLoading\DefaultUIFontTestFixture.cs" />
+    <Compile Include="DialogLoading\CheckBoxTestFixture.cs" />
+    <Compile Include="DialogLoading\ScrollableTextTestFixture.cs" />
+    <Compile Include="DialogLoading\ComboBoxTestFixture.cs" />
+    <Compile Include="DialogLoading\TextBoxTestFixture.cs" />
+    <Compile Include="DialogLoading\GroupBoxTestFixture.cs" />
+    <Compile Include="DialogLoading\ListBoxTestFixture.cs" />
+    <Compile Include="DialogLoading\ListViewTestFixture.cs" />
+    <Compile Include="DialogLoading\ProgressBarTestFixture.cs" />
+    <Compile Include="DialogLoading\MaskedEditTestFixture.cs" />
+    <Compile Include="DialogLoading\PathEditTestFixture.cs" />
+    <Compile Include="DialogLoading\SelectionTreeTestFixture.cs" />
+    <Compile Include="DialogLoading\DirectoryListTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\SimpleDialogTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\MinimizeBoxChangedTestFixture.cs" />
+    <Compile Include="Gui\FlushLoaderTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ButtonChangedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\AddAcceptAndCancelButtonTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ButtonRemovedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ButtonAddedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\GetControlTypeTests.cs" />
+    <Compile Include="DialogLoading\NameCreationServiceValidNameTests.cs" />
+    <Compile Include="DialogXmlGeneration\ButtonTextRemovedTestFixture.cs" />
+    <Compile Include="DialogLoading\MissingBitmapBinaryTestFixture.cs" />
+    <Compile Include="DialogLoading\BitmapTestFixture.cs" />
+    <Compile Include="Gui\BitmapCreatedByDesignerLoaderTestFixture.cs" />
+    <Compile Include="Utils\DialogLoadingTestFixtureBase.cs" />
+    <Compile Include="Document\GetDialogIdAtLineTestFixture.cs" />
+    <Compile Include="Document\GetEmptyElementDialogIdAtLineTestFixture.cs" />
+    <Compile Include="Document\GetMissingDialogFromWixDocumentTestFixture.cs" />
+    <Compile Include="Document\GetTwoDialogIdsFromWixDocumentTestFixture.cs" />
+    <Compile Include="Document\WixFileExtensionTests.cs" />
+    <Compile Include="Document\GetDialogElementRegionTests.cs" />
+    <Compile Include="Document\RegionToOffsetTests.cs" />
+    <Compile Include="Document\GetBinaryFileNameTestFixture.cs" />
+    <Compile Include="Document\GetDocumentPropertyTestFixture.cs" />
+    <Compile Include="Document\GetFullBinaryFileNameTestFixture.cs" />
+    <Compile Include="DialogLoading\TransparentLabelsTestFixture.cs" />
+    <Compile Include="Document\GetBinaryFileNameFromVariablesTestFixture.cs" />
+    <Compile Include="Project\GetPreprocessorVariableValueTests.cs" />
+    <Compile Include="Project\NameValuePairCollectionTests.cs" />
+    <Compile Include="Document\WixPropertyParserTests.cs" />
+    <Compile Include="DialogLoading\RadioButtonTestFixture.cs" />
+    <Compile Include="DialogLoading\MissingRadioButtonGroupTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\RadioButtonGroupChangedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\NonRadioButtonAddedToGroupTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\RadioButtonAddedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\RadioButtonRemovedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\RadioButtonGroupAddedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\GroupBoxContainingControlsTestFixture.cs" />
+    <Compile Include="DialogLoading\NullComponentCreatorTestFixture.cs" />
+    <Compile Include="DialogLoading\InvalidSizeTests.cs" />
+    <Compile Include="DialogLoading\InvalidLocationTests.cs" />
+    <Compile Include="DialogXmlGeneration\ListBoxItemAddedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ListBoxUpdatedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ListBoxItemRemovedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ListBoxAddedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ComboBoxItemAddedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ListViewItemAddedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ListViewItemRemovedTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ListViewAddedTestFixture.cs" />
+    <Compile Include="Document\GetValueWithNoProjectTestFixture.cs" />
+    <Compile Include="Project\WixInstallerPathTests.cs" />
+    <Compile Include="Project\GetWixSourceFileProjectItemsTestFixture.cs" />
+    <Compile Include="PackageFiles\NoWixSourceFileInProjectTestFixture.cs" />
+    <Compile Include="Utils\MockWixPackageFilesView.cs" />
+    <Compile Include="DialogXmlGeneration\DialogXmlWritingTestFixture.cs" />
+    <Compile Include="PackageFiles\SingleWixSourceFileInProjectTestFixture.cs" />
+    <Compile Include="Document\RootDirectoryTestFixture.cs" />
+    <Compile Include="Document\NoRootDirectoryTestFixture.cs" />
+    <Compile Include="Document\NoProductDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\ElementSelectedTestFixture.cs" />
+    <Compile Include="PackageFiles\ElementDeselectedTestFixture.cs" />
+    <Compile Include="PackageFiles\WixAttributeTypeTests.cs" />
+    <Compile Include="PackageFiles\TwoWixSourceFilesInProjectTestFixture.cs" />
+    <Compile Include="PackageFiles\WixSourceFileWithErrorsIgnoredTestFixture.cs" />
+    <Compile Include="PackageFiles\TwoWixSourceFilesWithErrorsTestFixture.cs" />
+    <Compile Include="PackageFiles\AttributeValueChangedTestFixture.cs" />
+    <Compile Include="PackageFiles\MissingFileAttributesTestFixture.cs" />
+    <Compile Include="PackageFiles\EmptyAttributesRemovedTestFixture.cs" />
+    <Compile Include="PackageFiles\AddDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\NoRootDirectoryInWixProductFileTestFixture.cs" />
+    <Compile Include="PackageFiles\NoWixProductFileTestFixture.cs" />
+    <Compile Include="PackageFiles\SaveChangesTestFixture.cs" />
+    <Compile Include="PackageFiles\PackageFilesTestFixtureBase.cs" />
+    <Compile Include="PackageFiles\NoChangesToSaveTestFixture.cs" />
+    <Compile Include="PackageFiles\RemoveDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\AllowedChildElementsTestFixture.cs" />
+    <Compile Include="PackageFiles\WixSchemaTests.cs" />
+    <Compile Include="PackageFiles\RemoveWhenNothingSelectedTestFixture.cs" />
+    <Compile Include="PackageFiles\AddFilesTestFixture.cs" />
+    <Compile Include="PackageFiles\FileIdGenerationTests.cs" />
+    <Compile Include="Document\WixDocumentWithNamespacePrefixTestFixture.cs" />
+    <Compile Include="Document\ChildDirectoriesTestFixture.cs" />
+    <Compile Include="PropertyGrid\WixXmlAttributePropertyDescriptorTestFixture.cs" />
+    <Compile Include="PropertyGrid\WixXmlAttributeTypeDescriptorTestFixture.cs" />
+    <Compile Include="PackageFiles\AddComponentTestFixture.cs" />
+    <Compile Include="Document\GetDirectoryElementRegionTests.cs" />
+    <Compile Include="Document\GetProductEndElementLocationTests.cs" />
+    <Compile Include="Document\NonRootDirectoryTestFixture.cs" />
+    <Compile Include="Document\RootDirectoryRefTestFixture.cs" />
+    <Compile Include="PackageFiles\TargetDirectoryRefTestFixture.cs" />
+    <Compile Include="PackageFiles\AddDirectoryToDirectoryRefTestFixture.cs" />
+    <Compile Include="Document\GetBinaryFileNameFromProjectTestFixture.cs" />
+    <Compile Include="DialogLoading\BitmapFromProjectTestFixture.cs" />
+    <Compile Include="Document\DirectoryNameTests.cs" />
+    <Compile Include="PackageFiles\ComponentDiskIdSetBeforeFilesAddedTestFixture.cs" />
+    <Compile Include="Document\ExistingFileIdGenerationTests.cs" />
+    <Compile Include="Document\AddRootDirectoryWithNoProductElementTestFixture.cs" />
+    <Compile Include="DirectoryImport\AddDirectoryTestFixture.cs" />
+    <Compile Include="DirectoryImport\AddSubDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\GenerateComponentIdTests.cs" />
+    <Compile Include="DirectoryImport\DuplicateComponentIdTestFixture.cs" />
+    <Compile Include="DirectoryImport\ExcludedItemsTestFixture.cs" />
+    <EmbeddedResource Include="Strings.resx" />
+    <Compile Include="PropertyGrid\GuidTypeEditorTestFixture.cs" />
+    <Compile Include="Utils\MockServiceProvider.cs" />
+    <Compile Include="Utils\MockWindowsFormsEditorService.cs" />
+    <Compile Include="PropertyGrid\GuidPropertyDescriptorTestFixture.cs" />
+    <Compile Include="PropertyGrid\FileNamePropertyDescriptorTestFixture.cs" />
+    <Compile Include="PackageFiles\GetRelativeFileNameTestFixture.cs" />
+    <Compile Include="PropertyGrid\DropDownTypeEditorTestFixture.cs" />
+    <Compile Include="PropertyGrid\DropDownPropertyDescriptorTestFixture.cs" />
+    <Compile Include="DirectoryImport\AddDirectoryWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\RadioButtonGroupPropertyWithSpecialXmlCharTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ListBoxPropertyWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ComboBoxPropertyWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="DialogXmlGeneration\ListViewPropertyWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="DialogLoading\TextStyleNameWithSpecialXmlCharsTestFixture.cs" />
+    <Compile Include="Diff\NoDifferentFilesTestFixture.cs" />
+    <Compile Include="Document\ChildComponentsTestFixture.cs" />
+    <Compile Include="Document\ChildFilesTestFixture.cs" />
+    <Compile Include="Diff\OneNewFileTestFixture.cs" />
+    <Compile Include="Diff\OneMissingFileTestFixture.cs" />
+    <Compile Include="PackageFiles\NoDiffShownTestFixture.cs" />
+    <Compile Include="PackageFiles\OneNewFileDiffTestFixture.cs" />
+    <Compile Include="DirectoryImport\ExcludedNamesTests.cs" />
+    <Compile Include="Diff\ExcludedFilesTestFixture.cs" />
+    <Compile Include="Diff\SameFileReferencedTwiceTestFixture.cs" />
+    <Compile Include="Project\CanCompileTests.cs" />
+    <Compile Include="DirectoryImport\AddDirectoryWithInvalidIdCharsTestFixture.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Project\WixBinding.csproj">
+      <Project>{e1b288a2-08ee-4318-8bbb-8ab72c69e33e}</Project>
+      <Name>WixBinding</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <Content Include="..\..\..\..\..\AddIns\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.dll">
+      <Link>FormsDesigner.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormsDesigner</Name>
+    </ProjectReference>
+    <Folder Include="Gui" />
+    <Folder Include="Project" />
+    <Folder Include="Utils" />
+    <Folder Include="DialogLoading" />
+    <Folder Include="DialogXmlGeneration" />
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+    <Folder Include="Document" />
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
+    <Folder Include="PackageFiles" />
+    <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
+      <Project>{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}</Project>
+      <Name>XmlEditor</Name>
+    </ProjectReference>
+    <Content Include="..\..\..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll">
+      <Link>ICSharpCode.SharpDevelop.Dom.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\..\..\AddIns\AddIns\DisplayBindings\XmlEditor\XmlEditor.dll">
+      <Link>XmlEditor.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Folder Include="PropertyGrid" />
+    <Folder Include="DirectoryImport" />
+    <Folder Include="Diff" />
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+    </ProjectReference>
+    <Content Include="..\..\..\..\..\bin\ICSharpCode.SharpDevelop.Widgets.dll">
+      <Link>ICSharpCode.SharpDevelop.Widgets.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

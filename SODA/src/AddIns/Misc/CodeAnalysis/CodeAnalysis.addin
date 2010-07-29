@@ -1,0 +1,68 @@
+﻿<AddIn name        = "CodeAnalysis"
+       author      = "Daniel Grunwald"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Integrates FxCop code analysis"
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.CodeAnalysis"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "CodeAnalysis.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles">
+		<String id="CodeAnalysis" text = "$(SharpDevelopBinPath)/SharpDevelop.CodeAnalysis.targets"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalProperties">
+		<String id="FxCopDir" text = "${property:CodeAnalysis.FxCopPath}"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
+		<DialogPanel id          = "CodeAnalysis"
+		             label       = "${res:ICSharpCode.CodeAnalysis}"
+		             class       = "ICSharpCode.CodeAnalysis.AnalysisProjectOptionsPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
+		<MenuItem id    = "CheckWithFxCop"
+		          label = "${res:ICSharpCode.CodeAnalysis.CheckWithFxCop}"
+		          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Analysis">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name = "ProjectActive" activeproject="*" />
+			</And>
+			<MenuItem id    = "CheckWithFxCop"
+			          label = "Check current project with FxCop"
+			          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalLoggers">
+		<TaskBoundAdditionalLogger
+			id = "FxCopLogger"
+			taskname = "FxCop"
+			class = "ICSharpCode.CodeAnalysis.FxCopLogger"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/ErrorList/CodeAnalysisTaskContextMenu">
+		<MenuItem id = "Exclude"
+		          label = "${res:ICSharpCode.CodeAnalysis.SuppressMessage}"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.CodeAnalysis.SuppressMessageCommand"/>
+		<MenuItem id = "Separator" type = "Separator"/>
+		<Include id="default" path="/SharpDevelop/Pads/ErrorList/TaskContextMenu"/>
+	</Path>
+	
+	<!-- Options panel -->
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id    = "CodeAnalysisOptionPanel"
+		             label = "${res:ICSharpCode.CodeAnalysis}"
+		             class = "ICSharpCode.CodeAnalysis.AnalysisIdeOptionsPanel"/>
+	</Path>
+</AddIn>

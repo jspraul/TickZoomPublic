@@ -1,0 +1,75 @@
+﻿<AddIn name        = "Resource Editor"
+       author      = "Mike Krueger"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "A display binding for *.resources and *.resx files."
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.ResourceEditor"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="ResourceEditor.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "Resources"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.ResourceFiles} (*.resx;*.resources)"
+		            extensions = "*.resx;*.resources"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "ResourceEditor"
+		                class = "ResourceEditor.ResourceEditorDisplayBinding"
+		                insertbefore    = "Text"
+		                fileNamePattern = "\.res(x|ources)$"
+		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.ResourceEditor}"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/ResourceEditor/ResourceList/ContextMenu">
+		<MenuItem id="AddStringEntry"
+		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddStringEntry}"
+		          class="ResourceEditor.AddStringCommand"
+		          shortcut = "Insert" />
+		
+		<MenuItem id="AddFile"
+		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddFiles}"
+		          class="ResourceEditor.AddNewFileCommand" />
+		
+		<MenuItem id="Separator1"
+		          type = "Separator" />
+		<Condition name = "Ownerstate" ownerstate="ItemsSelected" action="Disable">
+			<MenuItem id="SaveAs"
+			          label="${res:XML.MainMenu.FileMenu.SaveAs}"
+			          class="ResourceEditor.SaveEntryAsCommand" />
+			<MenuItem id="Rename"
+			          label="${res:ResourceEditor.ResourceEdit.ContextMenu.Rename}"
+			          class="ResourceEditor.RenameEntryCommand"
+			          shortcut="F2" />
+			<MenuItem id="CopyResourceName"
+			          label="${res:ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName}"
+			          class="ResourceEditor.CopyResourceNameCommand" />
+		</Condition>
+		
+		<Include id = "Delete" item = "/SharpDevelop/Workbench/MainMenu/Edit/Delete"/>
+		<MenuItem id = "Separator2" type = "Separator"/>
+		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
+		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
+		<Include id = "Paste" item = "/SharpDevelop/Workbench/MainMenu/Edit/Paste"/>
+		
+		<MenuItem id="Separator3"
+		          type = "Separator" />
+		
+		<Include id = "SelectAll" item = "/SharpDevelop/Workbench/MainMenu/Edit/SelectAll"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/CustomTools">
+		<CustomTool id    = "ResXFileCodeGenerator"
+		            class = "ResourceEditor.ResourceCodeGeneratorTool"
+		            fileNamePattern = "\.res(x|ources)$"/>
+		<CustomTool id    = "PublicResXFileCodeGenerator"
+		            class = "ResourceEditor.PublicResourceCodeGeneratorTool"
+		            fileNamePattern = "\.res(x|ources)$"/>
+	</Path>
+</AddIn>

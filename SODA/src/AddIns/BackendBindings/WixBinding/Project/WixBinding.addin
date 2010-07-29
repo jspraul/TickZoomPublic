@@ -1,0 +1,294 @@
+<AddIn name        = "WiX binding"
+       author      = "Matt Ward"
+       copyright   = "prj:///doc/copyright.txt"
+       url         = "http://icsharpcode.net"
+       description = "Binding for the WiX installer."
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.WixBinding"/>
+		<Dependency addin = "ICSharpCode.FormsDesigner" requirePreload = "true"/>
+		<Dependency addin = "ICSharpCode.XmlEditor" requirePreload = "true"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
+		<Import assembly = "WixBinding.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id           = "WixProject"
+		            insertbefore = "AllFiles"
+		            name         = "${res:ICSharpCode.WixBinding.WixProjectFilesFilterName} (*.wixproj)"
+		            class        = "ICSharpCode.SharpDevelop.Project.LoadProject"
+		            extensions   = "*.wixproj"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "Wix"
+		            insertbefore="AllFiles"
+		            name = "${res:ICSharpCode.WixBinding.WixFileFilterName} (*.wxs;*.wxi)"
+		            extensions = "*.wxs;*.wxi"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
+		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
+		<String id="light" text = "light"/>
+		<String id="lit" text = "lit"/>
+	</Path>
+	
+	<!-- WiX project and file templates -->
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "WiX" path = "./Templates" />
+	</Path>
+
+	<Path name = "/AddIns/FileTypeRegisterer/FileTypes">
+		<FiletypeAssociation
+			id = "wixproj"
+			insertafter = "sln"
+			insertbefore = "sdaddin"
+			autoRegister = "True"
+			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/prjx.ico"
+			text = "${res:ICSharpCode.WixBinding.WixProjectFileAssociation}"/>
+	</Path>
+	
+	<!-- Project options panels -->
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/Wix">
+		<DialogPanel id = "ApplicationSettings"
+			         label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
+			         class = "ICSharpCode.WixBinding.ApplicationSettingsPanel"/>
+		<DialogPanel id    = "BuildEvents"
+		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
+		<DialogPanel id = "WixCompiler"
+			         label = "${res:Dialog.ProjectOptions.BuildOptions}"
+			         class = "ICSharpCode.WixBinding.CompilerParametersPanel"/>
+		<DialogPanel id    = "DebugOptions"
+		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
+		<DialogPanel id    = "PreprocessorVariables"
+		             label = "${res:ICSharpCode.WixBinding.PreprocessorVariablesPanel}"
+		             class = "ICSharpCode.WixBinding.PreprocessorVariablesPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id                   = "Wix"
+		                 guid                 = "{CFEE4113-1246-4D54-95CB-156813CB8593}"
+		                 supportedextensions  = ".wxs"
+		                 projectfileextension = ".wixproj"
+		                 class                = "ICSharpCode.WixBinding.WixLanguageBinding" />
+	</Path>
+
+	<!-- Project Explorer tree node builders -->
+	<Path name = "/SharpDevelop/Views/ProjectBrowser/NodeBuilders">
+		<Class id = "WixProjectBuilder"
+		       insertbefore = "DefaultBuilder"
+		       class = "ICSharpCode.WixBinding.WixProjectNodeBuilder"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
+		<Condition name = "ProjectActive" activeproject="Wix">
+			<MenuItem id = "AddWixExtension"
+			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixExtension}"
+			          insertafter = "AddWebReference"
+			          insertbefore = "AddSeparator"
+			          class = "ICSharpCode.WixBinding.AddWixExtensionToProject"/>		
+			<MenuItem id = "AddWixLibrary"
+			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
+			          insertafter = "AddWixExtension"
+			          insertbefore = "AddSeparator"
+			          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
+		</Condition>	       
+	</Path>
+	
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixLibraryFolderNode">
+		<MenuItem id = "AddWixLibrary"
+		          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
+		          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
+	</Path>
+
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixExtensionFolderNode">
+		<MenuItem id = "AddWixExtension"
+		          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixExtension}"
+		          class = "ICSharpCode.WixBinding.AddWixExtensionToProject"/>		
+	</Path>
+	
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixLibraryNode">
+		<MenuItem id = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
+		          type = "Item"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>		
+		<MenuItem id = "PropertiesSeparator" type = "Separator"/>
+		<MenuItem id    = "Properties"
+		          icon  = "Icons.16x16.PropertiesIcon"
+		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+	</Path>
+
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixExtensionNode">
+		<MenuItem id = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
+		          type = "Item"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>		
+		<MenuItem id = "PropertiesSeparator" type = "Separator"/>
+		<MenuItem id    = "Properties"
+		          icon  = "Icons.16x16.PropertiesIcon"
+		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+	</Path>
+	
+	<!-- Project Explorer context menu item -->
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
+		<Condition name = "ProjectActive" activeproject="Wix">
+			<MenuItem id = "AddWixExtension"
+			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixExtension}"
+			          insertafter = "AddWebReference"
+			          insertbefore = "AddSeparator"
+			          class = "ICSharpCode.WixBinding.AddWixExtensionToProject"/>		
+			<MenuItem id = "AddWixLibrary"
+			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
+			          insertafter = "AddWixExtension"
+			          insertbefore = "AddSeparator"
+			          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id           = "WixSetupDialogListPad"
+		     category     = "Setup"
+		     title        = "${res:ICSharpCode.WixBinding.SetupDialogListPad.Title}"
+		     icon         = "Setup.Icons.16x16.SetupDialogsPad"
+		     class        = "ICSharpCode.WixBinding.SetupDialogListPad"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Pads/WixSetupDialogListPad/ContextMenu">
+		<Condition name = "Ownerstate" ownerstate = "ItemSelected" action = "Disable">
+			<MenuItem id = "OpenDialog"
+				icon  = "Icons.16x16.OpenFileIcon"
+				label = "${res:ProjectComponent.ContextMenu.Open}"
+		    	class = "ICSharpCode.WixBinding.OpenDialogCommand"/>
+			<MenuItem id = "ViewCode"
+				label = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
+				icon = "Icons.16x16.FormsDesigner.ViewCode"
+				class = "ICSharpCode.WixBinding.ViewDialogXmlCommand"/>
+		</Condition>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id = "WixDialogDesigner"
+			type  = "Secondary"
+		 	class = "ICSharpCode.WixBinding.WixDialogDesignerDisplayBinding"
+			fileNamePattern = "\.(wxs|wxi)$"/>
+	</Path>
+
+	<!-- Setup menu items that are created in the View menu -->
+	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
+		<MenuItem id = "Setup" label = "${res:XML.MainMenu.ViewMenu.SetupMenu}" type = "Menu" insertbefore = "Tools">
+			<Include id="View" path="/AddIns/WixBinding/View"/>
+		</MenuItem>
+	</Path>
+	
+	<Path name = "/AddIns/WixBinding/View">
+		<Condition name = "ProjectActive" activeproject="Wix" action = "Disable">
+			<MenuItem id = "ViewSetupDialogs"
+				label = "${res:XML.MainMenu.ViewMenu.SetupMenu.DialogsMenu}"
+				icon = "Setup.Icons.16x16.SetupDialogsPad"
+				class = "ICSharpCode.WixBinding.ViewSetupDialogsCommand"/>
+			<MenuItem id = "ViewSetupFiles"
+				label = "${res:XML.MainMenu.ViewMenu.SetupMenu.FilesMenu}" 
+				icon = "Icons.FileScoutIcon"
+				class = "ICSharpCode.WixBinding.ViewSetupFilesCommand"/>
+		</Condition>
+	</Path>
+
+	<!-- Setup Files tree view context menus-->
+	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/TreeView">
+		<Include path = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common"/>
+	</Path>	
+	
+	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/DirectoryTreeNode">
+		<MenuItem id = "AddDirectory"
+			label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddDirectory}"
+			class = "ICSharpCode.WixBinding.AddDirectoryCommand"/>
+		<MenuItem id = "AddFilesToDirectory"
+			label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddFiles}"
+			class = "ICSharpCode.WixBinding.AddFilesToDirectoryCommand"/>
+		<MenuItem id = "Diff"
+				label = "Diff"
+				class = "ICSharpCode.WixBinding.ShowDiffCommand"/>
+		<Include path = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common"/>
+	</Path>
+	
+	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/ComponentTreeNode">
+		<MenuItem id = "AddFiles"
+			label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddFiles}"
+			class = "ICSharpCode.WixBinding.AddFilesToComponentCommand"/>
+		<Include path = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common"/>
+	</Path>
+
+	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/FileTreeNode">
+		<Include path = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common"/>
+	</Path>
+
+	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/UnknownTreeNode">
+		<Include path = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common"/>
+	</Path>
+
+	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common">
+		<ComplexCondition action = "Exclude">
+			<Or>
+				<Condition name = "Ownerstate" ownerstate = "NothingSelected"/> 
+				<Condition name = "Ownerstate" ownerstate = "NothingSelectedAndChildElementsAllowed"/>
+			</Or>
+			<MenuItem id = "AddDirectory"
+				label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddDirectory}"
+				class = "ICSharpCode.WixBinding.AddDirectoryCommand"/>
+			<MenuItem id = "Diff"
+				label = "Diff"
+				class = "ICSharpCode.WixBinding.ShowDiffCommand"/>
+		</ComplexCondition>
+		<ComplexCondition action = "Exclude">
+			<Or>
+				<Condition name = "Ownerstate" ownerstate = "ChildElementsAllowed"/> 
+				<Condition name = "Ownerstate" ownerstate = "NothingSelectedAndChildElementsAllowed"/>
+			</Or>
+			<MenuItem id="AddChildElements"
+				label = "Add"
+				type = "Menu">
+				<MenuItem id = "AddChildElementsMenuBuilder"
+					 type = "Builder"
+					 class = "ICSharpCode.WixBinding.AddChildElementsMenuBuilder"/>
+			</MenuItem>
+		</ComplexCondition>
+		<ComplexCondition action = "Exclude">
+			<Or>
+				<Condition name = "Ownerstate" ownerstate = "ChildElementsAllowed"/> 
+				<Condition name = "Ownerstate" ownerstate = "NoChildElementsAllowed"/>
+			</Or>
+			<MenuItem id = "Remove"
+				label = "${res:Global.RemoveButtonText}"
+				icon  = "Icons.16x16.DeleteIcon"
+				class = "ICSharpCode.WixBinding.RemoveElementCommand"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/AddIns/WixBinding/WixPackageFilesDiffControl/ContextMenu">
+		<MenuItem id = "HideDiffControl"
+			label = "${res:Global.CloseButtonText}"
+			class = "ICSharpCode.WixBinding.HideDiffCommand"/>
+	</Path>
+
+	<!-- 
+		List of filenames and folder names that will excluded
+		when adding directories to the setup package
+	-->
+	<Path name="/AddIns/WixBinding/ExcludedItems">
+		<String id="svn" text=".svn"/>
+		<String id="obj" text="obj"/>
+		<String id="pdb" text="*.pdb"/>
+	</Path>
+</AddIn>

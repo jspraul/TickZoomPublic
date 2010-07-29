@@ -1,0 +1,131 @@
+<AddIn name        = "CodeCoverageAddIn"
+       author      = "Matt Ward"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Code Coverage AddIn for SharpDevelop using PartCover"
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity   name  = "ICSharpCode.CodeCoverage"/>
+		<Dependency addin = "ICSharpCode.UnitTesting" requirePreload = "true"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "CodeCoverage.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id           = "CodeCoveragePad"
+		     category     = "Tools"
+		     title        = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
+		     insertafter  = "Bookmarks"
+		     insertbefore = "DefinitionView"
+		     icon         = "CodeCoverage.Icons.16x16.Pad"
+		     shortcut     = "Control|Alt|G"
+		     class        = "ICSharpCode.CodeCoverage.CodeCoveragePad"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/CodeCoveragePad/Toolbar">
+		<ToolbarItem id      = "ToggleCodeCoverage"
+		             icon    = "CodeCoverage.Icons.16x16.File"
+		             tooltip = "${res:ICSharpCode.CodeCoverage.ToggleCodeCoverage}"
+		             type    = "CheckBox"
+		             class   = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
+		<ToolbarItem id      = "CodeCoveragePadDisplayOptionsSeparator" type = "Separator"/>
+		<ToolbarItem id      = "CodeCoveragePadDisplayOptions"
+		             type    = "DropDownButton"
+		             icon    = "Icons.16x16.Options"
+		             tooltip = "${res:ICSharpCode.CodeCoverage.DisplayOptions}"
+		             class   = "ICSharpCode.CodeCoverage.ShowDisplayOptionsDropDown">
+			<MenuItem id    = "ShowVisitCountOption"
+			          type  = "CheckBox"
+			          label = "${res:ICSharpCode.CodeCoverage.ShowVisitCount}"
+			          class = "ICSharpCode.CodeCoverage.ShowVisitCountCommand"/>
+			<MenuItem id    = "ShowSourceCodeOption"
+			          type  = "CheckBox"
+			          label = "${res:ICSharpCode.CodeCoverage.ShowSourceCode}"
+			          class = "ICSharpCode.CodeCoverage.ShowSourceCodeCommand"/>
+		</ToolbarItem>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id          = "CodeCoverageOptionsPanel"
+		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
+		             insertafter = "CodeAnalysisOptionPanel"
+		             class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
+				</Not>
+			</And>
+			<MenuItem id          = "RunWithCodeCoverage"
+			          insertafter = "RunWithDebugger"
+			          label       = "${res:ICSharpCode.UnitTesting.RunWithCoverage}"
+			          icon        = "CodeCoverage.Icons.16x16.Run"
+			          class       = "ICSharpCode.CodeCoverage.RunTestWithCodeCoverageCommand"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/UnitTestsPad/Toolbar">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
+				</Not>
+			</And>
+			<ToolbarItem id        = "RunWithCodeCoverage"
+			         insertbefore  = "Stop"
+			         insertafter   = "Run"
+		             icon          = "CodeCoverage.Icons.16x16.Run"
+		             tooltip       = "${res:ICSharpCode.UnitTesting.RunWithCoverage}"
+		             class         = "ICSharpCode.CodeCoverage.RunTestWithCodeCoverageCommand"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/MainMenu/Analysis/Test">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
+				</Not>
+			</And>
+			<MenuItem id            = "RunAllWithCodeCoverage"
+			          insertbefore  = "RunProjectTests"
+			          insertafter   = "RunAll"
+			          icon          = "CodeCoverage.Icons.16x16.Run"
+			          label         = "${res:ICSharpCode.UnitTesting.RunAllWithCoverage}"
+			          class         = "ICSharpCode.CodeCoverage.RunAllTestsWithCodeCoverageCommand"/>
+		</ComplexCondition>
+	</Path>	
+	
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
+		<DialogPanel id          = "CodeCoverage"
+		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
+		             class       = "ICSharpCode.CodeCoverage.CodeCoverageProjectOptionsPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
+		<MenuItem id          = "ShowCodeCoverage"
+		          insertafter = "Indent"
+		          label       = "${res:ICSharpCode.CodeCoverage.ShowCoverage}"
+		          checked     = "${property:CodeCoverage.Options/CodeCoverageHighlighted??False}"
+		          type        = "CheckBox"
+		          class       = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+		<MenuItem id           = "ShowCodeCoverage"
+		          insertafter  = "Indent"
+		          insertbefore = "FileMode"
+		          label        = "${res:ICSharpCode.CodeCoverage.ShowCoverage}"
+		          checked      = "${property:CodeCoverage.Options/CodeCoverageHighlighted??False}"
+		          type         = "CheckBox"
+		          class        = "ICSharpCode.CodeCoverage.ToggleCodeCoverageCommand"/>
+	</Path>
+</AddIn>
