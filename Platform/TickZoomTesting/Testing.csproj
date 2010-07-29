@@ -121,6 +121,10 @@
     <None Include="Startup\optimizeResults.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Charting\Charting.csproj">
+      <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
+      <Name>Charting</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
@@ -128,10 +132,6 @@
     <ProjectReference Include="..\TickZoomCommon\Common.csproj">
       <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
       <Name>Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TickZoomGui\GUI.csproj">
-      <Project>{2E2F67C6-8492-4034-A142-50872504D86D}</Project>
-      <Name>GUI</Name>
     </ProjectReference>
     <ProjectReference Include="..\TickZoomStarters\Starters.csproj">
       <Project>{61D3BADE-512C-4AE3-8863-0B669ACFEA99}</Project>

@@ -127,7 +127,7 @@ namespace ICSharpCode.SharpDevelop
 				#endif
 				
 				Assembly exe = typeof(SharpDevelopMain).Assembly;
-				startup.ApplicationRootPath = Path.Combine(Path.GetDirectoryName(exe.Location), "..");
+				startup.ApplicationRootPath = Path.Combine(Path.GetDirectoryName(exe.Location), @"..\..\..\SODA");
 				startup.AllowUserAddIns = true;
 				
 				string configDirectory = ConfigurationManager.AppSettings["settingsPath"];
@@ -148,9 +148,9 @@ namespace ICSharpCode.SharpDevelop
 					startup.DomPersistencePath = null;
 				}
 				
-//				startup.AddAddInFile("AddIns/TickZoomGUI.addin");
+				startup.AddAddInFile("AddIns/TickZoomGUI.addin");
 //				startup.AddAddInsFromDirectory(Path.Combine(startup.ApplicationRootPath, @"AddIns\AddIns"));
-				startup.AddAddInsFromDirectory(Path.Combine(startup.ApplicationRootPath, "AddIns"));
+//				startup.AddAddInsFromDirectory(Path.Combine(startup.ApplicationRootPath, "AddIns"));
 				
 				// allows testing addins without having to install them
 				foreach (string parameter in SplashScreenForm.GetParameterList()) {

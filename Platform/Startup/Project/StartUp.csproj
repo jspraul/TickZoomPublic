@@ -31,7 +31,7 @@
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\SODA\bin\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <OutputType>Exe</OutputType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
@@ -39,7 +39,7 @@
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\SODA\bin\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <OutputType>WinExe</OutputType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>

@@ -102,6 +102,10 @@
     <Folder Include="MiscTest" />
     <Folder Include="Lib" />
     <Folder Include="RealTime" />
+    <ProjectReference Include="..\Charting\Charting.csproj">
+      <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
+      <Name>Charting</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ExamplesPlugin\Examples.csproj">
       <Project>{B1A8F8F4-F7C9-46DC-B4BE-F08394778EF4}</Project>
       <Name>Examples</Name>
