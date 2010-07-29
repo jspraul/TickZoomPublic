@@ -219,8 +219,23 @@ namespace TickZoom.Interceptors
 		
 		private void ReversePosition(double price, Tick tick, LogicalOrder order)
 		{
-			CreateLogicalFillHelper(order.Positions,price,tick.Time,order);
-			CancelReverseOrders();
+             double position = 0;
+             switch (order.Type)
+             {
+                 case OrderType.BuyLimit:
+                 case OrderType.BuyMarket:
+                 case OrderType.BuyStop:
+                     position = order.Positions;
+                     break;
+                 case OrderType.SellLimit:
+                 case OrderType.SellMarket:
+                 case OrderType.SellStop:
+                     position = -order.Positions;
+                     break;
+                 default:
+                     throw new ApplicationException("Unexpected order type: " + order.Type);
+                     break;
+             }
 		}
 		
 		public void CancelReverseOrders() {

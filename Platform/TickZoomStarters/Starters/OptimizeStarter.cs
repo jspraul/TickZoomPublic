@@ -85,8 +85,6 @@ namespace TickZoom.Starters
 			
 			tasksRemaining = totalTasks;
 			
-//			ReportProgress( "Optimizing...", 0, totalTasks);
-			
 			log.Notice("Found " + Environment.ProcessorCount + " processors.");
 			
 			int tasksPerEngine = Math.Max(totalTasks / Environment.ProcessorCount, 1);
@@ -108,8 +106,8 @@ namespace TickZoom.Starters
 
 			log.Notice("Assigning " + tasksPerEngine + " passes to each engine per iteration.");
 			
-			int iterations = totalTasks / maxParallelPasses;
-			int leftOverPasses = totalTasks % maxParallelPasses;
+			int iterations = Math.Max(1,totalTasks / maxParallelPasses);
+			int leftOverPasses = Math.Max(0,totalTasks - (maxParallelPasses * iterations));
 			if( totalTasks % maxParallelPasses > 0) {
 				log.Notice("Planning " + iterations + " iterations with " + maxParallelPasses + " passes plus 1 pass with " + leftOverPasses + " iterations.");
 			} else {
@@ -157,8 +155,6 @@ namespace TickZoom.Starters
 
 			engineIterations.Clear();
 
-//			ReportProgress( "Optimizing Complete", totalTasks-tasksRemaining, totalTasks);
-			
 			Release();
 		}
 		
@@ -171,7 +167,6 @@ namespace TickZoom.Starters
 				TickEngine engine = engineIterations[i];
 				engine.WaitTask();
 		        --tasksRemaining;
-//				ReportProgress( "Optimizing...", totalTasks-tasksRemaining, totalTasks);
 			}
 		}
 
