@@ -1,0 +1,6 @@
+obj/
+bin/
+*.out
+*.tmp
+*.temp
+/Engine/
