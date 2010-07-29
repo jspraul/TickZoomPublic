@@ -389,7 +389,7 @@ namespace TickZoom.MBTFIX
 			foreach (var row in File.ReadAllLines(configFile)) {
 				if( string.IsNullOrEmpty(row) || row.TrimStart()[0] == '#') continue;
 				string[] nameValue = row.Split('=');
-				data.Add(nameValue[0].Trim().ToLower(),nameValue[1].Trim());
+				data[nameValue[0].Trim().ToLower()] = nameValue[1].Trim();
 			}
 			
 			ParseProperties();
