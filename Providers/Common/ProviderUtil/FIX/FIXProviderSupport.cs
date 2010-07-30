@@ -150,6 +150,8 @@ namespace TickZoom.MBTFIX
 			using( var fileOut = new StreamWriter(failedFile)) {
 				fileOut.WriteLine(message);
 				fileOut.WriteLine(fileMessage);
+				fileOut.WriteLine("Actual FIX message for login that failed:");
+				fileOut.WriteLine(packetString);
 			}
 			log.Error(message + " " + logMessage + "\n" + packetString);
 			throw new ApplicationException(message + " " + logMessage);
