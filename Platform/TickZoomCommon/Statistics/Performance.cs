@@ -43,7 +43,7 @@ namespace TickZoom.Statistics
 		private static readonly Log barDataLog = Factory.SysLog.GetLogger("BarDataLog");
 		private static readonly bool barDataDebug = barDataLog.IsDebugEnabled;
 		private static readonly Log tradeLog = Factory.SysLog.GetLogger("TradeLog");
-		private static readonly bool tradeInfo = tradeLog.IsInfoEnabled;
+		private static readonly bool tradeDebug = tradeLog.IsDebugEnabled;
 		private static readonly Log statsLog = Factory.SysLog.GetLogger("StatsLog");
 		private static readonly bool statsDebug = statsLog.IsDebugEnabled;
 		TransactionPairs comboTrades;
@@ -88,7 +88,12 @@ namespace TickZoom.Statistics
 			}
 			context.Invoke();
 			if( eventType == EventType.LogicalFill ||
-			    eventType == EventType.Tick) {
+			   (eventType == EventType.Tick
+// Uncommenting this will boost performance but the
+// tick event is still needed by a few parts of TZ.
+// After they are resolved, we can uncomment this.
+//			    && model is PortfolioInterface
+			   )) {
 				OnProcessFill();
 			}
 		}
@@ -176,7 +181,7 @@ namespace TickZoom.Statistics
 			comboTradesBinary.Tail = comboTrade;
 			double pnl = profitLoss.CalculateProfit(comboTrade.Direction,comboTrade.EntryPrice,comboTrade.ExitPrice);
 			Equity.OnChangeClosedEquity( pnl);
-			if( tradeInfo && !model.QuietMode) tradeLog.Info( model.Name + "," + Equity.ClosedEquity + "," + pnl + "," + comboTrade);
+			if( tradeDebug && !model.QuietMode) tradeLog.Debug( model.Name + "," + Equity.ClosedEquity + "," + pnl + "," + comboTrade);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
 				strategy.OnExitTrade();

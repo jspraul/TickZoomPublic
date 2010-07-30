@@ -265,7 +265,6 @@ namespace TickZoom.Interceptors
 
 		private void ProcessBuyMarket(LogicalOrder order, Tick tick)
 		{
-			LogMsg("Buy Market Exit at " + tick);
 			double price = tick.IsTrade ? tick.Price : tick.Ask;
 			FlattenPosition(price, tick, order);
 //			TryDrawTrade(order, price, position);
@@ -273,19 +272,15 @@ namespace TickZoom.Interceptors
 		
 		private void ProcessSellMarket(LogicalOrder order, Tick tick)
 		{
-			LogMsg("Sell Market Exit at " + tick);
 			double price = tick.IsTrade ? tick.Price : tick.Bid;
 			FlattenPosition(price, tick, order);
-//			TryDrawTrade(order, price, position);
 		}
 
 		private void ProcessBuyStop(LogicalOrder order, Tick tick)
 		{
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
 			if (price >= order.Price) {
-				LogMsg("Buy Stop Exit at " + tick);
 				FlattenPosition(price, tick, order);
-//				TryDrawTrade(order, price, position);
 			}
 		}
 
@@ -300,9 +295,7 @@ namespace TickZoom.Interceptors
 				isFilled = true;
 			}
 			if (isFilled) {
-				LogMsg("Buy Limit Exit at " + tick);
 				FlattenPosition(price, tick, order);
-//				TryDrawTrade(order, price, position);
 			}
 		}
 
@@ -310,9 +303,7 @@ namespace TickZoom.Interceptors
 		{
 			double price = tick.IsTrade ? tick.Price : tick.Bid;
 			if (price <= order.Price) {
-				LogMsg("Sell Stop Exit at " + tick);
 				FlattenPosition(price, tick, order);
-//				TryDrawTrade(order, price, position);
 			}
 		}
 
@@ -327,22 +318,18 @@ namespace TickZoom.Interceptors
 				isFilled = true;
 			}
 			if (isFilled) {
-				LogMsg("Sell Stop Limit at " + tick);
 				FlattenPosition(price, tick, order);
-//				TryDrawTrade(order, price, position);
 			}
 		}
 
 		private void ProcessReverseBuyMarket(LogicalOrder order, Tick tick)
 		{
-			LogMsg("Buy Market Exit at " + tick);
 			double price = tick.IsTrade ? tick.Price : tick.Ask;
 			ReversePosition( price, tick, order);
 		}
 		
 		private void ProcessReverseSellMarket(LogicalOrder order, Tick tick)
 		{
-			LogMsg("Sell Market Exit at " + tick);
 			double price = tick.IsTrade ? tick.Price : tick.Bid;
 			ReversePosition( price, tick, order);
 		}
@@ -351,7 +338,6 @@ namespace TickZoom.Interceptors
 		{
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
 			if (price >= order.Price) {
-				LogMsg("Buy Stop Exit at " + tick);
 				ReversePosition( price, tick, order);
 			}
 		}
@@ -367,7 +353,6 @@ namespace TickZoom.Interceptors
 				isFilled = true;
 			}
 			if (isFilled) {
-				LogMsg("Buy Limit Reverse at " + tick);
 				ReversePosition( price, tick, order);
 			}
 		}
@@ -376,7 +361,6 @@ namespace TickZoom.Interceptors
 		{
 			double price = tick.IsTrade ? tick.Price : tick.Bid;
 			if (price <= order.Price) {
-				LogMsg("Sell Stop Exit at " + tick);
 				ReversePosition( price, tick, order);
 			}
 		}
@@ -392,7 +376,6 @@ namespace TickZoom.Interceptors
 				isFilled = true;
 			}
 			if (isFilled) {
-				LogMsg("Sell Stop Limit at " + tick);
 				ReversePosition( price, tick, order);
 			}
 		}
@@ -435,10 +418,8 @@ namespace TickZoom.Interceptors
 		{
 			double price = tick.IsTrade ? tick.Price : tick.Ask;
 			if (price >= order.Price) {
-				LogMsg("Long Stop Entry at " + tick);
 				
 				CreateLogicalFillHelper(order.Positions, price, tick.Time, order);
-//				TryDrawTrade(order, price, order.Positions);
 				CancelEnterOrders();
 			}
 		}
@@ -447,23 +428,15 @@ namespace TickZoom.Interceptors
 		{
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
 			if (price <= order.Price) {
-				LogMsg("Short Stop Entry at " + tick);
 				CreateLogicalFillHelper(order.Positions, price, tick.Time, order);
-//				TryDrawTrade(order, price, order.Positions);
 				CancelEnterOrders();
 			}
 		}
 
-		private void LogMsg(string description)
-		{
-		}
-
 		private void ProcessEnterBuyMarket(LogicalOrder order, Tick tick)
 		{
-			LogMsg("Long Market Entry at " + tick);
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
 			CreateLogicalFillHelper(order.Positions, price, tick.Time, order);
-//			TryDrawTrade(order, price, order.Positions);
 			CancelEnterOrders();
 		}
 
@@ -493,19 +466,15 @@ namespace TickZoom.Interceptors
 				isFilled = true;
 			}
 			if (isFilled) {
-				LogMsg("Long Limit Entry at " + tick);
 				CreateLogicalFillHelper(order.Positions, price, tick.Time, order);
-//				TryDrawTrade(order, price, order.Positions);
 				CancelEnterOrders();
 			}
 		}
 
 		private void ProcessEnterSellMarket(LogicalOrder order, Tick tick)
 		{
-			LogMsg("Short Market Entry at " + tick);
 			double price = tick.IsQuote ? tick.Bid : tick.Price;
 			CreateLogicalFillHelper(-order.Positions, price, tick.Time, order);
-//			TryDrawTrade(order, price, -order.Positions);
 			CancelEnterOrders();
 		}
 
@@ -520,9 +489,7 @@ namespace TickZoom.Interceptors
 				isFilled = true;
 			}
 			if (isFilled) {
-				LogMsg("Short Limit Entry at " + tick);
 				CreateLogicalFillHelper(-order.Positions, price, tick.Time, order);
-//				TryDrawTrade(order, price, -order.Positions);
 				CancelEnterOrders();
 			}
 		}
