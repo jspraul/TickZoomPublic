@@ -53,7 +53,7 @@ namespace TickZoom.MBTFIX
 		private long retryStart = 30; // seconds
 		private long retryIncrease = 5;
 		private long retryMaximum = 30;
-		private volatile ConnectionStatus connectionStatus = ConnectionStatus.New;
+		private volatile Status connectionStatus = Status.New;
 		private string addrStr;
 		private ushort port;
 		private string userName;
@@ -90,7 +90,7 @@ namespace TickZoom.MBTFIX
 			socket = Factory.Provider.Socket("MBTFIXSocket");
 			socket.PacketFactory = new PacketFactoryFIX4_4();
 			if( debug) log.Debug("Created new " + socket);
-			connectionStatus = ConnectionStatus.New;
+			connectionStatus = Status.New;
 			if( trace) {
 				string message = "Generated socket: " + socket;
 				if( old != null) {
@@ -130,7 +130,7 @@ namespace TickZoom.MBTFIX
         	}
 		}
 		
-		public enum ConnectionStatus {
+		public enum Status {
 			New,
 			Connected,
 			PendingLogin,
@@ -163,7 +163,7 @@ namespace TickZoom.MBTFIX
 				return;
 			}
 			log.Info("OnDisconnect( " + socket + " ) ");
-			connectionStatus = ConnectionStatus.Disconnected;
+			connectionStatus = Status.Disconnected;
 		}
 	
 		public bool IsInterrupted {
@@ -173,19 +173,19 @@ namespace TickZoom.MBTFIX
 		}
 
 		public void StartRecovery() {
-			connectionStatus = ConnectionStatus.PendingRecovery;
+			connectionStatus = Status.PendingRecovery;
 			if( debug) log.Debug("ConnectionStatus changed to: " + connectionStatus);
 			OnStartRecovery();
 		}
 		
 		public void EndRecovery() {
-			connectionStatus = ConnectionStatus.Recovered;
+			connectionStatus = Status.Recovered;
 			if( debug) log.Debug("ConnectionStatus changed to: " + connectionStatus);
 		}
 		
 		public bool IsRecovered {
 			get { 
-				return connectionStatus == ConnectionStatus.Recovered;
+				return connectionStatus == Status.Recovered;
 			}
 		}
 		
@@ -197,7 +197,7 @@ namespace TickZoom.MBTFIX
 		
 		public bool IsRecovery {
 			get {
-				return connectionStatus == ConnectionStatus.PendingRecovery;
+				return connectionStatus == Status.PendingRecovery;
 			}
 		}
 		
@@ -224,20 +224,20 @@ namespace TickZoom.MBTFIX
 						return Yield.NoWork.Repeat;
 					}
 				case SocketState.Connected:
-					if( connectionStatus == ConnectionStatus.New) {
-						connectionStatus = ConnectionStatus.Connected;
+					if( connectionStatus == Status.New) {
+						connectionStatus = Status.Connected;
 						if( debug) log.Debug("ConnectionStatus changed to: " + connectionStatus);
 					}
 					switch( connectionStatus) {
-						case ConnectionStatus.Connected:
-							connectionStatus = ConnectionStatus.PendingLogin;
+						case Status.Connected:
+							connectionStatus = Status.PendingLogin;
 							if( debug) log.Debug("ConnectionStatus changed to: " + connectionStatus);
 							selector.AddReader(socket);
 							IncreaseRetryTimeout();
 							Yield result = OnLogin();
 							return result;
-						case ConnectionStatus.PendingRecovery:
-						case ConnectionStatus.Recovered:
+						case Status.PendingRecovery:
+						case Status.Recovered:
 							if( retryDelay != retryStart) {
 								retryDelay = retryStart;
 								log.Info("(RetryDelay reset to " + retryDelay + " seconds.)");
@@ -253,21 +253,21 @@ namespace TickZoom.MBTFIX
 								IncreaseRetryTimeout();
 							}
 							return result;
-						case ConnectionStatus.PendingLogin:
+						case Status.PendingLogin:
 						default:
 							return Yield.NoWork.Repeat;
 					}
 				case SocketState.Disconnected:
 					switch( connectionStatus) {
-						case ConnectionStatus.Disconnected:
+						case Status.Disconnected:
 							OnDisconnect();
 							retryTimeout = Factory.Parallel.TickCount + retryDelay * 1000;
-							connectionStatus = ConnectionStatus.PendingRetry;
+							connectionStatus = Status.PendingRetry;
 							if( debug) log.Debug("ConnectionStatus changed to: " + connectionStatus + ". Retrying in " + retryDelay + " seconds.");
 							retryDelay += retryIncrease;
 							retryDelay = Math.Min(retryDelay,retryMaximum);
 							return Yield.NoWork.Repeat;
-						case ConnectionStatus.PendingRetry:
+						case Status.PendingRetry:
 							if( Factory.Parallel.TickCount >= retryTimeout) {
 								log.Warn("Retry Time Elapsed");
 								OnRetry();
@@ -592,6 +592,10 @@ namespace TickZoom.MBTFIX
 		
 		public string AccountNumber {
 			get { return accountNumber; }
+		}
+		
+		public FIXProviderSupport.Status ConnectionStatus {
+			get { return connectionStatus; }
 		}
 	}
 }

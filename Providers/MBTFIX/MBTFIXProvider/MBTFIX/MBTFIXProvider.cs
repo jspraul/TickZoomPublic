@@ -46,23 +46,8 @@ namespace TickZoom.MBTFIX
         private Dictionary<ulong,LogicalOrderHandler> orderHandlers = new Dictionary<ulong,LogicalOrderHandler>();
 		private Dictionary<string,PhysicalOrder> openOrders = new Dictionary<string,PhysicalOrder>();
 		
-//		// Forex
-////		string userName = "DEMOYZPSFIX";
-////		string password = "1step2wax";
-////		string accountNumber = "33117308";		
-//
-//		// Equities
-//		string userName = "DEMOXJSPFIX";
-//		string password = "1lake2dust";
-//		string accountNumber = "33006566";		
-
 		public MBTFIXProvider()
 		{
-////			AddrStr = "216.52.236.112";
-//			AddrStr = "127.0.0.1";
-//			Port = 5679;
-//			UserName = userName;
-//			Password = password;
   			ProviderName = "MBTFIXProvider";
   			HeartbeatDelay = 35;
 		}
@@ -683,6 +668,9 @@ namespace TickZoom.MBTFIX
 		
 		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, IList<LogicalOrder> orders)
 		{
+			if( !IsRecovered) {
+				throw new ApplicationException("PositionChange event received prior to completing FIX recovery. Current connection status is: " + ConnectionStatus);
+			}
 			int orderCount = orders==null?0:orders.Count;
 			log.Info("Received PositionChange for " + symbol + " at position " + signal + " and " + orderCount + " orders.");
 			
