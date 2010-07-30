@@ -652,7 +652,7 @@ namespace TickZoom
    			if( "true".Equals(autoUpdateFlag) ) {
 	           	commandWorker.RunWorkerAsync(4);
    		    } else {
-				log.Notice("To enable AutoUpdate, set AutoUpdate 'true' in app.config");
+				log.Notice("To enable AutoUpdate, set AutoUpdate 'true' in " + projectConfig);
 				CheckForEngineInvoke();
    			}
         }
@@ -687,7 +687,7 @@ namespace TickZoom
     <clear />
     <add key=""StartTime"" value=""Wednesday, January 01, 1800"" />
     <add key=""EndTime"" value=""Thursday, July 23, 2009"" />
-    <add key=""AutoUpdate"" value=""false"" />
+    <add key=""AutoUpdate"" value=""true"" />
     <add key=""Symbol"" value=""GBP/USD,EUR/JPY"" />
     <add key=""UseModelLoader"" value=""true"" />
     <add key=""ModelLoader"" value=""Example: Reversal Multi-Symbol"" />
