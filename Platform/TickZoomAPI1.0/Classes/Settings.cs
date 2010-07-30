@@ -41,7 +41,7 @@ namespace TickZoom.Api
 		}
 		
 		private string GetAppDataFolder() {
-			ConfigFile config = new ConfigFile("TickZoom");
+			ConfigFile config = new ConfigFile();
 			string retVal = config.GetValue("AppDataFolder");
 			if( retVal != null) {
 				if( Directory.Exists(retVal)) {

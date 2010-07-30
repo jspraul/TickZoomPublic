@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -65,10 +66,15 @@ namespace TickZoom
 			set { endTime = value; }
 		}
         Thread thread_ProcessMessages;
+   		ConfigFile projectConfig;
    		
         public Form1()
         {
         	log = Factory.SysLog.GetLogger(typeof(Form1));
+        	string storageFolder = Factory.Settings["AppDataFolder"];
+        	string workspace = Path.Combine(storageFolder,"Workspace");
+        	string projectFile = Path.Combine(workspace,"project.xml");
+        	projectConfig = new ConfigFile( projectFile);
 			context = SynchronizationContext.Current;
             if(context == null)
             {
@@ -86,8 +92,8 @@ namespace TickZoom
             LoadIntervals();
             IntervalDefaults();
 			storageFolder = Factory.Settings["AppDataFolder"];
-       		tickZoomEngine = Factory.Settings["TickZoomEngine"];
-       		txtSymbol.Text = Factory.Settings["Symbol"];
+			tickZoomEngine = projectConfig.GetValue("TickZoomEngine");
+			txtSymbol.Text = projectConfig.GetValue("Symbol");
             Array units = Enum.GetValues(typeof(BarUnit));
             DateTime availableDate = new DateTime(1800,1,1);
             startTimePicker.Value = startTimePicker.MinDate = availableDate;
@@ -95,8 +101,8 @@ namespace TickZoom
             
             endTimePicker.MinDate = availableDate;
             endTimePicker.Value = endTimePicker.MaxDate = DateTime.Now.AddDays(1).AddSeconds(-1);
-       		string startTimeStr = Factory.Settings["startTime"];
-       		string EndTimeStr = Factory.Settings["EndTime"];
+            string startTimeStr = projectConfig.GetValue("StartTime");
+            string EndTimeStr = projectConfig.GetValue("EndTime");
        		if( startTimeStr != null) {
        			startTime = DateTime.Parse(startTimeStr);
        			startTimePicker.Value = startTime;
@@ -133,13 +139,13 @@ namespace TickZoom
 				}
 			}
 			modelLoaderBox.Items.AddRange(modelLoaderList.ToArray());
-			string value = Factory.Settings["ModelLoader"];
+			string value = projectConfig.GetValue("ModelLoader");
 			modelLoaderBox.SelectedItem = value;
         }
 
 		private void TryUpdate(BackgroundWorker bw) {
 			if( Factory.AutoUpdate(bw)) {
-				ConfigurationSettings.AppSettings["AutoUpdate"] = "false";
+        		projectConfig.SetValue("AutoUpdate","false");
 				SaveAutoUpdate();
 				log.Notice("AutoUpdate succesful. Restart unnecessary.");
 			}
@@ -334,46 +340,24 @@ namespace TickZoom
         }
         
         public void Save() {
-			// Get the configuration file.
-			Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 			
-			// Add an entry to appSettings.
-			int appStgCnt = ConfigurationManager.AppSettings.Count;
+			projectConfig.SetValue("startTime",startTime.ToLongDateString());
+			projectConfig.SetValue("EndTime",EndTime.ToLongDateString());
+			projectConfig.SetValue("Symbol",txtSymbol.Text);
+			projectConfig.SetValue("UseModelLoader",modelLoaderBox.Enabled ? "true" : "false");
+			projectConfig.SetValue("ModelLoader",modelLoaderBox.Text);
+			projectConfig.SetValue("AutoUpdate",projectConfig.GetValue("AutoUpdate"));
 			
-			SaveSetting(config,"startTime",startTime.ToLongDateString());
-			SaveSetting(config,"EndTime",EndTime.ToLongDateString());
-			SaveSetting(config,"Symbol",txtSymbol.Text);
-			SaveSetting(config,"UseModelLoader",modelLoaderBox.Enabled ? "true" : "false");
-			SaveSetting(config,"ModelLoader",modelLoaderBox.Text);
-			SaveSetting(config,"AutoUpdate",Factory.Settings["AutoUpdate"]);
+			SaveIntervals();
 			
-			SaveIntervals(config);
-			
-			// Save the configuration file.
-			config.Save(ConfigurationSaveMode.Modified);
-			
-			// Force a reload of the changed section.
-			ConfigurationManager.RefreshSection("appSettings");
         }
         
         public void SaveAutoUpdate() {
-			// Get the configuration file.
-			Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 			
 			// Add an entry to appSettings.
 			int appStgCnt = ConfigurationManager.AppSettings.Count;
 			
-			SaveSetting(config,"AutoUpdate",Factory.Settings["AutoUpdate"]);
-			
-			config.Save(ConfigurationSaveMode.Modified);
-			
-			// Force a reload of the changed section.
-			ConfigurationManager.RefreshSection("appSettings");
-        }
-        
-        private void SaveSetting(Configuration config, string key, string value) {
-        	config.AppSettings.Settings.Remove(key);
-			config.AppSettings.Settings.Add(key,value);
+			projectConfig.SetValue("AutoUpdate",projectConfig.GetValue("AutoUpdate"));
         }
         
         void ProcessWorkerDoWork(object sender, DoWorkEventArgs e)
@@ -579,22 +563,22 @@ namespace TickZoom
        		chartBarsCombo.Text = defaultCombo.Text;
         }
 		
-		void SaveIntervals(Configuration config) {
-			SaveSetting(config,"defaultBox",defaultBox.Text);
-			SaveSetting(config,"defaultCombo",defaultCombo.Text);
-			SaveSetting(config,"engineBarsBox",engineBarsBox.Text);
-			SaveSetting(config,"engineBarsCombo",engineBarsCombo.Text);
-			SaveSetting(config,"chartBarsBox",chartBarsBox.Text);
-			SaveSetting(config,"chartBarsCombo",chartBarsCombo.Text);
+		void SaveIntervals() {
+        	projectConfig.SetValue("DefaultPeriod",defaultBox.Text);
+			projectConfig.SetValue("DefaultInterval",defaultCombo.Text);
+			projectConfig.SetValue("EnginePeriod",engineBarsBox.Text);
+			projectConfig.SetValue("EngineInterval",engineBarsCombo.Text);
+			projectConfig.SetValue("ChartPeriod",chartBarsBox.Text);
+			projectConfig.SetValue("ChartInterval",chartBarsCombo.Text);
         }
 
 		void LoadIntervals() {
-			defaultBox.Text = CheckNull(Factory.Settings["defaultBox"]);
-			defaultCombo.Text = CheckNull(Factory.Settings["defaultCombo"]);
-			engineBarsBox.Text = CheckNull(Factory.Settings["engineBarsBox"]);
-			engineBarsCombo.Text = CheckNull(Factory.Settings["engineBarsCombo"]);
-			chartBarsBox.Text = CheckNull(Factory.Settings["chartBarsBox"]);
-			chartBarsCombo.Text = CheckNull(Factory.Settings["chartBarsCombo"]);
+        	defaultBox.Text = CheckNull(projectConfig.GetValue("DefaultPeriod"));
+        	defaultCombo.Text = CheckNull(projectConfig.GetValue("DefaultInterval"));
+        	engineBarsBox.Text = CheckNull(projectConfig.GetValue("EnginePeriod"));
+        	engineBarsCombo.Text = CheckNull(projectConfig.GetValue("EngineInterval"));
+        	chartBarsBox.Text = CheckNull(projectConfig.GetValue("ChartPeriod"));
+        	chartBarsCombo.Text = CheckNull(projectConfig.GetValue("ChartInterval"));
         }
 		
 		string CheckNull(string str) {
@@ -659,7 +643,7 @@ namespace TickZoom
         
         void Form1Shown(object sender, EventArgs e)
         {
-   			string autoUpdateFlag = Factory.Settings["AutoUpdate"];
+        	string autoUpdateFlag = projectConfig.GetValue("AutoUpdate");
    			if( "true".Equals(autoUpdateFlag) ) {
 	           	commandWorker.RunWorkerAsync(4);
    		    } else {

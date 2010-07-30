@@ -40,17 +40,17 @@ namespace TickZoom.Api
 		private string _cfgFile;
 		
 		public ConfigFile() {
-			string appName = Environment.CommandLine.Trim();
-			appName = appName.Replace("\"","");
-			appName = appName.Split(' ')[0];
-			appName = Path.GetFileNameWithoutExtension(appName);
+  			string appDataPath = Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData);
+  			appDataPath = Path.Combine(appDataPath,"TickZoom");
+			UseFile( Path.Combine(appDataPath, "TickZoom.config"));
 		}
 			
 		public ConfigFile(string name) {
-  			string appDataPath = Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData);
-			appDataPath += @"/TickZoom";
-			Directory.CreateDirectory(appDataPath);
-			_cfgFile = appDataPath + @"/"+name+".config";
+			UseFile(name);
+		}
+		
+		private void UseFile(string name) {
+			_cfgFile = name;
 			if( !Exists) {
 				CreateFile();
 			}
@@ -211,6 +211,7 @@ namespace TickZoom.Api
 		}
 		
 		private void CreateFile() {
+			Directory.CreateDirectory(Path.GetDirectoryName(_cfgFile));
 			string contents = BeautifyXML(defaultContents);
 	        using (StreamWriter sw = new StreamWriter(_cfgFile)) 
 	        {
