@@ -53,7 +53,12 @@ namespace MiscTest
 		}
 		
 		private Form1 CreateForm() {
-			Form1 form = new Form1();
+			string storageFolder = Factory.Settings["AppDataFolder"];
+			string workspaceFolder = Path.Combine(storageFolder,"Workspace");
+			string projectFile = Path.Combine(workspaceFolder,"test.tzproj");
+			ConfigFile projectConfig = new ConfigFile(projectFile,Form1.DefaultConfig);
+			projectConfig.SetValue("ProviderAssembly","TickZoomProviderMock");
+			Form1 form = new Form1("test");
 			form.Show();
 			WaitForEngine(form);
 			return form;
@@ -129,6 +134,8 @@ namespace MiscTest
 		 			File.Delete( appData + @"\TestServerCache\ESZ9.tck");
 		 			File.Delete( appData + @"\TestServerCache\IBM.tck");
 		 			File.Delete( appData + @"\TestServerCache\GBPUSD.tck");
+		 			Directory.CreateDirectory(appData + @"\Workspace\");
+		 			File.Delete( appData + @"\Workspace\test.config");
 					return;
 				} catch( Exception) {
 					count ++;

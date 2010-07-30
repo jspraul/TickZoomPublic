@@ -49,6 +49,11 @@ namespace TickZoom.Api
 			UseFile(name);
 		}
 		
+		public ConfigFile(string name, string defaultContents) {
+			this.defaultContents = defaultContents;
+			UseFile(name);
+		}
+		
 		private void UseFile(string name) {
 			_cfgFile = name;
 			if( !Exists) {
@@ -112,6 +117,9 @@ namespace TickZoom.Api
 			else
 				if (sType == typeof(DateTime))
 				return Convert.ToDateTime(retVal);
+			else
+				if (sType == typeof(ushort))
+				return Convert.ToUInt16(retVal);
 			else
 				return Convert.ToString(retVal);
 		}
@@ -236,6 +244,11 @@ namespace TickZoom.Api
 			    }
 			    return sb.ToString();
 			}
+		}
+		
+		public override string ToString()
+		{
+			return _cfgFile;
 		}
 		
 		private string defaultContents = @"<?xml version=""1.0"" encoding=""utf-8""?>

@@ -39,6 +39,7 @@ namespace TickZoom.Api
 			get;
 			set;
 		}
+    	
 		
 		ShowChartCallback ShowChartCallback {
 			get;
@@ -55,11 +56,6 @@ namespace TickZoom.Api
 			set;
 		}
     	
-    	TickQueue RealTimeTickQueue {
-    		get;
-    		set;
-    	}
-   		
     	/// <summary>
     	/// System tests use StartCount to constrain the number
     	/// of ticks read during the test. You may find this useful
@@ -97,5 +93,35 @@ namespace TickZoom.Api
 		}
 		
 		void Release();
+		
+		/// <summary>
+		/// Address either IP or domain name of the server which runs
+		/// the TickZoom Warehouse. Can also special value of "InProcess"
+		/// so the starter runs the warehouse inside the same process.
+		/// Regular domain or IP addresses expect the warehouse to
+		/// already be running. Runing InProcess is only really useful
+		/// for demo or trial purposes. Default is "InProcess".
+		/// </summary>
+		string Address {
+			get;
+			set;
+		}
+		
+		/// <summary>
+		/// Port for communicating to the TickZoom Warehouse. See
+		/// Address property for further details. Default is 6490.
+		/// </summary>
+		ushort Port {
+			get;
+			set;
+		}
+		
+		/// <summary>
+		/// The names of provider plugins to use for connection to
+		/// data vendors, brokers, exchanges, ECNs, etc. At time
+		/// of writing only support a single one.
+		/// </summary>
+		/// <param name="provider"></param>
+		void AddProvider( string provider);
 	}
 }

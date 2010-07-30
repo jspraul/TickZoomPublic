@@ -40,7 +40,9 @@ namespace TickZoom.Api
 			get;
 			set; 
 		}
-		void SetAddress(string addrStr, ushort port);
+		void SetConfig(string config);
+		void SetAddress(string address, ushort port);
+		void AddProvider(string provider);
 		void OnRun();
 		void OnStart();
 		void OnStop();

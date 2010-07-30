@@ -154,7 +154,7 @@ namespace TickZoom.Test
 				
 				ClearOrders();
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			long count = verify.Wait(symbol,10);
+	  			long count = verify.Wait(symbol,5);
 	  			Assert.GreaterOrEqual(count,1,"at least one tick");
 	  			TickIO lastTick = verify.LastTick;
 	  			double bid = lastTick.IsTrade ? lastTick.Price : lastTick.Bid;
@@ -170,7 +170,7 @@ namespace TickZoom.Test
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
 	  			count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			count = verify.Wait(symbol,20);
+	  			count = verify.Wait(symbol,5);
 
 	  			
 				ClearOrders();
@@ -182,14 +182,14 @@ namespace TickZoom.Test
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
 	  			count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			count = verify.Wait(symbol,20);
+	  			count = verify.Wait(symbol,5);
 	  			
 	  			
 				ClearOrders();
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
 	  			count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			count = verify.Wait(symbol,20);
+	  			count = verify.Wait(symbol,5);
 			}
 		}
 		
@@ -285,7 +285,7 @@ namespace TickZoom.Test
 				
 				ClearOrders();
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			long count = verify.Wait(symbol,10);
+	  			long count = verify.Wait(symbol,5);
 	  			Assert.GreaterOrEqual(count,1,"at least one tick");
 	  			TickIO lastTick = verify.LastTick;
 	  			double bid = lastTick.IsTrade ? lastTick.Price : lastTick.Bid;
@@ -299,7 +299,7 @@ namespace TickZoom.Test
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
 	  			count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			count = verify.Wait(symbol,20);
+	  			count = verify.Wait(symbol,5);
 
 	  			
 				ClearOrders();
@@ -311,14 +311,14 @@ namespace TickZoom.Test
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
 	  			count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			count = verify.Wait(symbol,20);
+	  			count = verify.Wait(symbol,5);
 	  			
 	  			
 				ClearOrders();
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
 	  			count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			count = verify.Wait(symbol,20);
+	  			count = verify.Wait(symbol,5);
 			}
 		}
 		

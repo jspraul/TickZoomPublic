@@ -36,7 +36,6 @@ using TickZoom.Api;
 
 namespace TickZoom
 {
-    
     public partial class Form1 : Form
     {
         // The progress of the task in percentage
@@ -57,7 +56,6 @@ namespace TickZoom
         Interval intervalDefault;
 		Interval intervalEngine;
 		Interval intervalChartBar;
-		string storageFolder;
 		string tickZoomEngine;
         bool isInitialized = false;
 		
@@ -68,13 +66,17 @@ namespace TickZoom
         Thread thread_ProcessMessages;
    		ConfigFile projectConfig;
    		
-        public Form1()
+   		public Form1() : this("project") {
+   			
+   		}
+   		
+        public Form1(string projectName)
         {
         	log = Factory.SysLog.GetLogger(typeof(Form1));
         	string storageFolder = Factory.Settings["AppDataFolder"];
         	string workspace = Path.Combine(storageFolder,"Workspace");
-        	string projectFile = Path.Combine(workspace,"project.xml");
-        	projectConfig = new ConfigFile( projectFile);
+        	string projectFile = Path.Combine(workspace,projectName+".tzproj");
+        	projectConfig = new ConfigFile( projectFile, DefaultConfig);
 			context = SynchronizationContext.Current;
             if(context == null)
             {
@@ -341,7 +343,7 @@ namespace TickZoom
         
         public void Save() {
 			
-			projectConfig.SetValue("startTime",startTime.ToLongDateString());
+			projectConfig.SetValue("StartTime",startTime.ToLongDateString());
 			projectConfig.SetValue("EndTime",EndTime.ToLongDateString());
 			projectConfig.SetValue("Symbol",txtSymbol.Text);
 			projectConfig.SetValue("UseModelLoader",modelLoaderBox.Enabled ? "true" : "false");
@@ -432,6 +434,9 @@ namespace TickZoom
 	    	starter.ProjectProperties.Chart.ChartType = chartType;
 	    	starter.ProjectProperties.Starter.SetSymbols(txtSymbol.Text);
 			starter.ProjectProperties.Starter.IntervalDefault = intervalDefault;
+			starter.Address = projectConfig.GetValue("ServiceAddress");
+			starter.Port = (ushort) projectConfig.GetValue("ServicePort",typeof(ushort));
+			starter.AddProvider( projectConfig.GetValue("ProviderAssembly"));
 			if( defaultOnly.Checked) {
 				starter.ProjectProperties.Chart.IntervalChartBar = intervalDefault;
 			} else {
@@ -674,5 +679,31 @@ namespace TickZoom
 		public System.Windows.Forms.TextBox LogOutput {
 			get { return logOutput; }
 		}
+        
+        public static string DefaultConfig = 
+@"<?xml version=""1.0"" encoding=""utf-8""?>
+<configuration>
+  <appSettings>
+    <clear />
+    <add key=""StartTime"" value=""Wednesday, January 01, 1800"" />
+    <add key=""EndTime"" value=""Thursday, July 23, 2009"" />
+    <add key=""AutoUpdate"" value=""false"" />
+    <add key=""Symbol"" value=""GBP/USD,EUR/JPY"" />
+    <add key=""UseModelLoader"" value=""true"" />
+    <add key=""ModelLoader"" value=""Example: Reversal Multi-Symbol"" />
+    <add key=""Model"" value=""ExampleReversalStrategy"" />
+    <add key=""MaxParallelPasses"" value=""1000"" />
+    <add key=""DefaultPeriod"" value=""1"" />
+    <add key=""DefaultInterval"" value=""Hour"" />
+    <add key=""EnginePeriod"" value=""1"" />
+    <add key=""EngineInterval"" value=""Hour"" />
+    <add key=""ChartPeriod"" value=""1"" />
+    <add key=""ChartInterval"" value=""Hour"" />
+    <add key=""ServiceAddress"" value=""InProcess"" />
+    <add key=""ServicePort"" value=""6490"" />
+    <add key=""ProviderAssembly"" value=""MBTFIXProvider"" />
+  </appSettings>
+</configuration>";
+        
    }
 }

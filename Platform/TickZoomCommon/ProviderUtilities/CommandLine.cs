@@ -35,6 +35,7 @@ namespace TickZoom.Common
 {
 	public class CommandLineProcess : ProviderService
 	{
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(CommandLineProcess));
 		ServiceConnection connection;
 		ServiceInstaller serviceInstaller;
 		string assemblyName = Assembly.GetEntryAssembly().GetName().Name;
@@ -48,9 +49,12 @@ namespace TickZoom.Common
 		/// </summary>
 		public void Run(string[] args)
 		{
-        	if( args.Length != 1) {
+        	if( args.Length < 1 || args.Length > 2) {
 	        	Console.WriteLine("Unknown command line arguments. Try --help.");
         	}
+			if( args.Length > 1) {
+				connection.SetConfig(args[1]);
+			}
 			switch( args[0]) {
 				case "--run":
 	        		connection.OnRun();
@@ -82,12 +86,14 @@ namespace TickZoom.Common
 		}
 		
 		private void Help() {
-			Console.WriteLine("Usage: " + assemblyName + " [--start | --stop | --run | {port}]");
+			Console.WriteLine("Usage: " + assemblyName + " [--start | --stop | --run | {port}] [{configuration}]");
 			Console.WriteLine();
 			Console.WriteLine("{port}: Run from command line using the port given on local host.");
 			Console.WriteLine("--run : Create as a Service Process so it will auto start at boot up.");
 			Console.WriteLine("--start : Create as a Service Process so it will auto start at boot up.");
 			Console.WriteLine("--stop : Remove the Service Process.");
+			Console.WriteLine();
+			Console.WriteLine("config : name of a configuration file in the Config folder.");
 			Console.WriteLine();
 			Console.WriteLine("On Windows, --start both installs and starts the process unlesss already installed or started.");
 			Console.WriteLine("And --stop stops and uninstalls unlesss already stopped or uninstalled.");

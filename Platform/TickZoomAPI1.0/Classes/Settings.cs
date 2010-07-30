@@ -25,16 +25,25 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 
 namespace TickZoom.Api
 {
 	public class Settings {
+		Dictionary<string,string> obsoleteSettings = new Dictionary<string,string>();
+		public Settings() {
+			obsoleteSettings.Add("ServiceAddress",null);
+			obsoleteSettings.Add("ServicePort",null);
+		}
 		public string this[string name]
 		{
 			get { 
 				if( name == "AppDataFolder") { return GetAppDataFolder(); }
+				if( obsoleteSettings.ContainsKey(name)) {
+					throw new ApplicationException("Used obsolete setting: " + name);
+				}
 				string retVal = ConfigurationManager.AppSettings[name];
 				return retVal;
 			}

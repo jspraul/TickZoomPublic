@@ -38,18 +38,38 @@ namespace TickZoom.Starters
 
 		public override Provider[] SetupProviders(bool quietMode, bool singleLoad)
 		{
-			return base.SetupDataProviders();
+			switch( Address) {
+				case "InProcess":
+					return base.SetupDataProviders("127.0.0.1",Port);
+				default:
+					return base.SetupDataProviders(Address,Port);
+			}
 		}
 		
 		public override void Run(ModelInterface model)
 		{
-			ServiceConnection service = Factory.Provider.ProviderService();
-			service.OnStart();
+			ServiceConnection service = null;
+			switch( Address) {
+				case "InProcess":
+					service = Factory.Provider.ProviderService();
+					foreach( var provider in Providers) {
+						service.AddProvider(provider);
+					}
+					service.SetAddress("127.0.0.1",Port);
+					break;
+				default:
+					break;
+			}
 			runMode = RunMode.RealTime;
 			try {
+				if( service != null) {
+					service.OnStart();
+				}
 				base.Run(model);
 			} finally {
-				service.OnStop();
+				if( service != null) {
+					service.OnStop();
+				}
 			}
 		}
 	}

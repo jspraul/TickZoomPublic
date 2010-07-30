@@ -47,7 +47,6 @@ namespace TickZoom.Starters
 		BackgroundWorker backgroundWorker;
 	    ShowChartCallback showChartCallback;
 	    CreateChartCallback createChartCallback;
-	    TickQueue realTimeTickQueue;
     	string dataFolder = "DataCache";
    		static Interval initialInterval = Factory.Engine.DefineInterval(BarUnit.Day,1);
    		long endCount = long.MaxValue;
@@ -61,6 +60,9 @@ namespace TickZoom.Starters
 		Dictionary<ModelInterface,Dictionary<string,object>> optimizeValueMap = new Dictionary<ModelInterface, Dictionary<string, object>>();
 		int taskCount=0;
 		ProgressImpl progress = new ProgressImpl();
+		private string address = "InProcess";
+		private ushort port = 6490;
+		private List<string> providers = new List<string>();
 		
 		public StarterCommon() : this(true) {
     		storageFolder = Factory.Settings["AppDataFolder"];
@@ -127,12 +129,12 @@ namespace TickZoom.Starters
 			return senderList.ToArray();
 		}
 		
-		public Provider[] SetupDataProviders() {
+		public Provider[] SetupDataProviders(string address, ushort port) {
 			try {
 				List<Provider> senderList = new List<Provider>();
 				SymbolInfo[] symbols = ProjectProperties.Starter.SymbolProperties;
 				for(int i=0; i<symbols.Length; i++) {
-					Provider provider = Factory.Provider.RemoteProvider();
+					Provider provider = Factory.Provider.RemoteProvider(address,port);
 					senderList.Add(provider);
 				}
 				return senderList.ToArray();
@@ -402,11 +404,6 @@ namespace TickZoom.Starters
 			set { startCount = value; }
 		}
 		
-		public TickQueue RealTimeTickQueue {
-			get { return realTimeTickQueue; }
-			set { realTimeTickQueue = value; }
-		}
-		
 		public ProjectProperties ProjectProperties {
 			get { return projectProperties; }
 			set { projectProperties = value; }
@@ -440,5 +437,22 @@ namespace TickZoom.Starters
 			set { fileName = value; }
 		}		
 		
+		public string Address {
+			get { return address; }
+			set { address = value; }
+		}
+		
+		public ushort Port {
+			get { return port; }
+			set { port = value; }
+		}
+		
+		public void AddProvider( string provider) {
+			providers.Add(provider);
+		}
+		
+		public List<string> Providers {
+			get { return providers; }
+		}		
 	}
 }

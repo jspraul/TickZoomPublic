@@ -34,7 +34,7 @@ namespace TickZoom.Api
 		Provider AsyncProvider( Provider provider);
 		AsyncReceiver AsyncReceiver( Receiver receiver);
 		Provider InProcessProvider();
-		Provider RemoteProvider();
+		Provider RemoteProvider(string address, ushort port);
 		Provider ProviderProcess(string address, ushort port, string executableFileName);
 		ServiceConnection ProviderService();
 		ServiceConnection ConnectionManager();

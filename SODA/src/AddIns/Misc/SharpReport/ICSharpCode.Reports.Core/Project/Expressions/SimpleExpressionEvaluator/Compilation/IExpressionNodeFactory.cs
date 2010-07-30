@@ -1,20 +1,27 @@
-#region Copyright note and modification history
+#region Copyright
 /*
------------------------------------------------------------------------------
-Copyright (c) 2006 HSI Inc. All Rights Reserved.
-
-PROPRIETARY NOTICE: This software has been provided pursuant to a
-License Agreement that contains restrictions on its use. This software
-contains valuable trade secrets and proprietary information of
-HSI Inc and is protected by Federal copyright law. It may not
-be copied or distributed in any form or medium, disclosed to third parties,
-or used in any manner that is not provided for in said License Agreement,
-except with the prior written authorization of HSI Inc.
-
------------------------------------------------------------------------------
-$Log: $
------------------------------------------------------------------------------
-*/
+ * Software: TickZoom Trading Platform
+ * Copyright 2009 M. Wayne Walter
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * Business use restricted to 30 days except as otherwise stated in
+ * in your Service Level Agreement (SLA).
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see <http://www.tickzoom.org/wiki/Licenses>
+ * or write to Free Software Foundation, Inc., 51 Franklin Street,
+ * Fifth Floor, Boston, MA  02110-1301, USA.
+ * 
+ */
 #endregion
 
 using SimpleExpressionEvaluator;
