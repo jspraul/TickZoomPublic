@@ -657,6 +657,54 @@ namespace Orders
 		}
 		
 		[Test]
+		public void Test14AddToShort() {
+			handler.ClearPhysicalOrders();
+			
+			double position = -4;
+			handler.SetActualPosition(-2);
+
+			handler.SetDesiredPosition(position);
+			handler.SetLogicalOrders(null);
+			handler.PerformCompare();
+			
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
+			Assert.AreEqual(0,handler.ChangedOrders.Count);
+			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			
+			PhysicalOrder order = handler.CreatedOrders[0];
+			Assert.AreEqual(OrderType.SellMarket,order.Type);
+			Assert.AreEqual(OrderSide.SellShort,order.Side);
+			Assert.AreEqual(0,order.Price);
+			Assert.AreEqual(2,order.Size);
+			Assert.AreEqual(0,order.LogicalOrderId);
+			Assert.IsNull(order.BrokerOrder);	
+		}
+		
+		[Test]
+		public void Test14ReverseFromLong() {
+			handler.ClearPhysicalOrders();
+			
+			double position = -4;
+			handler.SetActualPosition(2);
+
+			handler.SetDesiredPosition(position);
+			handler.SetLogicalOrders(null);
+			handler.PerformCompare();
+			
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
+			Assert.AreEqual(0,handler.ChangedOrders.Count);
+			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			
+			PhysicalOrder order = handler.CreatedOrders[0];
+			Assert.AreEqual(OrderType.SellMarket,order.Type);
+			Assert.AreEqual(OrderSide.Sell,order.Side);
+			Assert.AreEqual(0,order.Price);
+			Assert.AreEqual(2,order.Size);
+			Assert.AreEqual(0,order.LogicalOrderId);
+			Assert.IsNull(order.BrokerOrder);	
+		}
+		
+		[Test]
 		public void Test15LongToFlat() {
 			handler.ClearPhysicalOrders();
 			

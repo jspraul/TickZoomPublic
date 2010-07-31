@@ -89,6 +89,8 @@
     <Compile Include="RealTime\BrokerDualLimitOrder.cs" />
     <Compile Include="RealTime\BrokerLimitOrderTickBar.cs" />
     <Compile Include="RealTime\BrokerMarketOrder.cs" />
+    <Compile Include="RealTime\BrokerReversalTest.cs" />
+    <Compile Include="RealTime\BrokerSyntheticMarketOrder.cs" />
     <Compile Include="RealTime\BrokerTradeOnlyLimitOrderTest.cs" />
     <Compile Include="RealTime\ExperimentWithEnums.cs" />
     <Compile Include="RealTime\BrokerLimitOrderTest.cs" />

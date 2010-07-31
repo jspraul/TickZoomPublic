@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -40,20 +40,16 @@ using ZedGraph;
 namespace MockProvider
 {
 
-
+	
 	[TestFixture]
-	public class BrokerMarketOrder : MarketOrderTest {
+	public class BrokerSyntheticMarketOrder : MarketOrderTest {
 		
-		public BrokerMarketOrder() {
+		public BrokerSyntheticMarketOrder() {
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			SyncTicks.Enabled = true;
 			DeleteFiles();
-			Symbols = "USD/JPY";
+			Symbols = "USD/JPY_Synthetic";
 			CreateStarterCallback = CreateStarter;
-//			BreakPoint.SetEngineConstraint();
-//			BreakPoint.SetTickBreakPoint("2009-06-09 10:49:21.502");
-//			BreakPoint.SetBarBreakPoint(15);
-//			BreakPoint.SetSymbolConstraint("EUR/USD");
 			MatchTestResultsOf(typeof(MarketOrderTest));
 			ShowCharts = false;
 			StoreKnownGood = false;
@@ -70,7 +66,7 @@ namespace MockProvider
 			while( true) {
 				try {
 					string appData = Factory.Settings["AppDataFolder"];
-		 			File.Delete( appData + @"\TestServerCache\USDJPY.tck");
+		 			File.Delete( appData + @"\TestServerCache\USDJPY_Synthetic.tck");
 					break;
 				} catch( Exception) {
 				}
@@ -79,7 +75,7 @@ namespace MockProvider
 		
 		[Test]
 		public void CheckMockTradeCount() {
-			Assert.AreEqual(207,SyncTicks.MockTradeCount);
+			Assert.AreEqual(0,SyncTicks.MockTradeCount);
 		}
 	}
 }

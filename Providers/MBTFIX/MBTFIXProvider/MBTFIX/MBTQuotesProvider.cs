@@ -179,7 +179,9 @@ namespace TickZoom.MBTFIX
 							break;
 						case 2082: // Condition
 							int condition = packet.GetInt(ref ptr);
-							if( condition != 0 && condition != 53) {
+							if( condition != 0 &&
+							    condition != 53 &&
+							    condition != 45) {
 								log.Info( "Trade quote received with non-zero condition: " + condition);
 							}
 							break;

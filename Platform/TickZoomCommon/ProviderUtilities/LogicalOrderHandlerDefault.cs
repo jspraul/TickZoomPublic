@@ -271,7 +271,14 @@ namespace TickZoom.Common
 				CreateBrokerOrder(physical);
 			}
 			if( delta < 0) {
-				OrderSide side = (long) actualPosition >= (long) Math.Abs(delta) ? OrderSide.Sell : OrderSide.SellShort;
+				OrderSide side;
+				if( actualPosition > 0) {
+					side = OrderSide.Sell;
+					delta = actualPosition;
+				} else {
+					side = OrderSide.SellShort;
+				}
+				side = (long) actualPosition >= (long) Math.Abs(delta) ? OrderSide.Sell : OrderSide.SellShort;
 				physical = new PhysicalOrderDefault(true, symbol,side,OrderType.SellMarket,0,Math.Abs(delta),0,null,null);
 				CreateBrokerOrder(physical);
 			}

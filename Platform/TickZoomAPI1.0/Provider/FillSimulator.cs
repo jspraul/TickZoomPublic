@@ -32,7 +32,7 @@ namespace TickZoom.Api
 {
 	public interface FillSimulator
 	{
-		void ProcessOrders(Tick tick, IList<LogicalOrder> orders, double position);
+		bool ProcessOrders(Tick tick, IList<LogicalOrder> orders, double position);
 		void ProcessFill(StrategyInterface strategy, LogicalFill logicalFill);
 		Func<LogicalOrder, double, double, int> DrawTrade { get; set; }
 		Action<SymbolInfo, LogicalFill> ChangePosition { get; set; }
