@@ -306,6 +306,7 @@ namespace TickZoom.Common
 		
 		public void ProcessFill( LogicalFill fill) {
 			if( debug) log.Debug( "Considering fill: " + fill );
+			actualPosition = fill.Position;		
 			bool cancelAllEntries = false;
 			bool cancelAllExits = false;
 			bool cancelAllExitStrategies = false;
@@ -313,7 +314,6 @@ namespace TickZoom.Common
 			if( orderId == 0) {
 				// This is an adjust-to-position market order.
 				// Just set the new position.
-				actualPosition = fill.Position;		
 				return;
 			}
 			LogicalOrder filledOrder = null;
@@ -325,6 +325,8 @@ namespace TickZoom.Common
 				if( order.Id == orderId) {
 					if( debug) log.Debug( "Matched fill with orderId: " + orderId);
 					filledOrder = order;
+					desiredPosition = fill.Position;
+					if( debug) log.Debug( "Changed desired to: " + desiredPosition);
 					break;
 				}
 			}

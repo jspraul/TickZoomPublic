@@ -149,13 +149,13 @@ namespace TickZoom.Test
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				int secondsDelay = 25;
+				int secondsDelay = 5;
 				if(debug) log.Debug("===TestMarketOrder===");
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);
 				ClearOrders();
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			long count = verify.Wait(symbol,10);
+	  			long count = verify.Wait(symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,1,"at least one tick");
 	  			double desiredPosition = 2;
 	  			log.Warn("Sending 1");
@@ -189,20 +189,20 @@ namespace TickZoom.Test
 			}
 		}
 
-#if OTHERS
+#if !OTHERS
 		
 		[Test]
 		public void TestSignalChanges() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				int secondsDelay = 25;
+				int secondsDelay = 5;
 				if(debug) log.Debug("===TestSignalChanges===");
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);
 	  			double expectedPosition = 0;
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
-	  			long count = verify.Wait(symbol,5);
+	  			long count = verify.Wait(symbol,secondsDelay);
 
 	  			expectedPosition = 2;
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));

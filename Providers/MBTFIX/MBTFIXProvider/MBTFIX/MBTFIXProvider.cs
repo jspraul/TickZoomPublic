@@ -412,16 +412,16 @@ namespace TickZoom.MBTFIX
 						UpdateOrder( packetFIX, true, null);
 						break;
 					case "1": // Partial
+						UpdatePartial( packetFIX);
 						if( IsRecovered) {
 							SendFill( packetFIX);
 						}
-						UpdatePartial( packetFIX);
 						break;
 					case "2":  // Filled 
+						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						if( IsRecovered) {
 							SendFill( packetFIX);
 						}
-						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						break;
 					case "4": // Canceled
 						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
@@ -714,17 +714,14 @@ namespace TickZoom.MBTFIX
 			handler.SetLogicalOrders(orders);
 			
 			lock( orderHandlerLocker) {
-	        	foreach( var kvp in orderHandlers) {
-	        		handler = kvp.Value;
-	        		handler.ClearPhysicalOrders();
-	        	}
+				handler.ClearPhysicalOrders();
 	        	foreach( var kvp in openOrders) {
-	        		HandleOpenOrder(kvp.Value);
+					PhysicalOrder order = kvp.Value;
+					if( order.Symbol == symbol) {
+	        			HandleOpenOrder(kvp.Value);
+					}
 	        	}
-	        	foreach( var kvp in orderHandlers) {
-	        		LogicalOrderHandler orderHandler = kvp.Value;
-	    			orderHandler.PerformCompare();
-	        	}
+    			handler.PerformCompare();
 			}
 		}
 		
