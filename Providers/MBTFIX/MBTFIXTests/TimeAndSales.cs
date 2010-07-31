@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Threading;
 using NUnit.Framework;
 using TickZoom.Api;
 using TickZoom.MBTFIX;
@@ -35,8 +36,11 @@ namespace Test
 	[TestFixture]
 	public class TimeAndSalesTest : ProviderTests
 	{
+		public static readonly Log log = Factory.Log.GetLogger(typeof(EquityLevel1));
 		public TimeAndSalesTest()
 		{
+			log.Notice("Waiting 20 seconds for FIX server to reset.");
+			Thread.Sleep(20000);
 			SetSymbol("CSCO");
 			SetTickTest(TickTest.TimeAndSales);
 		}

@@ -45,6 +45,8 @@ namespace Test
 	
 		public FIXAPI()
 		{ 
+			log.Notice("Waiting 20 seconds for FIX server to reset.");
+			Thread.Sleep(20000);
 		}
 	
 		private void OnException( Exception ex) {

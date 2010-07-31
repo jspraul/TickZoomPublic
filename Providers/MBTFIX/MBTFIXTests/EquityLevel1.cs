@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Threading;
 using NUnit.Framework;
 using TickZoom.Api;
 using TickZoom.MBTFIX;
@@ -36,8 +37,11 @@ namespace Test
 	[TestFixture]
 	public class EquityLevel1 : ProviderTests
 	{
+		public static readonly Log log = Factory.Log.GetLogger(typeof(EquityLevel1));
 		public EquityLevel1()
 		{
+			log.Notice("Waiting 20 seconds for FIX server to reset.");
+			Thread.Sleep(20000);
 			SetSymbol("IBM");
 			SetTickTest(TickTest.Level1);
 		}
