@@ -304,6 +304,60 @@ namespace TickZoom.Common
 			return false;
 		}
 		
+		public void ProcessFill( LogicalFill fill) {
+			if( debug) log.Debug( "Considering fill: " + fill );
+			bool cancelAllEntries = false;
+			bool cancelAllExits = false;
+			bool cancelAllExitStrategies = false;
+			int orderId = fill.OrderId;
+			if( orderId == 0) {
+				// This is an adjust-to-position market order.
+				// Just set the new position.
+				actualPosition = fill.Position;		
+				return;
+			}
+			LogicalOrder filledOrder = null;
+			logicalOrders.Clear();
+			if( originalLogicals != null) {
+				logicalOrders.AddRange(originalLogicals);
+			}
+			foreach( var order in logicalOrders) {
+				if( order.Id == orderId) {
+					if( debug) log.Debug( "Matched fill with orderId: " + orderId);
+					filledOrder = order;
+					break;
+				}
+			}
+			if( filledOrder != null) {
+				bool clean = false;
+				if( filledOrder.TradeDirection == TradeDirection.Entry ) {
+					cancelAllEntries = true;
+					clean = true;
+				}
+				if( filledOrder.TradeDirection == TradeDirection.Exit ) {
+					cancelAllExits = true;
+					clean = true;
+				}
+				if( filledOrder.TradeDirection == TradeDirection.ExitStrategy ) {
+					cancelAllExitStrategies = true;
+					clean = true;
+				}
+				if( clean) {
+					foreach( var order in logicalOrders) {
+						if( order.TradeDirection == TradeDirection.Entry && cancelAllEntries) {
+							originalLogicals.Remove(order);
+						}
+						if( order.TradeDirection == TradeDirection.Exit && cancelAllExits) {
+							originalLogicals.Remove(order);
+						}
+						if( order.TradeDirection == TradeDirection.ExitStrategy && cancelAllExitStrategies) {
+							originalLogicals.Remove(order);
+						}
+					}
+				}
+			}
+		}
+		
 		public void PerformCompare() {
 			int orderCount = originalLogicals == null ? 0 : originalLogicals.Count;
 			if( debug) log.Debug( "PerformCompare() for " + symbol + " with " +

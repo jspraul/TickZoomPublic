@@ -39,5 +39,6 @@ namespace TickZoom.Api
 		void AddPhysicalOrder( bool isActive, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder);	
 		void SetLogicalOrders(IList<LogicalOrder> logicalOrders);
 		void PerformCompare();
+		void ProcessFill( LogicalFill fill);
 	}
 }

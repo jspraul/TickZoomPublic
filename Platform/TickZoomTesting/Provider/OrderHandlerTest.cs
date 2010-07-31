@@ -36,10 +36,10 @@ namespace Orders
 	public class OrderHandlerTest {
 		SymbolInfo symbol = Factory.Symbol.LookupSymbol("CSCO");
 		List<LogicalOrder> orders = new List<LogicalOrder>();
-		TestOrderHandler handler;
+		TestBrokerProvider handler;
 		
 		public OrderHandlerTest() {
-			handler = new TestOrderHandler(symbol);
+			handler = new TestBrokerProvider(symbol);
 		}
 		
 		[SetUp]
@@ -684,7 +684,7 @@ namespace Orders
 		public void Test14ReverseFromLong() {
 			handler.ClearPhysicalOrders();
 			
-			double position = -4;
+			double position = -2;
 			handler.SetActualPosition(2);
 
 			handler.SetDesiredPosition(position);
@@ -701,7 +701,24 @@ namespace Orders
 			Assert.AreEqual(0,order.Price);
 			Assert.AreEqual(2,order.Size);
 			Assert.AreEqual(0,order.LogicalOrderId);
-			Assert.IsNull(order.BrokerOrder);	
+			Assert.IsNull(order.BrokerOrder);
+			
+			handler.ClearPhysicalOrders();
+			LogicalFill fill = new LogicalFillBinary(0,23.35,TimeStamp.UtcNow,0);
+			handler.ProcessFill( fill);
+			handler.PerformCompare();
+			
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
+			Assert.AreEqual(0,handler.ChangedOrders.Count);
+			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			
+			order = handler.CreatedOrders[0];
+			Assert.AreEqual(OrderType.SellMarket,order.Type);
+			Assert.AreEqual(OrderSide.SellShort,order.Side);
+			Assert.AreEqual(0,order.Price);
+			Assert.AreEqual(2,order.Size);
+			Assert.AreEqual(0,order.LogicalOrderId);
+			Assert.IsNull(order.BrokerOrder);
 		}
 		
 		[Test]
@@ -1158,12 +1175,12 @@ namespace Orders
 			Assert.AreEqual(2,handler.CanceledOrders.Count);
 		}
 
-		public class TestOrderHandler : PhysicalOrderHandler, LogicalOrderHandler {
+		public class TestBrokerProvider : PhysicalOrderHandler, LogicalOrderHandler {
 			LogicalOrderHandler logicalHandler;
 			public List<PhysicalOrder> CanceledOrders = new List<PhysicalOrder>();
 			public List<PhysicalOrder> ChangedOrders = new List<PhysicalOrder>();
 			public List<PhysicalOrder> CreatedOrders = new List<PhysicalOrder>();
-			public TestOrderHandler(SymbolInfo symbol) {
+			public TestBrokerProvider(SymbolInfo symbol) {
 				logicalHandler = Factory.Utility.LogicalOrderHandler(symbol,this);
 			}
 			public void ClearPhysicalOrders()
@@ -1211,6 +1228,11 @@ namespace Orders
 		
 			public double ActualPosition {
 				get { return logicalHandler.ActualPosition; }
+			}
+			
+			public void ProcessFill(LogicalFill fill)
+			{
+				logicalHandler.ProcessFill(fill);
 			}
 		}
 		

@@ -77,12 +77,9 @@
     
     <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
 	  commandline='TickZoomTesting.dll /labels '/>
-    <kill processName="nunit-console.exe" />
 
     <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
           commandline='ExamplesTest.exe /labels '/>
-    <kill processName="nunit-console.exe" />
-    
   </target>
   
 </project>

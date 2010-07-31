@@ -370,7 +370,7 @@ namespace TickZoom.Symbols
         <property name=""UseSyntheticMarkets"" value=""false"" />
       </symbol>
       <category name=""Testing"">
-        <symbol name=""USD/JPY"" >
+        <symbol name=""USD/JPY_Synthetic"" >
           <property name=""UseSyntheticLimits"" value=""true"" />
           <property name=""UseSyntheticStops"" value=""true"" />
           <property name=""UseSyntheticMarkets"" value=""true"" />

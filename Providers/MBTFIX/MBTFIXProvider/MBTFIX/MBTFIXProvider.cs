@@ -474,8 +474,30 @@ namespace TickZoom.MBTFIX
 				LogicalFillBinary binary = new LogicalFillBinary(orderHandler.ActualPosition,packetFIX.AveragePrice,executionTime,logicalOrderId);
 				if( debug) log.Debug( "Sending logical fill: " + binary);
 	            receiver.OnEvent(symbolInfo,(int)EventType.LogicalFill,binary);
+            	openOrders.Remove(packetFIX.ClientOrderId);
+	            ProcessFill( symbolInfo, binary);
 			}
 		}
+
+		private void ProcessFill( SymbolInfo symbol, LogicalFill fill) {
+			if( debug) log.Debug("===============================================");
+			if( debug) log.Debug("Process Fill( " + symbol + ", " + fill + " ) ");
+			if( debug) log.Debug("===============================================");
+			LogicalOrderHandler handler = GetOrderHandler(symbol.BinaryIdentifier);
+			handler.ProcessFill( fill);
+			
+			lock( orderHandlerLocker) {
+				handler.ClearPhysicalOrders();
+	        	foreach( var kvp in openOrders) {
+					PhysicalOrder order = kvp.Value;
+					if( order.Symbol == symbol) {
+	        			HandleOpenOrder(kvp.Value);
+					}
+	        	}
+    			handler.PerformCompare();
+			}
+		}
+		
 		
 		public void RejectOrder( PacketFIX4_4 packetFIX) {
 			if( !IsRecovered) {
