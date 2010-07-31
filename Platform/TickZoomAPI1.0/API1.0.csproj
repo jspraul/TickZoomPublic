@@ -55,7 +55,6 @@
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>Lib\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">

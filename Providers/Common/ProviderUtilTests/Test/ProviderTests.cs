@@ -178,7 +178,7 @@ namespace TickZoom.Test
 	  			Assert.AreEqual(expectedPosition,position,"position");
 	  			
 	  			double requestedPosition = -2;
-	  			expectedPosition = 0;
+	  			expectedPosition = -2;
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,requestedPosition,null));
 	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(expectedPosition,position,"position");
@@ -190,7 +190,7 @@ namespace TickZoom.Test
 			}
 		}
 
-#if OTHERS
+#if !OTHERS
 		
 		[Test]
 		public void TestLogicalLimitOrders() {
