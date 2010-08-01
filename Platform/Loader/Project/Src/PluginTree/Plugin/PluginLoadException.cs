@@ -11,24 +11,24 @@ using System.Runtime.Serialization;
 namespace TickZoom.Loader
 {
 	/// <summary>
-	/// Exception used when loading an AddIn fails.
+	/// Exception used when loading an Plugin fails.
 	/// </summary>
 	[Serializable]
-	public class AddInLoadException : CoreException
+	public class PluginLoadException : CoreException
 	{
-		public AddInLoadException() : base()
+		public PluginLoadException() : base()
 		{
 		}
 		
-		public AddInLoadException(string message) : base(message)
+		public PluginLoadException(string message) : base(message)
 		{
 		}
 		
-		public AddInLoadException(string message, Exception innerException) : base(message, innerException)
+		public PluginLoadException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 		
-		protected AddInLoadException(SerializationInfo info, StreamingContext context) : base(info, context)
+		protected PluginLoadException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

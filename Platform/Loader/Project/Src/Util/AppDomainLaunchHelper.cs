@@ -12,7 +12,7 @@ using System.Reflection;
 namespace TickZoom.Loader
 {
 	/// <summary>
-	/// Because AddIn assemblies are loaded into the LoadFrom context, creating AppDomains in them that
+	/// Because Plugin assemblies are loaded into the LoadFrom context, creating AppDomains in them that
 	/// use an arbitrary ApplicationBase path does not work correctly.
 	/// This class contains a static method that helps launching a static method on a type in a new AppDomain.
 	/// </summary>

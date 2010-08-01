@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 
-namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
+namespace ICSharpCode.Core.Tests.PluginTreeTests.Tests
 {
 	/*
 	[TestFixture]

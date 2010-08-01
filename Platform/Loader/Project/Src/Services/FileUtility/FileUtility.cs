@@ -565,7 +565,7 @@ namespace TickZoom.Loader
 		{
 			return ObservedSave(saveFile,
 			                    fileName,
-			                    ResourceService.GetString("ICSharpCode.Services.FileUtilityService.CantSaveFileStandardText"),
+			                    ResourceService.GetString("TickZoom.Services.FileUtilityService.CantSaveFileStandardText"),
 			                    policy);
 		}
 		
@@ -609,7 +609,7 @@ namespace TickZoom.Loader
 		{
 			return ObservedSave(saveFileAs,
 			                    fileName,
-			                    ResourceService.GetString("ICSharpCode.Services.FileUtilityService.CantSaveFileStandardText"),
+			                    ResourceService.GetString("TickZoom.Services.FileUtilityService.CantSaveFileStandardText"),
 			                    policy);
 		}
 		
@@ -646,7 +646,7 @@ namespace TickZoom.Loader
 		{
 			return ObservedLoad(loadFile,
 			                    fileName,
-			                    ResourceService.GetString("ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText"),
+			                    ResourceService.GetString("TickZoom.Services.FileUtilityService.CantLoadFileStandardText"),
 			                    policy);
 		}
 		
@@ -664,7 +664,7 @@ namespace TickZoom.Loader
 		{
 			return ObservedLoad(saveFileAs,
 			                    fileName,
-			                    ResourceService.GetString("ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText"),
+			                    ResourceService.GetString("TickZoom.Services.FileUtilityService.CantLoadFileStandardText"),
 			                    policy);
 		}
 		

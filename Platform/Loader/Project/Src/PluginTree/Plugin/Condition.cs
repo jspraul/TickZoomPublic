@@ -56,7 +56,7 @@ namespace TickZoom.Loader
 		public bool IsValid(object caller)
 		{
 			try {
-				return AddInTree.ConditionEvaluators[name].IsValid(caller, this);
+				return PluginTree.ConditionEvaluators[name].IsValid(caller, this);
 			} catch (KeyNotFoundException) {
 				throw new CoreException("Condition evaluator " + name + " not found!");
 			}
@@ -89,7 +89,7 @@ namespace TickZoom.Loader
 								condition = NegatedCondition.Read(reader);
 								goto exit;
 							default:
-								throw new AddInLoadException("Invalid element name '" + reader.LocalName
+								throw new PluginLoadException("Invalid element name '" + reader.LocalName
 								                             + "', the first entry in a ComplexCondition " +
 								                             "must be <And>, <Or> or <Not>");
 						}
@@ -128,7 +128,7 @@ namespace TickZoom.Loader
 								conditions.Add(Condition.Read(reader));
 								break;
 							default:
-								throw new AddInLoadException("Invalid element name '" + reader.LocalName
+								throw new PluginLoadException("Invalid element name '" + reader.LocalName
 								                             + "', entries in a <" + endElement + "> " +
 								                             "must be <And>, <Or>, <Not> or <Condition>");
 						}

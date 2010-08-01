@@ -16,7 +16,7 @@ namespace TickZoom.Loader
 	/// </summary>
 	public class LazyLoadDoozer : IDoozer
 	{
-		AddIn addIn;
+		Plugin plugin;
 		string name;
 		string className;
 		
@@ -32,9 +32,9 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public LazyLoadDoozer(AddIn addIn, Properties properties)
+		public LazyLoadDoozer(Plugin plugin, Properties properties)
 		{
-			this.addIn      = addIn;
+			this.plugin      = plugin;
 			this.name       = properties["name"];
 			this.className  = properties["class"];
 			
@@ -46,22 +46,22 @@ namespace TickZoom.Loader
 		/// </summary>
 		public bool HandleConditions {
 			get {
-				IDoozer doozer = (IDoozer)addIn.CreateObject(className);
+				IDoozer doozer = (IDoozer)plugin.CreateObject(className);
 				if (doozer == null) {
 					return false;
 				}
-				AddInTree.Doozers[name] = doozer;
+				PluginTree.Doozers[name] = doozer;
 				return doozer.HandleConditions;
 			}
 		}
 		
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
-			IDoozer doozer = (IDoozer)addIn.CreateObject(className);
+			IDoozer doozer = (IDoozer)plugin.CreateObject(className);
 			if (doozer == null) {
 				return null;
 			}
-			AddInTree.Doozers[name] = doozer;
+			PluginTree.Doozers[name] = doozer;
 			return doozer.BuildItem(caller, codon, subItems);
 		}
 		

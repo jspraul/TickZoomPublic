@@ -14,9 +14,9 @@ using System.Reflection;
 namespace TickZoom.Loader
 {
 	/// <summary>
-	/// Represents a versioned reference to an AddIn. Used by <see cref="AddInManifest"/>.
+	/// Represents a versioned reference to an Plugin. Used by <see cref="PluginManifest"/>.
 	/// </summary>
-	public class AddInReference : ICloneable
+	public class PluginReference : ICloneable
 	{
 		string name;
 		Version minimumVersion;
@@ -53,9 +53,9 @@ namespace TickZoom.Loader
 		}
 		
 		/// <returns>Returns true when the reference is valid.</returns>
-		public bool Check(Dictionary<string, Version> addIns, out Version versionFound)
+		public bool Check(Dictionary<string, Version> plugins, out Version versionFound)
 		{
-			if (addIns.TryGetValue(name, out versionFound)) {
+			if (plugins.TryGetValue(name, out versionFound)) {
 				return CompareVersion(versionFound, minimumVersion) >= 0
 					&& CompareVersion(versionFound, maximumVersion) <= 0;
 			} else {
@@ -88,9 +88,9 @@ namespace TickZoom.Loader
 			return 0;
 		}
 		
-		public static AddInReference Create(Properties properties, string hintPath)
+		public static PluginReference Create(Properties properties, string hintPath)
 		{
-			AddInReference reference = new AddInReference(properties["addin"]);
+			PluginReference reference = new PluginReference(properties["addin"]);
 			string version = properties["version"];
 			if (version != null && version.Length > 0) {
 				int pos = version.IndexOf('-');
@@ -101,9 +101,9 @@ namespace TickZoom.Loader
 					reference.maximumVersion = reference.minimumVersion = ParseVersion(version, hintPath);
 				}
 				
-				if (reference.Name == "SharpDevelop") {
-					// HACK: SD 3.0 AddIns work with SharpDevelop 3.1
-					// Because some 3.0 AddIns restrict themselves to SD 3.0, we extend the
+				if (reference.Name == "TickZoom") {
+					// HACK: SD 3.0 Plugins work with TickZoom 3.1
+					// Because some 3.0 Plugins restrict themselves to SD 3.0, we extend the
 					// supported SD range.
 					if (reference.maximumVersion == new Version("3.0") || reference.maximumVersion == new Version("3.1")) {
 						reference.maximumVersion = new Version(entryVersion.Major + "." + entryVersion.Minor);
@@ -119,7 +119,7 @@ namespace TickZoom.Loader
 			if (version == null || version.Length == 0)
 				return new Version(0,0,0,0);
 			if (version.StartsWith("@")) {
-				if (version == "@SharpDevelopCoreVersion") {
+				if (version == "@TickZoomCoreVersion") {
 					return entryVersion;
 				}
 				if (hintPath != null) {
@@ -128,7 +128,7 @@ namespace TickZoom.Loader
 						FileVersionInfo info = FileVersionInfo.GetVersionInfo(fileName);
 						return new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart);
 					} catch (FileNotFoundException ex) {
-						throw new AddInLoadException("Cannot get version '" + version + "': " + ex.Message);
+						throw new PluginLoadException("Cannot get version '" + version + "': " + ex.Message);
 					}
 				}
 				return new Version(0,0,0,0);
@@ -137,11 +137,11 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public AddInReference(string name) : this(name, new Version(0,0,0,0), new Version(int.MaxValue, int.MaxValue)) { }
+		public PluginReference(string name) : this(name, new Version(0,0,0,0), new Version(int.MaxValue, int.MaxValue)) { }
 		
-		public AddInReference(string name, Version specificVersion) : this(name, specificVersion, specificVersion) { }
+		public PluginReference(string name, Version specificVersion) : this(name, specificVersion, specificVersion) { }
 		
-		public AddInReference(string name, Version minimumVersion, Version maximumVersion)
+		public PluginReference(string name, Version minimumVersion, Version maximumVersion)
 		{
 			this.Name = name;
 			if (minimumVersion == null) throw new ArgumentNullException("minimumVersion");
@@ -153,8 +153,8 @@ namespace TickZoom.Loader
 		
 		public override bool Equals(object obj)
 		{
-			if (!(obj is AddInReference)) return false;
-			AddInReference b = (AddInReference)obj;
+			if (!(obj is PluginReference)) return false;
+			PluginReference b = (PluginReference)obj;
 			return name == b.name && minimumVersion == b.minimumVersion && maximumVersion == b.maximumVersion;
 		}
 		
@@ -182,9 +182,9 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public AddInReference Clone()
+		public PluginReference Clone()
 		{
-			return new AddInReference(name, minimumVersion, maximumVersion);
+			return new PluginReference(name, minimumVersion, maximumVersion);
 		}
 		
 		object ICloneable.Clone()

@@ -64,17 +64,17 @@ namespace TickZoom.Loader
 						int pos = assembly.IndexOf('/');
 						if (pos < 0)
 							throw new ApplicationException("Expected '/' in path beginning with '$'!");
-						string referencedAddIn = assembly.Substring(1, pos - 1);
-						foreach (AddIn addIn in AddInTree.AddIns) {
-							if (addIn.Enabled && addIn.Manifest.Identities.ContainsKey(referencedAddIn)) {
-								string assemblyFile = Path.Combine(Path.GetDirectoryName(addIn.FileName),
+						string referencedPlugin = assembly.Substring(1, pos - 1);
+						foreach (Plugin plugin in PluginTree.Plugins) {
+							if (plugin.Enabled && plugin.Manifest.Identities.ContainsKey(referencedPlugin)) {
+								string assemblyFile = Path.Combine(Path.GetDirectoryName(plugin.FileName),
 								                                   assembly.Substring(pos + 1));
 								loadedAssembly = System.Reflection.Assembly.LoadFrom(assemblyFile);
 								break;
 							}
 						}
 						if (loadedAssembly == null) {
-							throw new FileNotFoundException("Could not find referenced AddIn " + referencedAddIn);
+							throw new FileNotFoundException("Could not find referenced Plugin " + referencedPlugin);
 						}
 					} else {
 						loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
@@ -123,7 +123,7 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		internal static void ReadSection(XmlReader reader, AddIn addIn, string hintPath)
+		internal static void ReadSection(XmlReader reader, Plugin plugin, string hintPath)
 		{
 			Stack<ICondition> conditionStack = new Stack<ICondition>();
 			while (reader.Read()) {
@@ -144,26 +144,26 @@ namespace TickZoom.Loader
 								conditionStack.Push(Condition.ReadComplexCondition(reader));
 								break;
 							case "Import":
-								addIn.Runtimes.Add(Runtime.Read(addIn, reader, hintPath, conditionStack));
+								plugin.Runtimes.Add(Runtime.Read(plugin, reader, hintPath, conditionStack));
 								break;
-							case "DisableAddIn":
-								if (Condition.GetFailedAction(conditionStack, addIn) == ConditionFailedAction.Nothing) {
-									// The DisableAddIn node not was not disabled by a condition
-									addIn.CustomErrorMessage = reader.GetAttribute("message");
+							case "DisablePlugin":
+								if (Condition.GetFailedAction(conditionStack, plugin) == ConditionFailedAction.Nothing) {
+									// The DisablePlugin node not was not disabled by a condition
+									plugin.CustomErrorMessage = reader.GetAttribute("message");
 								}
 								break;
 							default:
-								throw new AddInLoadException("Unknown node in runtime section :" + reader.LocalName);
+								throw new PluginLoadException("Unknown node in runtime section :" + reader.LocalName);
 						}
 						break;
 				}
 			}
 		}
 		
-		internal static Runtime Read(AddIn addIn, XmlReader reader, string hintPath, Stack<ICondition> conditionStack)
+		internal static Runtime Read(Plugin plugin, XmlReader reader, string hintPath, Stack<ICondition> conditionStack)
 		{
 			if (reader.AttributeCount != 1) {
-				throw new AddInLoadException("Import node requires ONE attribute.");
+				throw new PluginLoadException("Import node requires ONE attribute.");
 			}
 			Runtime	runtime = new Runtime(reader.GetAttribute(0), hintPath);
 			if (conditionStack.Count > 0) {
@@ -183,18 +183,18 @@ namespace TickZoom.Loader
 							switch (nodeName) {
 								case "Doozer":
 									if (!reader.IsEmptyElement) {
-										throw new AddInLoadException("Doozer nodes must be empty!");
+										throw new PluginLoadException("Doozer nodes must be empty!");
 									}
-									runtime.definedDoozers.Add(new LazyLoadDoozer(addIn, properties));
+									runtime.definedDoozers.Add(new LazyLoadDoozer(plugin, properties));
 									break;
 								case "ConditionEvaluator":
 									if (!reader.IsEmptyElement) {
-										throw new AddInLoadException("ConditionEvaluator nodes must be empty!");
+										throw new PluginLoadException("ConditionEvaluator nodes must be empty!");
 									}
-									runtime.definedConditionEvaluators.Add(new LazyConditionEvaluator(addIn, properties));
+									runtime.definedConditionEvaluators.Add(new LazyConditionEvaluator(plugin, properties));
 									break;
 								default:
-									throw new AddInLoadException("Unknown node in Import section:" + nodeName);
+									throw new PluginLoadException("Unknown node in Import section:" + nodeName);
 							}
 							break;
 					}

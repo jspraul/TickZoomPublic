@@ -35,7 +35,7 @@ namespace TickZoom.Loader
 		
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
-			return codon.AddIn.CreateObject(codon.Properties["class"]);
+			return codon.Plugin.CreateObject(codon.Properties["class"]);
 		}
 	}
 }

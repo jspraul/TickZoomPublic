@@ -15,7 +15,7 @@ using System.Runtime.CompilerServices;
 [assembly: Dependency("System.Xml", LoadHint.Always)]
 
 [assembly: AssemblyTitle("TickZoom.Loader")]
-[assembly: AssemblyDescription("The ICSharpCode Core containing the AddInTree and service Subsystem")]
+[assembly: AssemblyDescription("The TickZoom Loader containing the PluginTree and service Subsystem")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

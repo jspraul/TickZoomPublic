@@ -9,36 +9,36 @@ using System;
 using System.IO;
 using NUnit.Framework;
 
-namespace TickZoom.Loader.AddInTreeTests.Tests
+namespace TickZoom.Loader.PluginTreeTests.Tests
 {
 	[TestFixture]
-	public class AddInTreeLoadingTests
+	public class PluginTreeLoadingTests
 	{
-		#region AddIn node tests
+		#region Plugin node tests
 		[Test]
-		public void TestEmptyAddInTreeLoading()
+		public void TestEmptyPluginTreeLoading()
 		{
-			string addInText = @"<AddIn/>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
+			string pluginText = @"<Plugin/>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
 		}
 		
 		[Test]
-		public void TestAddInProperties()
+		public void TestPluginProperties()
 		{
-			string addInText = @"
-<AddIn name        = 'SharpDevelop Core'
+			string pluginText = @"
+<Plugin name        = 'SharpDevelop Core'
        author      = 'Mike Krueger'
        copyright   = 'GPL'
        url         = 'http://www.icsharpcode.net'
        description = 'SharpDevelop core module'
        version     = '1.0.0'/>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
-			Assert.AreEqual(addIn.Properties["name"], "SharpDevelop Core");
-			Assert.AreEqual(addIn.Properties["author"], "Mike Krueger");
-			Assert.AreEqual(addIn.Properties["copyright"], "GPL");
-			Assert.AreEqual(addIn.Properties["url"], "http://www.icsharpcode.net");
-			Assert.AreEqual(addIn.Properties["description"], "SharpDevelop core module");
-			Assert.AreEqual(addIn.Properties["version"], "1.0.0");
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
+			Assert.AreEqual(plugin.Properties["name"], "SharpDevelop Core");
+			Assert.AreEqual(plugin.Properties["author"], "Mike Krueger");
+			Assert.AreEqual(plugin.Properties["copyright"], "GPL");
+			Assert.AreEqual(plugin.Properties["url"], "http://www.icsharpcode.net");
+			Assert.AreEqual(plugin.Properties["description"], "SharpDevelop core module");
+			Assert.AreEqual(plugin.Properties["version"], "1.0.0");
 		}
 		#endregion
 		
@@ -46,36 +46,36 @@ namespace TickZoom.Loader.AddInTreeTests.Tests
 		[Test]
 		public void TestEmtpyRuntimeSection()
 		{
-			string addInText = @"<AddIn><Runtime/></AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
+			string pluginText = @"<Plugin><Runtime/></Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
 		}
 		
 		[Test]
 		public void TestEmtpyRuntimeSection2()
 		{
-			string addInText = @"<AddIn> <!-- Comment1 --> <Runtime>  <!-- Comment2 -->    </Runtime> <!-- Comment3 --> </AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
+			string pluginText = @"<Plugin> <!-- Comment1 --> <Runtime>  <!-- Comment2 -->    </Runtime> <!-- Comment3 --> </Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
 		}
 		
 		[Test]
 		public void TestRuntimeSectionImport()
 		{
-			string addInText = @"
-<AddIn>
+			string pluginText = @"
+<Plugin>
 	<Runtime>
 		<Import assembly = 'Test.dll'/>
 	</Runtime>
-</AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
-			Assert.AreEqual(1, addIn.Runtimes.Count);
-			Assert.AreEqual(addIn.Runtimes[0].Assembly, "Test.dll");
+</Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
+			Assert.AreEqual(1, plugin.Runtimes.Count);
+			Assert.AreEqual(plugin.Runtimes[0].Assembly, "Test.dll");
 		}
 		
 		[Test]
 		public void TestRuntimeSectionComplexImport()
 		{
-			string addInText = @"
-<AddIn>
+			string pluginText = @"
+<Plugin>
 	<Runtime>
 		<Import assembly = '../bin/SharpDevelop.Base.dll'>
 			<Doozer             name='MyDoozer'   class = 'ICSharpCode.Core.ClassDoozer'/>
@@ -84,23 +84,23 @@ namespace TickZoom.Loader.AddInTreeTests.Tests
 			<ConditionEvaluator name='Condition2' class = 'Condition2Class'/>
 		</Import>
 	</Runtime>
-</AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
-			Assert.AreEqual(1, addIn.Runtimes.Count);
-			Assert.AreEqual(addIn.Runtimes[0].Assembly, "../bin/SharpDevelop.Base.dll");
-			Assert.AreEqual(addIn.Runtimes[0].DefinedDoozers.Count, 2);
-			Assert.AreEqual(addIn.Runtimes[0].DefinedDoozers[0].Name, "MyDoozer");
-			Assert.AreEqual(addIn.Runtimes[0].DefinedDoozers[0].ClassName, "ICSharpCode.Core.ClassDoozer");
+</Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
+			Assert.AreEqual(1, plugin.Runtimes.Count);
+			Assert.AreEqual(plugin.Runtimes[0].Assembly, "../bin/SharpDevelop.Base.dll");
+			Assert.AreEqual(plugin.Runtimes[0].DefinedDoozers.Count, 2);
+			Assert.AreEqual(plugin.Runtimes[0].DefinedDoozers[0].Name, "MyDoozer");
+			Assert.AreEqual(plugin.Runtimes[0].DefinedDoozers[0].ClassName, "ICSharpCode.Core.ClassDoozer");
 			
-			Assert.AreEqual(addIn.Runtimes[0].DefinedDoozers[1].Name, "Test");
-			Assert.AreEqual(addIn.Runtimes[0].DefinedDoozers[1].ClassName, "ICSharpCode.Core.ClassDoozer2");
+			Assert.AreEqual(plugin.Runtimes[0].DefinedDoozers[1].Name, "Test");
+			Assert.AreEqual(plugin.Runtimes[0].DefinedDoozers[1].ClassName, "ICSharpCode.Core.ClassDoozer2");
 			
-			Assert.AreEqual(addIn.Runtimes[0].DefinedConditionEvaluators.Count, 2);
-			Assert.AreEqual(addIn.Runtimes[0].DefinedConditionEvaluators[0].Name, "MyCompare");
-			Assert.AreEqual(addIn.Runtimes[0].DefinedConditionEvaluators[0].ClassName, "ICSharpCode.Core.CompareCondition");
+			Assert.AreEqual(plugin.Runtimes[0].DefinedConditionEvaluators.Count, 2);
+			Assert.AreEqual(plugin.Runtimes[0].DefinedConditionEvaluators[0].Name, "MyCompare");
+			Assert.AreEqual(plugin.Runtimes[0].DefinedConditionEvaluators[0].ClassName, "ICSharpCode.Core.CompareCondition");
 			
-			Assert.AreEqual(addIn.Runtimes[0].DefinedConditionEvaluators[1].Name, "Condition2");
-			Assert.AreEqual(addIn.Runtimes[0].DefinedConditionEvaluators[1].ClassName, "Condition2Class");
+			Assert.AreEqual(plugin.Runtimes[0].DefinedConditionEvaluators[1].Name, "Condition2");
+			Assert.AreEqual(plugin.Runtimes[0].DefinedConditionEvaluators[1].ClassName, "Condition2Class");
 		}
 		#endregion
 		
@@ -108,67 +108,67 @@ namespace TickZoom.Loader.AddInTreeTests.Tests
 		[Test]
 		public void TestEmptyPathSection()
 		{
-			string addInText = @"
-<AddIn>
+			string pluginText = @"
+<Plugin>
 	<Path name = '/Path1'/>
 	<Path name = '/Path2'/>
 	<Path name = '/Path1/SubPath'/>
-</AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
-			Assert.AreEqual(3, addIn.Paths.Count);
-			Assert.IsNotNull(addIn.Paths["/Path1"]);
-			Assert.IsNotNull(addIn.Paths["/Path2"]);
-			Assert.IsNotNull(addIn.Paths["/Path1/SubPath"]);
+</Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
+			Assert.AreEqual(3, plugin.Paths.Count);
+			Assert.IsNotNull(plugin.Paths["/Path1"]);
+			Assert.IsNotNull(plugin.Paths["/Path2"]);
+			Assert.IsNotNull(plugin.Paths["/Path1/SubPath"]);
 		}
 		
 		[Test]
 		public void TestSimpleCodon()
 		{
-			string addInText = @"
-<AddIn>
+			string pluginText = @"
+<Plugin>
 	<Path name = '/Path1'>
 		<Simple id ='Simple' attr='a' attr2='b'/>
 	</Path>
-</AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
-			Assert.AreEqual(1, addIn.Paths.Count);
-			Assert.IsNotNull(addIn.Paths["/Path1"]);
-			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Simple", addIn.Paths["/Path1"].Codons[0].Name);
-			Assert.AreEqual("Simple", addIn.Paths["/Path1"].Codons[0].Id);
-			Assert.AreEqual("a", addIn.Paths["/Path1"].Codons[0].Properties["attr"]);
-			Assert.AreEqual("b", addIn.Paths["/Path1"].Codons[0].Properties["attr2"]);
+</Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
+			Assert.AreEqual(1, plugin.Paths.Count);
+			Assert.IsNotNull(plugin.Paths["/Path1"]);
+			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons.Count);
+			Assert.AreEqual("Simple", plugin.Paths["/Path1"].Codons[0].Name);
+			Assert.AreEqual("Simple", plugin.Paths["/Path1"].Codons[0].Id);
+			Assert.AreEqual("a", plugin.Paths["/Path1"].Codons[0].Properties["attr"]);
+			Assert.AreEqual("b", plugin.Paths["/Path1"].Codons[0].Properties["attr2"]);
 		}
 		
 		[Test]
 		public void TestSubCodons()
 		{
-			string addInText = @"
-<AddIn>
+			string pluginText = @"
+<Plugin>
 	<Path name = '/Path1'>
 		<Sub id='Path2'>
 			<Codon2 id='Sub2'/>
 		</Sub>
 	</Path>
-</AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
-			Assert.AreEqual(2, addIn.Paths.Count);
-			Assert.IsNotNull(addIn.Paths["/Path1"]);
-			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Sub", addIn.Paths["/Path1"].Codons[0].Name);
-			Assert.AreEqual("Path2", addIn.Paths["/Path1"].Codons[0].Id);
+</Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
+			Assert.AreEqual(2, plugin.Paths.Count);
+			Assert.IsNotNull(plugin.Paths["/Path1"]);
+			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons.Count);
+			Assert.AreEqual("Sub", plugin.Paths["/Path1"].Codons[0].Name);
+			Assert.AreEqual("Path2", plugin.Paths["/Path1"].Codons[0].Id);
 			
-			Assert.IsNotNull(addIn.Paths["/Path1/Path2"]);
-			Assert.AreEqual(1, addIn.Paths["/Path1/Path2"].Codons.Count);
-			Assert.AreEqual("Codon2", addIn.Paths["/Path1/Path2"].Codons[0].Name);
-			Assert.AreEqual("Sub2", addIn.Paths["/Path1/Path2"].Codons[0].Id);
+			Assert.IsNotNull(plugin.Paths["/Path1/Path2"]);
+			Assert.AreEqual(1, plugin.Paths["/Path1/Path2"].Codons.Count);
+			Assert.AreEqual("Codon2", plugin.Paths["/Path1/Path2"].Codons[0].Name);
+			Assert.AreEqual("Sub2", plugin.Paths["/Path1/Path2"].Codons[0].Id);
 		}
 		
 		[Test]
 		public void TestSubCodonsWithCondition()
 		{
-			string addInText = @"
-<AddIn>
+			string pluginText = @"
+<Plugin>
 	<Path name = '/Path1'>
 		<Condition name='Equal' string='a' equal='b'>
 			<Sub id='Path2'>
@@ -176,36 +176,36 @@ namespace TickZoom.Loader.AddInTreeTests.Tests
 			</Sub>
 		</Condition>
 	</Path>
-</AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
-			Assert.AreEqual(2, addIn.Paths.Count);
-			Assert.IsNotNull(addIn.Paths["/Path1"]);
-			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Sub", addIn.Paths["/Path1"].Codons[0].Name);
-			Assert.AreEqual("Path2", addIn.Paths["/Path1"].Codons[0].Id);
-			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons[0].Conditions.Length);
+</Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
+			Assert.AreEqual(2, plugin.Paths.Count);
+			Assert.IsNotNull(plugin.Paths["/Path1"]);
+			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons.Count);
+			Assert.AreEqual("Sub", plugin.Paths["/Path1"].Codons[0].Name);
+			Assert.AreEqual("Path2", plugin.Paths["/Path1"].Codons[0].Id);
+			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons[0].Conditions.Length);
 			
-			Assert.IsNotNull(addIn.Paths["/Path1/Path2"]);
-			Assert.AreEqual(1, addIn.Paths["/Path1/Path2"].Codons.Count);
-			Assert.AreEqual("Codon2", addIn.Paths["/Path1/Path2"].Codons[0].Name);
-			Assert.AreEqual("Sub2", addIn.Paths["/Path1/Path2"].Codons[0].Id);
-			Assert.AreEqual(0, addIn.Paths["/Path1/Path2"].Codons[0].Conditions.Length);
+			Assert.IsNotNull(plugin.Paths["/Path1/Path2"]);
+			Assert.AreEqual(1, plugin.Paths["/Path1/Path2"].Codons.Count);
+			Assert.AreEqual("Codon2", plugin.Paths["/Path1/Path2"].Codons[0].Name);
+			Assert.AreEqual("Sub2", plugin.Paths["/Path1/Path2"].Codons[0].Id);
+			Assert.AreEqual(0, plugin.Paths["/Path1/Path2"].Codons[0].Conditions.Length);
 		}
 		
 		[Test]
 		public void TestSimpleCondition()
 		{
-			string addInText = @"
-<AddIn>
+			string pluginText = @"
+<Plugin>
 	<Path name = '/Path1'>
 		<Condition name='Equal' string='a' equal='b'>
 			<Simple id ='Simple' attr='a' attr2='b'/>
 		</Condition>
 	</Path>
-</AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
-			Assert.AreEqual(1, addIn.Paths.Count, "Paths != 1");
-			ExtensionPath path = addIn.Paths["/Path1"];
+</Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
+			Assert.AreEqual(1, plugin.Paths.Count, "Paths != 1");
+			ExtensionPath path = plugin.Paths["/Path1"];
 			Assert.IsNotNull(path);
 			Assert.AreEqual(1, path.Codons.Count);
 			Codon codon = path.Codons[0];
@@ -227,8 +227,8 @@ namespace TickZoom.Loader.AddInTreeTests.Tests
 		[Test]
 		public void TestStackedCondition()
 		{
-			string addInText = @"
-<AddIn>
+			string pluginText = @"
+<Plugin>
 	<Path name = '/Path1'>
 		<Condition name='Equal' string='a' equal='b'>
 			<Condition name='StackedCondition' string='1' equal='2'>
@@ -238,10 +238,10 @@ namespace TickZoom.Loader.AddInTreeTests.Tests
 		</Condition>
 			<Simple id ='Simple3' attr='a' attr2='b'/>
 	</Path>
-</AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
-			Assert.AreEqual(1, addIn.Paths.Count);
-			ExtensionPath path = addIn.Paths["/Path1"];
+</Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
+			Assert.AreEqual(1, plugin.Paths.Count);
+			ExtensionPath path = plugin.Paths["/Path1"];
 			Assert.IsNotNull(path);
 			
 			Assert.AreEqual(3, path.Codons.Count);
@@ -281,8 +281,8 @@ namespace TickZoom.Loader.AddInTreeTests.Tests
 		[Test]
 		public void TestComplexCondition()
 		{
-			string addInText = @"
-<AddIn>
+			string pluginText = @"
+<Plugin>
 	<Path name = '/Path1'>
 		<ComplexCondition>
 			<And>
@@ -296,10 +296,10 @@ namespace TickZoom.Loader.AddInTreeTests.Tests
 			<Simple id ='Simple' attr='a' attr2='b'/>
 		</ComplexCondition>
 	</Path>
-</AddIn>";
-			AddIn addIn = AddIn.Load(new StringReader(addInText));
-			Assert.AreEqual(1, addIn.Paths.Count);
-			ExtensionPath path = addIn.Paths["/Path1"];
+</Plugin>";
+			Plugin plugin = Plugin.Load(new StringReader(pluginText));
+			Assert.AreEqual(1, plugin.Paths.Count);
+			ExtensionPath path = plugin.Paths["/Path1"];
 			Assert.IsNotNull(path);
 			Assert.AreEqual(1, path.Codons.Count);
 			Codon codon = path.Codons[0];

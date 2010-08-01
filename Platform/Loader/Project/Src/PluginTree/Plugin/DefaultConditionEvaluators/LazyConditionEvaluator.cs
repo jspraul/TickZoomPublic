@@ -14,7 +14,7 @@ namespace TickZoom.Loader
 	/// </summary>
 	public class LazyConditionEvaluator : IConditionEvaluator
 	{
-		AddIn addIn;
+		Plugin plugin;
 		string name;
 		string className;
 		
@@ -30,20 +30,20 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public LazyConditionEvaluator(AddIn addIn, Properties properties)
+		public LazyConditionEvaluator(Plugin plugin, Properties properties)
 		{
-			this.addIn      = addIn;
+			this.plugin      = plugin;
 			this.name       = properties["name"];
 			this.className  = properties["class"];
 		}
 		
 		public bool IsValid(object caller, Condition condition)
 		{
-			IConditionEvaluator evaluator = (IConditionEvaluator)addIn.CreateObject(className);
+			IConditionEvaluator evaluator = (IConditionEvaluator)plugin.CreateObject(className);
 			if (evaluator == null) {
 				return false;
 			}
-			AddInTree.ConditionEvaluators[name] = evaluator;
+			PluginTree.ConditionEvaluators[name] = evaluator;
 			return evaluator.IsValid(caller, condition);
 		}
 		

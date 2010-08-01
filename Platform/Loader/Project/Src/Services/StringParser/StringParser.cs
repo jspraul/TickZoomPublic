@@ -198,9 +198,9 @@ namespace TickZoom.Loader
 				case "SDKTOOLPATH":
 					return FileUtility.GetSdkPath(propertyName);
 				case "ADDINPATH":
-					foreach (AddIn addIn in AddInTree.AddIns) {
-						if (addIn.Manifest.Identities.ContainsKey(propertyName)) {
-							return System.IO.Path.GetDirectoryName(addIn.FileName);
+					foreach (Plugin plugin in PluginTree.Plugins) {
+						if (plugin.Manifest.Identities.ContainsKey(propertyName)) {
+							return System.IO.Path.GetDirectoryName(plugin.FileName);
 						}
 					}
 					return null;
@@ -230,7 +230,7 @@ namespace TickZoom.Loader
 		/// ${property:ContainerName/PropertyName}
 		/// ${property:ContainerName/PropertyName??DefaultValue}
 		/// A container is a Properties instance stored in the PropertyService. This is
-		/// used by many AddIns to group all their properties into one container.
+		/// used by many Plugins to group all their properties into one container.
 		/// </summary>
 		static string GetProperty(string propertyName)
 		{

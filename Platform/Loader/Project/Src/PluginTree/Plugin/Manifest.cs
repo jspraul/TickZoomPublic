@@ -12,12 +12,12 @@ using System.Xml;
 namespace TickZoom.Loader
 {
 	/// <summary>
-	/// Stores information about the manifest of an AddIn.
+	/// Stores information about the manifest of an Plugin.
 	/// </summary>
-	public class AddInManifest
+	public class PluginManifest
 	{
-		List<AddInReference> dependencies = new List<AddInReference>();
-		List<AddInReference> conflicts = new List<AddInReference>();
+		List<PluginReference> dependencies = new List<PluginReference>();
+		List<PluginReference> conflicts = new List<PluginReference>();
 		Dictionary<string, Version> identities = new Dictionary<string, Version>();
 		Version primaryVersion;
 		string primaryIdentity;
@@ -40,13 +40,13 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public List<AddInReference> Dependencies {
+		public List<PluginReference> Dependencies {
 			get {
 				return dependencies;
 			}
 		}
 		
-		public List<AddInReference> Conflicts {
+		public List<PluginReference> Conflicts {
 			get {
 				return conflicts;
 			}
@@ -55,13 +55,13 @@ namespace TickZoom.Loader
 		void AddIdentity(string name, string version, string hintPath)
 		{
 			if (name.Length == 0)
-				throw new AddInLoadException("Identity needs a name");
+				throw new PluginLoadException("Identity needs a name");
 			foreach (char c in name) {
 				if (!char.IsLetterOrDigit(c) && c != '.' && c != '_') {
-					throw new AddInLoadException("Identity name contains invalid character: '" + c + "'");
+					throw new PluginLoadException("Identity name contains invalid character: '" + c + "'");
 				}
 			}
-			Version v = AddInReference.ParseVersion(version, hintPath);
+			Version v = PluginReference.ParseVersion(version, hintPath);
 			if (primaryVersion == null) {
 				primaryVersion = v;
 			}
@@ -74,10 +74,10 @@ namespace TickZoom.Loader
 		public void ReadManifestSection(XmlReader reader, string hintPath)
 		{
 			if (reader.AttributeCount != 0) {
-				throw new AddInLoadException("Manifest node cannot have attributes.");
+				throw new PluginLoadException("Manifest node cannot have attributes.");
 			}
 			if (reader.IsEmptyElement) {
-				throw new AddInLoadException("Manifest node cannot be empty.");
+				throw new PluginLoadException("Manifest node cannot be empty.");
 			}
 			while (reader.Read()) {
 				switch (reader.NodeType) {
@@ -94,13 +94,13 @@ namespace TickZoom.Loader
 								AddIdentity(properties["name"], properties["version"], hintPath);
 								break;
 							case "Dependency":
-								dependencies.Add(AddInReference.Create(properties, hintPath));
+								dependencies.Add(PluginReference.Create(properties, hintPath));
 								break;
 							case "Conflict":
-								conflicts.Add(AddInReference.Create(properties, hintPath));
+								conflicts.Add(PluginReference.Create(properties, hintPath));
 								break;
 							default:
-								throw new AddInLoadException("Unknown node in Manifest section:" + nodeName);
+								throw new PluginLoadException("Unknown node in Manifest section:" + nodeName);
 						}
 						break;
 				}

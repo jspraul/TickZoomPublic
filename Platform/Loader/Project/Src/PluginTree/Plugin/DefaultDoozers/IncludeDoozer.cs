@@ -46,7 +46,7 @@ namespace TickZoom.Loader
 			string path = codon.Properties["path"];
 			if (item != null && item.Length > 0) {
 				// include item
-				return AddInTree.BuildItem(item, caller);
+				return PluginTree.BuildItem(item, caller);
 			} else if (path != null && path.Length > 0) {
 				// include path (=multiple items)
 				return new IncludeReturnItem(caller, path);
@@ -69,9 +69,9 @@ namespace TickZoom.Loader
 			
 			public void Apply(IList items)
 			{
-				AddInTreeNode node;
+				PluginTreeNode node;
 				try {
-					node = AddInTree.GetTreeNode(path);
+					node = PluginTree.GetTreeNode(path);
 					foreach (object o in node.BuildChildItems(caller)) {
 						items.Add(o);
 					}

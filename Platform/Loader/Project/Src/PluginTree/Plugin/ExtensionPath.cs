@@ -17,12 +17,12 @@ namespace TickZoom.Loader
 	public class ExtensionPath
 	{
 		string      name;
-		AddIn       addIn;
+		Plugin       plugin;
 		List<Codon> codons = new List<Codon>();
 		
-		public AddIn AddIn {
+		public Plugin Plugin {
 			get {
-				return addIn;
+				return plugin;
 			}
 		}
 		
@@ -37,9 +37,9 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public ExtensionPath(string name, AddIn addIn)
+		public ExtensionPath(string name, Plugin plugin)
 		{
-			this.addIn = addIn;
+			this.plugin = plugin;
 			this.name = name;
 		}
 		
@@ -62,10 +62,10 @@ namespace TickZoom.Loader
 						} else if (elementName == "ComplexCondition") {
 							conditionStack.Push(Condition.ReadComplexCondition(reader));
 						} else {
-							Codon newCodon = new Codon(extensionPath.AddIn, elementName, Properties.ReadFromAttributes(reader), conditionStack.ToArray());
+							Codon newCodon = new Codon(extensionPath.Plugin, elementName, Properties.ReadFromAttributes(reader), conditionStack.ToArray());
 							extensionPath.codons.Add(newCodon);
 							if (!reader.IsEmptyElement) {
-								ExtensionPath subPath = extensionPath.AddIn.GetExtensionPath(extensionPath.Name + "/" + newCodon.Id);
+								ExtensionPath subPath = extensionPath.Plugin.GetExtensionPath(extensionPath.Name + "/" + newCodon.Id);
 								//foreach (ICondition condition in extensionPath.conditionStack) {
 								//	subPath.conditionStack.Push(condition);
 								//}

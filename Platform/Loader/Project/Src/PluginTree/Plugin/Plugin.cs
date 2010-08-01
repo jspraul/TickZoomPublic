@@ -12,17 +12,17 @@ using System.Xml;
 
 namespace TickZoom.Loader
 {
-	public sealed class AddIn
+	public sealed class Plugin
 	{
 		Properties    properties = new Properties();
 		List<Runtime> runtimes   = new List<Runtime>();
 		List<string> bitmapResources = new List<string>();
 		List<string> stringResources = new List<string>();
 		
-		internal string addInFileName = null;
-		AddInManifest manifest = new AddInManifest();
+		internal string pluginFileName = null;
+		PluginManifest manifest = new PluginManifest();
 		Dictionary<string, ExtensionPath> paths = new Dictionary<string, ExtensionPath>();
-		AddInAction action = AddInAction.Disable;
+		PluginAction action = PluginAction.Disable;
 		bool enabled;
 		
 		static bool hasShownErrorMessage = false;
@@ -59,17 +59,17 @@ namespace TickZoom.Loader
 		{
 			if (!dependenciesLoaded) {
 				dependenciesLoaded = true;
-				foreach (AddInReference r in manifest.Dependencies) {
+				foreach (PluginReference r in manifest.Dependencies) {
 					if (r.RequirePreload) {
 						bool found = false;
-						foreach (AddIn addIn in AddInTree.AddIns) {
-							if (addIn.Manifest.Identities.ContainsKey(r.Name)) {
+						foreach (Plugin plugin in PluginTree.Plugins) {
+							if (plugin.Manifest.Identities.ContainsKey(r.Name)) {
 								found = true;
-								addIn.LoadRuntimeAssemblies();
+								plugin.LoadRuntimeAssemblies();
 							}
 						}
 						if (!found) {
-							throw new AddInLoadException("Cannot load run-time dependency for " + r.ToString());
+							throw new PluginLoadException("Cannot load run-time dependency for " + r.ToString());
 						}
 					}
 				}
@@ -78,15 +78,15 @@ namespace TickZoom.Loader
 		
 		public override string ToString()
 		{
-			return "[AddIn: " + Name + "]";
+			return "[Plugin: " + Name + "]";
 		}
 		
 		string customErrorMessage;
 		
 		/// <summary>
-		/// Gets the message of a custom load error. Used only when AddInAction is set to CustomError.
+		/// Gets the message of a custom load error. Used only when PluginAction is set to CustomError.
 		/// Settings this property to a non-null value causes Enabled to be set to false and
-		/// Action to be set to AddInAction.CustomError.
+		/// Action to be set to PluginAction.CustomError.
 		/// </summary>
 		public string CustomErrorMessage {
 			get {
@@ -95,7 +95,7 @@ namespace TickZoom.Loader
 			internal set {
 				if (value != null) {
 					Enabled = false;
-					Action = AddInAction.CustomError;
+					Action = PluginAction.CustomError;
 				}
 				customErrorMessage = value;
 			}
@@ -104,7 +104,7 @@ namespace TickZoom.Loader
 		/// <summary>
 		/// Action to execute when the application is restarted.
 		/// </summary>
-		public AddInAction Action {
+		public PluginAction Action {
 			get {
 				return action;
 			}
@@ -127,7 +127,7 @@ namespace TickZoom.Loader
 		
 		public string FileName {
 			get {
-				return addInFileName;
+				return pluginFileName;
 			}
 		}
 		
@@ -137,7 +137,7 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public AddInManifest Manifest {
+		public PluginManifest Manifest {
 			get {
 				return manifest;
 			}
@@ -179,15 +179,15 @@ namespace TickZoom.Loader
 			}
 			set {
 				enabled = value;
-				this.Action = value ? AddInAction.Enable : AddInAction.Disable;
+				this.Action = value ? PluginAction.Enable : PluginAction.Disable;
 			}
 		}
 		
-		internal AddIn()
+		internal Plugin()
 		{
 		}
 		
-		static void SetupAddIn(XmlReader reader, AddIn addIn, string hintPath)
+		static void SetupPlugin(XmlReader reader, Plugin plugin, string hintPath)
 		{
 			while (reader.Read()) {
 				if (reader.NodeType == XmlNodeType.Element && reader.IsStartElement()) {
@@ -195,57 +195,57 @@ namespace TickZoom.Loader
 						case "StringResources":
 						case "BitmapResources":
 							if (reader.AttributeCount != 1) {
-								throw new AddInLoadException("BitmapResources requires ONE attribute.");
+								throw new PluginLoadException("BitmapResources requires ONE attribute.");
 							}
 							
 							string filename = StringParser.Parse(reader.GetAttribute("file"));
 							
 							if(reader.LocalName == "BitmapResources")
 							{
-								addIn.BitmapResources.Add(filename);
+								plugin.BitmapResources.Add(filename);
 							}
 							else
 							{
-								addIn.StringResources.Add(filename);
+								plugin.StringResources.Add(filename);
 							}
 							break;
 						case "Runtime":
 							if (!reader.IsEmptyElement) {
-								Runtime.ReadSection(reader, addIn, hintPath);
+								Runtime.ReadSection(reader, plugin, hintPath);
 							}
 							break;
 						case "Include":
 							if (reader.AttributeCount != 1) {
-								throw new AddInLoadException("Include requires ONE attribute.");
+								throw new PluginLoadException("Include requires ONE attribute.");
 							}
 							if (!reader.IsEmptyElement) {
-								throw new AddInLoadException("Include nodes must be empty!");
+								throw new PluginLoadException("Include nodes must be empty!");
 							}
 							if (hintPath == null) {
-								throw new AddInLoadException("Cannot use include nodes when hintPath was not specified (e.g. when AddInManager reads a .addin file)!");
+								throw new PluginLoadException("Cannot use include nodes when hintPath was not specified (e.g. when PluginManager reads a .addin file)!");
 							}
 							string fileName = Path.Combine(hintPath, reader.GetAttribute(0));
 							XmlReaderSettings xrs = new XmlReaderSettings();
 							xrs.ConformanceLevel = ConformanceLevel.Fragment;
 							using (XmlReader includeReader = XmlTextReader.Create(fileName, xrs)) {
-								SetupAddIn(includeReader, addIn, Path.GetDirectoryName(fileName));
+								SetupPlugin(includeReader, plugin, Path.GetDirectoryName(fileName));
 							}
 							break;
 						case "Path":
 							if (reader.AttributeCount != 1) {
-								throw new AddInLoadException("Import node requires ONE attribute.");
+								throw new PluginLoadException("Import node requires ONE attribute.");
 							}
 							string pathName = reader.GetAttribute(0);
-							ExtensionPath extensionPath = addIn.GetExtensionPath(pathName);
+							ExtensionPath extensionPath = plugin.GetExtensionPath(pathName);
 							if (!reader.IsEmptyElement) {
 								ExtensionPath.SetUp(extensionPath, reader, "Path");
 							}
 							break;
 						case "Manifest":
-							addIn.Manifest.ReadManifestSection(reader, hintPath);
+							plugin.Manifest.ReadManifestSection(reader, hintPath);
 							break;
 						default:
-							throw new AddInLoadException("Unknown root path node:" + reader.LocalName);
+							throw new PluginLoadException("Unknown root path node:" + reader.LocalName);
 					}
 				}
 			}
@@ -259,41 +259,41 @@ namespace TickZoom.Loader
 			return paths[pathName];
 		}
 		
-		public static AddIn Load(TextReader textReader)
+		public static Plugin Load(TextReader textReader)
 		{
 			return Load(textReader, null);
 		}
 		
-		public static AddIn Load(TextReader textReader, string hintPath)
+		public static Plugin Load(TextReader textReader, string hintPath)
 		{
-			AddIn addIn = new AddIn();
+			Plugin plugin = new Plugin();
 			using (XmlTextReader reader = new XmlTextReader(textReader)) {
 				while (reader.Read()){
 					if (reader.IsStartElement()) {
 						switch (reader.LocalName) {
-							case "AddIn":
-								addIn.properties = Properties.ReadFromAttributes(reader);
-								SetupAddIn(reader, addIn, hintPath);
+							case "Plugin":
+								plugin.properties = Properties.ReadFromAttributes(reader);
+								SetupPlugin(reader, plugin, hintPath);
 								break;
 							default:
-								throw new AddInLoadException("Unknown add-in file.");
+								throw new PluginLoadException("Unknown add-in file.");
 						}
 					}
 				}
 			}
-			return addIn;
+			return plugin;
 		}
 		
-		public static AddIn Load(string fileName)
+		public static Plugin Load(string fileName)
 		{
 			try {
 				using (TextReader textReader = File.OpenText(fileName)) {
-					AddIn addIn = Load(textReader, Path.GetDirectoryName(fileName));
-					addIn.addInFileName = fileName;
-					return addIn;
+					Plugin plugin = Load(textReader, Path.GetDirectoryName(fileName));
+					plugin.pluginFileName = fileName;
+					return plugin;
 				}
 			} catch (Exception e) {
-				throw new AddInLoadException("Can't load " + fileName, e);
+				throw new PluginLoadException("Can't load " + fileName, e);
 			}
 		}
 	}

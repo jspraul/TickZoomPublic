@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 
-namespace TickZoom.Loader.AddInTreeTests.Tests
+namespace TickZoom.Loader.PluginTreeTests.Tests
 {
 	[TestFixture]
 	public class FileUtilityTests

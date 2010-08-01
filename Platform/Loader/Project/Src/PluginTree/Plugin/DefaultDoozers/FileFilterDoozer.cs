@@ -19,7 +19,7 @@ namespace TickZoom.Loader
 	/// <attribute name="extensions" use="required">
 	/// The extensions associated with this file filter entry.
 	/// </attribute>
-	/// <usage>Only in /SharpDevelop/Workbench/FileFilter</usage>
+	/// <usage>Only in /TickZoom/Workbench/FileFilter</usage>
 	/// <returns>
 	/// String in the format "name|extensions".
 	/// </returns>

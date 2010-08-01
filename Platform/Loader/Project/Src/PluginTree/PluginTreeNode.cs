@@ -12,18 +12,18 @@ using System.Collections.Generic;
 namespace TickZoom.Loader
 {
 	/// <summary>
-	/// Represents an extension path in the <see cref="AddInTree"/>.
+	/// Represents an extension path in the <see cref="PluginTree"/>.
 	/// </summary>
-	public sealed class AddInTreeNode
+	public sealed class PluginTreeNode
 	{
-		Dictionary<string, AddInTreeNode> childNodes = new Dictionary<string, AddInTreeNode>();
+		Dictionary<string, PluginTreeNode> childNodes = new Dictionary<string, PluginTreeNode>();
 		List<Codon> codons = new List<Codon>();
 		bool isSorted = false;
 		
 		/// <summary>
 		/// A dictionary containing the child paths.
 		/// </summary>
-		public Dictionary<string, AddInTreeNode> ChildNodes {
+		public Dictionary<string, PluginTreeNode> ChildNodes {
 			get {
 				return childNodes;
 			}
@@ -51,8 +51,8 @@ namespace TickZoom.Loader
 //			}
 //
 //			writer.Write((ushort)childNodes.Count);
-//			foreach (KeyValuePair<string, AddInTreeNode> child in childNodes) {
-//				writer.Write(AddInTree.GetNameOffset(child.Key));
+//			foreach (KeyValuePair<string, PluginTreeNode> child in childNodes) {
+//				writer.Write(PluginTree.GetNameOffset(child.Key));
 //				child.Value.BinarySerialize(writer);
 //			}
 //		}
@@ -157,7 +157,7 @@ namespace TickZoom.Loader
 				} else if (result is T) {
 					items.Add((T)result);
 				} else {
-					throw new InvalidCastException("The AddInTreeNode <" + codon.Name + " id='" + codon.Id
+					throw new InvalidCastException("The PluginTreeNode <" + codon.Name + " id='" + codon.Id
 					                               + "' returned an instance of " + result.GetType().FullName
 					                               + " but the type " + typeof(T).FullName + " is expected.");
 				}

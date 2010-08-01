@@ -11,7 +11,7 @@ using System.Text;
 namespace TickZoom.Loader
 {
 	/// <summary>
-	/// A minimal version of FileUtility. Is used by ICSharpCode.SharpDevelop.Dom (which doesn't reference
+	/// A minimal version of FileUtility. Is used by ICSharpCode.TickZoom.Dom (which doesn't reference
 	/// TickZoom.Loader)
 	/// </summary>
 	static partial class FileUtility

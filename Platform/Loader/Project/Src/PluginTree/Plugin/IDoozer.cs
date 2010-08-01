@@ -25,7 +25,7 @@ namespace TickZoom.Loader
 		/// <summary>
 		/// Construct the item.
 		/// </summary>
-		/// <param name="caller">The caller passed to <see cref="AddInTree.BuildItem"/>.</param>
+		/// <param name="caller">The caller passed to <see cref="PluginTree.BuildItem"/>.</param>
 		/// <param name="codon">The codon to build.</param>
 		/// <param name="subItems">The list of objects created by (other) doozers for the sub items.</param>
 		/// <returns>The constructed item.</returns>

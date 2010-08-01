@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace TickZoom.Loader
 {
 	/// <summary>
-	/// Is thrown when the AddInTree could not find the requested path.
+	/// Is thrown when the PluginTree could not find the requested path.
 	/// </summary>
 	[Serializable()]
 	public class TreePathNotFoundException : CoreException

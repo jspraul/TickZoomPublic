@@ -282,8 +282,8 @@ namespace TickZoom.Loader
 //		{
 //			writer.Write((byte)properties.Count);
 //			foreach (KeyValuePair<string, object> entry in properties) {
-//				writer.Write(AddInTree.GetNameOffset(entry.Key));
-//				writer.Write(AddInTree.GetNameOffset(entry.Value.ToString()));
+//				writer.Write(PluginTree.GetNameOffset(entry.Key));
+//				writer.Write(PluginTree.GetNameOffset(entry.Value.ToString()));
 //			}
 //		}
 		

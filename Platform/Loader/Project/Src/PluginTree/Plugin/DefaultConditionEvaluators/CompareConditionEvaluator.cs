@@ -12,7 +12,7 @@ namespace TickZoom.Loader
 	/// <summary>
 	/// Compares two strings.
 	/// The strings are passed through the StringParser, so it is possible to compare
-	/// SharpDevelop properties.<br/>
+	/// TickZoom properties.<br/>
 	/// Useful if you want to run a command only when a setting is active to prevent
 	/// loading your addin if that setting isn't set.
 	/// </summary>
@@ -27,7 +27,7 @@ namespace TickZoom.Loader
 	/// 'OrdinalIgnoreCase'.
 	/// </attribute>
 	/// <example title="Check the value of a property in the PropertyService">
-	/// &lt;Condition name = "Compare" string = "${property:SharpDevelop.FiletypesRegisterStartup}" equals = "True"&gt;
+	/// &lt;Condition name = "Compare" string = "${property:TickZoom.FiletypesRegisterStartup}" equals = "True"&gt;
 	/// </example>
 	public class CompareConditionEvaluator : IConditionEvaluator
 	{

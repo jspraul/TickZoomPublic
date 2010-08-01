@@ -14,17 +14,17 @@ using System.Resources;
 namespace TickZoom.Loader
 {
 	/// <summary>
-	/// Static class containing the AddInTree. Contains methods for accessing tree nodes and building items.
+	/// Static class containing the PluginTree. Contains methods for accessing tree nodes and building items.
 	/// </summary>
-	public static class AddInTree
+	public static class PluginTree
 	{
-		static List<AddIn>   addIns   = new List<AddIn>();
-		static AddInTreeNode rootNode = new AddInTreeNode();
+		static List<Plugin>   plugins   = new List<Plugin>();
+		static PluginTreeNode rootNode = new PluginTreeNode();
 		
 		static Dictionary<string, IDoozer> doozers = new Dictionary<string, IDoozer>();
 		static Dictionary<string, IConditionEvaluator> conditionEvaluators = new Dictionary<string, IConditionEvaluator>();
 		
-		static AddInTree()
+		static PluginTree()
 		{
 			doozers.Add("Class", new ClassDoozer());
 			doozers.Add("FileFilter", new FileFilterDoozer());
@@ -37,33 +37,33 @@ namespace TickZoom.Loader
 			conditionEvaluators.Add("Compare", new CompareConditionEvaluator());
 			conditionEvaluators.Add("Ownerstate", new OwnerStateConditionEvaluator());
 			
-			ApplicationStateInfoService.RegisterStateGetter("Installed 3rd party AddIns", GetInstalledThirdPartyAddInsListAsString);
+			ApplicationStateInfoService.RegisterStateGetter("Installed 3rd party Plugins", GetInstalledThirdPartyPluginsListAsString);
 		}
 		
-		static object GetInstalledThirdPartyAddInsListAsString()
+		static object GetInstalledThirdPartyPluginsListAsString()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			foreach (AddIn addIn in AddIns) {
-				// Skip preinstalled AddIns (show only third party AddIns)
-				if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, addIn.FileName)) {
-					string hidden = addIn.Properties["addInManagerHidden"];
+			foreach (Plugin plugin in Plugins) {
+				// Skip preinstalled Plugins (show only third party Plugins)
+				if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, plugin.FileName)) {
+					string hidden = plugin.Properties["pluginManagerHidden"];
 					if (string.Equals(hidden, "true", StringComparison.OrdinalIgnoreCase) || string.Equals(hidden, "preinstalled", StringComparison.OrdinalIgnoreCase))
 						continue;
 				}
 				if (sb.Length > 0) sb.Append(", ");
 				sb.Append("[");
-				sb.Append(addIn.Name);
-				if (addIn.Version != null) {
+				sb.Append(plugin.Name);
+				if (plugin.Version != null) {
 					sb.Append(' ');
-					sb.Append(addIn.Version.ToString());
+					sb.Append(plugin.Version.ToString());
 				}
-				if (!addIn.Enabled) {
+				if (!plugin.Enabled) {
 					sb.Append(", Enabled=");
-					sb.Append(addIn.Enabled);
+					sb.Append(plugin.Enabled);
 				}
-				if (addIn.Action != AddInAction.Enable) {
+				if (plugin.Action != PluginAction.Enable) {
 					sb.Append(", Action=");
-					sb.Append(addIn.Action.ToString());
+					sb.Append(plugin.Action.ToString());
 				}
 				sb.Append("]");
 			}
@@ -71,11 +71,11 @@ namespace TickZoom.Loader
 		}
 		
 		/// <summary>
-		/// Gets the list of loaded AddIns.
+		/// Gets the list of loaded Plugins.
 		/// </summary>
-		public static IList<AddIn> AddIns {
+		public static IList<Plugin> Plugins {
 			get {
-				return addIns.AsReadOnly();
+				return plugins.AsReadOnly();
 			}
 		}
 		
@@ -98,7 +98,7 @@ namespace TickZoom.Loader
 		}
 		
 		/// <summary>
-		/// Checks whether the specified path exists in the AddIn tree.
+		/// Checks whether the specified path exists in the Plugin tree.
 		/// </summary>
 		public static bool ExistsTreeNode(string path)
 		{
@@ -107,7 +107,7 @@ namespace TickZoom.Loader
 			}
 			
 			string[] splittedPath = path.Split('/');
-			AddInTreeNode curPath = rootNode;
+			PluginTreeNode curPath = rootNode;
 			int i = 0;
 			while (i < splittedPath.Length) {
 				// curPath = curPath.ChildNodes[splittedPath[i]] - check if child path exists
@@ -120,31 +120,31 @@ namespace TickZoom.Loader
 		}
 		
 		/// <summary>
-		/// Gets the <see cref="AddInTreeNode"/> representing the specified path.
+		/// Gets the <see cref="PluginTreeNode"/> representing the specified path.
 		/// This method throws a <see cref="TreePathNotFoundException"/> when the
 		/// path does not exist.
 		/// </summary>
-		public static AddInTreeNode GetTreeNode(string path)
+		public static PluginTreeNode GetTreeNode(string path)
 		{
 			return GetTreeNode(path, true);
 		}
 		
 		/// <summary>
-		/// Gets the <see cref="AddInTreeNode"/> representing the specified path.
+		/// Gets the <see cref="PluginTreeNode"/> representing the specified path.
 		/// </summary>
-		/// <param name="path">The path of the AddIn tree node</param>
+		/// <param name="path">The path of the Plugin tree node</param>
 		/// <param name="throwOnNotFound">
 		/// If set to <c>true</c>, this method throws a
 		/// <see cref="TreePathNotFoundException"/> when the path does not exist.
 		/// If set to <c>false</c>, <c>null</c> is returned for non-existing paths.
 		/// </param>
-		public static AddInTreeNode GetTreeNode(string path, bool throwOnNotFound)
+		public static PluginTreeNode GetTreeNode(string path, bool throwOnNotFound)
 		{
 			if (path == null || path.Length == 0) {
 				return rootNode;
 			}
 			string[] splittedPath = path.Split('/');
-			AddInTreeNode curPath = rootNode;
+			PluginTreeNode curPath = rootNode;
 			int i = 0;
 			while (i < splittedPath.Length) {
 				if (!curPath.ChildNodes.TryGetValue(splittedPath[i], out curPath)) {
@@ -171,7 +171,7 @@ namespace TickZoom.Loader
 			int pos = path.LastIndexOf('/');
 			string parent = path.Substring(0, pos);
 			string child = path.Substring(pos + 1);
-			AddInTreeNode node = GetTreeNode(parent);
+			PluginTreeNode node = GetTreeNode(parent);
 			return node.BuildChildItem(child, caller, new ArrayList(BuildItems<object>(path, caller, false)));
 		}
 		
@@ -196,24 +196,24 @@ namespace TickZoom.Loader
 		/// path is not found.</param>
 		public static List<T> BuildItems<T>(string path, object caller, bool throwOnNotFound)
 		{
-			AddInTreeNode node = GetTreeNode(path, throwOnNotFound);
+			PluginTreeNode node = GetTreeNode(path, throwOnNotFound);
 			if (node == null)
 				return new List<T>();
 			else
 				return node.BuildChildItems<T>(caller);
 		}
 		
-		static AddInTreeNode CreatePath(AddInTreeNode localRoot, string path)
+		static PluginTreeNode CreatePath(PluginTreeNode localRoot, string path)
 		{
 			if (path == null || path.Length == 0) {
 				return localRoot;
 			}
 			string[] splittedPath = path.Split('/');
-			AddInTreeNode curPath = localRoot;
+			PluginTreeNode curPath = localRoot;
 			int i = 0;
 			while (i < splittedPath.Length) {
 				if (!curPath.ChildNodes.ContainsKey(splittedPath[i])) {
-					curPath.ChildNodes[splittedPath[i]] = new AddInTreeNode();
+					curPath.ChildNodes[splittedPath[i]] = new PluginTreeNode();
 				}
 				curPath = curPath.ChildNodes[splittedPath[i]];
 				++i;
@@ -224,82 +224,82 @@ namespace TickZoom.Loader
 		
 		static void AddExtensionPath(ExtensionPath path)
 		{
-			AddInTreeNode treePath = CreatePath(rootNode, path.Name);
+			PluginTreeNode treePath = CreatePath(rootNode, path.Name);
 			foreach (Codon codon in path.Codons) {
 				treePath.Codons.Add(codon);
 			}
 		}
 		
 		/// <summary>
-		/// The specified AddIn is added to the <see cref="AddIns"/> collection.
-		/// If the AddIn is enabled, its doozers, condition evaluators and extension
-		/// paths are added to the AddInTree and its resources are added to the
+		/// The specified Plugin is added to the <see cref="Plugins"/> collection.
+		/// If the Plugin is enabled, its doozers, condition evaluators and extension
+		/// paths are added to the PluginTree and its resources are added to the
 		/// <see cref="ResourceService"/>.
 		/// </summary>
-		public static void InsertAddIn(AddIn addIn)
+		public static void InsertPlugin(Plugin plugin)
 		{
-			if (addIn.Enabled) {
-				foreach (ExtensionPath path in addIn.Paths.Values) {
+			if (plugin.Enabled) {
+				foreach (ExtensionPath path in plugin.Paths.Values) {
 					AddExtensionPath(path);
 				}
 				
-				foreach (Runtime runtime in addIn.Runtimes) {
+				foreach (Runtime runtime in plugin.Runtimes) {
 					if (runtime.IsActive) {
 						foreach (LazyLoadDoozer doozer in runtime.DefinedDoozers) {
-							if (AddInTree.Doozers.ContainsKey(doozer.Name)) {
-								throw new AddInLoadException("Duplicate doozer: " + doozer.Name);
+							if (PluginTree.Doozers.ContainsKey(doozer.Name)) {
+								throw new PluginLoadException("Duplicate doozer: " + doozer.Name);
 							}
-							AddInTree.Doozers.Add(doozer.Name, doozer);
+							PluginTree.Doozers.Add(doozer.Name, doozer);
 						}
 						foreach (LazyConditionEvaluator condition in runtime.DefinedConditionEvaluators) {
-							if (AddInTree.ConditionEvaluators.ContainsKey(condition.Name)) {
-								throw new AddInLoadException("Duplicate condition evaluator: " + condition.Name);
+							if (PluginTree.ConditionEvaluators.ContainsKey(condition.Name)) {
+								throw new PluginLoadException("Duplicate condition evaluator: " + condition.Name);
 							}
-							AddInTree.ConditionEvaluators.Add(condition.Name, condition);
+							PluginTree.ConditionEvaluators.Add(condition.Name, condition);
 						}
 					}
 				}
 				
-				string addInRoot = Path.GetDirectoryName(addIn.FileName);
-				foreach(string bitmapResource in addIn.BitmapResources)
+				string pluginRoot = Path.GetDirectoryName(plugin.FileName);
+				foreach(string bitmapResource in plugin.BitmapResources)
 				{
-					string path = Path.Combine(addInRoot, bitmapResource);
+					string path = Path.Combine(pluginRoot, bitmapResource);
 					ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
 					ResourceService.RegisterNeutralImages(resourceManager);
 				}
 				
-				foreach(string stringResource in addIn.StringResources)
+				foreach(string stringResource in plugin.StringResources)
 				{
-					string path = Path.Combine(addInRoot, stringResource);
+					string path = Path.Combine(pluginRoot, stringResource);
 					ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
 					ResourceService.RegisterNeutralStrings(resourceManager);
 				}
 			}
-			addIns.Add(addIn);
+			plugins.Add(plugin);
 		}
 		
 		/// <summary>
-		/// The specified AddIn is removed to the <see cref="AddIns"/> collection.
-		/// This is only possible for disabled AddIns, enabled AddIns require
+		/// The specified Plugin is removed to the <see cref="Plugins"/> collection.
+		/// This is only possible for disabled Plugins, enabled Plugins require
 		/// a restart of the application to be removed.
 		/// </summary>
-		/// <exception cref="ArgumentException">Occurs when trying to remove an enabled AddIn.</exception>
-		public static void RemoveAddIn(AddIn addIn)
+		/// <exception cref="ArgumentException">Occurs when trying to remove an enabled Plugin.</exception>
+		public static void RemovePlugin(Plugin plugin)
 		{
-			if (addIn.Enabled) {
-				throw new ArgumentException("Cannot remove enabled AddIns at runtime.");
+			if (plugin.Enabled) {
+				throw new ArgumentException("Cannot remove enabled Plugins at runtime.");
 			}
-			addIns.Remove(addIn);
+			plugins.Remove(plugin);
 		}
 		
 		// As long as the show form takes 10 times of loading the xml representation I'm not implementing
 		// binary serialization.
 //		static Dictionary<string, ushort> nameLookupTable = new Dictionary<string, ushort>();
-//		static Dictionary<AddIn, ushort> addInLookupTable = new Dictionary<AddIn, ushort>();
+//		static Dictionary<Plugin, ushort> pluginLookupTable = new Dictionary<Plugin, ushort>();
 //
-//		public static ushort GetAddInOffset(AddIn addIn)
+//		public static ushort GetPluginOffset(Plugin plugin)
 //		{
-//			return addInLookupTable[addIn];
+//			return pluginLookupTable[plugin];
 //		}
 //
 //		public static ushort GetNameOffset(string name)
@@ -312,14 +312,14 @@ namespace TickZoom.Loader
 //
 //		public static void BinarySerialize(string fileName)
 //		{
-//			for (int i = 0; i < addIns.Count; ++i) {
-//				addInLookupTable[addIns] = (ushort)i;
+//			for (int i = 0; i < plugins.Count; ++i) {
+//				pluginLookupTable[plugins] = (ushort)i;
 //			}
 //			using (BinaryWriter writer = new BinaryWriter(File.OpenWrite(fileName))) {
 //				rootNode.BinarySerialize(writer);
-//				writer.Write((ushort)addIns.Count);
-//				for (int i = 0; i < addIns.Count; ++i) {
-//					addIns[i].BinarySerialize(writer);
+//				writer.Write((ushort)plugins.Count);
+//				for (int i = 0; i < plugins.Count; ++i) {
+//					plugins[i].BinarySerialize(writer);
 //				}
 //				writer.Write((ushort)nameLookupTable.Count);
 //				foreach (string name in nameLookupTable.Keys) {
@@ -329,13 +329,13 @@ namespace TickZoom.Loader
 //		}
 		
 		// used by Load(): disables an addin and removes it from the dictionaries.
-		static void DisableAddin(AddIn addIn, Dictionary<string, Version> dict, Dictionary<string, AddIn> addInDict)
+		static void DisableAddin(Plugin plugin, Dictionary<string, Version> dict, Dictionary<string, Plugin> pluginDict)
 		{
-			addIn.Enabled = false;
-			addIn.Action = AddInAction.DependencyError;
-			foreach (string name in addIn.Manifest.Identities.Keys) {
+			plugin.Enabled = false;
+			plugin.Action = PluginAction.DependencyError;
+			foreach (string name in plugin.Manifest.Identities.Keys) {
 				dict.Remove(name);
-				addInDict.Remove(name);
+				pluginDict.Remove(name);
 			}
 		}
 		
@@ -343,99 +343,99 @@ namespace TickZoom.Loader
 		/// Loads a list of .addin files, ensuring that dependencies are satisfied.
 		/// This method is normally called by <see cref="CoreStartup.RunInitialization"/>.
 		/// </summary>
-		/// <param name="addInFiles">
+		/// <param name="pluginFiles">
 		/// The list of .addin file names to load.
 		/// </param>
-		/// <param name="disabledAddIns">
-		/// The list of disabled AddIn identity names.
+		/// <param name="disabledPlugins">
+		/// The list of disabled Plugin identity names.
 		/// </param>
-		public static void Load(List<string> addInFiles, List<string> disabledAddIns)
+		public static void Load(List<string> pluginFiles, List<string> disabledPlugins)
 		{
-			List<AddIn> list = new List<AddIn>();
+			List<Plugin> list = new List<Plugin>();
 			Dictionary<string, Version> dict = new Dictionary<string, Version>();
-			Dictionary<string, AddIn> addInDict = new Dictionary<string, AddIn>();
-			foreach (string fileName in addInFiles) {
-				AddIn addIn;
+			Dictionary<string, Plugin> pluginDict = new Dictionary<string, Plugin>();
+			foreach (string fileName in pluginFiles) {
+				Plugin plugin;
 				try {
-					addIn = AddIn.Load(fileName);
-				} catch (AddInLoadException ex) {
+					plugin = Plugin.Load(fileName);
+				} catch (PluginLoadException ex) {
 					LoggingService.Error(ex);
 					if (ex.InnerException != null) {
-						MessageService.ShowError("Error loading AddIn " + fileName + ":\n"
+						MessageService.ShowError("Error loading Plugin " + fileName + ":\n"
 						                         + ex.InnerException.Message);
 					} else {
-						MessageService.ShowError("Error loading AddIn " + fileName + ":\n"
+						MessageService.ShowError("Error loading Plugin " + fileName + ":\n"
 						                         + ex.Message);
 					}
-					addIn = new AddIn();
-					addIn.addInFileName = fileName;
-					addIn.CustomErrorMessage = ex.Message;
+					plugin = new Plugin();
+					plugin.pluginFileName = fileName;
+					plugin.CustomErrorMessage = ex.Message;
 				}
-				if (addIn.Action == AddInAction.CustomError) {
-					list.Add(addIn);
+				if (plugin.Action == PluginAction.CustomError) {
+					list.Add(plugin);
 					continue;
 				}
-				addIn.Enabled = true;
-				if (disabledAddIns != null && disabledAddIns.Count > 0) {
-					foreach (string name in addIn.Manifest.Identities.Keys) {
-						if (disabledAddIns.Contains(name)) {
-							addIn.Enabled = false;
+				plugin.Enabled = true;
+				if (disabledPlugins != null && disabledPlugins.Count > 0) {
+					foreach (string name in plugin.Manifest.Identities.Keys) {
+						if (disabledPlugins.Contains(name)) {
+							plugin.Enabled = false;
 							break;
 						}
 					}
 				}
-				if (addIn.Enabled) {
-					foreach (KeyValuePair<string, Version> pair in addIn.Manifest.Identities) {
+				if (plugin.Enabled) {
+					foreach (KeyValuePair<string, Version> pair in plugin.Manifest.Identities) {
 						if (dict.ContainsKey(pair.Key)) {
 							MessageService.ShowError("Name '" + pair.Key + "' is used by " +
-							                         "'" + addInDict[pair.Key].FileName + "' and '" + fileName + "'");
-							addIn.Enabled = false;
-							addIn.Action = AddInAction.InstalledTwice;
+							                         "'" + pluginDict[pair.Key].FileName + "' and '" + fileName + "'");
+							plugin.Enabled = false;
+							plugin.Action = PluginAction.InstalledTwice;
 							break;
 						} else {
 							dict.Add(pair.Key, pair.Value);
-							addInDict.Add(pair.Key, addIn);
+							pluginDict.Add(pair.Key, plugin);
 						}
 					}
 				}
-				list.Add(addIn);
+				list.Add(plugin);
 			}
 		checkDependencies:
 			for (int i = 0; i < list.Count; i++) {
-				AddIn addIn = list[i];
-				if (!addIn.Enabled) continue;
+				Plugin plugin = list[i];
+				if (!plugin.Enabled) continue;
 				
 				Version versionFound;
 				
-				foreach (AddInReference reference in addIn.Manifest.Conflicts) {
+				foreach (PluginReference reference in plugin.Manifest.Conflicts) {
 					if (reference.Check(dict, out versionFound)) {
-						MessageService.ShowError(addIn.Name + " conflicts with " + reference.ToString()
+						MessageService.ShowError(plugin.Name + " conflicts with " + reference.ToString()
 						                         + " and has been disabled.");
-						DisableAddin(addIn, dict, addInDict);
+						DisableAddin(plugin, dict, pluginDict);
 						goto checkDependencies; // after removing one addin, others could break
 					}
 				}
-				foreach (AddInReference reference in addIn.Manifest.Dependencies) {
+				foreach (PluginReference reference in plugin.Manifest.Dependencies) {
 					if (!reference.Check(dict, out versionFound)) {
 						if (versionFound != null) {
-							MessageService.ShowError(addIn.Name + " has not been loaded because it requires "
+							MessageService.ShowError(plugin.Name + " has not been loaded because it requires "
 							                         + reference.ToString() + ", but version "
 							                         + versionFound.ToString() + " is installed.");
 						} else {
-							MessageService.ShowError(addIn.Name + " has not been loaded because it requires "
+							MessageService.ShowError(plugin.Name + " has not been loaded because it requires "
 							                         + reference.ToString() + ".");
 						}
-						DisableAddin(addIn, dict, addInDict);
+						DisableAddin(plugin, dict, pluginDict);
 						goto checkDependencies; // after removing one addin, others could break
 					}
 				}
 			}
-			foreach (AddIn addIn in list) {
+			foreach (Plugin plugin in list) {
 				try {
-					InsertAddIn(addIn);
-				} catch (AddInLoadException ex) {
+					InsertPlugin(plugin);
+				} catch (PluginLoadException ex) {
 					LoggingService.Error(ex);
-					MessageService.ShowError("Error loading AddIn " + addIn.FileName + ":\n"
+					MessageService.ShowError("Error loading Plugin " + plugin.FileName + ":\n"
 					                         + ex.Message);
 				}
 			}

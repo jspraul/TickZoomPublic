@@ -43,7 +43,7 @@ namespace TickZoom.Loader
 	/// <children childTypes="MenuItem">
 	/// If "type" is "Menu", the item can have sub-menuitems.
 	/// </children>
-	/// <usage>Any menu strip paths or context menu paths, e.g. /SharpDevelop/Workbench/MainMenu</usage>
+	/// <usage>Any menu strip paths or context menu paths, e.g. /TickZoom/Workbench/MainMenu</usage>
 	/// <returns>
 	/// A MenuItemDescriptor object.
 	/// </returns>

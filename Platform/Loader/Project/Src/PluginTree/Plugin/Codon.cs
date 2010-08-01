@@ -16,7 +16,7 @@ namespace TickZoom.Loader
 	/// </summary>
 	public class Codon
 	{
-		AddIn       addIn;
+		Plugin       plugin;
 		string      name;
 		Properties  properties;
 		ICondition[] conditions;
@@ -27,9 +27,9 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public AddIn AddIn {
+		public Plugin Plugin {
 			get {
-				return addIn;
+				return plugin;
 			}
 		}
 		
@@ -81,9 +81,9 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public Codon(AddIn addIn, string name, Properties properties, ICondition[] conditions)
+		public Codon(Plugin plugin, string name, Properties properties, ICondition[] conditions)
 		{
-			this.addIn      = addIn;
+			this.plugin      = plugin;
 			this.name       = name;
 			this.properties = properties;
 			this.conditions = conditions;
@@ -97,15 +97,15 @@ namespace TickZoom.Loader
 //
 //		public void BinarySerialize(BinaryWriter writer)
 //		{
-//			writer.Write(AddInTree.GetNameOffset(name));
-//			writer.Write(AddInTree.GetAddInOffset(addIn));
+//			writer.Write(PluginTree.GetNameOffset(name));
+//			writer.Write(PluginTree.GetPluginOffset(plugin));
 //			properties.BinarySerialize(writer);
 //		}
 //
 		public object BuildItem(object owner, ArrayList subItems)
 		{
 			IDoozer doozer;
-			if (!AddInTree.Doozers.TryGetValue(Name, out doozer))
+			if (!PluginTree.Doozers.TryGetValue(Name, out doozer))
 				throw new CoreException("Doozer " + Name + " not found!");
 			
 			if (!doozer.HandleConditions && conditions.Length > 0) {
@@ -119,9 +119,9 @@ namespace TickZoom.Loader
 		
 		public override string ToString()
 		{
-			return String.Format("[Codon: name = {0}, addIn={1}]",
+			return String.Format("[Codon: name = {0}, plugin={1}]",
 			                     name,
-			                     addIn.FileName);
+			                     plugin.FileName);
 		}
 	}
 }

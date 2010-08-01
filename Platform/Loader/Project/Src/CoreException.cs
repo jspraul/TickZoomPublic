@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace TickZoom.Loader
 {
 	/// <summary>
-	/// Base class for exceptions thrown by the SharpDevelop core.
+	/// Base class for exceptions thrown by the TickZoom core.
 	/// </summary>
 	[Serializable()]
 	public class CoreException : Exception

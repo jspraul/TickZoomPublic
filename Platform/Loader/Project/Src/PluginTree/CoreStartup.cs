@@ -16,24 +16,24 @@ namespace TickZoom.Loader
 	/// </summary>
 	/// <remarks>
 	/// Initializing TickZoom.Loader requires initializing several static classes
-	/// and the <see cref="AddInTree"/>. <see cref="CoreStartup"/> does this work
+	/// and the <see cref="PluginTree"/>. <see cref="CoreStartup"/> does this work
 	/// for you, provided you use it like this:
 	/// 1. Create a new CoreStartup instance
 	/// 2. (Optional) Set the values of the properties.
 	/// 3. Call <see cref="StartCoreServices()"/>.
-	/// 4. Add "preinstalled" AddIns using <see cref="AddAddInsFromDirectory"/>
-	///    and <see cref="AddAddInFile"/>.
-	/// 5. (Optional) Call <see cref="ConfigureExternalAddIns"/> to support
-	///    disabling AddIns and installing external AddIns
-	/// 6. (Optional) Call <see cref="ConfigureUserAddIns"/> to support installing
-	///    user AddIns.
+	/// 4. Add "preinstalled" Plugins using <see cref="AddPluginsFromDirectory"/>
+	///    and <see cref="AddPluginFile"/>.
+	/// 5. (Optional) Call <see cref="ConfigureExternalPlugins"/> to support
+	///    disabling Plugins and installing external Plugins
+	/// 6. (Optional) Call <see cref="ConfigureUserPlugins"/> to support installing
+	///    user Plugins.
 	/// 7. Call <see cref="RunInitialization"/>.
 	/// </remarks>
 	public sealed class CoreStartup
 	{
-		List<string> addInFiles = new List<string>();
-		List<string> disabledAddIns = new List<string>();
-		bool externalAddInsConfigured;
+		List<string> pluginFiles = new List<string>();
+		List<string> disabledPlugins = new List<string>();
+		bool externalPluginsConfigured;
 		string propertiesName;
 		string configDirectory;
 		string dataDirectory;
@@ -105,84 +105,84 @@ namespace TickZoom.Loader
 		}
 		
 		/// <summary>
-		/// Find AddIns by searching all .addin files recursively in <paramref name="addInDir"/>.
-		/// The found AddIns are added to the list of AddIn files to load.
+		/// Find Plugins by searching all .addin files recursively in <paramref name="pluginDir"/>.
+		/// The found Plugins are added to the list of Plugin files to load.
 		/// </summary>
-		public void AddAddInsFromDirectory(string addInDir)
+		public void AddPluginsFromDirectory(string pluginDir)
 		{
-			if (addInDir == null)
-				throw new ArgumentNullException("addInDir");
-			addInFiles.AddRange(FileUtility.SearchDirectory(addInDir, "*.addin"));
+			if (pluginDir == null)
+				throw new ArgumentNullException("pluginDir");
+			pluginFiles.AddRange(FileUtility.SearchDirectory(pluginDir, "*.addin"));
 		}
 		
 		/// <summary>
-		/// Add the specified .addin file to the list of AddIn files to load.
+		/// Add the specified .addin file to the list of Plugin files to load.
 		/// </summary>
-		public void AddAddInFile(string addInFile)
+		public void AddPluginFile(string pluginFile)
 		{
-			if (addInFile == null)
-				throw new ArgumentNullException("addInFile");
-			addInFiles.Add(addInFile);
+			if (pluginFile == null)
+				throw new ArgumentNullException("pluginFile");
+			pluginFiles.Add(pluginFile);
 		}
 		
 		/// <summary>
 		/// Use the specified configuration file to store information about
-		/// disabled AddIns and external AddIns.
-		/// You have to call this method to support the <see cref="AddInManager"/>.
+		/// disabled Plugins and external Plugins.
+		/// You have to call this method to support the <see cref="PluginManager"/>.
 		/// </summary>
-		/// <param name="addInConfigurationFile">
-		/// The name of the file used to store the list of disabled AddIns
-		/// and the list of installed external AddIns.
+		/// <param name="pluginConfigurationFile">
+		/// The name of the file used to store the list of disabled Plugins
+		/// and the list of installed external Plugins.
 		/// A good value for this parameter would be
-		/// <c>Path.Combine(<see cref="PropertyService.ConfigDirectory"/>, "AddIns.xml")</c>.
+		/// <c>Path.Combine(<see cref="PropertyService.ConfigDirectory"/>, "Plugins.xml")</c>.
 		/// </param>
-		public void ConfigureExternalAddIns(string addInConfigurationFile)
+		public void ConfigureExternalPlugins(string pluginConfigurationFile)
 		{
-			externalAddInsConfigured = true;
-			AddInManager.ConfigurationFileName = addInConfigurationFile;
-			AddInManager.LoadAddInConfiguration(addInFiles, disabledAddIns);
+			externalPluginsConfigured = true;
+			PluginManager.ConfigurationFileName = pluginConfigurationFile;
+			PluginManager.LoadPluginConfiguration(pluginFiles, disabledPlugins);
 		}
 		
 		/// <summary>
-		/// Configures user AddIn support.
+		/// Configures user Plugin support.
 		/// </summary>
-		/// <param name="addInInstallTemp">
-		/// The AddIn installation temporary directory.
-		/// ConfigureUserAddIns will install the AddIns from this directory and
-		/// store the parameter value in <see cref="AddInManager.AddInInstallTemp"/>.
+		/// <param name="pluginInstallTemp">
+		/// The Plugin installation temporary directory.
+		/// ConfigureUserPlugins will install the Plugins from this directory and
+		/// store the parameter value in <see cref="PluginManager.PluginInstallTemp"/>.
 		/// </param>
-		/// <param name="userAddInPath">
-		/// The path where user AddIns are installed to.
-		/// AddIns from this directory will be loaded.
+		/// <param name="userPluginPath">
+		/// The path where user Plugins are installed to.
+		/// Plugins from this directory will be loaded.
 		/// </param>
-		public void ConfigureUserAddIns(string addInInstallTemp, string userAddInPath)
+		public void ConfigureUserPlugins(string pluginInstallTemp, string userPluginPath)
 		{
-			if (!externalAddInsConfigured) {
-				throw new InvalidOperationException("ConfigureExternalAddIns must be called before ConfigureUserAddIns");
+			if (!externalPluginsConfigured) {
+				throw new InvalidOperationException("ConfigureExternalPlugins must be called before ConfigureUserPlugins");
 			}
-			AddInManager.AddInInstallTemp = addInInstallTemp;
-			AddInManager.UserAddInPath = userAddInPath;
-			if (Directory.Exists(addInInstallTemp)) {
-				AddInManager.InstallAddIns(disabledAddIns);
+			PluginManager.PluginInstallTemp = pluginInstallTemp;
+			PluginManager.UserPluginPath = userPluginPath;
+			if (Directory.Exists(pluginInstallTemp)) {
+				PluginManager.InstallPlugins(disabledPlugins);
 			}
-			if (Directory.Exists(userAddInPath)) {
-				AddAddInsFromDirectory(userAddInPath);
+			if (Directory.Exists(userPluginPath)) {
+				AddPluginsFromDirectory(userPluginPath);
 			}
 		}
 		
 		/// <summary>
-		/// Initializes the AddIn system.
-		/// This loads the AddIns that were added to the list,
+		/// Initializes the Plugin system.
+		/// This loads the Plugins that were added to the list,
 		/// then it executes the <see cref="ICommand">commands</see>
 		/// in <c>/Workspace/Autostart</c>.
 		/// </summary>
 		public void RunInitialization()
 		{
-			AddInTree.Load(addInFiles, disabledAddIns);
+			PluginTree.Load(pluginFiles, disabledPlugins);
 			
 			// run workspace autostart commands
 			LoggingService.Info("Running autostart commands...");
-			foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/Autostart", null, false)) {
+			foreach (ICommand command in PluginTree.BuildItems<ICommand>("/Workspace/Autostart", null, false)) {
 				try {
 					command.Run();
 				} catch (Exception ex) {
