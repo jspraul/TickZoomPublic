@@ -36,6 +36,7 @@ namespace TickZoom.Api
 		Disposed
 	}
 	
+	[CLSCompliant(false)]
 	public interface Socket : IDisposable {
 		void SetBlocking(bool enable);
 		void Connect(string addrStr, ushort port);

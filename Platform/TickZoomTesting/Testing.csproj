@@ -125,6 +125,10 @@
       <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
       <Name>Charting</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Loader\Project\Loader.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>Loader</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>

@@ -41,7 +41,7 @@ namespace TickZoom.Symbols
 	public class SymbolLibrary 
 	{
 		Dictionary<string,SymbolProperties> symbolMap;
-		Dictionary<ulong,SymbolProperties> universalMap;
+		Dictionary<long,SymbolProperties> universalMap;
 		public SymbolLibrary() {
 			SymbolDictionary dictionary = SymbolDictionary.Create("universal",SymbolDictionary.UniversalDictionary);
 			IEnumerable<SymbolProperties> enumer = dictionary;
@@ -59,8 +59,8 @@ namespace TickZoom.Symbols
 		}
 		
 		private void CreateUniversalIds() {
-			ulong universalIdentifier = 1;
-			universalMap = new Dictionary<ulong, SymbolProperties>();
+			long universalIdentifier = 1;
+			universalMap = new Dictionary<long, SymbolProperties>();
 			foreach( var kvp in symbolMap) {
 				kvp.Value.BinaryIdentifier = universalIdentifier;
 				universalMap.Add(universalIdentifier,kvp.Value);
@@ -125,7 +125,7 @@ namespace TickZoom.Symbols
 			return GetSymbolProperties(symbol);
 		}
 	
-		public SymbolInfo LookupSymbol(ulong universalIdentifier) {
+		public SymbolInfo LookupSymbol(long universalIdentifier) {
 			SymbolProperties symbolProperties;
 			if( universalMap.TryGetValue(universalIdentifier,out symbolProperties)) {
 				return symbolProperties;

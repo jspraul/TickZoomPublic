@@ -41,7 +41,7 @@ namespace TickZoom.Test
 		private static readonly bool debug = log.IsDebugEnabled;		
 		private List<LogicalOrder> orders = new List<LogicalOrder>();
 		protected SymbolInfo symbol;
-		Action<TickIO, TickIO, ulong> assertTick;
+		Action<TickIO, TickIO, long> assertTick;
 			
 		public enum TickTest {
 			TimeAndSales,
@@ -481,7 +481,7 @@ namespace TickZoom.Test
   			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,actualPosition,list));
 		}
 		
-		public void AssertLevel1( TickIO tick, TickIO lastTick, ulong symbol) {
+		public void AssertLevel1( TickIO tick, TickIO lastTick, long symbol) {
         	Assert.IsTrue(tick.IsQuote || tick.IsTrade);
         	if( tick.IsQuote) {
 	        	Assert.Greater(tick.Bid,0);
@@ -497,7 +497,7 @@ namespace TickZoom.Test
     		Assert.AreEqual(symbol,tick.lSymbol);
 		}
 		
-		public void AssertTimeAndSales( TickIO tick, TickIO lastTick, ulong symbol) {
+		public void AssertTimeAndSales( TickIO tick, TickIO lastTick, long symbol) {
         	Assert.IsFalse(tick.IsQuote);
         	if( tick.IsQuote) {
 	        	Assert.Greater(tick.Bid,0);

@@ -47,7 +47,7 @@ namespace TickZoom.Api
 		private static SymbolFactory symbolFactory;
 		private static StarterFactory starterFactory;
 		private static UtilityFactory utilityFactory;
-		private static FactoryLoader factorySupport;
+		private static FactoryLoader factoryLoader;
 		
 		private static object Locker {
 			get {
@@ -60,20 +60,18 @@ namespace TickZoom.Api
 	
 		public static FactoryLoader FactoryLoader {
 			get {
-				if( factorySupport == null) {
-					throw new ApplicationException("Please assign an implementation to FactorySupport at startup of your application.");
+				if( factoryLoader == null) {
+					lock(Locker) {
+						if( factoryLoader == null) {
+							factoryLoader = new BootStrap().FactoryLoader();
+						}
+					}
 				}
-				return factorySupport;
-			}
-			set {
-				if( factorySupport == null) {
-					factorySupport = value;
-				} else {
-					throw new ApplicationException("Sorry, FactorySupport can only be set once at the startup of your application.");
-				}
+				return factoryLoader;
 			}
 		}
 		
+		[CLSCompliant(false)]
 		public static EngineFactory Engine {
 			get { 
 				if( engineFactory == null) {
@@ -194,6 +192,7 @@ namespace TickZoom.Api
 			}
 		}
 		
+		[CLSCompliant(false)]
 		public static UtilityFactory Utility {
 			get {
 				if( utilityFactory == null) {
@@ -207,6 +206,7 @@ namespace TickZoom.Api
 			}
 		}
 		
+		[CLSCompliant(false)]
 		public static ProviderFactory Provider {
 			get {
 				if( provider == null) {
@@ -220,6 +220,7 @@ namespace TickZoom.Api
 			}
 		}
 
+		[CLSCompliant(false)]
 		public static TickUtilFactory TickUtil {
 			get {
 				if( tickUtilFactory == null) {
@@ -234,15 +235,7 @@ namespace TickZoom.Api
 		}
 
 	    public static bool AutoUpdate(BackgroundWorker bw) {
-	    	bool retVal = false;
-			log.Notice( "Attempting AutoUpdate...");
-			AutoUpdate updater = new AutoUpdate();
-			updater.BackgroundWorker = bw;
-			
-			if( updater.UpdateAll() ) {
-				retVal = true;
-			}
-   			return retVal;
+	    	return FactoryLoader.AutoUpdate(bw);
    		}
 		
 		public static Settings Settings {

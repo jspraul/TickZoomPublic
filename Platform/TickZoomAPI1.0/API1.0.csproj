@@ -52,16 +52,12 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="..\..\TickZoom.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>Lib\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -70,17 +66,14 @@
     <Compile Include="Aspects\DiagramHelper.cs" />
     <Compile Include="Aspects\DiagramInstance.cs" />
     <Compile Include="Aspects\DiagramObject.cs" />
+    <Compile Include="Classes\BootStrapLoader.cs" />
     <Compile Include="Locks\SimpleLock.cs" />
     <Compile Include="Locks\SyncTicks.cs" />
     <Compile Include="Locks\TaskLock.cs">
     </Compile>
     <Compile Include="Misc\Attributes\SkipCopy.cs" />
-    <Compile Include="AutoUpdate\AutoUpdate.cs" />
-    <Compile Include="AutoUpdate\PostSubmitter.cs" />
-    <Compile Include="AutoUpdate\ProgressImpl.cs" />
     <Compile Include="Classes\CheckedMemoryStream.cs" />
     <Compile Include="Classes\Factory.cs" />
-    <Compile Include="Classes\FactoryLoaderDefault.cs" />
     <Compile Include="Classes\ConfigFile.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Misc\Enums\ArrowDirection.cs" />
@@ -94,6 +87,7 @@
     <Compile Include="Misc\Exceptions\MustUseLoaderException.cs" />
     <Compile Include="Misc\ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="Misc\Factories\FactoryLoader.cs" />
+    <Compile Include="Misc\Structs\Progress.cs" />
     <Compile Include="Misc\Structs\QueueItem.cs" />
     <Compile Include="Platform\ChartProperties.cs" />
     <Compile Include="Platform\DrawingInterface.cs" />
@@ -112,7 +106,6 @@
     <Compile Include="Platform\PortfolioInterface.cs" />
     <Compile Include="Platform\PositionInterface.cs" />
     <Compile Include="Platform\ProfitLoss.cs" />
-    <Compile Include="Platform\Progress.cs" />
     <Compile Include="Platform\ProjectProperties.cs" />
     <Compile Include="Platform\ReportWriter.cs" />
     <Compile Include="Platform\ResultInterface.cs" />
@@ -212,12 +205,10 @@
     <Compile Include="Misc\Structs\SymbolTimeZone.cs" />
     <Compile Include="Misc\Structs\TickBinary.cs" />
     <Compile Include="Misc\Structs\TimeStamp.cs" />
-    <None Include="Lib\ICSharpCode.SharpZipLib.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Aspects" />
     <Folder Include="Misc\HTTP" />
-    <Folder Include="AutoUpdate" />
-    <Folder Include="Lib" />
     <Folder Include="Misc\Events" />
     <Folder Include="Misc\ExtensionMethods" />
     <Folder Include="Misc" />

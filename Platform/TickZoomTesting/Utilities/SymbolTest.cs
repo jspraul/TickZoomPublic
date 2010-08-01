@@ -38,7 +38,7 @@ namespace TickZoom.Utilities
 		public void TestSymbol()
 		{
 			string symbol = "USD/JPY";
-			ulong uSymbol = ExtensionMethods.SymbolToULong(symbol);
+			long uSymbol = ExtensionMethods.SymbolToULong(symbol);
 			string symbolConverted = ExtensionMethods.ULongToSymbol(uSymbol);
 			Assert.AreEqual(symbol,symbolConverted);
 		}
@@ -65,7 +65,7 @@ namespace TickZoom.Utilities
 		public void TestSpecific()
 		{
 			string symbol = "Daily4Tic";
-			ulong uSymbol = ExtensionMethods.SymbolToULong(symbol);
+			long uSymbol = ExtensionMethods.SymbolToULong(symbol);
 			string symbolConverted = ExtensionMethods.ULongToSymbol(uSymbol);
 			Assert.AreEqual(symbol,symbolConverted);
 //			Assert.AreEqual(1515607893785,uSymbol);
@@ -75,7 +75,7 @@ namespace TickZoom.Utilities
 		public void TestMaxString2()
 		{
 			string expectedSymbol = "AAAAAAAAA";
-			ulong uSymbol = ExtensionMethods.SymbolToULong(expectedSymbol);
+			long uSymbol = ExtensionMethods.SymbolToULong(expectedSymbol);
 			string symbol = ExtensionMethods.ULongToSymbol(uSymbol);
 			Assert.AreEqual(expectedSymbol,symbol);
 		}

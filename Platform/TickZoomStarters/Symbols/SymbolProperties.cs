@@ -47,7 +47,7 @@ namespace TickZoom.Symbols
 		private int level2LotSize = 1;
 		private double level2Increment;
 		private int level2LotSizeMinimum;
-		private ulong binaryIdentifier;
+		private long binaryIdentifier;
 		private SymbolInfo universalSymbol;
 		private int chartGroup;
 		private QuoteType quoteType = QuoteType.Level1;
@@ -147,7 +147,7 @@ namespace TickZoom.Symbols
 			set { universalSymbol = value; }
 		}
 		
-		public ulong BinaryIdentifier {
+		public long BinaryIdentifier {
 			get { return binaryIdentifier; }
 			set { binaryIdentifier = value; }
 		}

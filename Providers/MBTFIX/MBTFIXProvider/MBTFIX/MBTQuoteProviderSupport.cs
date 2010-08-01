@@ -42,7 +42,7 @@ namespace TickZoom.MBTFIX
 		private readonly bool trace;
 		private static long nextConnectTime = 0L;
 		protected readonly object symbolsRequestedLocker = new object();
-		protected Dictionary<ulong,SymbolInfo> symbolsRequested = new Dictionary<ulong, SymbolInfo>();
+		protected Dictionary<long,SymbolInfo> symbolsRequested = new Dictionary<long, SymbolInfo>();
 		private Selector selector;
 		private Socket socket;
 		private Task socketTask;

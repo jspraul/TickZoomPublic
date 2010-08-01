@@ -65,7 +65,7 @@ namespace TickZoom.Common
 					tickIO.Initialize();
 					tickIO.SetSymbol(symbol.BinaryIdentifier);
 					tickIO.SetTime(TimeStamp.UtcNow);
-					tickIO.SetQuote(Bid,Ask,(ushort)BidSize,(ushort)AskSize);
+					tickIO.SetQuote(Bid,Ask,(short)BidSize,(short)AskSize);
 					TickBinary binary = tickIO.Extract();
 					receiver.OnEvent(symbol,(int)EventType.Tick,binary);
 				}
@@ -116,7 +116,7 @@ namespace TickZoom.Common
 				tickIO.SetTime(TimeStamp.UtcNow);
 				tickIO.SetTrade(Last,LastSize);
 				if( symbol.QuoteType == QuoteType.Level1) {
-					tickIO.SetQuote(Bid,Ask,(ushort)BidSize,(ushort)AskSize);
+					tickIO.SetQuote(Bid,Ask,(short)BidSize,(short)AskSize);
 				}
 				TickBinary binary = tickIO.Extract();
 				receiver.OnEvent(symbol,(int)EventType.Tick,binary);

@@ -68,7 +68,7 @@ namespace TickZoom.Common
 			return VerifyEvent(1, assertTick, symbol, timeout);
 		}
 		
-		public long Verify(Action<TickIO, TickIO, ulong> assertTick, SymbolInfo symbol, int timeout)
+		public long Verify(Action<TickIO, TickIO, long> assertTick, SymbolInfo symbol, int timeout)
 		{
 			return Verify(2, assertTick, symbol, timeout);
 		}
@@ -77,7 +77,7 @@ namespace TickZoom.Common
 		int countLog = 0;
 		TickBinary tickBinary = new TickBinary();
 		TickIO tickIO = Factory.TickUtil.TickIO();
-		public long Verify(int expectedCount, Action<TickIO, TickIO, ulong> assertTick, SymbolInfo symbol, int timeout)
+		public long Verify(int expectedCount, Action<TickIO, TickIO, long> assertTick, SymbolInfo symbol, int timeout)
 		{
 			if (debug) log.Debug("Verify");
 			syncTicks = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
@@ -371,7 +371,7 @@ namespace TickZoom.Common
 			return true;
 		}
 
-		Dictionary<ulong, double> actualPositions = new Dictionary<ulong, double>();
+		Dictionary<long, double> actualPositions = new Dictionary<long, double>();
 
 		public double GetPosition(SymbolInfo symbol)
 		{

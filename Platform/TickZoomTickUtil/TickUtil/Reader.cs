@@ -39,7 +39,7 @@ namespace TickZoom.TickUtil
 		BackgroundWorker backgroundWorker;
 		long maxCount = long.MaxValue;
 		SymbolInfo symbol = null;
-		ulong lSymbol = 0;
+		long lSymbol = 0;
 		static readonly Log log = Factory.SysLog.GetLogger("TickZoom.TickUtil.Reader<" + typeof(TickBinary).Name + ">");
 		static readonly bool debug = log.IsDebugEnabled;
 		static readonly bool trace = log.IsDebugEnabled;
@@ -60,7 +60,7 @@ namespace TickZoom.TickUtil
 		string storageFolder;
 		MemoryStream memory;
 		byte[] buffer;
-		ProgressImpl progress = new ProgressImpl();
+		Progress progress = new Progress();
 
 		public Reader()
 		{

@@ -55,17 +55,17 @@ namespace Test
 //			Assert.AreEqual(expectedMessage,message);
 		}
 		
-		[Test]
-		public void ForexQuotePOSTTest() {
-			ProgressImpl progress = new ProgressImpl();
-			PostSubmitter post=new PostSubmitter(progress);
-			post.Url="https://www.mbtrading.com/secure/getquoteserverxml.asp";
-			post.PostItems.Add("username","DEMOYZPS");
-			post.PostItems.Add("password","1step2wax");
-			string message=post.Post();
-			string expectedMessage = @"<xml><logins username=""DEMOYZPS"" quote_Server=""";
-			Assert.IsTrue(message.StartsWith(expectedMessage));
-		}
+//		[Test]
+//		public void ForexQuotePOSTTest() {
+//			Progress progress = new Progress();
+//			PostSubmitter post = new PostSubmitter(progress);
+//			post.Url="https://www.mbtrading.com/secure/getquoteserverxml.asp";
+//			post.PostItems.Add("username","DEMOYZPS");
+//			post.PostItems.Add("password","1step2wax");
+//			string message=post.Post();
+//			string expectedMessage = @"<xml><logins username=""DEMOYZPS"" quote_Server=""";
+//			Assert.IsTrue(message.StartsWith(expectedMessage));
+//		}
 		
 		private void OnException( Exception ex) {
 			log.Error("Exception occurred", ex);

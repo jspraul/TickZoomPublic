@@ -59,9 +59,9 @@ namespace TickZoom.Starters
 	    string storageFolder;
 		Dictionary<ModelInterface,Dictionary<string,object>> optimizeValueMap = new Dictionary<ModelInterface, Dictionary<string, object>>();
 		int taskCount=0;
-		ProgressImpl progress = new ProgressImpl();
+		Progress progress = new Progress();
 		private string address = "InProcess";
-		private ushort port = 6490;
+		private int port = 6490;
 		private List<string> providers = new List<string>();
 		
 		public StarterCommon() : this(true) {
@@ -129,12 +129,12 @@ namespace TickZoom.Starters
 			return senderList.ToArray();
 		}
 		
-		public Provider[] SetupDataProviders(string address, ushort port) {
+		public Provider[] SetupDataProviders(string address, int port) {
 			try {
 				List<Provider> senderList = new List<Provider>();
 				SymbolInfo[] symbols = ProjectProperties.Starter.SymbolProperties;
 				for(int i=0; i<symbols.Length; i++) {
-					Provider provider = Factory.Provider.RemoteProvider(address,port);
+					Provider provider = Factory.Provider.RemoteProvider(address,(ushort)port);
 					senderList.Add(provider);
 				}
 				return senderList.ToArray();
@@ -442,7 +442,7 @@ namespace TickZoom.Starters
 			set { address = value; }
 		}
 		
-		public ushort Port {
+		public int Port {
 			get { return port; }
 			set { port = value; }
 		}

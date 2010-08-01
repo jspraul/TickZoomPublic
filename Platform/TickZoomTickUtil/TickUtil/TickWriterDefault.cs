@@ -56,7 +56,7 @@ namespace TickZoom.TickUtil
 		bool isInitialized = false;
 		bool isPaused = false;
 		string storageFolder;
-		ProgressImpl progress = new ProgressImpl();
+		Progress progress = new Progress();
 		
 		public TickWriterDefault(bool eraseFileToStart)
 		{

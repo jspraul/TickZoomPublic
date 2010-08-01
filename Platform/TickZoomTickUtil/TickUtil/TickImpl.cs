@@ -50,7 +50,6 @@ namespace TickZoom.TickUtil
 		// Older formats were already multiplied by 1000.
 		public const long OlderFormatConvertToLong = 1000000;
 		private static Log log = Factory.SysLog.GetLogger(typeof(TickImpl));
-//		public static double UtcOffset = TimeStamp.UtcOffset;
 
 		byte dataVersion;
 		TickBinary binary;
@@ -91,7 +90,7 @@ namespace TickZoom.TickUtil
 			SetQuote( dBid.ToLong(), dAsk.ToLong());
 		}
 		
-		public void SetQuote(double dBid, double dAsk, ushort bidSize, ushort askSize)
+		public void SetQuote(double dBid, double dAsk, short bidSize, short askSize)
 		{
 			try {
 				SetQuote( dBid.ToLong(), dAsk.ToLong(), bidSize, askSize);
@@ -106,15 +105,15 @@ namespace TickZoom.TickUtil
 			binary.Ask = lAsk;
 		}
 		
-		public void SetQuote(long lBid, long lAsk, ushort bidSize, ushort askSize) {
+		public void SetQuote(long lBid, long lAsk, short bidSize, short askSize) {
 			IsQuote=true;
 			HasDepthOfMarket=true;
 			binary.Bid = lBid;
 			binary.Ask = lAsk;
 			fixed( ushort *b = binary.DepthBidLevels)
 			fixed( ushort *a = binary.DepthAskLevels) {
-				*b = bidSize;
-				*a = askSize;
+				*b = (ushort) bidSize;
+				*a = (ushort) askSize;
 			}
 		}
 		
@@ -135,28 +134,20 @@ namespace TickZoom.TickUtil
 			binary.Size = size;
 		}
 		
-		public void SetDepth(ushort[] bidSize, ushort[] askSize)
+		public void SetDepth(short[] bidSize, short[] askSize)
 		{
 			HasDepthOfMarket = true;
 			fixed( ushort *b = binary.DepthBidLevels)
 			fixed( ushort *a = binary.DepthAskLevels) {
 				for(int i=0;i<TickBinary.DomLevels;i++) {
-					*(b+i) = bidSize[i];
-					*(a+i) = askSize[i];
+					*(b+i) = (ushort) bidSize[i];
+					*(a+i) = (ushort) askSize[i];
 				}
 			}
 		}
 		
-		public void SetSymbol( ulong lSymbol) {
+		public void SetSymbol( long lSymbol) {
 			binary.Symbol = lSymbol;
-		}
-		
-		/// <summary>
-		/// Obsolete: Please use Copy() instead.
-		/// </summary>
-		[Obsolete("Please use Copy() instead.",true)]
-		public void init(TickIO tick) {
-			Copy(tick);
 		}
 		
 		public void Copy(TickIO tick) {
@@ -165,14 +156,6 @@ namespace TickZoom.TickUtil
 			} else {  
 				Copy( tick, tick.ContentMask);
 			}
-		}
-		
-		/// <summary>
-		/// Obsolete: Please use Copy() instead.
-		/// </summary>
-		[Obsolete("Please use Copy() instead.",true)]
-		public void init(TickIO tick, byte contentMask) {
-			Copy(tick,contentMask);
 		}
 		
 		public void Copy(TickIO tick, byte contentMask) {
@@ -194,130 +177,17 @@ namespace TickZoom.TickUtil
 				fixed( ushort *b = binary.DepthBidLevels)
 				fixed( ushort *a = binary.DepthAskLevels)
 				for(int i=0;i<TickBinary.DomLevels;i++) {
-					*(b+i) = tick.BidLevel(i);
-					*(a+i) = tick.AskLevel(i);
+					*(b+i) = (ushort) tick.BidLevel(i);
+					*(a+i) = (ushort) tick.AskLevel(i);
 				}
 			}
 			binary.ContentMask = contentMask;
 			dataVersion = tick.DataVersion;
 		}
 		
-		/// <summary>
-		/// Use for setting quote data on the tick.
-		/// </summary>
-		[Obsolete("Please use multiple init methods instead to set last trade and quote data in two method calls. This greatly simplifies the API.",true)]
-		public void init(TimeStamp utcTime, double dBid, double dAsk) {
-			init( utcTime, dBid.ToLong(), dAsk.ToLong());
-		}
-		
 		private void ClearContentMask() {
 			binary.ContentMask = 0;
 		}
-		
-		/// <summary>
-		/// For internal use to set quote only data.
-		/// </summary>
-		/// <param name="utcTime"></param>
-		/// <param name="lBid"></param>
-		/// <param name="lAsk"></param>
-		[Obsolete("Please use multiple init methods instead to set last trade and quote data in two method calls. This greatly simplifies the API.",true)]
-		internal void init(TimeStamp utcTime, long lBid, long lAsk) {
-			ClearContentMask();
-			dataVersion = TickVersion;
-			binary.UtcTime = utcTime.Internal;
-			IsQuote=true;
-			binary.Bid = lBid;
-			binary.Ask = lAsk;
-		}
-		
-		/// <summary>
-		/// Use to set last trade data on the tick.
-		/// </summary>
-		/// <param name="utcTime"></param>
-		/// <param name="price"></param>
-		/// <param name="size"></param>
-		[Obsolete("Please use multiple init methods instead to set last trade and quote data in two method calls. This greatly simplifies the API.",true)]
-		public void init(TimeStamp utcTime, double price, int size) {
-			init( utcTime, (byte) TradeSide.Unknown, price, size);
-		}
-
-		/// <summary>
-		/// Sets the last trade data on the tick with the option
-		/// of setting the "side". The side of the trade is only useful
-		/// in advance data feed analysis to figure out which size of
-		/// the Bid/Ask spread absorbed this trade.
-		/// </summary>
-		/// <param name="utcTime"></param>
-		/// <param name="side"></param>
-		/// <param name="price"></param>
-		/// <param name="size"></param>
-		[Obsolete("Please use multiple init methods instead to set last trade and quote data in two method calls. This greatly simplifies the API.",true)]
-		public void init(TimeStamp utcTime, byte side, double price, int size) {
-			init( utcTime, side, price.ToLong(), size);
-		}
-		
-		/// <summary>
-		/// For internal use in setting last trade data with side.
-		/// </summary>
-		/// <param name="utcTime"></param>
-		/// <param name="side"></param>
-		/// <param name="lPrice"></param>
-		/// <param name="size"></param>
-		[Obsolete("Please use multiple init methods instead to set last trade and quote data in two method calls. This greatly simplifies the API.",true)]
-		internal void init(TimeStamp utcTime, byte side, long lPrice, int size) {
-			ClearContentMask();
-			IsTrade=true;
-			binary.Side = side;
-			binary.Price = lPrice;
-			binary.Size = size;
-		}
-		
-		/// <summary>
-		/// Obsolete: Please use multiple init methods instead to set last trade and quote data in two method calls.
-		/// </summary>
-		[Obsolete("Please use multiple init methods instead to set last trade and quote data in two method calls.",true)]
-		public void init(TimeStamp utcTime, byte side, double dPrice, int size, double dBid, double dAsk) {
-			init(utcTime,side,dPrice.ToLong(),size,dBid.ToLong(),dAsk.ToLong());
-		}
-
-		/// <summary>
-		/// Obsolete: For setting tick values internally.
-		/// </summary>
-		[Obsolete("Please use multiple init methods instead to set last trade and quote data in two method calls. This greatly simplifies the API.",true)]
-		internal void init(TimeStamp utcTime, byte side, long lPrice, int size, long lBid, long lAsk) {
-			init(utcTime,lBid,lAsk);
-			ClearContentMask();
-			IsQuote = true;
-			IsTrade = true;
-			binary.Side = side;
-			binary.Price = lPrice;
-			binary.Size = size;
-		}
-
-		/// <summary>
-		/// Obsolete: Please use multiple init methods instead to set last trade and quote data in two method calls. This greatly simplifies the API.
-		/// </summary>
-		[Obsolete("Please use multiple init methods instead to set last trade and quote data in two method calls. This greatly simplifies the API.",true)]
-		public void init(TimeStamp utcTime, byte side, double price, int size, double dBid, double dAsk, ushort[] bidSize, ushort[] askSize) {
-			init(utcTime,dBid,dAsk);
-			ClearContentMask();
-			IsQuote = true;
-			IsTrade = true;
-			HasDepthOfMarket = true;
-			binary.Side = side;
-			binary.Price = price.ToLong();
-			
-			binary.Size = size;
-			fixed( ushort *b = binary.DepthBidLevels) {
-			fixed( ushort *a = binary.DepthAskLevels) {
-				for(int i=0;i<TickBinary.DomLevels;i++) {
-					*(b+i) = bidSize[i];;
-					*(a+i) = askSize[i];;
-				}
-			}
-			}
-		}
-		
 		
 		public int BidDepth {
 			get { int total = 0;
@@ -762,15 +632,15 @@ namespace TickZoom.TickUtil
 			get { return Size; }
 		}
 		
-		public ushort AskLevel(int level) {
+		public short AskLevel(int level) {
 			fixed( ushort *p = binary.DepthAskLevels) {
-				return *(p+level);
+				return (short) *(p+level);
 			}
 		}
 		
-		public ushort BidLevel(int level) {
+		public short BidLevel(int level) {
 			fixed( ushort *p = binary.DepthBidLevels) {
-				return *(p+level);
+				return (short) *(p+level);
 			}
 		}
 		
@@ -817,7 +687,7 @@ namespace TickZoom.TickUtil
 			get { return new TimeStamp(binary.UtcTime); }
 		}
 
-		public ulong lSymbol {
+		public long lSymbol {
 			get { return binary.Symbol; }
 		}
 		

@@ -43,7 +43,7 @@ namespace TickZoom.MBTFIX
 		private static readonly bool trace = log.IsTraceEnabled;
 		private static long nextConnectTime = 0L;
 		private readonly object orderHandlerLocker = new object();
-        private Dictionary<ulong,LogicalOrderHandler> orderHandlers = new Dictionary<ulong,LogicalOrderHandler>();
+        private Dictionary<long,LogicalOrderHandler> orderHandlers = new Dictionary<long,LogicalOrderHandler>();
 		private Dictionary<string,PhysicalOrder> openOrders = new Dictionary<string,PhysicalOrder>();
 		
 		public MBTFIXProvider()
@@ -665,7 +665,7 @@ namespace TickZoom.MBTFIX
 			Dispose();
 		}
 		
-		private LogicalOrderHandler GetOrderHandler(ulong symbol) {
+		private LogicalOrderHandler GetOrderHandler(long symbol) {
 			LogicalOrderHandler handler;
 			lock( orderHandlerLocker) {
 				if( !orderHandlers.TryGetValue(symbol, out handler)) {
@@ -677,7 +677,7 @@ namespace TickZoom.MBTFIX
 			return handler;
 		}
 		
-		private bool RemoveOrderHandler(ulong symbol) {
+		private bool RemoveOrderHandler(long symbol) {
 			lock( orderHandlerLocker) {
 				if( orderHandlers.ContainsKey(symbol)) {
 					orderHandlers.Remove(symbol);

@@ -29,9 +29,6 @@ using System.Collections.Generic;
 
 namespace TickZoom.Api
 {
-	public interface AsyncHandler {
-		object Instance { get; }
-	}
 	public class DiagramAsyncSenderAttribute : Attribute {
 		
 	}

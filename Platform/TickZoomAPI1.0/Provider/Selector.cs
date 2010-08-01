@@ -28,6 +28,7 @@ using System;
 
 namespace TickZoom.Api
 {				 
+	[CLSCompliant(false)]
 	public interface Selector : IDisposable {
 		void AddReader(Socket socket);
 		void AddWriter(Socket socket);
