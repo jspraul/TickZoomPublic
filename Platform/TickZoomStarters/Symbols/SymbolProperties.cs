@@ -57,7 +57,6 @@ namespace TickZoom.Symbols
 		private bool useSyntheticMarkets = true;
 		private bool useSyntheticLimits = true;
 		private bool useSyntheticStops = true;
-		InstrumentType instrumentType = InstrumentType.None;
 		private ProfitLoss profitLoss = new ProfitLossDefault();
 		private string commission = "default";
 		private string fees = "default";
@@ -191,11 +190,6 @@ namespace TickZoom.Symbols
 		public bool UseSyntheticStops {
 			get { return useSyntheticStops; }
 			set { useSyntheticStops = value; }
-		}
-		
-		public InstrumentType InstrumentType {
-			get { return instrumentType; }
-			set { instrumentType = value; }
 		}
 		
 		public ProfitLoss ProfitLoss {

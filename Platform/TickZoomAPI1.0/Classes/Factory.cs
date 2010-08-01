@@ -32,7 +32,6 @@ using System.Threading;
 
 namespace TickZoom.Api
 {
-
 	/// <summary>
 	/// Description of Factory.
 	/// </summary>
@@ -48,7 +47,7 @@ namespace TickZoom.Api
 		private static SymbolFactory symbolFactory;
 		private static StarterFactory starterFactory;
 		private static UtilityFactory utilityFactory;
-		private static FactorySupport factorySupport;
+		private static FactoryLoader factorySupport;
 		
 		private static object Locker {
 			get {
@@ -59,16 +58,19 @@ namespace TickZoom.Api
 			}
 		}
 	
-		public static FactorySupport FactorySupport {
+		public static FactoryLoader FactoryLoader {
 			get {
 				if( factorySupport == null) {
-					lock(Locker) {
-						if( factorySupport == null) {
-							factorySupport = new FactorySupport();
-						}
-					}
+					throw new ApplicationException("Please assign an implementation to FactorySupport at startup of your application.");
 				}
 				return factorySupport;
+			}
+			set {
+				if( factorySupport == null) {
+					factorySupport = value;
+				} else {
+					throw new ApplicationException("Sorry, FactorySupport can only be set once at the startup of your application.");
+				}
 			}
 		}
 		
@@ -82,7 +84,7 @@ namespace TickZoom.Api
 				       		if( "true".Equals(profilerFlag)) {
 				       			engineName = "TickZoomProfiler";
 				       			try { 
-									engineFactory = (EngineFactory) FactorySupport.Load( typeof(EngineFactory), engineName);
+									engineFactory = (EngineFactory) FactoryLoader.Load( typeof(EngineFactory), engineName);
 				       			} catch( Exception ex) {
 				       				log.Notice( "ERROR: In the config file, TickZoomProfiler is set to \"true\"");
 				       				log.Notice( "However, an error occurred while loading TickZoomProfiler engine.");
@@ -94,7 +96,7 @@ namespace TickZoom.Api
 				       		
 				       		if( engineFactory == null) {
 				       			engineName = "TickZoomEngine";
-								engineFactory = (EngineFactory) FactorySupport.Load( typeof(EngineFactory), engineName);
+								engineFactory = (EngineFactory) FactoryLoader.Load( typeof(EngineFactory), engineName);
 				       		}
 						}
 					}
@@ -108,7 +110,7 @@ namespace TickZoom.Api
 				if( logManager == null) {
 					lock(Locker) {
 						if( logManager == null) {
-							logManager = (LogManager) FactorySupport.Load(typeof(LogManager), "TickZoomLogging" );
+							logManager = (LogManager) FactoryLoader.Load(typeof(LogManager), "TickZoomLogging" );
 							logManager.Configure("TickZoom");
 						}
 						
@@ -123,7 +125,7 @@ namespace TickZoom.Api
 				if( logManager == null) {
 					lock(Locker) {
 						if( logManager == null) {
-							logManager = (LogManager) FactorySupport.Load(typeof(LogManager), "TickZoomLogging" );
+							logManager = (LogManager) FactoryLoader.Load(typeof(LogManager), "TickZoomLogging" );
 							logManager.Configure("Default");
 						}
 						
@@ -171,7 +173,7 @@ namespace TickZoom.Api
 				if( symbolFactory == null) {
 					lock(Locker) {
 						if( symbolFactory == null) {
-							symbolFactory = (SymbolFactory) FactorySupport.Load( typeof(SymbolFactory), "TickZoomStarters" );
+							symbolFactory = (SymbolFactory) FactoryLoader.Load( typeof(SymbolFactory), "TickZoomStarters" );
 						}
 					}
 				}
@@ -184,7 +186,7 @@ namespace TickZoom.Api
 				if( starterFactory == null) {
 					lock(Locker) {
 						if( starterFactory == null) {
-							starterFactory = (StarterFactory) FactorySupport.Load( typeof(StarterFactory), "TickZoomStarters" );
+							starterFactory = (StarterFactory) FactoryLoader.Load( typeof(StarterFactory), "TickZoomStarters" );
 						}
 					}
 				}
@@ -197,7 +199,7 @@ namespace TickZoom.Api
 				if( utilityFactory == null) {
 					lock(Locker) {
 						if( utilityFactory == null) {
-							utilityFactory = (UtilityFactory) FactorySupport.Load( typeof(UtilityFactory), "TickZoomPluginCommon" );
+							utilityFactory = (UtilityFactory) FactoryLoader.Load( typeof(UtilityFactory), "TickZoomPluginCommon" );
 						}
 					}
 				}
@@ -210,7 +212,7 @@ namespace TickZoom.Api
 				if( provider == null) {
 					lock(Locker) {
 						if( provider == null) {
-							provider = (ProviderFactory) FactorySupport.Load( typeof(ProviderFactory), "ProviderCommon" );
+							provider = (ProviderFactory) FactoryLoader.Load( typeof(ProviderFactory), "ProviderCommon" );
 						}
 					}
 				}
@@ -223,7 +225,7 @@ namespace TickZoom.Api
 				if( tickUtilFactory == null) {
 					lock(Locker) {
 						if( tickUtilFactory == null) {
-							tickUtilFactory = (TickUtilFactory) FactorySupport.Load( typeof(TickUtilFactory), "TickZoomTickUtil" );
+							tickUtilFactory = (TickUtilFactory) FactoryLoader.Load( typeof(TickUtilFactory), "TickZoomTickUtil" );
 						}
 					}
 				}
