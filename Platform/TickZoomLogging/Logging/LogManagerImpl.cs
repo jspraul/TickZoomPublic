@@ -80,7 +80,11 @@ namespace TickZoom.Logging
 			get {
                 // get the log directory
                 string logDirectory = Factory.Settings["AppDataFolder"];
-                logDirectory =	Path.Combine(logDirectory,"Logs");
+				string uniqueFolder = Environment.CurrentDirectory;
+				uniqueFolder = uniqueFolder.Replace(Path.DirectorySeparatorChar,'-');
+				uniqueFolder = uniqueFolder.Replace(":","");
+				logDirectory = Path.Combine( logDirectory, "Logs");
+				logDirectory = Path.Combine( logDirectory, uniqueFolder);
 				return logDirectory;
 			}
 		}
