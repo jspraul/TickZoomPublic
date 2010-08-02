@@ -64,12 +64,14 @@ namespace TickZoom.Interceptors
 //			RequestUpdate(Intervals.Week1);
 //			RequestUpdate(Intervals.Month1);
 			position = new PositionCommon(strategy);
+			strategy.RequestEvent(EventType.Tick);
 		}
 		
 		EventContext context;
 		public override void Intercept(EventContext context, EventType eventType, object eventDetail)
 		{
 			if( eventType == EventType.Initialize) {
+				// TODO: Optimize tick event.
 				Strategy.AddInterceptor( EventType.Tick, this);
 				Strategy.AddInterceptor( EventType.LogicalFill, this);
 				OnInitialize();

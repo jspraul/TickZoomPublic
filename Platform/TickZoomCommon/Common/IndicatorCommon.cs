@@ -78,6 +78,9 @@ namespace TickZoom.Common
 				RequestUpdate(fastUpdateInterval);
 			}
 			output =  Doubles();
+			if( isChartDynamic) {
+				RequestEvent(EventType.Tick);
+			}
 		}
 
 		public override void OnConfigure()

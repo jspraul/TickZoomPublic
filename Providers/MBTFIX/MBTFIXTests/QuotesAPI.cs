@@ -26,6 +26,7 @@
 
 #define FOREX
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -35,6 +36,54 @@ using TickZoom.MBTFIX;
 
 namespace Test
 {
+	
+	[TestFixture]
+	public class LoopTest
+	{
+		private static Log log = Factory.SysLog.GetLogger(typeof(QuotesAPI));
+		
+		public class TestItem {
+			public int Number;
+		}
+
+		[Test]
+		public void LinkedListTest() {
+			LinkedList<TestItem> linked = new LinkedList<TestItem>();
+			List<TestItem> list = new List<TestItem>();
+			for( int i= 0; i< 1000000; i++) {
+				linked.AddLast(new TestItem());
+				list.Add(new TestItem());
+			}
+			long startTime = Factory.TickCount;
+			for( int j=0; j< 100; j++) {
+				for( int i= 0; i<list.Count; i++) {
+					TestItem item = list[i];
+					item.Number += 2;
+				}
+			}
+			long endTime = Factory.TickCount;
+			log.Notice("for list took " + (endTime - startTime));
+			
+			startTime = Factory.TickCount;
+			for( int j=0; j< 100; j++) {
+				foreach( var item in list) {
+					item.Number += 2;
+				}
+			}
+			endTime = Factory.TickCount;
+			log.Notice("foreach list took " + (endTime - startTime));
+
+			startTime = Factory.TickCount;
+			for( int j=0; j< 100; j++) {
+				foreach( var item in linked) {
+					item.Number += 2;
+				}
+			}
+			endTime = Factory.TickCount;
+			log.Notice("foreach linked took " + (endTime - startTime));
+		}
+	}
+	
 	[TestFixture]
 	public class QuotesAPI 
 	{
@@ -42,6 +91,23 @@ namespace Test
 
 		public QuotesAPI()
 		{
+		}
+		
+		[Test]
+		public void LinkedListTest() {
+			LinkedList<int> linked = new LinkedList<int>();
+			List<int> list = new List<int>();
+			for( int i= 0; i< 1000000; i++) {
+				linked.AddLast(i);
+				list.Add(i);
+			}
+			long startTime = Factory.TickCount;
+			for( int i= 0; i<list.Count; i++) {
+				list[i] += 1;
+			}
+			long endTime = Factory.TickCount;
+			log.Notice("for list took " + (endTime - startTime));
+			
 		}
 
 		[Test]

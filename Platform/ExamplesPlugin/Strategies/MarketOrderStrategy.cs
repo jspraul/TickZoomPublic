@@ -77,5 +77,13 @@ namespace TickZoom.Examples
 			EquityStats stats = Performance.Equity.CalculateStatistics();
 			return stats.Daily.Count + "," + stats.Daily.WinRate + "," + stats.Daily.ProfitFactor + "," + base.OnGetOptimizeResult(optimizeValues);
 		}
+		
+		/// <summary>
+		/// Returning false disables writing the HTML reports.
+		/// </summary>
+		public override bool OnWriteReport(string folder)
+		{
+			return false;
+		}
 	}
 }

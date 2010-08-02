@@ -58,9 +58,8 @@ namespace TickZoom.Common
 			performance = new Performance(this);
 			FullName = this.GetType().Name;
 			Performance.GraphTrades = false;
+			RequestEvent(EventType.Tick);
 		}
-		
-		
 		
 		public sealed override void OnConfigure() {
 			BreakPoint.TrySetStrategy(this);

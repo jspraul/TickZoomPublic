@@ -93,6 +93,7 @@
     <Compile Include="Loaders\ExampleReversalPortfolioLoader.cs" />
     <Compile Include="Loaders\ExampleSimulatedLoader.cs" />
     <Compile Include="Loaders\ExampleDualSymbolLoader.cs" />
+    <Compile Include="Loaders\Load5000Strategies.cs" />
     <Compile Include="Loaders\MarketOrderLoader.cs" />
     <Compile Include="Strategies\OldStuff\BreakoutTrend.cs" />
     <Compile Include="Strategies\OldStuff\ChartIndicator.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="Strategies\ExampleSMAStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="COPYING.txt" />
+    <Content Include="ProfilingSessions\Session20100801_230610.sdps" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Indicators" />

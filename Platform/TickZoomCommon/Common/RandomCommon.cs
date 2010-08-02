@@ -51,6 +51,7 @@ namespace TickZoom.Common
 			if( trace) log.Trace("new");
 			randomEntries = new TimeStamp[20];
 			if( trace) log.Trace(Chain.ToString());
+			RequestEvent(EventType.Tick);
 		}
 		
 		public override bool OnProcessTick(Tick tick)

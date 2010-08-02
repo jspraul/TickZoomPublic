@@ -40,6 +40,8 @@ namespace TickZoom.TradingFramework
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		
+		
+		
 		[SetUp]
 		public void CreateChain()
 		{

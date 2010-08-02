@@ -147,6 +147,7 @@
     <Compile Include="Transactions\TransactionPairsBinary.cs" />
     <Compile Include="Transactions\TransactionPairsPage.cs" />
     <Compile Include="Transactions\TransactionPairsPages.cs" />
+    <Content Include="ProfilingSessions\Session20100801_231358.sdps" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common" />

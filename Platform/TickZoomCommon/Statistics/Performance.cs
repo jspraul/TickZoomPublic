@@ -79,6 +79,7 @@ namespace TickZoom.Statistics
 			this.context = context;
 			if( EventType.Initialize == eventType) {
 				model.AddInterceptor( EventType.Close, this);
+				// TODO: Optimize tick event.
 				model.AddInterceptor( EventType.Tick, this);
 				model.AddInterceptor( EventType.LogicalFill, this);
 				OnInitialize();

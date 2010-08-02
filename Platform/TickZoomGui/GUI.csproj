@@ -110,6 +110,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="ProfilingSessions\Session20100801_214917.sdps" />
+    <Content Include="ProfilingSessions\Session20100801_220502.sdps" />
+    <Content Include="ProfilingSessions\Session20100801_225128.sdps" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Charting\Charting.csproj">

@@ -32,6 +32,10 @@ using TickZoom.Common;
 
 namespace TickZoom.Examples
 {
+	/// <summary>
+	/// This example loads 5,000 strategies. Mostly used to test and
+	/// demonstrate the engine performance with thousands of strategies.
+	/// </summary>
 	public class MarketOrderLoader : ModelLoaderCommon
 	{
 		public MarketOrderLoader() {
@@ -52,4 +56,6 @@ namespace TickZoom.Examples
 			TopModel = strategy;
 		}
 	}
+	
+
 }

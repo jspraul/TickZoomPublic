@@ -62,5 +62,8 @@ namespace TickZoom.Api
         PositionChange,
 		LogicalFill,
         Error,
+        
+        // Never use an event id higher than this.
+        Capacity=5000
 	}
 }
