@@ -148,6 +148,8 @@
     <Compile Include="Transactions\TransactionPairsPage.cs" />
     <Compile Include="Transactions\TransactionPairsPages.cs" />
     <Content Include="ProfilingSessions\Session20100801_231358.sdps" />
+    <Content Include="ProfilingSessions\Session20100802_002917.sdps" />
+    <Content Include="ProfilingSessions\Session20100802_010437.sdps" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common" />

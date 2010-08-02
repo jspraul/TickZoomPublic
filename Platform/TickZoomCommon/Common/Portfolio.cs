@@ -345,8 +345,8 @@ namespace TickZoom.Common
 			get { return isActiveOrdersChanged; }
 			set {
 				if( !value) {
-					foreach( var strategy in strategies) {
-						strategy.IsActiveOrdersChanged = false;
+					foreach( var watcher in activeWatchers) {
+						watcher.IsActiveOrdersChanged = false;
 					}
 				}
 				isActiveOrdersChanged = value; 

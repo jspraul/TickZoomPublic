@@ -50,7 +50,7 @@ namespace TickZoom.Examples
 			Portfolio portfolio = new Portfolio();
 			for( int i=0; i<5000; i++) {
 				Strategy strategy = new MarketOrderStrategy();
-				if( i>5) {
+				if( i>0) {
 					strategy.IsActive = false;
 				}
 				portfolio.AddDependency(strategy);

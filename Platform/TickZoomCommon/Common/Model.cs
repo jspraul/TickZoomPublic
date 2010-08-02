@@ -141,6 +141,7 @@ namespace TickZoom.Common
 		}
 		
 		public void AddIndicator( IndicatorCommon indicator) {
+			indicator.IsActive = isActive;
 			if( chain.Dependencies.Contains(indicator.Chain)) {
 				throw new ApplicationException( "Indicator " + indicator.Name + " already added.");
 			}
@@ -320,8 +321,8 @@ namespace TickZoom.Common
 			}
 		}
 		
-		public void AddDependency( ModelInterface formula) {
-			chain.Dependencies.Add(formula.Chain);
+		public void AddDependency( ModelInterface model) {
+			chain.Dependencies.Add(model.Chain);
 		}
 	
 		[Browsable(false)]
@@ -451,9 +452,18 @@ namespace TickZoom.Common
 			get { return isActive; }
 			set { if( isActive != value) {
 					isActive = value;
-					if( isActiveChange != null) {
-						isActiveChange(this);
-					}
+					IsActiveChanged();
+				}
+			}
+		}
+		
+		private void IsActiveChanged() {
+			if( isActiveChange != null) {
+				isActiveChange(this);
+			}
+			foreach( var dependency in chain.Dependencies) {
+				if( dependency.Model != null) {
+					dependency.Model.IsActive = isActive;
 				}
 			}
 		}

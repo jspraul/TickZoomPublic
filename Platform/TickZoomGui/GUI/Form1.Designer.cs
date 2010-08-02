@@ -72,6 +72,7 @@ namespace TickZoom
         	this.modelLoaderBox = new System.Windows.Forms.ComboBox();
         	this.groupBox1 = new System.Windows.Forms.GroupBox();
         	this.label5 = new System.Windows.Forms.Label();
+        	this.disableChartsCheckBox = new System.Windows.Forms.CheckBox();
         	this.intervals.SuspendLayout();
         	this.groupBox1.SuspendLayout();
         	this.SuspendLayout();
@@ -253,6 +254,7 @@ namespace TickZoom
         	// 
         	// intervals
         	// 
+        	this.intervals.Controls.Add(this.disableChartsCheckBox);
         	this.intervals.Controls.Add(this.label7);
         	this.intervals.Controls.Add(this.timeChartRadio);
         	this.intervals.Controls.Add(this.barChartRadio);
@@ -476,6 +478,15 @@ namespace TickZoom
         	this.label5.TabIndex = 29;
         	this.label5.Text = "Model Loader";
         	// 
+        	// disableChartsCheckBox
+        	// 
+        	this.disableChartsCheckBox.Location = new System.Drawing.Point(10, 188);
+        	this.disableChartsCheckBox.Name = "disableChartsCheckBox";
+        	this.disableChartsCheckBox.Size = new System.Drawing.Size(256, 31);
+        	this.disableChartsCheckBox.TabIndex = 53;
+        	this.disableChartsCheckBox.Text = "Disable charting to run faster with less memory.";
+        	this.disableChartsCheckBox.UseVisualStyleBackColor = true;
+        	// 
         	// Form1
         	// 
         	this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -513,6 +524,7 @@ namespace TickZoom
         	this.ResumeLayout(false);
         	this.PerformLayout();
         }
+        private System.Windows.Forms.CheckBox disableChartsCheckBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ComboBox modelLoaderBox;

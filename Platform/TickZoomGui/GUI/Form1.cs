@@ -103,6 +103,12 @@ namespace TickZoom
             
             endTimePicker.MinDate = availableDate;
             endTimePicker.Value = endTimePicker.MaxDate = DateTime.Now.AddDays(1).AddSeconds(-1);
+            string disableCharting = projectConfig.GetValue("DisableCharting");
+            if( !string.IsNullOrEmpty(disableCharting) && "true".Equals(disableCharting.ToLower())) {
+            	disableChartsCheckBox.Checked = true;
+            } else {
+            	disableChartsCheckBox.Checked = false;
+            }
             string startTimeStr = projectConfig.GetValue("StartTime");
             string EndTimeStr = projectConfig.GetValue("EndTime");
        		if( startTimeStr != null) {
@@ -126,6 +132,7 @@ namespace TickZoom
             thread_ProcessMessages.Priority = ThreadPriority.Lowest;
             thread_ProcessMessages.IsBackground = true;
             thread_ProcessMessages.Start();
+            UpdateCheckBoxes();
             isInitialized = true;
         }
         
@@ -349,6 +356,7 @@ namespace TickZoom
 			projectConfig.SetValue("UseModelLoader",modelLoaderBox.Enabled ? "true" : "false");
 			projectConfig.SetValue("ModelLoader",modelLoaderBox.Text);
 			projectConfig.SetValue("AutoUpdate",projectConfig.GetValue("AutoUpdate"));
+			projectConfig.SetValue("DisableCharting",disableChartsCheckBox.Checked ? "true" : "false" );
 			
 			SaveIntervals();
 			
@@ -429,8 +437,11 @@ namespace TickZoom
         	FlushChartsInvoke();
     		starter.ProjectProperties.Starter.StartTime = (TimeStamp) startTime;
     		starter.BackgroundWorker = bw;
-    		starter.CreateChartCallback = new CreateChartCallback(CreateChartInvoke);
-    		starter.ShowChartCallback = new ShowChartCallback(ShowChartInvoke);
+    		if( !disableChartsCheckBox.Checked) {
+    			log.Notice("You have the \"disable charts\" check box enabled.");
+	    		starter.CreateChartCallback = new CreateChartCallback(CreateChartInvoke);
+    			starter.ShowChartCallback = new ShowChartCallback(ShowChartInvoke);
+    		}
 	    	starter.ProjectProperties.Chart.ChartType = chartType;
 	    	starter.ProjectProperties.Starter.SetSymbols(txtSymbol.Text);
 			starter.ProjectProperties.Starter.IntervalDefault = intervalDefault;

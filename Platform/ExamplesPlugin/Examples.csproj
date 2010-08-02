@@ -144,6 +144,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="COPYING.txt" />
     <Content Include="ProfilingSessions\Session20100801_230610.sdps" />
+    <Content Include="ProfilingSessions\Session20100802_005638.sdps" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Indicators" />

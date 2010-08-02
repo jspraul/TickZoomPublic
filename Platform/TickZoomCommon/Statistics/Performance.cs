@@ -134,11 +134,6 @@ namespace TickZoom.Statistics
 
 			if( model is Portfolio) {
 				Portfolio portfolio = (Portfolio) model;
-				double tempNetClosedEquity = 0;
-				foreach( Strategy tempStrategy in portfolio.Strategies) {
-					tempNetClosedEquity += tempStrategy.Performance.Equity.ClosedEquity;
-					tempNetClosedEquity -= tempStrategy.Performance.Equity.StartingEquity;
-				}
 				double tempNetPortfolioEquity = 0;
 				tempNetPortfolioEquity += portfolio.Performance.Equity.ClosedEquity;
 				tempNetPortfolioEquity -= portfolio.Performance.Equity.StartingEquity;

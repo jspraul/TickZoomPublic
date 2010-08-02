@@ -57,6 +57,7 @@ namespace TickZoom.Common
 		
 		public bool IsActiveOrdersChanged {
 			get { return strategy.IsActiveOrdersChanged; }
+			set { strategy.IsActiveOrdersChanged = false; }
 		}
 		
 		public void Refresh() {
