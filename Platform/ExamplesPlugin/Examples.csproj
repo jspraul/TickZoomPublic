@@ -95,6 +95,7 @@
     <Compile Include="Loaders\ExampleDualSymbolLoader.cs" />
     <Compile Include="Loaders\Load5000Strategies.cs" />
     <Compile Include="Loaders\MarketOrderLoader.cs" />
+    <Compile Include="Portfolios\Portfolio5000Strategies.cs" />
     <Compile Include="Strategies\OldStuff\BreakoutTrend.cs" />
     <Compile Include="Strategies\OldStuff\ChartIndicator.cs" />
     <Compile Include="Strategies\OldStuff\DOMSmooth.cs" />
@@ -149,6 +150,7 @@
   <ItemGroup>
     <Folder Include="Indicators" />
     <Folder Include="Loaders" />
+    <Folder Include="Portfolios" />
     <Folder Include="Strategies\OldStuff" />
     <Folder Include="Strategies" />
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">

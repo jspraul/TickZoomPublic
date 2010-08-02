@@ -24,47 +24,38 @@
  */
 #endregion
 
+#region Namespaces
 using System;
-using System.ComponentModel;
-using System.Collections.Generic;
 using System.Drawing;
+using TickZoom.Api;
+using TickZoom.Common;
+#endregion
 
-namespace TickZoom.Api
+namespace TickZoom.Examples
 {
-	public enum EventType : int {
-		None=0,
-		// Provider/Receiver Connection Events.
-		Initialize=1000,
-		Terminate,
-		Connect,
-		Disconnect,
-		StartSymbol,
-		StopSymbol,
-		StartHistorical,
-		EndRealTime,
-		EndHistorical,
-		StartRealTime,
-		StartBroker,
-		EndBroker,
-        TickBatch,
-		TimeSync,
+	public class Portfolio5000Strategies : Portfolio
+	{
+		int current = 0;
+		public Portfolio5000Strategies() {
+			Performance.Equity.GraphEquity = true;
+		}
 		
-		// TCP/IP Events
-		Acknowledgment=2000,
-		Heartbeat,
+		public override void OnInitialize()
+		{
+			Strategies[current].IsActive = true;
+			foreach( Strategy strategy in Strategies) {
+				strategy.Performance.GraphTrades = true;
+				strategy.Performance.Equity.GraphEquity = true;
+			}
+		}
 		
-		// Events visible to Platform
-		Open=3000,
-		OpenInterval,
-		Close,
-		CloseInterval,
-		Tick,
-		CheckOrders,
-        PositionChange,
-		LogicalFill,
-        Error,
-        
-        // Never use an event id higher than this.
-        Capacity=5000
+		public override bool OnIntervalClose()
+		{
+			if( Strategies[current].Performance.ComboTrades.Count > 10) {
+				current++;
+				Strategies[current].IsActive = true;
+			}
+			return true;
+		}
 	}
 }

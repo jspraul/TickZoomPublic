@@ -50,6 +50,7 @@ namespace TickZoom.Common
 		private PositionCommon position;
 		private Performance performance;
 		private bool isActiveOrdersChanged;
+		private Action<StrategyInterface> onActiveOrdersChange;
 		
 		public Portfolio()
 		{
@@ -58,6 +59,7 @@ namespace TickZoom.Common
 			performance = new Performance(this);
 			FullName = this.GetType().Name;
 			Performance.GraphTrades = false;
+			int OptimizeTickEvent = 0;
 			RequestEvent(EventType.Tick);
 		}
 		
@@ -130,7 +132,7 @@ namespace TickZoom.Common
 			
 			// Create strategy watchers
 			foreach( var strategy in strategies) {
-				strategy.IsActiveChange = OnActiveChange;
+				strategy.OnActiveChange += HandleActiveChange;
 				StrategyWatcher watcher = new StrategyWatcher(strategy);
 				watchers.Add( strategy, watcher);
 				if( strategy.IsActive) {
@@ -142,7 +144,7 @@ namespace TickZoom.Common
 			}
 		}
 		
-		public void OnActiveChange(ModelInterface model) {
+		public void HandleActiveChange(ModelInterface model) {
 			StrategyWatcher watcher;
 			if( watchers.TryGetValue(model,out watcher)) {
 				if( watcher.IsActive && !activeWatchers.Contains(watcher)) {
@@ -159,6 +161,7 @@ namespace TickZoom.Common
 		public override void OnEvent(EventContext context, EventType eventType, object eventDetail)
 		{
 			base.OnEvent(context, eventType, eventDetail);
+			
 			if( eventType == EventType.Tick ||
 			    eventType == EventType.LogicalFill) {
 				if( context.Position == null) {
@@ -343,13 +346,12 @@ namespace TickZoom.Common
 		
 		public bool IsActiveOrdersChanged {
 			get { return isActiveOrdersChanged; }
-			set {
-				if( !value) {
+			set { if( isActiveOrdersChanged != value) {
+					isActiveOrdersChanged = value; 
 					foreach( var watcher in activeWatchers) {
-						watcher.IsActiveOrdersChanged = false;
+						watcher.IsActiveOrdersChanged = value;
 					}
 				}
-				isActiveOrdersChanged = value; 
 			}
 		}
 		
@@ -359,6 +361,11 @@ namespace TickZoom.Common
 		
 		public bool IsExitStrategyFlat {
 			get { return false; }
+		}
+		
+		public Action<StrategyInterface> OnActiveOrdersChange {
+			get { return onActiveOrdersChange; }
+			set { onActiveOrdersChange = value; }
 		}
 	}
 

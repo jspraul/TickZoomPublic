@@ -31,18 +31,15 @@ using System.Drawing;
 
 namespace TickZoom.Api
 {
+	
 	public interface ModelInterface
 	{
+		event Action<ModelInterface> OnActiveChange;
 		
 		/// <summary>
 		/// Whether receiving events from the data engine or not.
 		/// </summary>
 		bool IsActive {
-			get;
-			set;
-		}
-		
-		Action<ModelInterface> IsActiveChange {
 			get;
 			set;
 		}

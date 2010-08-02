@@ -46,7 +46,8 @@ namespace TickZoom.Common
 		string symbolDefault = "Default";
 		DrawingInterface drawing;
 		bool isActive = true;
-		private Action<ModelInterface> isActiveChange;
+		public event Action<ModelInterface> OnActiveChange;
+		
 		List<Interval> updateIntervals = new List<Interval>();
 		Data data;
 		Chart chart;
@@ -435,11 +436,6 @@ namespace TickZoom.Common
 			get { return strategyInterceptors; }
 		}
 		
-		public Action<ModelInterface> IsActiveChange {
-			get { return isActiveChange; }
-			set { isActiveChange = value; }
-		}		
-
 		public bool QuietMode {
 			get { return quietMode; }
 			set { quietMode = value; }
@@ -458,8 +454,8 @@ namespace TickZoom.Common
 		}
 		
 		private void IsActiveChanged() {
-			if( isActiveChange != null) {
-				isActiveChange(this);
+			if( OnActiveChange != null) {
+				OnActiveChange(this);
 			}
 			foreach( var dependency in chain.Dependencies) {
 				if( dependency.Model != null) {

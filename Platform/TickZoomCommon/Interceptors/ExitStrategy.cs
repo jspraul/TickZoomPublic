@@ -64,6 +64,7 @@ namespace TickZoom.Interceptors
 //			RequestUpdate(Intervals.Week1);
 //			RequestUpdate(Intervals.Month1);
 			position = new PositionCommon(strategy);
+			int OptimizeTickEvent = 0;
 			strategy.RequestEvent(EventType.Tick);
 		}
 		
@@ -71,7 +72,7 @@ namespace TickZoom.Interceptors
 		public override void Intercept(EventContext context, EventType eventType, object eventDetail)
 		{
 			if( eventType == EventType.Initialize) {
-				// TODO: Optimize tick event.
+				int OptimizeTickEvent = 0;
 				Strategy.AddInterceptor( EventType.Tick, this);
 				Strategy.AddInterceptor( EventType.LogicalFill, this);
 				OnInitialize();

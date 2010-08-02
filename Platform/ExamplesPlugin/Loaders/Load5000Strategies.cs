@@ -47,12 +47,10 @@ namespace TickZoom.Examples
 		}
 		
 		public override void OnLoad(ProjectProperties properties) {
-			Portfolio portfolio = new Portfolio();
+			Portfolio portfolio = new Portfolio5000Strategies();
 			for( int i=0; i<5000; i++) {
 				Strategy strategy = new MarketOrderStrategy();
-				if( i>0) {
-					strategy.IsActive = false;
-				}
+				strategy.IsActive = false;
 				portfolio.AddDependency(strategy);
 			}
 			portfolio.Name = "Market Order Portfolio";
