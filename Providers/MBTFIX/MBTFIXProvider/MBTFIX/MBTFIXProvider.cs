@@ -762,7 +762,11 @@ namespace TickZoom.MBTFIX
 			}
 			fixMsg.SetHandlingInstructions(1);
 			if( !isChange) {
-				fixMsg.SetDestination("MBTX");
+				if( physicalOrder.Symbol.Destination.ToLower() == "default") {
+					fixMsg.SetDestination("MBTX");
+				} else {
+					fixMsg.SetDestination(physicalOrder.Symbol.Destination);
+				}
 			}
 			fixMsg.SetSymbol(physicalOrder.Symbol.Symbol);
 			switch( physicalOrder.Side) {
