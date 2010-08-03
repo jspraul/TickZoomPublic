@@ -77,7 +77,6 @@
     <Compile Include="Classes\ConfigFile.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Misc\Collections\ActiveList.cs" />
-    <Compile Include="Misc\Collections\IterableList.cs" />
     <Compile Include="Misc\Enums\ArrowDirection.cs" />
     <Compile Include="Misc\Enums\QuoteType.cs" />
     <Compile Include="Misc\Enums\TimeAndSales.cs" />

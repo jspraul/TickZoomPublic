@@ -46,7 +46,7 @@ namespace TickZoom.Common
 		private readonly bool instanceTrace;
 		private Result result;
 		private Dictionary<int,LogicalOrder> ordersHash = new Dictionary<int,LogicalOrder>();
-		private IterableList<LogicalOrder> allOrders = new IterableList<LogicalOrder>();
+		private ActiveList<LogicalOrder> allOrders = new ActiveList<LogicalOrder>();
 		private ActiveList<LogicalOrder> activeOrders = new ActiveList<LogicalOrder>();
 		private List<LogicalOrder> nextBarOrders = new List<LogicalOrder>();
 		private bool isActiveOrdersChanged = false;
@@ -309,7 +309,7 @@ namespace TickZoom.Common
 		public void AddOrder(LogicalOrder order)
 		{
 			Context.AddOrder(order);
-			allOrders.Add(order);
+			allOrders.AddLast(order);
 			ordersHash.Add(order.Id,order);
 		}
 		
