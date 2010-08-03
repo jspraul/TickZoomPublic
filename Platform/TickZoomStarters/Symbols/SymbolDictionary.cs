@@ -80,7 +80,6 @@ namespace TickZoom.Symbols
 			}
 		}
 		
-		
 		public static SymbolDictionary Create(TextReader projectXML) {
 			lock( locker) {
 				SymbolDictionary project = new SymbolDictionary();

@@ -33,6 +33,12 @@ namespace TickZoom.Api
 	/// </summary>
 	public interface LogicalOrder :  Serializable, IComparable
 	{
+		event Action<LogicalOrder> OnActiveChange;
+		
+		StrategyInterface Strategy {
+			get;
+		}
+
 		OrderType Type {
 			get;
 			set;
