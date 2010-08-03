@@ -65,10 +65,10 @@
     <Compile Include="Loaders\ExampleDualStrategyTest.cs" />
     <Compile Include="Loaders\ExampleMixedTest.cs" />
     <Compile Include="Loaders\ExampleMultiStrategyTest.cs" />
+    <Compile Include="Loaders\ExampleReversalTest.cs" />
     <Compile Include="Loaders\ExampleScannerTest.cs" />
     <Compile Include="Loaders\ExampleSimpleTradeOnlyTest.cs" />
     <Compile Include="Loaders\ExampleSimulatedTest.cs" />
-    <Compile Include="Loaders\ExampleSimpleTest.cs" />
     <Compile Include="Loaders\ExampleDualSymbolTest.cs" />
     <Compile Include="Loaders\LimitOrderTest.cs" />
     <Compile Include="Loaders\LimitOrderTickBarTest.cs" />

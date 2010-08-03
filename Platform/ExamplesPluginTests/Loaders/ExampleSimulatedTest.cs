@@ -72,11 +72,14 @@ namespace Loaders
 	    		strategy = loader.TopModel as ExampleOrderStrategy;
 	    		
 	    		LoadTrades();
+	    		LoadBarData();
 			} catch( Exception ex) {
 				log.Error("Setup error.", ex);
 				throw;
 			}
 		}
+		#endregion
+		
 		
 		[Test]
 		public void VerifyCurrentEquity() {
@@ -105,47 +108,14 @@ namespace Loaders
 			VerifyTradeCount(strategy);
 		}
 		
-		#endregion
-		
 		[Test]
-		public void CompareTradeCount() {
-			Assert.AreEqual(472,strategy.Performance.ComboTrades.Count, "trade count");
+		public void VerifyBarData() {
+			VerifyBarData(strategy);
 		}
 		
 		[Test]
-		public void BuyStopSellStopTest() {
-			VerifyPair( strategy, 0, "1983-03-31 09:00:00.001", 29.500,
-			                 "1983-03-31 09:00:00.002",29.300);
-		}
-		
-		[Test]
-		public void SellLimitBuyLimitTest() {
-			VerifyPair( strategy, 1, "1983-04-04 09:00:00.001", 29.570,
-			                 "1983-04-06 09:00:00.001", 29.680);
-		}
-		
-		[Test]
-		public void BuyStopStopLossTest() {
-			VerifyPair( strategy, 2, "1983-04-08 09:00:00.000", 30.650D,
-			                 "1983-04-11 09:00:00.001",30.280D);
-		}
-		
-		[Test]
-		public void TradeAfterStopLossTest() {
-			VerifyPair( strategy, 3, "1983-04-12 09:00:00.002", 30.550D,
-			                 "1983-04-12 09:00:00.002",31.000D);
-		}
-		
-		[Test]
-		public void SellStopStopLossTest() {
-			VerifyPair( strategy, 4, "1983-04-18 09:00:00.000", 30.560D,
-			                 "1983-04-18 09:00:00.002",30.710);
-		}
-		
-		[Test]
-		public void BuyStopBreakEvenTest() {
-			VerifyPair( strategy, 44, "1983-12-16 09:00:00.000", 28.68D,
-			                 "1983-12-20 09:00:00.002",28.68d);
+		public void VerifyBarDataCount() {
+			VerifyBarDataCount(strategy);
 		}
 		
 		[Test]
