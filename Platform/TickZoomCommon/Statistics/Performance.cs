@@ -39,6 +39,7 @@ namespace TickZoom.Statistics
 	public class Performance : StrategyInterceptor
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Performance));
+		private static readonly bool trace = log.IsTraceEnabled;
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly Log barDataLog = Factory.SysLog.GetLogger("BarDataLog");
 		private static readonly bool barDataDebug = barDataLog.IsDebugEnabled;
@@ -152,6 +153,9 @@ namespace TickZoom.Statistics
 			pair.EntryTime = position.Time;
 			pair.EntryBar = model.Chart.ChartBars.BarCount;
 			comboTradesBinary.Add(pair);
+			if( trace) {
+				log.Trace( "Enter trade: " + pair);
+			}
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
 				strategy.OnEnterTrade();
@@ -177,6 +181,9 @@ namespace TickZoom.Statistics
 			comboTradesBinary.Tail = comboTrade;
 			double pnl = profitLoss.CalculateProfit(comboTrade.Direction,comboTrade.EntryPrice,comboTrade.ExitPrice);
 			Equity.OnChangeClosedEquity( pnl);
+			if( trace) {
+				log.Trace( "Exit Trade: " + comboTrade);
+			}
 			if( tradeDebug && !model.QuietMode) tradeLog.Debug( model.Name + "," + Equity.ClosedEquity + "," + pnl + "," + comboTrade);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;

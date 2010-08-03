@@ -52,6 +52,7 @@ namespace TickZoom.Common
 		private bool isActiveOrdersChanged;
 		private Action<StrategyInterface> onActiveOrdersChange;
 		
+		
 		public Portfolio()
 		{
 			result = new Result(this);
@@ -213,7 +214,7 @@ namespace TickZoom.Common
 				for(int i=0; i<count; i++) {
 					var watcher = activeWatchers[i];
 					if( !watcher.IsActive) continue;
-					activeOrders.AddRange(watcher.ActiveOrders);
+					activeOrders.AddLast(watcher.ActiveOrders);
 				}
 			}
 		}
@@ -325,16 +326,16 @@ namespace TickZoom.Common
 		public Performance Performance {
 			get { return performance; }
 		}
-
-		List<LogicalOrder> allOrders = new List<LogicalOrder>();
-		public IList<LogicalOrder> AllOrders {
+		
+		IterableList<LogicalOrder> allOrders = new IterableList<LogicalOrder>();
+		public Iterable<LogicalOrder> AllOrders {
 			get {
 				return allOrders;
 			}
 		}
 		
-		List<LogicalOrder> activeOrders = new List<LogicalOrder>();
-		public IList<LogicalOrder> ActiveOrders {
+		ActiveList<LogicalOrder> activeOrders = new ActiveList<LogicalOrder>();
+		public Iterable<LogicalOrder> ActiveOrders {
 			get {
 				return activeOrders;
 			}

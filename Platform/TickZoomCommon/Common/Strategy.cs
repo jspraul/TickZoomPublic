@@ -35,7 +35,7 @@ using TickZoom.Statistics;
 
 namespace TickZoom.Common
 {
-	public class Strategy : Model, StrategyInterface 
+	public class Strategy : Model, StrategyInterface
 	{
 		PositionInterface position;
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Strategy));
@@ -45,9 +45,8 @@ namespace TickZoom.Common
 		private readonly bool instanceDebug;
 		private readonly bool instanceTrace;
 		private Result result;
-		private List<LogicalOrder> allOrders = new List<LogicalOrder>();
-		private List<LogicalOrder> tempActiveOrders = new List<LogicalOrder>();
-		private List<LogicalOrder> activeOrders = new List<LogicalOrder>();
+		private IterableList<LogicalOrder> allOrders = new IterableList<LogicalOrder>();
+		private ActiveList<LogicalOrder> activeOrders = new ActiveList<LogicalOrder>();
 		private List<LogicalOrder> nextBarOrders = new List<LogicalOrder>();
 		private bool isActiveOrdersChanged = false;
 		
@@ -162,6 +161,18 @@ namespace TickZoom.Common
 			return performance.WriteReport(Name,folder);
 		}
 		
+		private void ActiveOrdersChanged() {
+			if( trace) {
+				StringBuilder sb = new StringBuilder();
+				foreach( var item in activeOrders) {
+					sb.Append("        ");
+					sb.AppendLine( item.ToString());
+					sb.AppendLine();
+				}
+				log.Trace("ActiveOrdersChanged while position = " + position.Current + "\n" + sb);
+			}
+		}
+		
 		public void OrderModified( LogicalOrder order) {
 			if( order.IsActive ) {
 				// Any change to an active order even if only 
@@ -169,16 +180,16 @@ namespace TickZoom.Common
 				IsActiveOrdersChanged = true;
 				if( !activeOrders.Contains(order)) {
 					bool found = false;
-					for( int i=0; i<activeOrders.Count; i++) {
-						LogicalOrder other = activeOrders[i];
+					for( var node = activeOrders.First; node != null; node = node.Next) {
+						LogicalOrder other = node.Value;
 						if( order.CompareTo(other) < 0) {
-							activeOrders.Insert(i,order);
+							activeOrders.AddBefore(node,order);
 							found = true;
 							break;
 						}
 					}
 					if( !found) {
-						activeOrders.Add(order);
+						activeOrders.AddLast(order);
 					}
 				}
 			} else {
@@ -198,6 +209,7 @@ namespace TickZoom.Common
 					nextBarOrders.Remove(order);
 				}
 			}
+			ActiveOrdersChanged();
 		}
 		
 		[Browsable(true)]
@@ -300,12 +312,7 @@ namespace TickZoom.Common
 			allOrders.Add(order);
 		}
 		
-		public void RefreshActiveOrders() {
-			tempActiveOrders.Clear();
-			tempActiveOrders.AddRange(activeOrders);
-		}
-		
-		public IList<LogicalOrder> AllOrders {
+		public Iterable<LogicalOrder> AllOrders {
 			get {
 				return allOrders;
 			}
@@ -320,9 +327,9 @@ namespace TickZoom.Common
 			throw new ApplicationException("Logical Order Id " + orderId + " was not found.");
 		}
 		
-		public IList<LogicalOrder> ActiveOrders {
+		public Iterable<LogicalOrder> ActiveOrders {
 			get {
-				return tempActiveOrders;
+				return activeOrders;
 			}
 		}
 		

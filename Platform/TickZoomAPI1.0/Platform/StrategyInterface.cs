@@ -54,9 +54,8 @@ namespace TickZoom.Api
 		bool OnWriteReport(string folder);
 		string OnGetOptimizeHeader(Dictionary<string,object> optimizeValues);
 		string OnGetOptimizeResult(Dictionary<string,object> optimizeValues);
-		void RefreshActiveOrders();
-	 	IList<LogicalOrder> AllOrders { get; }
-	 	IList<LogicalOrder> ActiveOrders { get; }
+	 	Iterable<LogicalOrder> AllOrders { get; }
+	 	Iterable<LogicalOrder> ActiveOrders { get; }
 		
 		void OrderModified( LogicalOrder order);
 		bool IsActiveOrdersChanged { get; set; }

@@ -32,8 +32,8 @@ namespace TickZoom.Api
 	public class PositionChangeDetail {
 		private SymbolInfo symbol;
 		private double position;
-		private IList<LogicalOrder> orders;
-		public PositionChangeDetail(SymbolInfo symbol, double position, IList<LogicalOrder> orders) {
+		private Iterable<LogicalOrder> orders;
+		public PositionChangeDetail(SymbolInfo symbol, double position, Iterable<LogicalOrder> orders) {
 			this.symbol = symbol;
 			this.position = position;
 			this.orders = orders;
@@ -43,7 +43,7 @@ namespace TickZoom.Api
 			get { return position; }
 		}
 		
-		public IList<LogicalOrder> Orders {
+		public Iterable<LogicalOrder> Orders {
 			get { return orders; }
 		}
 		

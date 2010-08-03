@@ -51,7 +51,7 @@ namespace TickZoom.Common
 			get { return previousPosition != position.Current; }
 		}
 		
-		public IList<LogicalOrder> ActiveOrders {
+		public Iterable<LogicalOrder> ActiveOrders {
 			get { return strategy.ActiveOrders; }
 		}
 		

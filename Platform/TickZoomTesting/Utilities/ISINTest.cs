@@ -25,20 +25,50 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Text;
+
 using NUnit.Framework;
 using TickZoom.Api;
 
 namespace TickZoom.Utilities
 {
-	/// <summary>
-	/// Description of ISINTest.
-	/// </summary>
 	[TestFixture]
 	public class ISINTest
 	{
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		public ISINTest()
 		{
+		}
+		
+		public class ActiveList<T> : LinkedList<T>, Iterable<T> {
+			public IEnumerable<T> Iterate() {
+				for( var node = this.First; node != null; node = node.Next) {
+					yield return node.Value;
+				}
+			}
+		}
+		
+		[Test]
+		public void EnumerableTest() {
+			ActiveList<int> list = new ActiveList<int>();
+			for( int i=0; i<10; i++) {
+				list.AddLast(i);
+			}
+			
+			Iterable<int> active = list;
+			foreach( var val in active.Iterate()) {
+				if( val == 5) {
+					list.AddAfter(list.First,22);
+				}
+			}
+			
+			StringBuilder sb = new StringBuilder();
+			foreach( var val in active.Iterate()) {
+				sb.Append(val);
+				sb.Append(", ");
+			}
+			Assert.AreEqual("0, 22, 1, 2, 3, 4, 5, 6, 7, 8, 9, ",sb.ToString());
 		}
 		
 		[TestFixtureSetUpAttribute]

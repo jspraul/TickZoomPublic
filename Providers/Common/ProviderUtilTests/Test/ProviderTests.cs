@@ -39,7 +39,7 @@ namespace TickZoom.Test
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TimeAndSales));
 		private static readonly bool debug = log.IsDebugEnabled;		
-		private List<LogicalOrder> orders = new List<LogicalOrder>();
+		private ActiveList<LogicalOrder> orders = new ActiveList<LogicalOrder>();
 		protected SymbolInfo symbol;
 		Action<TickIO, TickIO, long> assertTick;
 			
@@ -269,9 +269,9 @@ namespace TickZoom.Test
 				ClearOrders();
 				enterBuyLimit.Price = bid-260*symbol.MinimumTick;
 				enterSellLimit.Price = ask+280*symbol.MinimumTick;
-				orders.Add(enterBuyLimit);
-				orders.Add(enterSellLimit);
-				orders.Add(exitSellLimit);
+				orders.AddLast(enterBuyLimit);
+				orders.AddLast(enterSellLimit);
+				orders.AddLast(exitSellLimit);
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
 	  			count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
@@ -316,9 +316,9 @@ namespace TickZoom.Test
 				ClearOrders();
 				enterSellStop.Price = bid-360*symbol.MinimumTick;
 				enterBuyStop.Price = ask+380*symbol.MinimumTick;
-				orders.Add(enterBuyStop);
-				orders.Add(enterSellStop);
-				orders.Add(exitBuyStop);
+				orders.AddLast(enterBuyStop);
+				orders.AddLast(enterSellStop);
+				orders.AddLast(exitBuyStop);
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
 	  			count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
@@ -460,7 +460,7 @@ namespace TickZoom.Test
 #endif
 
 		private void ClearOrders() {
-			orders = new List<LogicalOrder>();
+			orders.Clear();
 		}
 		
 		private void CreateEntry( Provider provider, VerifyFeed verify, OrderType orderType, double desiredPositions, double actualPosition) {
@@ -471,13 +471,13 @@ namespace TickZoom.Test
 		}
 		
 		private void CreateOrder( Provider provider, VerifyFeed verify, TradeDirection tradeDirection, OrderType orderType, double desiredPositions, double actualPosition) {
-  			List<LogicalOrder> list = new List<LogicalOrder>();
+  			ActiveList<LogicalOrder> list = new ActiveList<LogicalOrder>();
   			LogicalOrder order = Factory.Engine.LogicalOrder(symbol,null);
   			order.TradeDirection = tradeDirection;
   			order.Type = orderType;
   			order.Positions = desiredPositions;
   			order.IsActive = true;
-  			list.Add(order);
+  			list.AddLast(order);
   			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,actualPosition,list));
 		}
 		
@@ -532,7 +532,7 @@ namespace TickZoom.Test
 			logical.Type = type;
 			logical.Price = price;
 			logical.Positions = size;
-			orders.Add(logical);
+			orders.AddLast(logical);
 			return logical;
 		}
 		
@@ -542,12 +542,20 @@ namespace TickZoom.Test
 			logical.TradeDirection = TradeDirection.Exit;
 			logical.Type = type;
 			logical.Price = price;
-			orders.Add(logical);
+			orders.AddLast(logical);
 			return logical;
 		}
 		
 		public static Log Log {
 			get { return log; }
+		}
+		
+		internal class ActiveList<T> : LinkedList<T>, Iterable<T> {
+			public IEnumerable<T> Iterate() {
+				for( var node = this.First; node != null; node = node.Next) {
+					yield return node.Value;
+				}
+			}
 		}
 	}
 }

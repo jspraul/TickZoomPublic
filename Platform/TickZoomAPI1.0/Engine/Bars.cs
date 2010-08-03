@@ -25,10 +25,14 @@
 #endregion
 
 using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace TickZoom.Api
 {
+	public interface Iterable<T> {
+		IEnumerable<T> Iterate();
+	}
+	
 	/// <summary>
 	/// Description of DataSeries.
 	/// </summary>

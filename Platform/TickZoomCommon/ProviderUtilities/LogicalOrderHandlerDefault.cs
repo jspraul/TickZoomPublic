@@ -41,9 +41,9 @@ namespace TickZoom.Common
 		private static readonly bool trace = log.IsTraceEnabled;
 		SymbolInfo symbol;
 		PhysicalOrderHandler brokerOrders;
-		List<PhysicalOrder> physicalOrders;
-		IList<LogicalOrder> originalLogicals;
-		List<LogicalOrder> logicalOrders;
+		ActiveList<PhysicalOrder> physicalOrders;
+		ActiveList<LogicalOrder> originalLogicals;
+		ActiveList<LogicalOrder> logicalOrders;
 		List<LogicalOrder> extraLogicals = new List<LogicalOrder>();
 		double actualPosition;
 		double desiredPosition;
@@ -51,8 +51,9 @@ namespace TickZoom.Common
 		public LogicalOrderHandlerDefault(SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
 			this.symbol = symbol;
 			this.brokerOrders = brokerOrders;
-			this.physicalOrders = new List<PhysicalOrder>();
-			this.logicalOrders = new List<LogicalOrder>();
+			this.originalLogicals = new ActiveList<LogicalOrder>();
+			this.physicalOrders = new ActiveList<PhysicalOrder>();
+			this.logicalOrders = new ActiveList<LogicalOrder>();
 		}
 		
 		public void ClearPhysicalOrders() {
@@ -64,15 +65,15 @@ namespace TickZoom.Common
 		}
 		
 		public void AddPhysicalOrder( bool isActive, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder, object tag) {
-			physicalOrders.Add( new PhysicalOrderDefault(isActive, symbol,side,type,price,size,logicalOrderId,brokerOrder, tag));
+			physicalOrders.AddLast( new PhysicalOrderDefault(isActive, symbol,side,type,price,size,logicalOrderId,brokerOrder, tag));
 		}
 
 		public void AddPhysicalOrder( bool isActive, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder) {
-			physicalOrders.Add( new PhysicalOrderDefault(isActive, symbol,side,type,price,size,logicalOrderId,brokerOrder, null));
+			physicalOrders.AddLast( new PhysicalOrderDefault(isActive, symbol,side,type,price,size,logicalOrderId,brokerOrder, null));
 		}
 
 		public void AddPhysicalOrder( PhysicalOrder order) {
-			physicalOrders.Add( order);
+			physicalOrders.AddLast( order);
 		}
 		private bool TryMatchId( LogicalOrder logical, out PhysicalOrder physicalOrder) {
 			foreach( var physical in physicalOrders) {
@@ -226,8 +227,7 @@ namespace TickZoom.Common
 		private void ComparePosition() {
 			double positionDelta = desiredPosition - actualPosition;
 			double pendingAdjustments = 0D;
-			for( int i=0; i<physicalOrders.Count; i++) {
-				var order = physicalOrders[i];
+			foreach( var order in physicalOrders.Iterate()) {
 				if(order.Type != OrderType.BuyMarket &&
 				   order.Type != OrderType.SellMarket) {
 					continue;
@@ -261,7 +261,7 @@ namespace TickZoom.Common
 						TryCancelBrokerOrder(order);
 						pendingAdjustments += order.Type == OrderType.SellMarket ? order.Size : -order.Size;
 					}
-					physicalOrders.RemoveAt(i);	i--;
+					physicalOrders.Remove(order);
 				}
 			}
 			double delta = positionDelta - pendingAdjustments;
@@ -285,10 +285,16 @@ namespace TickZoom.Common
 			actualPosition = desiredPosition;
 		}
 		
-		public void SetLogicalOrders( IList<LogicalOrder> originalLogicals) {
-			int orderCount = originalLogicals == null ? 0 : originalLogicals.Count;
-			if( trace) log.Trace("SetLogicalOrders() order count = " + orderCount);
-			this.originalLogicals = originalLogicals;
+		public void SetLogicalOrders( Iterable<LogicalOrder> originalLogicals) {
+			if( trace) {
+				int count = 0;
+				if( originalLogicals != null) {
+					foreach( var order in originalLogicals.Iterate()) { count++; }
+				}
+				log.Trace("SetLogicalOrders() order count = " + count);
+			}
+			this.originalLogicals.Clear();
+			this.originalLogicals.AddLast(originalLogicals);
 		}
 		
 		public void SetDesiredPosition(	double position) {
@@ -319,7 +325,7 @@ namespace TickZoom.Common
 			LogicalOrder filledOrder = null;
 			logicalOrders.Clear();
 			if( originalLogicals != null) {
-				logicalOrders.AddRange(originalLogicals);
+				logicalOrders.AddLast(originalLogicals);
 			}
 			foreach( var order in logicalOrders) {
 				if( order.Id == orderId) {
@@ -379,12 +385,12 @@ namespace TickZoom.Common
 			// Now synchronize the orders.
 			logicalOrders.Clear();
 			if(originalLogicals != null) {
-				logicalOrders.AddRange(originalLogicals);
+				logicalOrders.AddLast(originalLogicals);
 			}
 			PhysicalOrder physical;
 			extraLogicals.Clear();
 			while( logicalOrders.Count > 0) {
-				var logical = logicalOrders[0];
+				var logical = logicalOrders.First.Value;
 				if( TryMatchId(logical, out physical)) {
 					ProcessMatch(logical,physical);
 					physicalOrders.Remove(physical);
@@ -401,7 +407,7 @@ namespace TickZoom.Common
 			}
 			if( debug) log.Debug("Found " + physicalOrders.Count + " extra physicals.");
 			while( physicalOrders.Count > 0) {
-				physical = physicalOrders[0];
+				physical = physicalOrders.First.Value;
 				ProcessMissingLogical(physical);
 				physicalOrders.Remove(physical);
 			}

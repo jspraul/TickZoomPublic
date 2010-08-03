@@ -37,7 +37,7 @@ namespace TickZoom.Interceptors
 		private static readonly bool IsTrace = Log.IsTraceEnabled;
 		private static readonly bool IsDebug = Log.IsDebugEnabled;
 		private static readonly bool IsNotice = Log.IsNoticeEnabled;
-		private IList<LogicalOrder> activeOrders;
+		private Iterable<LogicalOrder> activeOrders;
 		private double position;
 		private Action<SymbolInfo, LogicalFill> changePosition;
 		private Action<LogicalFillBinary> createLogicalFill;
@@ -63,7 +63,7 @@ namespace TickZoom.Interceptors
 			graphTrades = strategy.Performance.GraphTrades;
 		}
 		
-		public bool ProcessOrders(Tick tick, IList<LogicalOrder> orders, double position)
+		public bool ProcessOrders(Tick tick, Iterable<LogicalOrder> orders, double position)
 		{
 			bool retVal = false;
 			if( changePosition == null) {
@@ -74,8 +74,7 @@ namespace TickZoom.Interceptors
 			}
 			this.position = position;
 			this.activeOrders = orders;
-			for(int i=0; i<activeOrders.Count; i++) {
-				LogicalOrder order = activeOrders[i];
+			foreach( var order in activeOrders.Iterate()) {
 				if (order.IsActive) {
 					if (doEntryOrders && order.TradeDirection == TradeDirection.Entry) {
 						if( OnProcessEnterOrder(order, tick)) {
@@ -274,8 +273,7 @@ namespace TickZoom.Interceptors
 		}
 		
 		public void CancelReverseOrders() {
-			for (int i = activeOrders.Count - 1; i >= 0; i--) {
-				LogicalOrder order = activeOrders[i];
+			foreach( var order in activeOrders.Iterate()) {
 				if (order.TradeDirection == TradeDirection.Exit ||
 				   order.TradeDirection == TradeDirection.Reverse) {
 					order.IsActive = false;
@@ -285,8 +283,7 @@ namespace TickZoom.Interceptors
 		
 		public void CancelExitOrders(TradeDirection tradeDirection)
 		{
-			for (int i = activeOrders.Count - 1; i >= 0; i--) {
-				LogicalOrder order = activeOrders[i];
+			foreach( var order in activeOrders.Iterate()) {
 				if (order.TradeDirection == tradeDirection) {
 					order.IsActive = false;
 				}
@@ -516,8 +513,7 @@ namespace TickZoom.Interceptors
 
 		public void CancelEnterOrders()
 		{
-			for (int i = activeOrders.Count - 1; i >= 0; i--) {
-				LogicalOrder order = activeOrders[i];
+			foreach( var order in activeOrders.Iterate()) {
 				if (order.TradeDirection == TradeDirection.Entry) {
 					order.IsActive = false;
 				}
@@ -579,7 +575,7 @@ namespace TickZoom.Interceptors
 			bool cancelAllExitStrategies = false;
 			int orderId = fill.OrderId;
 			LogicalOrder filledOrder = null;
-			foreach( var order in strategy.ActiveOrders) {
+			foreach( var order in strategy.ActiveOrders.Iterate()) {
 				if( order.Id == orderId) {
 					if( IsDebug) Log.Debug( "Matched fill with orderId: " + orderId);
 					if( order.TradeDirection == TradeDirection.Entry && !doEntryOrders) {
@@ -622,8 +618,7 @@ namespace TickZoom.Interceptors
 					clean = true;
 				}
 				if( clean) {
-					strategy.RefreshActiveOrders();
-					foreach( var order in strategy.ActiveOrders) {
+					foreach( var order in strategy.ActiveOrders.Iterate()) {
 						if( order.TradeDirection == TradeDirection.Entry && cancelAllEntries) {
 							order.IsActive = false;
 						}

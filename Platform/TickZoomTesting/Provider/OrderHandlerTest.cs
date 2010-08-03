@@ -35,7 +35,7 @@ namespace Orders
 	[TestFixture]
 	public class OrderHandlerTest {
 		SymbolInfo symbol = Factory.Symbol.LookupSymbol("CSCO");
-		List<LogicalOrder> orders = new List<LogicalOrder>();
+		ActiveList<LogicalOrder> orders = new ActiveList<LogicalOrder>();
 		TestBrokerProvider handler;
 		
 		public OrderHandlerTest() {
@@ -54,7 +54,7 @@ namespace Orders
 			logical.Type = type;
 			logical.Price = price;
 			logical.Positions = size;
-			orders.Add(logical);
+			orders.AddLast(logical);
 			return logical.Id;
 		}
 		
@@ -64,7 +64,7 @@ namespace Orders
 			logical.TradeDirection = TradeDirection.Exit;
 			logical.Type = type;
 			logical.Price = price;
-			orders.Add(logical);
+			orders.AddLast(logical);
 			return logical.Id;
 		}
 		
@@ -1208,7 +1208,7 @@ namespace Orders
 			{
 				CreatedOrders.Add(order);
 			}
-			public void SetLogicalOrders(IList<LogicalOrder> logicalOrders) {
+			public void SetLogicalOrders(Iterable<LogicalOrder> logicalOrders) {
 				logicalHandler.SetLogicalOrders(logicalOrders);
 			}
 			public void PerformCompare()

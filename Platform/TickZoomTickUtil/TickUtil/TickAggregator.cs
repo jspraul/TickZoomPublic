@@ -184,7 +184,7 @@ namespace TickZoom.TickUtil
 			throw new NotImplementedException();
 		}
 		
-		public void PositionChange(Receiver receiver, SymbolInfo symbol, double position, IList<LogicalOrder> orders)
+		public void PositionChange(Receiver receiver, SymbolInfo symbol, double position, Iterable<LogicalOrder> orders)
 		{
 			throw new NotImplementedException();
 		}

@@ -139,7 +139,7 @@ namespace TickZoom.Starters
 		{
 		}
 
-	    public void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, IList<LogicalOrder> orders)
+	    public void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, Iterable<LogicalOrder> orders)
 	    {
 	        throw new NotImplementedException();
 	    }
