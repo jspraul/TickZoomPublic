@@ -31,6 +31,8 @@ namespace TickZoom.Api
 {
 	public interface OrderManager : StrategyInterceptor
 	{
+		event Action<OrderManager> OnActiveChange;
+		bool IsActive { get; set; }
 		bool PostProcess { get; set; }
 		Action<SymbolInfo,LogicalFill> ChangePosition { get; set; }
 		bool DoEntryOrders { get; set; }
