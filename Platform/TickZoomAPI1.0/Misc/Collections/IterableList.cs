@@ -26,9 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using TickZoom.Api;
 
-namespace TickZoom.Common
+namespace TickZoom.Api
 {
 	public class IterableList<T> : List<T>, Iterable<T> {
 		public IEnumerable<T> Iterate() {
