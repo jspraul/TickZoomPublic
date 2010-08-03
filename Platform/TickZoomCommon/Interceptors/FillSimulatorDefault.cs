@@ -34,9 +34,9 @@ namespace TickZoom.Interceptors
 	public class FillSimulatorDefault : FillSimulator
 	{
 		private static readonly Log Log = Factory.SysLog.GetLogger(typeof(FillSimulatorDefault));
-		private static readonly bool IsTrace = Log.IsTraceEnabled;
-		private static readonly bool IsDebug = Log.IsDebugEnabled;
-		private static readonly bool IsNotice = Log.IsNoticeEnabled;
+		private static readonly bool trace = Log.IsTraceEnabled;
+		private static readonly bool debug = Log.IsDebugEnabled;
+		private static readonly bool notice = Log.IsNoticeEnabled;
 		private Iterable<LogicalOrder> activeOrders;
 		private double position;
 		private Action<SymbolInfo, LogicalFill> changePosition;
@@ -104,7 +104,7 @@ namespace TickZoom.Interceptors
 		private bool OnProcessExitOrder(LogicalOrder order, Tick tick)
 		{
 			bool retVal = false;
-			if (IsTrace)
+			if (trace)
 				Log.Trace("OnProcessEnterOrder()");
 			if (IsLong) {
 				if (order.Type == OrderType.BuyStop || order.Type == OrderType.BuyLimit) {
@@ -174,7 +174,7 @@ namespace TickZoom.Interceptors
 		private bool OnProcessReverseOrder(LogicalOrder order, Tick tick)
 		{
 			bool retVal = false;
-			if (IsTrace)
+			if (trace)
 				Log.Trace("OnProcessEnterOrder()");
 			if (IsLong) {
 				if (order.Type == OrderType.BuyStop || order.Type == OrderType.BuyLimit) {
@@ -440,7 +440,7 @@ namespace TickZoom.Interceptors
 		private bool OnProcessEnterOrder(LogicalOrder order, Tick tick)
 		{
 			bool retVal = false;
-			if (IsTrace) Log.Trace("OnProcessEnterOrder()");
+			if (trace) Log.Trace("OnProcessEnterOrder()");
 			if (IsFlat || (allowReversal && IsShort)) {
 				if (order.Type == OrderType.BuyMarket && useSyntheticMarkets) {
 					if( ProcessEnterBuyMarket(order, tick)) {
@@ -568,7 +568,7 @@ namespace TickZoom.Interceptors
 		}
 		
 		public void ProcessFill(StrategyInterface strategyInterface, LogicalFill fill) {
-			if( IsDebug) Log.Debug( "Considering fill: " + fill + " for strategy " + strategyInterface);
+			if( debug) Log.Debug( "Considering fill: " + fill + " for strategy " + strategyInterface);
 			Strategy strategy = (Strategy) strategyInterface;
 			bool cancelAllEntries = false;
 			bool cancelAllExits = false;
@@ -577,26 +577,26 @@ namespace TickZoom.Interceptors
 			LogicalOrder filledOrder = null;
 			foreach( var order in strategy.ActiveOrders.Iterate()) {
 				if( order.Id == orderId) {
-					if( IsDebug) Log.Debug( "Matched fill with orderId: " + orderId);
+					if( debug) Log.Debug( "Matched fill with orderId: " + orderId);
 					if( order.TradeDirection == TradeDirection.Entry && !doEntryOrders) {
-						if( IsDebug) Log.Debug( "Skipping fill, entry order fills disabled.");
+						if( debug) Log.Debug( "Skipping fill, entry order fills disabled.");
 						return;
 					}
 					if( order.TradeDirection == TradeDirection.Exit && !doExitOrders) {
-						if( IsDebug) Log.Debug( "Skipping fill, exit order fills disabled.");
+						if( debug) Log.Debug( "Skipping fill, exit order fills disabled.");
 						return;
 					}
 					if( order.TradeDirection == TradeDirection.Reverse && !doExitOrders) {
-						if( IsDebug) Log.Debug( "Skipping fill, reverse order fills disabled.");
+						if( debug) Log.Debug( "Skipping fill, reverse order fills disabled.");
 						return;
 					}
 					if( order.TradeDirection == TradeDirection.ExitStrategy && !doExitStrategyOrders) {
-						if( IsDebug) Log.Debug( "Skipping fill, exit strategy orders fills disabled.");
+						if( debug) Log.Debug( "Skipping fill, exit strategy orders fills disabled.");
 						return;
 					}
 					filledOrder = order;
 					TryDrawTrade(order, fill.Price, fill.Position);
-					if( IsDebug) Log.Debug( "Changing position because of fill");
+					if( debug) Log.Debug( "Changing position because of fill");
 					changePosition(strategy.Data.SymbolInfo,fill);
 				}
 			}
