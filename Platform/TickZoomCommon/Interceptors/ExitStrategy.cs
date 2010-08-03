@@ -60,9 +60,6 @@ namespace TickZoom.Interceptors
 		PositionCommon position;
 		
 		public ExitStrategy(Strategy strategy) : base( strategy) {
-//			RequestUpdate(Intervals.Day1);
-//			RequestUpdate(Intervals.Week1);
-//			RequestUpdate(Intervals.Month1);
 			position = new PositionCommon(strategy);
 			int OptimizeTickEvent = 0;
 			strategy.RequestEvent(EventType.Tick);
@@ -197,9 +194,9 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void CancelOrders() {
-			marketOrder.IsActive = false;
-			breakEvenStopOrder.IsActive = false;
-			stopLossOrder.IsActive = false;
+			marketOrder.Status = OrderStatus.Inactive;
+			breakEvenStopOrder.Status = OrderStatus.Inactive;
+			stopLossOrder.Status = OrderStatus.Inactive;
 		}
 		
 		private void flattenSignal(Tick tick, string tag) {
@@ -246,7 +243,7 @@ namespace TickZoom.Interceptors
 					stopLossOrder.Type = OrderType.BuyStop;
 					stopLossOrder.Price = entryPrice + stopLoss;
 				}
-				stopLossOrder.IsActive = true;
+				stopLossOrder.Status = OrderStatus.Active;
 //			}
 			if( pnl <= -stopLoss) {
 				LogExit("StopLoss " + stopLoss + " Exit at " + tick);
@@ -278,7 +275,7 @@ namespace TickZoom.Interceptors
 			if( pnl >= breakEven) {
 				breakEvenStopOrder.Tag = "Break Even";
 				if( !breakEvenStopOrder.IsActive) {
-					breakEvenStopOrder.IsActive = true;
+					breakEvenStopOrder.Status = OrderStatus.Active;
 					if( position.IsLong ) {
 						breakEvenStopOrder.Type = OrderType.SellStop;
 						breakEvenStopOrder.Price = entryPrice + breakEvenStop;

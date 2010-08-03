@@ -53,7 +53,7 @@ namespace TickZoom.Examples
 		{
 //			if( Strategies[current].Performance.ComboTrades.Count > 10) {
 //				current++;
-//				Strategies[current].IsActive = true;
+//				Strategies[current].Status = OrderStatus.Active;
 //			}
 			return true;
 		}

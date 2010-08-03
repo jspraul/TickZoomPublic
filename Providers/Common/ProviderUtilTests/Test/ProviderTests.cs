@@ -476,7 +476,7 @@ namespace TickZoom.Test
   			order.TradeDirection = tradeDirection;
   			order.Type = orderType;
   			order.Positions = desiredPositions;
-  			order.IsActive = true;
+  			order.Status = OrderStatus.Active;
   			list.AddLast(order);
   			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,actualPosition,list));
 		}
@@ -527,7 +527,7 @@ namespace TickZoom.Test
 		
 		public LogicalOrder CreateLogicalEntry(OrderType type, double price, int size) {
 			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,null);
-			logical.IsActive = true;
+  			logical.Status = OrderStatus.Active;
 			logical.TradeDirection = TradeDirection.Entry;
 			logical.Type = type;
 			logical.Price = price;
@@ -538,7 +538,7 @@ namespace TickZoom.Test
 		
 		public LogicalOrder CreateLogicalExit(OrderType type, double price) {
 			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,null);
-			logical.IsActive = true;
+  			logical.Status = OrderStatus.Active;
 			logical.TradeDirection = TradeDirection.Exit;
 			logical.Type = type;
 			logical.Price = price;

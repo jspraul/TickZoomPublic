@@ -82,19 +82,19 @@ namespace TickZoom.Interceptors
 		
         public void CancelOrders()
         {
-        	orders.buyMarket.IsActive = false;
-            orders.sellMarket.IsActive = false;
-        	orders.buyStop.IsActive = false;
-            orders.sellStop.IsActive = false;
-            orders.buyLimit.IsActive = false;
-            orders.sellLimit.IsActive = false;
+        	orders.buyMarket.Status = OrderStatus.Inactive;
+            orders.sellMarket.Status = OrderStatus.Inactive;
+        	orders.buyStop.Status = OrderStatus.Inactive;
+            orders.sellStop.Status = OrderStatus.Inactive;
+            orders.buyLimit.Status = OrderStatus.Inactive;
+            orders.sellLimit.Status = OrderStatus.Inactive;
             
-        	orders.buyMarket.IsNextBar = false;
-            orders.sellMarket.IsNextBar = false;
-        	orders.buyStop.IsNextBar = false;
-            orders.sellStop.IsNextBar = false;
-            orders.buyLimit.IsNextBar = false;
-            orders.sellLimit.IsNextBar = false;
+        	orders.buyMarket.Status = OrderStatus.Inactive;
+            orders.sellMarket.Status = OrderStatus.Inactive;
+        	orders.buyStop.Status = OrderStatus.Inactive;
+            orders.sellStop.Status = OrderStatus.Inactive;
+            orders.buyLimit.Status = OrderStatus.Inactive;
+            orders.sellLimit.Status = OrderStatus.Inactive;
         }
 		
 		private void LogEntry(string description) {
@@ -129,9 +129,9 @@ namespace TickZoom.Interceptors
         	orders.sellMarket.Price = 0;
         	orders.sellMarket.Positions = lots * lotSize;
         	if( isNextBar) {
-	        	orders.sellMarket.IsNextBar = true;
+	        	orders.sellMarket.Status = OrderStatus.NextBar;
         	} else {
-        		orders.sellMarket.IsActive = true;
+        		orders.sellMarket.Status = OrderStatus.Active;
         	}
         }
         
@@ -159,9 +159,9 @@ namespace TickZoom.Interceptors
         	orders.buyMarket.Price = 0;
         	orders.buyMarket.Positions = lots * lotSize;
         	if( isNextBar) {
-	        	orders.buyMarket.IsNextBar = true;
+	        	orders.buyMarket.Status = OrderStatus.NextBar;
         	} else {
-        		orders.buyMarket.IsActive = true;
+        		orders.buyMarket.Status = OrderStatus.Active;
         	}
         }
         
@@ -191,9 +191,9 @@ namespace TickZoom.Interceptors
         	orders.buyLimit.Price = price;
         	orders.buyLimit.Positions = lots * lotSize;
         	if( isNextBar) {
-	        	orders.buyLimit.IsNextBar = true;
+	        	orders.buyLimit.Status = OrderStatus.NextBar;
         	} else {
-        		orders.buyLimit.IsActive = true;
+        		orders.buyLimit.Status = OrderStatus.Active;
         	}
 		}
         
@@ -215,9 +215,9 @@ namespace TickZoom.Interceptors
         	orders.sellLimit.Price = price;
         	orders.sellLimit.Positions = lots * lotSize;
         	if( isNextBar) {
-	        	orders.sellLimit.IsNextBar = true;
+	        	orders.sellLimit.Status = OrderStatus.NextBar;
         	} else {
-        		orders.sellLimit.IsActive = true;
+        		orders.sellLimit.Status = OrderStatus.Active;
         	}
 		}
         
@@ -239,9 +239,9 @@ namespace TickZoom.Interceptors
         	orders.buyStop.Price = price;
         	orders.buyStop.Positions = lots * lotSize;
         	if( isNextBar) {
-	        	orders.buyStop.IsNextBar = true;
+	        	orders.buyStop.Status = OrderStatus.NextBar;
         	} else {
-        		orders.buyStop.IsActive = true;
+        		orders.buyStop.Status = OrderStatus.Active;
         	}
 		}
 	
@@ -263,9 +263,9 @@ namespace TickZoom.Interceptors
         	orders.sellStop.Price = price;
         	orders.sellStop.Positions = lots * lotSize;
         	if( isNextBar) {
-	        	orders.sellStop.IsNextBar = true;
+	        	orders.sellStop.Status = OrderStatus.NextBar;
         	} else {
-        		orders.sellStop.IsActive = true;
+        		orders.sellStop.Status = OrderStatus.Active;
         	}
         }
         

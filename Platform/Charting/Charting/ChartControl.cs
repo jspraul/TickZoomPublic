@@ -409,7 +409,7 @@ namespace TickZoom
 			ArrowObj arrow = CreateArrow( direction, color, 12.5f, ChartBars.BarCount, fillPrice);
 			StringBuilder sb = new StringBuilder();
 			if( order.Tag != null) {
-				sb.AppendLine(order.Tag);
+				sb.AppendLine(order.Tag.ToString());
 			}
 			sb.Append(order.TradeDirection);
 			sb.Append(" ");

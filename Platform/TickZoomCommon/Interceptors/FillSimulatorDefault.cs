@@ -108,12 +108,12 @@ namespace TickZoom.Interceptors
 				Log.Trace("OnProcessEnterOrder()");
 			if (IsLong) {
 				if (order.Type == OrderType.BuyStop || order.Type == OrderType.BuyLimit) {
-					order.IsActive = false;
+					order.Status = OrderStatus.Inactive;
 				}
 			}
 			if (IsShort) {
 				 if (order.Type == OrderType.SellStop || order.Type == OrderType.SellLimit) {
-					order.IsActive = false;
+					order.Status = OrderStatus.Inactive;
 				}
 			}
 
@@ -178,12 +178,12 @@ namespace TickZoom.Interceptors
 				Log.Trace("OnProcessEnterOrder()");
 			if (IsLong) {
 				if (order.Type == OrderType.BuyStop || order.Type == OrderType.BuyLimit) {
-					order.IsActive = false;
+					order.Status = OrderStatus.Inactive;
 				}
 			}
 			if (IsShort) {
 				 if (order.Type == OrderType.SellStop || order.Type == OrderType.SellLimit) {
-					order.IsActive = false;
+					order.Status = OrderStatus.Inactive;
 				}
 			}
 
@@ -276,7 +276,7 @@ namespace TickZoom.Interceptors
 			foreach( var order in activeOrders.Iterate()) {
 				if (order.TradeDirection == TradeDirection.Exit ||
 				   order.TradeDirection == TradeDirection.Reverse) {
-					order.IsActive = false;
+					order.Status = OrderStatus.Inactive;
 				}
 			}
 		}
@@ -285,7 +285,7 @@ namespace TickZoom.Interceptors
 		{
 			foreach( var order in activeOrders.Iterate()) {
 				if (order.TradeDirection == tradeDirection) {
-					order.IsActive = false;
+					order.Status = OrderStatus.Inactive;
 				}
 			}
 		}
@@ -515,7 +515,7 @@ namespace TickZoom.Interceptors
 		{
 			foreach( var order in activeOrders.Iterate()) {
 				if (order.TradeDirection == TradeDirection.Entry) {
-					order.IsActive = false;
+					order.Status = OrderStatus.Inactive;
 				}
 			}
 		}
@@ -620,13 +620,13 @@ namespace TickZoom.Interceptors
 				if( clean) {
 					foreach( var order in strategy.ActiveOrders.Iterate()) {
 						if( order.TradeDirection == TradeDirection.Entry && cancelAllEntries) {
-							order.IsActive = false;
+							order.Status = OrderStatus.Inactive;
 						}
 						if( order.TradeDirection == TradeDirection.Exit && cancelAllExits) {
-							order.IsActive = false;
+							order.Status = OrderStatus.Inactive;
 						}
 						if( order.TradeDirection == TradeDirection.ExitStrategy && cancelAllExitStrategies) {
-							order.IsActive = false;
+							order.Status = OrderStatus.Inactive;
 						}
 					}
 				}

@@ -49,7 +49,7 @@ namespace Orders
 		
 		public int CreateLogicalEntry(OrderType type, double price, int size) {
 			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,null);
-			logical.IsActive = true;
+			logical.Status = OrderStatus.Active;
 			logical.TradeDirection = TradeDirection.Entry;
 			logical.Type = type;
 			logical.Price = price;
@@ -60,7 +60,7 @@ namespace Orders
 		
 		public int CreateLogicalExit(OrderType type, double price) {
 			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,null);
-			logical.IsActive = true;
+			logical.Status = OrderStatus.Active;
 			logical.TradeDirection = TradeDirection.Exit;
 			logical.Type = type;
 			logical.Price = price;

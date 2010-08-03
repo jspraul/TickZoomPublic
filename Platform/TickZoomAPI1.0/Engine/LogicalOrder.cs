@@ -28,12 +28,18 @@ using System;
 
 namespace TickZoom.Api
 {
+	public enum OrderStatus {
+		Inactive,
+		NextBar,
+		Active,
+	}
+	
 	/// <summary>
 	/// Description of OrderCommon.
 	/// </summary>
 	public interface LogicalOrder :  Serializable, IComparable
 	{
-		event Action<LogicalOrder> OnActiveChange;
+		event Action<LogicalOrder> OnStatusChange;
 		
 		StrategyInterface Strategy {
 			get;
@@ -59,17 +65,20 @@ namespace TickZoom.Api
 			set;
 		}
 		
-		bool IsActive {
+		OrderStatus Status {
 			get;
 			set;
+		}
+		
+		bool IsActive {
+			get;
 		}
 		
 		bool IsNextBar {
 			get;
-			set;
 		}
 		
-		string Tag {
+		object Tag {
 			get;
 			set;
 		}
