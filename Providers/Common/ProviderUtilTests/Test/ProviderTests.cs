@@ -549,13 +549,5 @@ namespace TickZoom.Test
 		public static Log Log {
 			get { return log; }
 		}
-		
-		internal class ActiveList<T> : LinkedList<T>, Iterable<T> {
-			public IEnumerable<T> Iterate() {
-				for( var node = this.First; node != null; node = node.Next) {
-					yield return node.Value;
-				}
-			}
-		}
 	}
 }

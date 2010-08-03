@@ -688,16 +688,15 @@ namespace TickZoom.MBTFIX
 			}
 		}
 		
-		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, IList<LogicalOrder> orders)
+		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, Iterable<LogicalOrder> orders)
 		{
 			if( !IsRecovered) {
 				throw new ApplicationException("PositionChange event received prior to completing FIX recovery. Current connection status is: " + ConnectionStatus);
 			}
-			int orderCount = orders==null?0:orders.Count;
-			log.Info("Received PositionChange for " + symbol + " at position " + signal + " and " + orderCount + " orders.");
+			log.Info("Received PositionChange for " + symbol + " with position " + signal + " and the following orders:");
 			
 			if( orders != null) {
-				foreach( var order in orders) {
+				foreach( var order in orders.Iterate()) {
 					log.Info("Logical Order: " + order);
 				}
 			}

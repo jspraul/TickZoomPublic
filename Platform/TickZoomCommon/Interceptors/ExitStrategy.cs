@@ -238,8 +238,6 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void processStopLoss(Tick tick) {
-//			if( !stopLossOrder.IsActive) {
-				stopLossOrder.IsActive = true;
 				if( position.IsLong) {
 					stopLossOrder.Type = OrderType.SellStop;
 					stopLossOrder.Price = entryPrice - stopLoss;
@@ -248,6 +246,7 @@ namespace TickZoom.Interceptors
 					stopLossOrder.Type = OrderType.BuyStop;
 					stopLossOrder.Price = entryPrice + stopLoss;
 				}
+				stopLossOrder.IsActive = true;
 //			}
 			if( pnl <= -stopLoss) {
 				LogExit("StopLoss " + stopLoss + " Exit at " + tick);

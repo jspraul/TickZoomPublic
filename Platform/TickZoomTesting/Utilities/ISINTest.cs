@@ -41,14 +41,6 @@ namespace TickZoom.Utilities
 		{
 		}
 		
-		public class ActiveList<T> : LinkedList<T>, Iterable<T> {
-			public IEnumerable<T> Iterate() {
-				for( var node = this.First; node != null; node = node.Next) {
-					yield return node.Value;
-				}
-			}
-		}
-		
 		[Test]
 		public void EnumerableTest() {
 			ActiveList<int> list = new ActiveList<int>();
@@ -69,6 +61,20 @@ namespace TickZoom.Utilities
 				sb.Append(", ");
 			}
 			Assert.AreEqual("0, 22, 1, 2, 3, 4, 5, 6, 7, 8, 9, ",sb.ToString());
+		}
+
+		[Test]
+		public void TestRemoveWhileIterate() {
+			ActiveList<int> list = new ActiveList<int>();
+			for( int i=0; i<10; i++) {
+				list.AddLast(i);
+			}
+			
+			foreach( var val in list.Iterate()) {
+				list.Remove(val);
+			}
+			
+			Assert.AreEqual( 0, list.Count);
 		}
 		
 		[TestFixtureSetUpAttribute]

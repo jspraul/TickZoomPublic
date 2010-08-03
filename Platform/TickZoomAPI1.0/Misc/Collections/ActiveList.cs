@@ -31,7 +31,9 @@ namespace TickZoom.Api
 {
 	public class ActiveList<T> : LinkedList<T>, Iterable<T> {
 		public IEnumerable<T> Iterate() {
-			for( var node = this.First; node != null; node = node.Next) {
+			LinkedListNode<T> next = null;
+			for( var node = this.First; node != null; node = next) {
+				next = node.Next;
 				yield return node.Value;
 			}
 		}

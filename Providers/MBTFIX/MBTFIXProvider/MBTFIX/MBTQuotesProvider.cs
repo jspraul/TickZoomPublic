@@ -50,7 +50,7 @@ namespace TickZoom.MBTFIX
   			HeartbeatDelay = 15;
         }
 		
-		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, IList<LogicalOrder> orders)
+		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, Iterable<LogicalOrder> orders)
 		{
 		}
 		

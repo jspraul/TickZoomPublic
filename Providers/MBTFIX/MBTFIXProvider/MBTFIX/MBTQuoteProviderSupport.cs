@@ -451,7 +451,7 @@ namespace TickZoom.MBTFIX
 			return false;
 		}
 		
-		public abstract void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, IList<LogicalOrder> orders);
+		public abstract void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, Iterable<LogicalOrder> orders);
 		
 	 	protected volatile bool isDisposed = false;
 	    public void Dispose() 
