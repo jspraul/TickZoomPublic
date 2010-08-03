@@ -45,6 +45,7 @@ namespace TickZoom.Common
 		private readonly bool instanceDebug;
 		private readonly bool instanceTrace;
 		private Result result;
+		private Dictionary<int,LogicalOrder> ordersHash = new Dictionary<int,LogicalOrder>();
 		private IterableList<LogicalOrder> allOrders = new IterableList<LogicalOrder>();
 		private ActiveList<LogicalOrder> activeOrders = new ActiveList<LogicalOrder>();
 		private List<LogicalOrder> nextBarOrders = new List<LogicalOrder>();
@@ -309,6 +310,7 @@ namespace TickZoom.Common
 		{
 			Context.AddOrder(order);
 			allOrders.Add(order);
+			ordersHash.Add(order.Id,order);
 		}
 		
 		public Iterable<LogicalOrder> AllOrders {
@@ -317,13 +319,9 @@ namespace TickZoom.Common
 			}
 		}
 		
-		public LogicalOrder GetOrder(int orderId) {
-			foreach( var order in allOrders) {
-				if( order.Id == orderId){
-					return order;
-				}
-			}
-			throw new ApplicationException("Logical Order Id " + orderId + " was not found.");
+		public bool TryGetOrderById(int id, out LogicalOrder order)
+		{
+			return ordersHash.TryGetValue(id,out order);
 		}
 		
 		public Iterable<LogicalOrder> ActiveOrders {

@@ -575,32 +575,28 @@ namespace TickZoom.Interceptors
 			bool cancelAllExitStrategies = false;
 			int orderId = fill.OrderId;
 			LogicalOrder filledOrder = null;
-			foreach( var order in strategy.ActiveOrders.Iterate()) {
-				if( order.Id == orderId) {
-					if( debug) Log.Debug( "Matched fill with orderId: " + orderId);
-					if( order.TradeDirection == TradeDirection.Entry && !doEntryOrders) {
-						if( debug) Log.Debug( "Skipping fill, entry order fills disabled.");
-						return;
-					}
-					if( order.TradeDirection == TradeDirection.Exit && !doExitOrders) {
-						if( debug) Log.Debug( "Skipping fill, exit order fills disabled.");
-						return;
-					}
-					if( order.TradeDirection == TradeDirection.Reverse && !doExitOrders) {
-						if( debug) Log.Debug( "Skipping fill, reverse order fills disabled.");
-						return;
-					}
-					if( order.TradeDirection == TradeDirection.ExitStrategy && !doExitStrategyOrders) {
-						if( debug) Log.Debug( "Skipping fill, exit strategy orders fills disabled.");
-						return;
-					}
-					filledOrder = order;
-					TryDrawTrade(order, fill.Price, fill.Position);
-					if( debug) Log.Debug( "Changing position because of fill");
-					changePosition(strategy.Data.SymbolInfo,fill);
+			if( strategyInterface.TryGetOrderById( fill.OrderId, out filledOrder)) {
+				if( debug) Log.Debug( "Matched fill with orderId: " + orderId);
+				if( filledOrder.TradeDirection == TradeDirection.Entry && !doEntryOrders) {
+					if( debug) Log.Debug( "Skipping fill, entry order fills disabled.");
+					return;
 				}
-			}
-			if( filledOrder != null) {
+				if( filledOrder.TradeDirection == TradeDirection.Exit && !doExitOrders) {
+					if( debug) Log.Debug( "Skipping fill, exit order fills disabled.");
+					return;
+				}
+				if( filledOrder.TradeDirection == TradeDirection.Reverse && !doExitOrders) {
+					if( debug) Log.Debug( "Skipping fill, reverse order fills disabled.");
+					return;
+				}
+				if( filledOrder.TradeDirection == TradeDirection.ExitStrategy && !doExitStrategyOrders) {
+					if( debug) Log.Debug( "Skipping fill, exit strategy orders fills disabled.");
+					return;
+				}
+				TryDrawTrade(filledOrder, fill.Price, fill.Position);
+				if( debug) Log.Debug( "Changing position because of fill");
+				changePosition(strategy.Data.SymbolInfo,fill);
+			} else {
 				bool clean = false;
 				if( filledOrder.TradeDirection == TradeDirection.Entry &&
 				   doEntryOrders ) {

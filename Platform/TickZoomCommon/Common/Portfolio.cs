@@ -327,7 +327,7 @@ namespace TickZoom.Common
 			get { return performance; }
 		}
 		
-		IterableList<LogicalOrder> allOrders = new IterableList<LogicalOrder>();
+		ActiveList<LogicalOrder> allOrders = new ActiveList<LogicalOrder>();
 		public Iterable<LogicalOrder> AllOrders {
 			get {
 				return allOrders;
@@ -367,6 +367,11 @@ namespace TickZoom.Common
 		public Action<StrategyInterface> OnActiveOrdersChange {
 			get { return onActiveOrdersChange; }
 			set { onActiveOrdersChange = value; }
+		}
+		
+		public bool TryGetOrderById(int id, out LogicalOrder order)
+		{
+			throw new NotImplementedException();
 		}
 	}
 
