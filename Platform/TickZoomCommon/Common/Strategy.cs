@@ -160,7 +160,6 @@ namespace TickZoom.Common
 		{
 			return performance.WriteReport(Name,folder);
 		}
-		TimeStamp breakTime = new TimeStamp("1983-04-18 09:00:00.000");
 		private void ActiveOrdersChanged() {
 			if( trace) {
 				StringBuilder sb = new StringBuilder();
@@ -170,9 +169,6 @@ namespace TickZoom.Common
 					sb.AppendLine();
 				}
 				log.Trace("ActiveOrdersChanged while position = " + position.Current + "\n" + sb);
-			}
-			if( Ticks[0].Time == breakTime) {
-				int x = 0;
 			}
 		}
 		

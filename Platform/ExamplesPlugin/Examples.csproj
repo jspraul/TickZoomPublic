@@ -146,6 +146,7 @@
     <None Include="COPYING.txt" />
     <Content Include="ProfilingSessions\Session20100801_230610.sdps" />
     <Content Include="ProfilingSessions\Session20100802_005638.sdps" />
+    <Content Include="ProfilingSessions\Session20100803_134229.sdps" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Indicators" />

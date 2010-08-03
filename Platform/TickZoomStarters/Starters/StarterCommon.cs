@@ -239,7 +239,7 @@ namespace TickZoom.Starters
 	    			return false;
 				}
 			} else if( namePairs.Length == 3) {
-				StrategyInterceptor strategySupport = property.GetValue(strategy) as StrategyInterceptor;
+				StrategyInterceptorInterface strategySupport = property.GetValue(strategy) as StrategyInterceptorInterface;
 				if( strategySupport == null) {
 	    			log.Error("Sorry, the optimizer variable '" + name + "' was not found.");
 	    			return false;

@@ -30,6 +30,7 @@ using System.Drawing;
 
 using TickZoom.Api;
 using TickZoom.Common;
+using TickZoom.Interceptors;
 using TickZoom.Reports;
 using TickZoom.Transactions;
 
@@ -71,7 +72,7 @@ namespace TickZoom.Statistics
 			equityProfitLoss = new ProfitLossEquity();
 		}
 		
-		public void Intercept(EventContext context, EventType eventType, object eventDetail)
+		public override void Intercept(EventContext context, EventType eventType, object eventDetail)
 		{
 			if( EventType.Initialize == eventType) {
 				OnInitialize();

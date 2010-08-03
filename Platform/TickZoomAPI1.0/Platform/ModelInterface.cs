@@ -107,12 +107,12 @@ namespace TickZoom.Api
 			set;
 		}
 		
-		void AddInterceptor(StrategyInterceptor interceptor);
-		void InsertInterceptor(StrategyInterceptor interceptor);
+		void AddInterceptor(StrategyInterceptorInterface interceptor);
+		void InsertInterceptor(StrategyInterceptorInterface interceptor);
 		void AddInterceptor(EventType eventType, EventInterceptor interceptor);
 		void InsertInterceptor(EventType eventType, EventInterceptor interceptor);
 		
-		List<StrategyInterceptor> StrategyInterceptors {
+		List<StrategyInterceptorInterface> StrategyInterceptors {
 			get;
 		}
 		

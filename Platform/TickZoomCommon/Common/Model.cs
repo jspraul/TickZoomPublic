@@ -32,6 +32,7 @@ using System.Drawing;
 using System.Reflection;
 
 using TickZoom.Api;
+using TickZoom.Interceptors;
 
 namespace TickZoom.Common
 {
@@ -57,7 +58,7 @@ namespace TickZoom.Common
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		bool isOptimizeMode = false;
-		List<StrategyInterceptor> strategyInterceptors = new List<StrategyInterceptor>();
+		List<StrategyInterceptorInterface> strategyInterceptors = new List<StrategyInterceptorInterface>();
 		Dictionary<EventType,List<EventInterceptor>> eventInterceptors = new Dictionary<EventType,List<EventInterceptor>>();
 		List<EventType> events = new List<EventType>();
 		private bool quietMode = false;
@@ -84,11 +85,11 @@ namespace TickZoom.Common
 		}
 
 		[Diagram(AttributeExclude=true)]
-		public void AddInterceptor(StrategyInterceptor interceptor) {
+		public void AddInterceptor(StrategyInterceptorInterface interceptor) {
 			strategyInterceptors.Add(interceptor);
 		}
 		
-		public void InsertInterceptor(StrategyInterceptor interceptor) {
+		public void InsertInterceptor(StrategyInterceptorInterface interceptor) {
 			strategyInterceptors.Insert(0,interceptor);
 		}
 		
@@ -432,7 +433,7 @@ namespace TickZoom.Common
 			get { return events; }
 		}
 		
-		public List<StrategyInterceptor> StrategyInterceptors {
+		public List<StrategyInterceptorInterface> StrategyInterceptors {
 			get { return strategyInterceptors; }
 		}
 		

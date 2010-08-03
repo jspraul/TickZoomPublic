@@ -27,15 +27,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Diagnostics;
+using System.Text;
 
 using TickZoom.Api;
+using TickZoom.Interceptors;
 
 namespace TickZoom.Common
 {
 	[Diagram(AttributeExclude=true)]
-	public class BreakPoint : BreakPointInterface, StrategyInterceptor {
+	public class BreakPoint : StrategyInterceptor, BreakPointInterface {
 		private StrategyInterface strategy;
 		private static int count;
 		private static TimeStamp time;
@@ -90,7 +91,7 @@ namespace TickZoom.Common
 		public BreakPoint() {
 		}
 		
-		public void Intercept(EventContext context, EventType eventType, object eventDetail)
+		public override void Intercept(EventContext context, EventType eventType, object eventDetail)
 		{
 			if( eventType == EventType.Initialize) {
 				if( breakMode == BreakMode.Bar) {

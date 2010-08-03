@@ -64,7 +64,7 @@ namespace TickZoom.Interceptors
 			throw new NotImplementedException("Operation not valid for this type of object");
 		}
 		
-		public virtual void Intercept(EventContext eventContext, EventType eventType, object eventDetail)
+		public override void Intercept(EventContext eventContext, EventType eventType, object eventDetail)
 		{
 			throw new NotImplementedException("\"" + eventType + "\" event intercepted without any implementation on '" + GetType() + "'.");
 		}
@@ -94,6 +94,5 @@ namespace TickZoom.Interceptors
 				throw new NotImplementedException();
 			}
 		}
-		
 	}
 }

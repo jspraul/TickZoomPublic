@@ -114,8 +114,8 @@
     <Compile Include="Platform\ServiceConnection.cs" />
     <Compile Include="Platform\Starter.cs" />
     <Compile Include="Platform\StarterProperties.cs" />
-    <Compile Include="Platform\StrategyInterface.cs" />
     <Compile Include="Platform\StrategyInterceptor.cs" />
+    <Compile Include="Platform\StrategyInterface.cs" />
     <Compile Include="Misc\Converters\Converters.cs" />
     <Compile Include="Misc\Converters\ElapsedTypeConverter.cs" />
     <Compile Include="Misc\Converters\IntervalTypeConverter.cs" />

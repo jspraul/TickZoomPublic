@@ -43,7 +43,7 @@ namespace TickZoom.Examples
 		
 		public MarketOrderStrategy() {
 			Performance.GraphTrades = true;
-			Performance.Equity.GraphEquity = true;
+			Performance.Equity.GraphEquity = false;
 		}
 		
 		public override void OnInitialize()

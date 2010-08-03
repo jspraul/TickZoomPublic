@@ -45,16 +45,16 @@ namespace TickZoom.Examples
 			Strategies[current].IsActive = true;
 			foreach( Strategy strategy in Strategies) {
 				strategy.Performance.GraphTrades = true;
-				strategy.Performance.Equity.GraphEquity = true;
+				strategy.Performance.Equity.GraphEquity = false;
 			}
 		}
 		
 		public override bool OnIntervalClose()
 		{
-			if( Strategies[current].Performance.ComboTrades.Count > 10) {
-				current++;
-				Strategies[current].IsActive = true;
-			}
+//			if( Strategies[current].Performance.ComboTrades.Count > 10) {
+//				current++;
+//				Strategies[current].IsActive = true;
+//			}
 			return true;
 		}
 	}

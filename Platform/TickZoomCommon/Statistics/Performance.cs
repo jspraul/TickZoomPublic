@@ -31,6 +31,7 @@ using System.Text;
 
 using TickZoom.Api;
 using TickZoom.Common;
+using TickZoom.Interceptors;
 using TickZoom.Reports;
 using TickZoom.Transactions;
 
@@ -75,7 +76,7 @@ namespace TickZoom.Statistics
 		
 		EventContext context;
 		
-		public void Intercept(EventContext context, EventType eventType, object eventDetail)
+		public override void Intercept(EventContext context, EventType eventType, object eventDetail)
 		{
 			this.context = context;
 			if( EventType.Initialize == eventType) {

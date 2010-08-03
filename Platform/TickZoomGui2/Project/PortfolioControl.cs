@@ -168,7 +168,7 @@ namespace TickZoom
 	    	if( properties != null) {
 	    		if( typeof(IndicatorInterface).IsAssignableFrom(properties.Value.GetType())) {
 			    	writer.WriteStartElement("indicator");
-	    		} else if( typeof(StrategyInterceptor).IsAssignableFrom(properties.Value.GetType())) {
+	    		} else if( typeof(StrategyInterceptorInterface).IsAssignableFrom(properties.Value.GetType())) {
 			    	writer.WriteStartElement("strategy");
 	    		} else if( typeof(ProjectProperties).IsAssignableFrom(properties.Value.GetType())) {
 			    	writer.WriteStartElement("projectproperties");
