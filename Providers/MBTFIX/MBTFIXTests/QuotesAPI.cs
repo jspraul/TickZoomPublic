@@ -95,9 +95,11 @@ namespace Test
 			
 			startTime = Factory.TickCount;
 			for( int j=0; j< iterations; j++) {
-				linked.Iterate( (item) => {
-				               	item.Number += 2;
-				               } );
+				var next = linked.First;
+				for( var node = next; node != null; node = next) {
+					next = node.Next;
+				    node.Value.Number += 2;
+				}
 			}
 			endTime = Factory.TickCount;
 			log.Notice("lambda on linked took " + (endTime - startTime));

@@ -161,6 +161,7 @@ namespace TickZoom.Common
 		{
 			return performance.WriteReport(Name,folder);
 		}
+		
 		private void ActiveOrdersChanged(LogicalOrder order) {
 			if( trace) {
 				StringBuilder sb = new StringBuilder();
@@ -185,7 +186,20 @@ namespace TickZoom.Common
 				// a price change means the list change.
 				IsActiveOrdersChanged = true;
 				if( !activeOrders.Contains(order)) {
-					activeOrders.AddLast(order);
+					bool found = false;
+					var next = activeOrders.First;
+					for( var node = next; node != null; node = next) {
+						next = node.Next;
+						LogicalOrder other = node.Value;
+						if( order.CompareTo(other) < 0) {
+							activeOrders.AddBefore(node,order);
+							found = true;
+							break;
+						}
+					}
+					if( !found) {
+						activeOrders.AddLast(order);
+					}
 				}
 			} else {
 				if( activeOrders.Remove(order)) {
