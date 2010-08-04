@@ -74,7 +74,10 @@ namespace TickZoom.Interceptors
 			}
 			this.position = position;
 			this.activeOrders = orders;
-			foreach( var order in activeOrders.Iterate()) {
+			var next = activeOrders.First;
+			for( var node = next; node != null; node = next) {
+				next = node.Next;
+				LogicalOrder order = node.Value;
 				if (order.IsActive) {
 					if (doEntryOrders && order.TradeDirection == TradeDirection.Entry) {
 						if( OnProcessEnterOrder(order, tick)) {
@@ -273,7 +276,10 @@ namespace TickZoom.Interceptors
 		}
 		
 		public void CancelReverseOrders() {
-			foreach( var order in activeOrders.Iterate()) {
+			var next = activeOrders.First;
+			for( var node = next; node != null; node = next) {
+				next = node.Next;
+				LogicalOrder order = node.Value;
 				if (order.TradeDirection == TradeDirection.Exit ||
 				   order.TradeDirection == TradeDirection.Reverse) {
 					order.Status = OrderStatus.Inactive;
@@ -283,7 +289,10 @@ namespace TickZoom.Interceptors
 		
 		public void CancelExitOrders(TradeDirection tradeDirection)
 		{
-			foreach( var order in activeOrders.Iterate()) {
+			var next = activeOrders.First;
+			for( var node = next; node != null; node = next) {
+				next = node.Next;
+				LogicalOrder order = node.Value;
 				if (order.TradeDirection == tradeDirection) {
 					order.Status = OrderStatus.Inactive;
 				}
@@ -513,7 +522,10 @@ namespace TickZoom.Interceptors
 
 		public void CancelEnterOrders()
 		{
-			foreach( var order in activeOrders.Iterate()) {
+			var next = activeOrders.First;
+			for( var node = next; node != null; node = next) {
+				next = node.Next;
+				LogicalOrder order = node.Value;
 				if (order.TradeDirection == TradeDirection.Entry) {
 					order.Status = OrderStatus.Inactive;
 				}
@@ -614,7 +626,10 @@ namespace TickZoom.Interceptors
 					clean = true;
 				}
 				if( clean) {
-					foreach( var order in strategy.ActiveOrders.Iterate()) {
+					var next = strategy.ActiveOrders.First;
+					for( var node = next; node != null; node = next) {
+						next = node.Next;
+						LogicalOrder order = next.Value;
 						if( order.TradeDirection == TradeDirection.Entry && cancelAllEntries) {
 							order.Status = OrderStatus.Inactive;
 						}

@@ -115,6 +115,7 @@
     <Content Include="ProfilingSessions\Session20100801_225128.sdps" />
     <Content Include="ProfilingSessions\Session20100802_004329.sdps" />
     <Content Include="ProfilingSessions\Session20100802_010657.sdps" />
+    <Content Include="ProfilingSessions\Session20100803_203537.sdps" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Charting\Charting.csproj">

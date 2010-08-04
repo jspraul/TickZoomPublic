@@ -696,9 +696,9 @@ namespace TickZoom.MBTFIX
 			log.Info("Received PositionChange for " + symbol + " with position " + signal + " and the following orders:");
 			
 			if( orders != null) {
-				foreach( var order in orders.Iterate()) {
+				orders.Iterate( (order) => {
 					log.Info("Logical Order: " + order);
-				}
+				});
 			}
 			
 			if( openOrders != null) {

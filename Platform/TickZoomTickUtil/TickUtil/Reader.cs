@@ -72,6 +72,9 @@ namespace TickZoom.TickUtil
 			memory = new MemoryStream();
 			memory.SetLength(TickImpl.minTickSize);
 			buffer = memory.GetBuffer();
+			TickEventMethod = TickEvent;
+			SendFinishMethod = SendFinish;
+			StartEventMethod = StartEvent;
 		}
 
 		bool CancelPending {
@@ -331,6 +334,10 @@ namespace TickZoom.TickUtil
 			tickIO.SetTime(new TimeStamp(tickIO.Extract().UtcTime));
 			return true;
 		}
+		
+		private YieldMethod TickEventMethod;
+		private YieldMethod SendFinishMethod;
+		private YieldMethod StartEventMethod;
 
 		private Yield FileReader()
 		{
@@ -359,11 +366,11 @@ namespace TickZoom.TickUtil
 						if (maxCount > 0 && count > maxCount) {
 							if (debug)
 								log.Debug("Ending data read because count reached " + maxCount + " ticks.");
-							return Yield.DidWork.Invoke(SendFinish);
+							return Yield.DidWork.Invoke(SendFinishMethod);
 						}
 
 						if (IsAtEnd(tick)) {
-							return Yield.DidWork.Invoke(SendFinish);
+							return Yield.DidWork.Invoke(SendFinishMethod);
 						}
 
 						if (IsAtStart(tick)) {
@@ -382,20 +389,20 @@ namespace TickZoom.TickUtil
 
 							if (isFirstTick) {
 								isFirstTick = false;
-								return Yield.DidWork.Invoke(StartEvent);
+								return Yield.DidWork.Invoke(StartEventMethod);
 							} else {
 								tickCount++;
 							}
 
-							return Yield.DidWork.Invoke(TickEvent);
+							return Yield.DidWork.Invoke(TickEventMethod);
 						}
 						tickCount++;
 
 					} else {
-						return Yield.DidWork.Invoke(SendFinish);
+						return Yield.DidWork.Invoke(SendFinishMethod);
 					}
 				} catch (ObjectDisposedException) {
-					return Yield.DidWork.Invoke(SendFinish);
+					return Yield.DidWork.Invoke(SendFinishMethod);
 //				} catch( ApplicationException ex) {
 					////					dataIn.BaseStream.Position = position + 1;
 //					return Yield.DidWork.Invoke(SendFinish);
@@ -415,7 +422,7 @@ namespace TickZoom.TickUtil
 				if (!quietMode) {
 					LogInfo("Starting loading for " + symbol + " from " + tickIO.ToPosition());
 				}
-				return Yield.DidWork.Invoke(TickEvent);
+				return Yield.DidWork.Invoke(TickEventMethod);
 			}
 		}
 

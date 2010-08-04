@@ -153,6 +153,8 @@
     <Content Include="ProfilingSessions\Session20100802_010437.sdps" />
     <Content Include="ProfilingSessions\Session20100802_022131.sdps" />
     <Content Include="ProfilingSessions\Session20100803_135432.sdps" />
+    <Content Include="ProfilingSessions\Session20100803_203016.sdps" />
+    <Content Include="ProfilingSessions\Session20100803_213849.sdps" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common" />

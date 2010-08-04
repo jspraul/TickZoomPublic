@@ -39,6 +39,7 @@ namespace TickZoom.Api
 	}
 	
 	public delegate Yield YieldMethod();
+	
 	public struct Yield {
 		public bool IsIdle;
 		public YieldMethod Method;

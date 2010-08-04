@@ -48,14 +48,16 @@ namespace Test
 
 		[Test]
 		public void LinkedListTest() {
-			LinkedList<TestItem> linked = new LinkedList<TestItem>();
+			ActiveList<TestItem> linked = new ActiveList<TestItem>();
 			List<TestItem> list = new List<TestItem>();
-			for( int i= 0; i< 1000000; i++) {
+			int size = 1000;
+			int iterations = 100000;
+			for( int i= 0; i< size; i++) {
 				linked.AddLast(new TestItem());
 				list.Add(new TestItem());
 			}
 			long startTime = Factory.TickCount;
-			for( int j=0; j< 100; j++) {
+			for( int j=0; j< iterations; j++) {
 				for( int i= 0; i<list.Count; i++) {
 					TestItem item = list[i];
 					item.Number += 2;
@@ -65,7 +67,7 @@ namespace Test
 			log.Notice("for list took " + (endTime - startTime));
 			
 			startTime = Factory.TickCount;
-			for( int j=0; j< 100; j++) {
+			for( int j=0; j< iterations; j++) {
 				foreach( var item in list) {
 					item.Number += 2;
 				}
@@ -74,13 +76,31 @@ namespace Test
 			log.Notice("foreach list took " + (endTime - startTime));
 
 			startTime = Factory.TickCount;
-			for( int j=0; j< 100; j++) {
+			for( int j=0; j< iterations; j++) {
 				foreach( var item in linked) {
 					item.Number += 2;
 				}
 			}
 			endTime = Factory.TickCount;
 			log.Notice("foreach linked took " + (endTime - startTime));
+			
+			startTime = Factory.TickCount;
+			for( int j=0; j< iterations; j++) {
+				for( var node = linked.First; node != null; node = node.Next) {
+					node.Value.Number += 2;
+				}
+			}
+			endTime = Factory.TickCount;
+			log.Notice("for on linked took " + (endTime - startTime));
+			
+			startTime = Factory.TickCount;
+			for( int j=0; j< iterations; j++) {
+				linked.Iterate( (item) => {
+				               	item.Number += 2;
+				               } );
+			}
+			endTime = Factory.TickCount;
+			log.Notice("lambda on linked took " + (endTime - startTime));
 		}
 	}
 	

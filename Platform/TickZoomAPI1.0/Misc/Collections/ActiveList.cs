@@ -29,13 +29,23 @@ using System.Collections.Generic;
 
 namespace TickZoom.Api
 {
-	public class ActiveList<T> : LinkedList<T>, Iterable<T> {
-		public IEnumerable<T> Iterate() {
-			LinkedListNode<T> next = null;
-			for( var node = this.First; node != null; node = next) {
-				next = node.Next;
-				yield return node.Value;
-			}
+	public interface Iterable<T> {
+		int Count {
+			get;
 		}
+		LinkedListNode<T> First {
+			get;
+		}
+	}
+	
+	public class ActiveList<T> : LinkedList<T>, Iterable<T> {
+		
+//		public void Iterate( Action<T> action ) {
+//			LinkedListNode<T> next = null;
+//			for( var node = First; node != null; node = next) {
+//				next = node.Next;
+//				action(node.Value);
+//			}
+//		}
 	}
 }

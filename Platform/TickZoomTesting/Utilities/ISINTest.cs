@@ -49,15 +49,19 @@ namespace TickZoom.Utilities
 			}
 			
 			Iterable<int> active = list;
-			foreach( var val in active.Iterate()) {
-				if( val == 5) {
+			var next = active.First;
+			for( var node = next; node != null; node = next) {
+				next = node.Next;
+				if( node.Value == 5) {
 					list.AddAfter(list.First,22);
 				}
 			}
 			
 			StringBuilder sb = new StringBuilder();
-			foreach( var val in active.Iterate()) {
-				sb.Append(val);
+			next = active.First;
+			for( var node = next; node != null; node = next) {
+				next = node.Next;
+				sb.Append(node.Value);
 				sb.Append(", ");
 			}
 			Assert.AreEqual("0, 22, 1, 2, 3, 4, 5, 6, 7, 8, 9, ",sb.ToString());
@@ -70,8 +74,10 @@ namespace TickZoom.Utilities
 				list.AddLast(i);
 			}
 			
-			foreach( var val in list.Iterate()) {
-				list.Remove(val);
+			var next = list.First;
+			for( var node = next; node != null; node = next) {
+				next = node.Next;
+				list.Remove(node.Value);
 			}
 			
 			Assert.AreEqual( 0, list.Count);

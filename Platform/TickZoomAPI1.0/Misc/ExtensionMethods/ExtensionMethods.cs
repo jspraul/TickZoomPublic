@@ -241,8 +241,10 @@ namespace TickZoom.Api
 		
 		public static void AddLast<T>(this LinkedList<T> list1, Iterable<T> list2) {
 			if( list2 != null) {
-				foreach( var item in list2.Iterate()) {
-					list1.AddLast(item);
+				var next = list2.First;
+				for( var node = next; node != null; node = next) {
+					next = node.Next;
+					list1.AddLast(node.Value);
 				}
 			}
 		}

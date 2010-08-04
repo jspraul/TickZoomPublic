@@ -227,7 +227,8 @@ namespace TickZoom.Common
 		private void ComparePosition() {
 			double positionDelta = desiredPosition - actualPosition;
 			double pendingAdjustments = 0D;
-			foreach( var order in physicalOrders.Iterate()) {
+			for( var node = physicalOrders.First; node != null; node = node.Next) {
+				PhysicalOrder order = node.Value;
 				if(order.Type != OrderType.BuyMarket &&
 				   order.Type != OrderType.SellMarket) {
 					continue;
@@ -287,10 +288,7 @@ namespace TickZoom.Common
 		
 		public void SetLogicalOrders( Iterable<LogicalOrder> originalLogicals) {
 			if( trace) {
-				int count = 0;
-				if( originalLogicals != null) {
-					foreach( var order in originalLogicals.Iterate()) { count++; }
-				}
+				int count = originalLogicals == null ? 0 : originalLogicals.Count;
 				log.Trace("SetLogicalOrders() order count = " + count);
 			}
 			this.originalLogicals.Clear();
