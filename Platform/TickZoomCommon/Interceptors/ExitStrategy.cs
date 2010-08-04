@@ -106,7 +106,7 @@ namespace TickZoom.Interceptors
 			// Handle ActiveNow orders.
 			
 			if( stopTradingToday || stopTradingThisWeek || stopTradingThisMonth ) {
-				return;
+				return; 
 			}
 			
 			if( (strategySignal>0) != context.Position.IsLong || (strategySignal<0) != context.Position.IsShort ) {

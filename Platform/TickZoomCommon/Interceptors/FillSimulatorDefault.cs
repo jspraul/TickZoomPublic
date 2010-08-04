@@ -641,6 +641,8 @@ namespace TickZoom.Interceptors
 						}
 					}
 				}
+			} else {
+				throw new ApplicationException("A fill for order id: " + orderId + " was incorrectly routed to: " + strategyInterface.Name);
 			}
 		}
 		

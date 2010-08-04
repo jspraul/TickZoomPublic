@@ -161,7 +161,7 @@ namespace TickZoom.Common
 		{
 			return performance.WriteReport(Name,folder);
 		}
-		private void ActiveOrdersChanged() {
+		private void ActiveOrdersChanged(LogicalOrder order) {
 			if( trace) {
 				StringBuilder sb = new StringBuilder();
 				sb.AppendLine("Active Orders:");
@@ -174,7 +174,7 @@ namespace TickZoom.Common
 					sb.Append("        ");
 					sb.AppendLine( item.ToString());
 				}
-				log.Trace("ActiveOrdersChanged while position = " + position.Current + "\n" + sb);
+				log.Trace("Order #" + order.Id + " was modified while position = " + position.Current + "\n" + sb);
 				sb.AppendLine();
 			}
 		}
@@ -203,7 +203,7 @@ namespace TickZoom.Common
 					nextBarOrders.Remove(order);
 				}
 			}
-			ActiveOrdersChanged();
+			ActiveOrdersChanged(order);
 		}
 		
 		[Browsable(true)]
