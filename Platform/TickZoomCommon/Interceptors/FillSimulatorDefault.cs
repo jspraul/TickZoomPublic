@@ -608,7 +608,7 @@ namespace TickZoom.Interceptors
 				TryDrawTrade(filledOrder, fill.Price, fill.Position);
 				if( debug) Log.Debug( "Changing position because of fill");
 				changePosition(strategy.Data.SymbolInfo,fill);
-			} else {
+
 				bool clean = false;
 				if( filledOrder.TradeDirection == TradeDirection.Entry &&
 				   doEntryOrders ) {
@@ -629,7 +629,7 @@ namespace TickZoom.Interceptors
 					var next = strategy.ActiveOrders.First;
 					for( var node = next; node != null; node = next) {
 						next = node.Next;
-						LogicalOrder order = next.Value;
+						LogicalOrder order = node.Value;
 						if( order.TradeDirection == TradeDirection.Entry && cancelAllEntries) {
 							order.Status = OrderStatus.Inactive;
 						}

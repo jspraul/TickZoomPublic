@@ -227,7 +227,9 @@ namespace TickZoom.Common
 		private void ComparePosition() {
 			double positionDelta = desiredPosition - actualPosition;
 			double pendingAdjustments = 0D;
-			for( var node = physicalOrders.First; node != null; node = node.Next) {
+			var next = physicalOrders.First;
+			for( var node = next; node != null; node = next) {
+				next = node.Next;
 				PhysicalOrder order = node.Value;
 				if(order.Type != OrderType.BuyMarket &&
 				   order.Type != OrderType.SellMarket) {

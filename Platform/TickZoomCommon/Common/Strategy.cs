@@ -164,12 +164,18 @@ namespace TickZoom.Common
 		private void ActiveOrdersChanged() {
 			if( trace) {
 				StringBuilder sb = new StringBuilder();
+				sb.AppendLine("Active Orders:");
 				foreach( var item in activeOrders) {
 					sb.Append("        ");
 					sb.AppendLine( item.ToString());
-					sb.AppendLine();
+				}
+				sb.AppendLine("NextBar Orders:");
+				foreach( var item in nextBarOrders) {
+					sb.Append("        ");
+					sb.AppendLine( item.ToString());
 				}
 				log.Trace("ActiveOrdersChanged while position = " + position.Current + "\n" + sb);
+				sb.AppendLine();
 			}
 		}
 		
@@ -179,22 +185,10 @@ namespace TickZoom.Common
 				// a price change means the list change.
 				IsActiveOrdersChanged = true;
 				if( !activeOrders.Contains(order)) {
-					bool found = false;
-					for( var node = activeOrders.First; node != null; node = node.Next) {
-						LogicalOrder other = node.Value;
-						if( order.CompareTo(other) < 0) {
-							activeOrders.AddBefore(node,order);
-							found = true;
-							break;
-						}
-					}
-					if( !found) {
-						activeOrders.AddLast(order);
-					}
+					activeOrders.AddLast(order);
 				}
 			} else {
-				if( activeOrders.Contains(order)) {
-					activeOrders.Remove(order);
+				if( activeOrders.Remove(order)) {
 					// Since this order became inactive, it
 					// means the active list changed.
 					IsActiveOrdersChanged = true;
