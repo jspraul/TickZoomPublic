@@ -62,6 +62,7 @@
     <Compile Include="Loaders\ChartThread.cs" />
     <Compile Include="Loaders\CompareSimulatedTest.cs" />
     <Compile Include="Loaders\DualStrategyLimitOrder.cs" />
+    <Compile Include="Loaders\ExampleBreakoutReversalTest.cs" />
     <Compile Include="Loaders\ExampleDualStrategyTest.cs" />
     <Compile Include="Loaders\ExampleMixedTest.cs" />
     <Compile Include="Loaders\ExampleMultiStrategyTest.cs" />

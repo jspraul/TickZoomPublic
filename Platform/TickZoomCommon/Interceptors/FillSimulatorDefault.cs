@@ -273,6 +273,8 @@ namespace TickZoom.Interceptors
                  default:
                      throw new ApplicationException("Unexpected order type: " + order.Type);
              }
+			CreateLogicalFillHelper(position, price, tick.Time, order);
+			CancelReverseOrders();
 		}
 		
 		public void CancelReverseOrders() {

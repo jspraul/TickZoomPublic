@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -27,6 +27,7 @@
 
 using System;
 using NUnit.Framework;
+using TickZoom;
 using TickZoom.Api;
 using TickZoom.Common;
 using TickZoom.Examples;
@@ -34,16 +35,15 @@ using TickZoom.Starters;
 
 namespace Loaders
 {
-
-	
 	[TestFixture]
-	public class ExampleSimulatedTest : StrategyTest
+	public class ExampleBreakoutReversalTest : StrategyTest
 	{
 		Log log = Factory.SysLog.GetLogger(typeof(ExampleSimulatedTest));
 		#region SetupTest
-		ExampleOrderStrategy strategy;
+		ExampleBreakoutReversal strategy;
 		
-		public ExampleSimulatedTest() {
+		public ExampleBreakoutReversalTest() {
+			ShowCharts = false;
 			StoreKnownGood = false;
 		}
 			
@@ -55,20 +55,20 @@ namespace Loaders
 				
 				// Set run properties as in the GUI.
 				starter.ProjectProperties.Starter.StartTime = new TimeStamp(1800,1,1);
-	    		starter.ProjectProperties.Starter.EndTime = new TimeStamp(1990,1,1);
+	    		starter.ProjectProperties.Starter.EndTime = new TimeStamp(2010,1,1);
 	    		starter.DataFolder = "TestData";
-	    		starter.ProjectProperties.Starter.SetSymbols("Daily4Sim");
-				starter.ProjectProperties.Starter.IntervalDefault = Intervals.Day1;
+	    		starter.ProjectProperties.Starter.SetSymbols("USD/JPY");
+				starter.ProjectProperties.Starter.IntervalDefault = Intervals.Minute1;
 				
 	    		starter.CreateChartCallback = new CreateChartCallback(HistoricalCreateChart);
 	    		starter.ShowChartCallback = new ShowChartCallback(HistoricalShowChart);
 				
 				// Run the loader.
-				ExampleLimitOrderLoader loader = new ExampleLimitOrderLoader();
+				ExampleBreakoutReversalLoader loader = new ExampleBreakoutReversalLoader();
 	    		starter.Run(loader);
 	
 	    		// Get the stategy
-	    		strategy = loader.TopModel as ExampleOrderStrategy;
+	    		strategy = loader.TopModel as ExampleBreakoutReversal;
 	    		
 	    		LoadTrades();
 	    		LoadBarData();
@@ -82,15 +82,15 @@ namespace Loaders
 		
 		[Test]
 		public void VerifyCurrentEquity() {
-			Assert.AreEqual( Math.Round(9992.52,2),Math.Round(strategy.Performance.Equity.CurrentEquity,2),"current equity");
+			Assert.AreEqual( Math.Round(7430D,2),Math.Round(strategy.Performance.Equity.CurrentEquity,2),"current equity");
 		}
 		[Test]
 		public void VerifyOpenEquity() {
-			Assert.AreEqual( Math.Round(-0.02,2),Math.Round(strategy.Performance.Equity.OpenEquity,2),"open equity");
+			Assert.AreEqual( Math.Round(730D,2),Math.Round(strategy.Performance.Equity.OpenEquity,2),"open equity");
 		}
 		[Test]
 		public void VerifyClosedEquity() {
-			Assert.AreEqual( Math.Round(9992.54,2),Math.Round(strategy.Performance.Equity.ClosedEquity,2),"closed equity");
+			Assert.AreEqual( Math.Round(6700D,2),Math.Round(strategy.Performance.Equity.ClosedEquity,2),"closed equity");
 		}
 		[Test]
 		public void VerifyStartingEquity() {
@@ -101,7 +101,7 @@ namespace Loaders
 		public void VerifyTrades() {
 			VerifyTrades(strategy);
 		}
-
+	
 		[Test]
 		public void VerifyTradeCount() {
 			VerifyTradeCount(strategy);

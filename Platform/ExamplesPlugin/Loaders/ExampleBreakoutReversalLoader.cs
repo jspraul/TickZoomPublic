@@ -32,30 +32,15 @@ using TickZoom.Common;
 
 namespace TickZoom.Examples
 {
-
-	public class Load5000Strategies : ModelLoaderCommon
+	public class ExampleBreakoutReversalLoader : ModelLoaderCommon
 	{
-		public Load5000Strategies() {
-			/// <summary>
-			/// IMPORTANT: You can personalize the name of each model loader.
-			/// </summary>
-			category = "Test";
-			name = "5,000 Strategies";
-			this.IsVisibleInGUI = true;
-		}
-		
-		public override void OnInitialize(ProjectProperties properties) {
+		public ExampleBreakoutReversalLoader() {
+			category = "Example";
+			name = "Breakout Reversal";
 		}
 		
 		public override void OnLoad(ProjectProperties properties) {
-			Portfolio portfolio = new Portfolio5000Strategies();
-			for( int i=0; i<500; i++) {
-				Strategy strategy = new ExampleReversalStrategy();
-				strategy.IsActive = true;
-				portfolio.AddDependency(strategy);
-			}
-			portfolio.Name = "Market Order Portfolio";
-			TopModel = portfolio;
+			TopModel = new ExampleBreakoutReversal();
 		}
 	}
 }
