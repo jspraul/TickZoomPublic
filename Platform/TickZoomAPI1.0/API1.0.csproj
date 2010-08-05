@@ -85,6 +85,7 @@
     <Compile Include="Misc\Events\PositionChangeDetail.cs" />
     <Compile Include="Misc\Events\StartSymbolDetail.cs" />
     <Compile Include="Misc\Events\TimeSyncDetail.cs" />
+    <Compile Include="Misc\Exceptions\BeyondCircularException.cs" />
     <Compile Include="Misc\Exceptions\MustUseLoaderException.cs" />
     <Compile Include="Misc\ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="Misc\Factories\FactoryLoader.cs" />
