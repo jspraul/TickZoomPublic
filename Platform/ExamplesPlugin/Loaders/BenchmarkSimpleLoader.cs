@@ -47,8 +47,23 @@ namespace TickZoom.Examples
 		public override void OnInitialize(ProjectProperties properties) {
 		}
 		
-		public override void OnLoad(ProjectProperties model) {
-	    	TopModel = GetStrategy("ExampleReversalStrategy");
+		public override void OnLoad(ProjectProperties project) {
+			var strategies = new List<Strategy>();
+			foreach( var symbol in project.Starter.SymbolProperties) {
+				var barLogic = new RenkoSeries(symbol,100,100);
+				project.Starter.IntervalDefault = Intervals.Custom(barLogic);
+				var strategy = new ExampleReversalStrategy();
+				strategies.Add(strategy);
+			}
+			if( strategies.Count == 1) {
+				TopModel = strategies[0];
+			} else {
+				var portfolio = new Portfolio();
+				foreach( var strategy in strategies) {
+					portfolio.AddDependency(strategy);
+				}
+				TopModel = portfolio;
+			}
 		}
 		
 	}

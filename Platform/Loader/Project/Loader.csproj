@@ -129,9 +129,6 @@
     <Folder Include="Src\Services\LoggingService" />
     <Folder Include="Src\Services\FactoryService" />
     <Folder Include="Src\Services\ResourceService" />
-    <Content Include="..\..\..\..\data\schemas\AddIn.xsd">
-      <Link>Src\AddInTree\AddIn\AddIn.xsd</Link>
-    </Content>
     <ProjectReference Include="..\..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>

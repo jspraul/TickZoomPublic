@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -25,44 +25,12 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 
 namespace TickZoom.Api
 {
-	/// <summary>
-	/// Description of Period.
-	/// </summary>
-	public interface Interval 
-	{
-		BarUnit BarUnit {
-			get;
-		}
-		
-		int Period {
-			get;
-		}
-		
-		bool IsTimeBased {
-			get;
-		}
-		
-		int Seconds {
-			get;
-		}
-
-		void Set<T>(string name, T value);
-		T Get<T>(string name, T value);
-
-		[Obsolete("Please use Set() or Get() for custom properties instead.",true)]
-		bool HasSecondary {
-			get;
-		}
-		
-		[Obsolete("Please use Set() or Get() for custom properties instead.",true)]
-		Interval Secondary {
-			get;
-		}
+	public interface BarLogic : IDisposable {
+		void InitializeTick( Tick tick, BarData data);
+	    bool IsNewBarNeeded(Tick tick);
+	    void ProcessTick(Tick tick, BarData data);
 	}
 }

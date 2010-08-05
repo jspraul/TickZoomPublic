@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -25,33 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.InteropServices.ComTypes;
-using System.Diagnostics;
 
 namespace TickZoom.Api
 {
-	public enum BarUnit
-	{
-	   Default,
-	   Volume,
-	   /// <summary>
-	   /// Constant range bars. These reset every day by default.
-	   /// You can override the reset interval for a bar period 
-	   /// by setting a secondary time frame.
-	   /// </summary>
-	   Range,
-	   PointFigure,
-	   Change,
-	   Tick,
-	   Second,
-	   Minute,
-	   Hour,
-	   Day,
-	   Session,
-	   Week,
-	   Month,
-	   Year,
+	public interface BarData {
+		void NewBar( long open, long high, long low, long close, int volume, TimeStamp startTime, int tickCount);
+		void UpdateBar( long high, long low, long close, int volume, TimeStamp endTime, int tickCount);
 	}
 }

@@ -78,6 +78,7 @@
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Misc\Collections\ActiveList.cs" />
     <Compile Include="Misc\Enums\ArrowDirection.cs" />
+    <Compile Include="Misc\Enums\BarUnit.cs" />
     <Compile Include="Misc\Enums\QuoteType.cs" />
     <Compile Include="Misc\Enums\TimeAndSales.cs" />
     <Compile Include="Misc\Events\ErrorDetail.cs" />
@@ -91,6 +92,8 @@
     <Compile Include="Misc\Factories\FactoryLoader.cs" />
     <Compile Include="Misc\Structs\Progress.cs" />
     <Compile Include="Misc\Structs\QueueItem.cs" />
+    <Compile Include="Platform\BarData.cs" />
+    <Compile Include="Platform\BarLogic.cs" />
     <Compile Include="Platform\ChartProperties.cs" />
     <Compile Include="Platform\DrawingInterface.cs" />
     <Compile Include="Platform\EngineProperties.cs" />
@@ -158,7 +161,6 @@
     <Compile Include="Misc\Enums\RunMode.cs" />
     <Compile Include="Misc\Enums\Side.cs" />
     <Compile Include="Misc\Enums\Positioning.cs" />
-    <Compile Include="Misc\Enums\TimeUnit.cs" />
     <Compile Include="Misc\Enums\WeekDay.cs" />
     <Compile Include="Misc\Exceptions\CollectionTerminatedException.cs" />
     <Compile Include="Misc\Exceptions\CollectionTimeoutException.cs" />

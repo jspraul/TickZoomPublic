@@ -26,95 +26,31 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Globalization;
+using System.Runtime.InteropServices.ComTypes;
+using System.Diagnostics;
 
 namespace TickZoom.Api
 {
-	// Binary Values with amount data stored in the the tick.
-	// This makes more efficent reading and writing of data.
-	public class ContentBit {
-		public const byte Quote=1;
-		public const byte TimeAndSales=2;
-		public const byte DepthOfMarket=4;
-		public const byte SimulateTicks=8;
-		public const byte FakeTick=16;
-	}
-	
-	/// <summary>
-	/// Description of TickDOM.
-	/// </summary>
-	public interface Tick 
+	public enum BarUnit
 	{
-		int BidDepth {
-			get;
-		}
-		
-		int AskDepth {
-			get;
-		}
-		
-		double Bid {
-			get;
-		}
-		
-		double Ask {
-			get;
-		}
-		
-		long lBid {
-			get;
-		}
-		
-		long lAsk {
-			get;
-		}
-		
-		TradeSide Side {
-			get;
-		}
-		
-		double Price {
-			get;
-		}
-		
-		long lPrice {
-			get;
-		}
-		
-		int Size {
-			get;
-		}
-		
-		int Volume {
-			get;
-		}
-		
-		short AskLevel(int level);
-		
-		short BidLevel(int level);
-		
-		int DomLevels {
-			get;
-		}
-		
-		TimeStamp Time {
-			get;
-		}
-		
-		TimeStamp UtcTime {
-			get;
-		}
-		
-		byte ContentMask {
-			get;
-		}
-		
-		bool IsTrade {
-			get;
-		}
-		
-		bool IsQuote {
-			get;
-		}
+	   Default,
+	   Volume,
+	   /// <summary>
+	   /// Constant range bars. These reset every day by default.
+	   /// </summary>
+	   Range,
+	   PointFigure,
+	   Change,
+	   Tick,
+	   Second,
+	   Minute,
+	   Hour,
+	   Day,
+	   Session,
+	   Week,
+	   Month,
+	   Year,
+	   Custom,
 	}
 }

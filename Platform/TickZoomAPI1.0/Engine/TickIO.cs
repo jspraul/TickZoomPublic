@@ -96,18 +96,6 @@ namespace TickZoom.Api
 		/// <param name="other">The other tick to copy from.</param>
 		void Copy(TickIO other);
 		
-		long lBid {
-			get;
-		}
-		
-		long lAsk {
-			get;
-		}
-		
-		long lPrice {
-			get;
-		}
-		
 		string Symbol {
 			get;
 		}
