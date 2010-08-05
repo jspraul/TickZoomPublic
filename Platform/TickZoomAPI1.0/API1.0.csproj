@@ -120,9 +120,9 @@
     <Compile Include="Misc\Converters\IntervalTypeConverter.cs" />
     <Compile Include="Misc\Converters\TimestampTypeConverter.cs" />
     <Compile Include="Engine\Bars.cs" />
-    <Compile Include="Engine\CircularList.cs" />
+    <Compile Include="Engine\DataArray.cs" />
     <Compile Include="Engine\FastQueue.cs" />
-    <Compile Include="Engine\ICircularArray.cs" />
+    <Compile Include="Engine\Countable.cs" />
     <Compile Include="Engine\PageStore.cs" />
     <Compile Include="Engine\ReadWritable.cs" />
     <Compile Include="Engine\Task.cs" />

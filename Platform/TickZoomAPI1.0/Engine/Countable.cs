@@ -28,7 +28,7 @@ using System;
 
 namespace TickZoom.Api
 {
-	public interface ICircularArray 
+	public interface Countable 
 	{
 		int Count {get;}
 		int BarCount {get;}

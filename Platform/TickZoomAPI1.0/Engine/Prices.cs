@@ -40,7 +40,7 @@ namespace TickZoom.Api
 		}
 	}
 	
-	public interface Prices : CircularList<double> {
+	public interface Prices : DataArray<double> {
 	}
 	
 

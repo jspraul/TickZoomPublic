@@ -28,9 +28,7 @@ using System;
 
 namespace TickZoom.Api
 {
-
-
-	public interface CircularList<T> : ICircularArray {
+	public interface DataArray<T> : Countable {
 		T this[int position] {
 			get;
 		}
