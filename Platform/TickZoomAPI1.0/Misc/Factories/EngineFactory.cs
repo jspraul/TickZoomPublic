@@ -45,7 +45,7 @@ namespace TickZoom.Api
 		
 		Chain Chain(ModelInterface model);
 		
-		Series<T> Series<T>();
+		DataSeries<T> Series<T>();
 		
 		Interval DefineInterval(BarUnit unit,int period);
 		

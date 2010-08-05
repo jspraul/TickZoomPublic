@@ -137,7 +137,7 @@
     <Compile Include="Engine\LogicalOrder.cs" />
     <Compile Include="Engine\ModelProperty.cs" />
     <Compile Include="Engine\Prices.cs" />
-    <Compile Include="Engine\Series.cs" />
+    <Compile Include="Engine\DataSeries.cs" />
     <Compile Include="Engine\TestBars.cs" />
     <Compile Include="Engine\Tick.cs" />
     <Compile Include="Engine\TickEngine.cs" />

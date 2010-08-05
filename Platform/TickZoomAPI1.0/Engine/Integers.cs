@@ -29,11 +29,11 @@ using System.Collections.Generic;
 
 namespace TickZoom.Api
 {
-	public interface Integers : Series<int>  {
+	public interface Integers : DataSeries<int>  {
 	}
-	public interface Doubles : Series<double> {
+	public interface Doubles : DataSeries<double> {
 	}
-	public interface Longs : Series<long> {
+	public interface Longs : DataSeries<long> {
 	}
 	public class WrapIntegers : Doubles {
 		Integers integers;
@@ -62,6 +62,9 @@ namespace TickZoom.Api
 		{
 			integers.Clear();
 		}
+		public void Release() {
+			integers.Release();
+		}
 	}
 	public class WrapPrices : Doubles {
 		Prices prices;
@@ -88,6 +91,9 @@ namespace TickZoom.Api
 		public void Clear()
 		{
 			throw new InvalidOperationException("You can't clear price values when wrapped by Doubles");
+		}
+		public void Release() {
+			prices.Release();
 		}
 	}
 }
