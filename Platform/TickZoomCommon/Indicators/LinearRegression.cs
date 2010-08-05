@@ -39,7 +39,7 @@ namespace TickZoom.Common
 			coord = Factory.Engine.Series<ChartPoint>();
 		}
 		
-		public LinearRegression(Series<ChartPoint> series) {
+		public LinearRegression(DataSeries<ChartPoint> series) {
 			coord = Factory.Engine.Series<ChartPoint>();
 			for( int i=series.Count-1;i>=0;i--) {
 				coord.Add(series[i]);
@@ -113,7 +113,7 @@ namespace TickZoom.Common
 		}
 		
 		public virtual void removePointsBefore( double x) {
-			Series<ChartPoint> newCoord = Factory.Engine.Series<ChartPoint>();
+			DataSeries<ChartPoint> newCoord = Factory.Engine.Series<ChartPoint>();
 			for( int i=coord.Count-1;i>=0;i--) {
 				if( coord[i].X >= x || i < 3) {
 					newCoord.Add( coord[i]);
@@ -151,11 +151,11 @@ namespace TickZoom.Common
 		private double SumXY=0, SumY=0, SumX=0, SumXSqr=0, SumYSqr=0;
 		private double Divisor=0;
 		private double CorrelDivisor=0;
-		public Series<ChartPoint> Coord {
+		public DataSeries<ChartPoint> Coord {
 			get { return coord; }
 		}
 		
-		private Series<ChartPoint> coord;
+		private DataSeries<ChartPoint> coord;
 		
 		private double angle;
 		public double Angle {

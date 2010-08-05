@@ -40,14 +40,14 @@ namespace TickZoom
 	/// </summary>
 	public class RegressionChannels : IndicatorCommon
 	{
-		Series<Channel> lines;
+		DataSeries<Channel> lines;
 		
 		IndicatorCommon slope;
 		bool reDrawLines = false;
 		bool drawDashedLines = true;
 		bool drawLines = true;
-		Series<ChartPoint> highs;
-		Series<ChartPoint> lows;
+		DataSeries<ChartPoint> highs;
+		DataSeries<ChartPoint> lows;
 		int extend = 10;
 		Color longColor = Color.Green;
 		Color shortColor = Color.Red;
@@ -58,9 +58,9 @@ namespace TickZoom
 			
 		public RegressionChannels()
 		{
-			lines = Series<Channel>();
-			highs = Series<ChartPoint>();
-			lows = Series<ChartPoint>();
+			lines = DataSeries<Channel>();
+			highs = DataSeries<ChartPoint>();
+			lows = DataSeries<ChartPoint>();
 		}
 
 		public override void OnInitialize()
@@ -300,7 +300,7 @@ namespace TickZoom
 			set { drawLines = value; }
 		}
 		
-		public Series<Channel> Lines {
+		public DataSeries<Channel> Lines {
 			get { return lines; }
 		}
 		

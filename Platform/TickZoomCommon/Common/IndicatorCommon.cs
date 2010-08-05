@@ -224,5 +224,10 @@ namespace TickZoom.Common
 			get { return performance; }
 			set { performance = value; }
 		}
+		
+		public void Release() {
+			output.Release();
+			input.Release();
+		}
 	}
 }

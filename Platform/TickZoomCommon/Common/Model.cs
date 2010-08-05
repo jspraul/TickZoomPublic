@@ -380,7 +380,7 @@ namespace TickZoom.Common
 			return Factory.Engine.Doubles(obj);
 		}
 		
-		public Series<T> Series<T>() {
+		public DataSeries<T> DataSeries<T>() {
 			return Factory.Engine.Series<T>();
 		}
 		

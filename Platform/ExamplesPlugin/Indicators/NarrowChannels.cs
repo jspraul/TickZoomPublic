@@ -39,15 +39,15 @@ namespace TickZoom
 	public class NarrowChannels : IndicatorCommon
 	{
 		Strategy strategy;
-		Series<NarrowChannel> tapes;
-		Series<WideChannel> channels;
+		DataSeries<NarrowChannel> tapes;
+		DataSeries<WideChannel> channels;
 		
 		bool reDrawLines = true;
 		bool drawDashedLines = false;
 		bool drawSolidLines = true;
 		bool drawLines = true;
-		Series<ChartPoint> highs;
-		Series<ChartPoint> lows;
+		DataSeries<ChartPoint> highs;
+		DataSeries<ChartPoint> lows;
 		int extend = 10;
 		Color longColor = Color.Green;
 		Color shortColor = Color.Red;
@@ -56,10 +56,10 @@ namespace TickZoom
 
 //		Trend trend = Trend.Flat;
 		public NarrowChannels() {
-			tapes = Series<NarrowChannel>();
-			channels = Series<WideChannel>();
-			highs = Series<ChartPoint>();
-			lows = Series<ChartPoint>();
+			tapes = DataSeries<NarrowChannel>();
+			channels = DataSeries<WideChannel>();
+			highs = DataSeries<ChartPoint>();
+			lows = DataSeries<ChartPoint>();
 		}
 			
 		public NarrowChannels(Strategy strategy)
@@ -113,7 +113,7 @@ namespace TickZoom
 			return true;
 		}
 
-		public ChartPoint FindPoint( Series<ChartPoint> points, double bar) {
+		public ChartPoint FindPoint( DataSeries<ChartPoint> points, double bar) {
 			for( int i=0; i<points.Count; i++) {
 				if( points[i].X < bar) {
 					return points[i];
@@ -265,7 +265,7 @@ namespace TickZoom
 			set { drawLines = value; }
 		}
 		
-		public Series<NarrowChannel> Tapes {
+		public DataSeries<NarrowChannel> Tapes {
 			get { return tapes; }
 		}
 		
@@ -293,7 +293,7 @@ namespace TickZoom
 			set { isActivated = value; }
 		}
 		
-		public Series<WideChannel> Channels {
+		public DataSeries<WideChannel> Channels {
 			get { return channels; }
 		}
 	}
