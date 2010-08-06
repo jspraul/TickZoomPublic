@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -31,19 +31,17 @@ using TickZoom.Common;
 
 namespace TickZoom.Examples
 {
-
-	
 	/// <summary>
 	/// Description of Starter.
 	/// </summary>
-	public class BenchmarkSimpleLoader : ModelLoaderCommon
+	public class ExampleCustomBarsLoader : ModelLoaderCommon
 	{
-		public BenchmarkSimpleLoader() {
+		public ExampleCustomBarsLoader() {
 			/// <summary>
 			/// IMPORTANT: You can personalize the name of each model loader.
 			/// </summary>
-			category = "Benchmark";
-			name = "Simple";
+			category = "Example";
+			name = "Custom Bars";
 		}
 		
 		public override void OnInitialize(ProjectProperties properties) {
@@ -52,10 +50,11 @@ namespace TickZoom.Examples
 		public override void OnLoad(ProjectProperties project) {
 			var strategies = new List<Strategy>();
 			foreach( var symbol in project.Starter.SymbolProperties) {
+				var barLogic = new PointFigureBars(symbol,20,4);
+				project.Starter.IntervalDefault = Intervals.Custom(barLogic);
 				var strategy = new ExampleReversalStrategy();
 				strategies.Add(strategy);
 			}
-			
 			if( strategies.Count == 1) {
 				TopModel = strategies[0];
 			} else {

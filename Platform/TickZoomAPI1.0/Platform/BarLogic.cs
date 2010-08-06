@@ -30,7 +30,39 @@ namespace TickZoom.Api
 {
 	public interface BarLogic : IDisposable {
 		void InitializeTick( Tick tick, BarData data);
+		/// <summary>
+		/// Determines if this tick will cause a new bar to get
+		/// created. If so, the engine will fire the OnIntervalClose()
+		/// events for the symbol and then call ProcessTick() 
+		/// to actually add the new bar. The engine always calls
+		/// ProcessTick() for every tick. So most of the time it
+		/// will simply update the information for the current bar.
+		/// </summary>
+		/// <param name="tick">The current tick to use in your determination of new bar status.</param>
+		/// <returns>true/false whether to end the current bar.</returns>
 	    bool IsNewBarNeeded(Tick tick);
+	    /// <summary>
+	    /// Use the tick to update or create a new bar or bars.
+	    /// Make sure you only create new bars after IsNewBarNeeded()
+	    /// returns true so that OnIntervalClose() events get fired
+	    /// appropriately.
+	    /// </summary>
+	    /// <param name="tick">The current tick.</param>
+	    /// <param name="data">This interface has method to create a bar or update the current bar.</param>
 	    void ProcessTick(Tick tick, BarData data);
+	    /// <summary>
+	    /// This method will determine if the current bar must end.
+	    /// Ordinarily bars end and begin at the same boundaries. One
+	    /// example of an exception to this are session bars. Sessions
+	    /// start and end at specific times. The end of bar events 
+	    /// must be called long before the next open in some cases.
+	    /// 
+	    /// NOTE: if your bars always end and start at the same point
+	    /// then simply throw the NotImplementedException() and the
+	    /// engine will never call this method again on your type.
+	    /// </summary>
+	    /// <param name="tick"></param>
+	    /// <returns>true/false whether it's time to end the current bar</returns>
+	    bool IsEndBarNeeded(Tick tick);
 	}
 }

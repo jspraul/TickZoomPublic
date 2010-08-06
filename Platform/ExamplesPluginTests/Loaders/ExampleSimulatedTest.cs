@@ -34,7 +34,92 @@ using TickZoom.Starters;
 
 namespace Loaders
 {
+	[TestFixture]
+	public class ExampleCustomBarsTest : StrategyTest
+	{
+		Log log = Factory.SysLog.GetLogger(typeof(ExampleSimulatedTest));
+		#region SetupTest
+		ExampleReversalStrategy strategy;
+		
+		public ExampleCustomBarsTest() {
+			StoreKnownGood = true;
+			ShowCharts = false;
+		}
+			
+		[TestFixtureSetUp]
+		public override void RunStrategy() {
+			base.RunStrategy();
+			try {
+				Starter starter = new HistoricalStarter();
+				
+				// Set run properties as in the GUI.
+				starter.ProjectProperties.Starter.StartTime = new TimeStamp(1800,1,1);
+	    		starter.ProjectProperties.Starter.EndTime = new TimeStamp(2010,1,1);
+	    		starter.DataFolder = "TestData";
+	    		starter.ProjectProperties.Starter.SetSymbols("USD/JPY");
+				
+	    		starter.CreateChartCallback = new CreateChartCallback(HistoricalCreateChart);
+	    		starter.ShowChartCallback = new ShowChartCallback(HistoricalShowChart);
+				
+				// Run the loader.
+				ExampleCustomBarsLoader loader = new ExampleCustomBarsLoader();
+	    		starter.Run(loader);
+	
+	    		// Get the stategy
+	    		strategy = loader.TopModel as ExampleReversalStrategy;
+	    		
+	    		LoadTrades();
+	    		LoadBarData();
+			} catch( Exception ex) {
+				log.Error("Setup error.", ex);
+				throw;
+			}
+		}
+		#endregion
+		
+		
+		[Test]
+		public void VerifyCurrentEquity() {
+			Assert.AreEqual( Math.Round(42490.0,2),Math.Round(strategy.Performance.Equity.CurrentEquity,2),"current equity");
+		}
+		[Test]
+		public void VerifyOpenEquity() {
+			Assert.AreEqual( Math.Round(730.0,2),Math.Round(strategy.Performance.Equity.OpenEquity,2),"open equity");
+		}
+		[Test]
+		public void VerifyClosedEquity() {
+			Assert.AreEqual( Math.Round(41760.0,2),Math.Round(strategy.Performance.Equity.ClosedEquity,2),"closed equity");
+		}
+		[Test]
+		public void VerifyStartingEquity() {
+			Assert.AreEqual( 10000,strategy.Performance.Equity.StartingEquity,"starting equity");
+		}
+		
+		[Test]
+		public void VerifyTrades() {
+			VerifyTrades(strategy);
+		}
 
+		[Test]
+		public void VerifyTradeCount() {
+			VerifyTradeCount(strategy);
+		}
+		
+		[Test]
+		public void VerifyBarData() {
+			VerifyBarData(strategy);
+		}
+		
+		[Test]
+		public void VerifyBarDataCount() {
+			VerifyBarDataCount(strategy);
+		}
+		
+		[Test]
+		public void CompareBars() {
+			CompareChart(strategy,GetChart(strategy.SymbolDefault));
+		}
+	}
 	
 	[TestFixture]
 	public class ExampleSimulatedTest : StrategyTest

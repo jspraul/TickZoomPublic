@@ -46,7 +46,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomBars\RenkoSeries.cs" />
+    <Compile Include="CustomBars\PointFigureBars.cs" />
     <Compile Include="Indicators\Channel.cs" />
     <Compile Include="Indicators\Channel2.cs" />
     <Compile Include="Indicators\CustomPlot.cs" />
@@ -85,6 +85,7 @@
     <Compile Include="Loaders\BenchmarkSimpleLoader.cs" />
     <Compile Include="Loaders\ExampleBreakoutReversalLoader.cs" />
     <Compile Include="Loaders\ExampleChartIndicator.cs" />
+    <Compile Include="Loaders\ExampleCustomBarsLoader.cs" />
     <Compile Include="Loaders\ExampleDataConverterLoader.cs" />
     <Compile Include="Loaders\ExampleMixedLoader.cs" />
     <Compile Include="Loaders\ExampleMultiSymbolLoader.cs" />
