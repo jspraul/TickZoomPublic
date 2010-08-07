@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Logging\AssertFailedException.cs" />
     <Compile Include="Logging\FileAppender.cs" />
+    <Compile Include="Logging\LogEvent.cs" />
     <Compile Include="Logging\LogImpl.cs" />
     <Compile Include="Logging\LoggingQueue.cs" />
     <Compile Include="Logging\LogManagerImpl.cs" />

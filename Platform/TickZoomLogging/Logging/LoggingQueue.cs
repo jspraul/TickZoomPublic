@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+
+using log4net.Core;
 using TickZoom.Api;
 
 namespace TickZoom.Logging
@@ -36,8 +38,8 @@ namespace TickZoom.Logging
 	/// </summary>
 	public class LoggingQueue
 	{
-	    System.Collections.Generic.Queue<String> queue =
-	    	new System.Collections.Generic.Queue<String>();
+	    System.Collections.Generic.Queue<LoggingEvent> queue =
+	    	new System.Collections.Generic.Queue<LoggingEvent>();
 	    bool terminate = false;
 	    int maxSize = int.MaxValue;
 	    object listLock = new object();
@@ -49,7 +51,7 @@ namespace TickZoom.Logging
 	    	this.maxSize = maxSize;
 	    }
 	    
-	    public void EnQueue(string o)
+	    public void EnQueue(LoggingEvent o)
 	    {
 	    	lock (listLock) {
 	            // If the queue is full, wait for an item to be removed
@@ -73,7 +75,7 @@ namespace TickZoom.Logging
 	    	}
 	    }
 	    
-	    public string Dequeue()
+	    public LoggingEvent Dequeue()
 	    {
 	    	lock( listLock) {
 	            // If the queue is empty, wait for an item to be added
@@ -90,7 +92,7 @@ namespace TickZoom.Logging
 	                // after being woken up by a call to Pulse
 	                System.Threading.Monitor.Wait(listLock);
 	            }
-	            string retVal = queue.Dequeue();
+	            LoggingEvent retVal = queue.Dequeue();
 	            
 	            // We always need to pulse, in case the queue was full
 	            // and a feeder thread is waiting to write more data.

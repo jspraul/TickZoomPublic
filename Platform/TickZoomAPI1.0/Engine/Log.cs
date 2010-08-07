@@ -38,6 +38,11 @@ namespace TickZoom.Api
 		}
 	}
 
+	public interface LogEvent {
+		bool IsAudioAlarm { get; set; }
+		object MessageObject { get; set; }
+	}
+	
 	public interface Log 
     {
         [Obsolete("Use Notice method instead. ")]
@@ -53,7 +58,7 @@ namespace TickZoom.Api
         	get;
         }
         
-        String ReadLine();
+        LogEvent ReadLine();
         
  		string FileName {
 			get;

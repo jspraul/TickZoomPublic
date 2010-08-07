@@ -39,7 +39,8 @@ namespace TickZoom
 	            while (true)
 	            {
 	            	try {
-		            	Echo(log.ReadLine());
+	            		var msg = log.ReadLine();
+	            		Echo(msg.MessageObject.ToString());
 		   			} catch( CollectionTerminatedException) {
 		   				break;
 	            	}

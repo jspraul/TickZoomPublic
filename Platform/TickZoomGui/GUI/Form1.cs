@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.IO;
+using System.Media;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -49,7 +50,6 @@ namespace TickZoom
    		DateTime startTime = new DateTime(2003,1,1); 
    		DateTime endTime = DateTime.Now;
 		Dictionary<int,Progress> progressChildren = new Dictionary<int,Progress>();
-// 		ProviderProxy provider = null;
 		Log log;
 		
         Interval initialInterval;
@@ -173,15 +173,31 @@ namespace TickZoom
                 logOutput.ScrollToCaret();
        		}), null);
         }
+
+        private void StartAlarm()
+        {
+       		context.Send(new SendOrPostCallback((state) =>
+       	    {
+        		stopAlarmButton.Visible = true;
+        		stopAlarmLabel.Visible = true;
+				alarmTimer.Enabled = true;
+				testTheAlarm.Visible = false;
+				PlayAlarmSound();
+       		}), null);
+        }
         
         private void ProcessMessages()
         {
         	try {
 	            while (!stopMessages)
 	            {
-	            	if(  log.HasLine) {
+	            	while(  !stopMessages && log.HasLine) {
 		            	try {
-			            	Echo(log.ReadLine());
+	            			var message = log.ReadLine();
+	            			if( message.IsAudioAlarm) {
+	            				StartAlarm();
+	            			}
+	            			Echo(message.MessageObject.ToString());
 			   			} catch( CollectionTerminatedException) {
 			   				break;
 		            	}
@@ -701,6 +717,7 @@ namespace TickZoom
     <add key=""AutoUpdate"" value=""true"" />
     <add key=""Symbol"" value=""GBP/USD,EUR/JPY"" />
     <add key=""UseModelLoader"" value=""true"" />
+    <add key=""AlarmSound"" value=""..\..\Media\59642_AlternatingToneAlarm.wav"" />
     <add key=""ModelLoader"" value=""Example: Reversal Multi-Symbol"" />
     <add key=""Model"" value=""ExampleReversalStrategy"" />
     <add key=""MaxParallelPasses"" value=""1000"" />
@@ -716,5 +733,41 @@ namespace TickZoom
   </appSettings>
 </configuration>";
         
+        
+        void AlarmTimerTick(object sender, EventArgs e)
+        {
+        	PlayAlarmSound();
+        }
+        
+        bool failedAlarmSound = false;
+        void PlayAlarmSound() {
+        	if( !failedAlarmSound) {
+        		string alarmFile = projectConfig.GetValue("AlarmSound");
+        		if( string.IsNullOrEmpty(alarmFile)) {
+			   		alarmFile = @"..\..\Media\59642_AlternatingToneAlarm.wav";
+        		}
+		    	try { 
+				    SoundPlayer simpleSound = new SoundPlayer(alarmFile);
+				    simpleSound.Play();
+		    	} catch( Exception ex) {
+		   			failedAlarmSound = true;
+		    		log.Error("Failure playing alarm sound file " + filePath + " : " + ex.Message,ex);
+		    	}
+        	}
+        }
+        
+        void StopAlarmButtonClick(object sender, EventArgs e)
+        {
+        	alarmTimer.Enabled = false;
+        	stopAlarmButton.Visible = false;
+        	stopAlarmLabel.Visible = false;
+			testTheAlarm.Checked = false;
+			testTheAlarm.Visible = true;
+        }
+        
+        void TestTheAlarmClick(object sender, EventArgs e)
+        {
+        	StartAlarm();
+        }
    }
 }

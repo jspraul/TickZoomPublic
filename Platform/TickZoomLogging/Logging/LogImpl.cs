@@ -48,7 +48,6 @@ namespace TickZoom.Logging
 		private readonly static Type callingType = typeof(LogImpl);
 		private LogImplWrapper log;
         private string[] indentStrings = new string[50];
-        private string indentString = "";
 		private static Dictionary<string,string> symbolMap;
 		private static TimeStamp beginTime;
 		private static TimeStamp endTime;
@@ -150,10 +149,9 @@ namespace TickZoom.Logging
         	Info(msg);
         }
         
-        private void WriteScreen(object msg) {
+        private void WriteScreen(LoggingEvent msg) {
         	if( messageQueue != null) {
-	        	string fullMsg = DateTime.Now.ToLongTimeString()+" : "+ msg;
-        		messageQueue.EnQueue(fullMsg);
+        		messageQueue.EnQueue(msg);
     	    }
         }
         
@@ -170,12 +168,16 @@ namespace TickZoom.Logging
         		return messageQueue.Count > 0;
         	}
         }
-        
-        public String ReadLine() {
+        Level x;
+        public LogEvent ReadLine() {
         	if( messageQueue == null) {
         		throw new ApplicationException( "Sorry. You must Connect before ReadLine");
         	}
-        	return messageQueue.Dequeue();
+        	var msg = messageQueue.Dequeue();
+        	return new LogEventDefault() {
+        		IsAudioAlarm = msg.Level >= Level.Error,
+				MessageObject = msg.MessageObject
+        	};
         }
         
         int indent = 0;
@@ -194,7 +196,6 @@ namespace TickZoom.Logging
        		if( indent < 0) {
         		indent = 0;
         	}
-    		indentString = indentStrings[Math.Min(indent,49)];
         }
         
  		public string FileName {
@@ -297,15 +298,14 @@ namespace TickZoom.Logging
 		
 		public void Notice(object message, Exception t)
 		{
-        	WriteScreen(message);
 			if (IsNoticeEnabled && CheckFilters())
 			{
-				message = indentString+message;
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Notice, message, t);
 				if( t!=null) {
 					System.Diagnostics.Debug.WriteLine(message + "\n" + t);
 				}
 				SetProperties(loggingEvent);
+        		WriteScreen(loggingEvent);
 				log.Logger.Log(loggingEvent);
 			}
 		}
@@ -314,7 +314,6 @@ namespace TickZoom.Logging
 		{
 			if (IsTraceEnabled && CheckFilters())
 			{
-				message = indentString+message;
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Trace, message, t);
 				if( t!=null) {
 					System.Diagnostics.Debug.WriteLine(message + "\n" + t);
@@ -408,7 +407,6 @@ namespace TickZoom.Logging
 		{
 			if (IsDebugEnabled && CheckFilters())
 			{
-				message = indentString+message;
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Debug, message, t);
 				if( t!=null) {
 					System.Diagnostics.Debug.WriteLine(message + "\n" + t);
@@ -422,7 +420,6 @@ namespace TickZoom.Logging
 		{
 			if (IsInfoEnabled && CheckFilters())
 			{
-				message = indentString+message;
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Info, message, t);
 				if( t!=null) {
 					System.Diagnostics.Debug.WriteLine(message + "\n" + t);
@@ -434,30 +431,28 @@ namespace TickZoom.Logging
 		
 		public void Warn(object message, Exception t)
 		{
-        	WriteScreen(message);
 			if (IsWarnEnabled && CheckFilters())
 			{
-				message = indentString+message;
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Warn, message, t);
 				if( t!=null) {
 					System.Diagnostics.Debug.WriteLine(message + "\n" + t);
 				}
 				SetProperties(loggingEvent);
+	        	WriteScreen(loggingEvent);
 				log.Logger.Log(loggingEvent);
 			}
 		}
 		
 		public void Error(object message, Exception t)
 		{
-        	WriteScreen(message);
 			if (IsErrorEnabled && CheckFilters())
 			{
-				message = indentString+message;
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Error, message, t);
 				if( t!=null) {
 					System.Diagnostics.Debug.WriteLine(message + "\n" + t);
 				}
 				SetProperties(loggingEvent);
+	        	WriteScreen(loggingEvent);
 				log.Logger.Log(loggingEvent);
 			}
 		}
@@ -527,12 +522,11 @@ namespace TickZoom.Logging
 		
 		public void Fatal(object message, Exception t)
 		{
-        	WriteScreen(message);
 			if (IsFatalEnabled && CheckFilters())
 			{
-				message = indentString+message;
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Fatal, message, t);
 				SetProperties(loggingEvent);
+	        	WriteScreen(loggingEvent);
 				log.Logger.Log(loggingEvent);
 			}
 		}

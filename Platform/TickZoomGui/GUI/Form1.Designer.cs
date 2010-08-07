@@ -30,6 +30,7 @@ namespace TickZoom
         /// </summary>
         private void InitializeComponent()
         {
+        	this.components = new System.ComponentModel.Container();
         	this.lblSymbol = new System.Windows.Forms.Label();
         	this.txtSymbol = new System.Windows.Forms.TextBox();
         	this.btnOptimize = new System.Windows.Forms.Button();
@@ -51,6 +52,9 @@ namespace TickZoom
         	this.intervalEngineTxt = new System.Windows.Forms.Label();
         	this.engineBarsCombo = new System.Windows.Forms.ComboBox();
         	this.intervals = new System.Windows.Forms.GroupBox();
+        	this.testTheAlarm = new System.Windows.Forms.CheckBox();
+        	this.stopAlarmLabel = new System.Windows.Forms.Label();
+        	this.disableChartsCheckBox = new System.Windows.Forms.CheckBox();
         	this.label7 = new System.Windows.Forms.Label();
         	this.timeChartRadio = new System.Windows.Forms.RadioButton();
         	this.barChartRadio = new System.Windows.Forms.RadioButton();
@@ -72,7 +76,8 @@ namespace TickZoom
         	this.modelLoaderBox = new System.Windows.Forms.ComboBox();
         	this.groupBox1 = new System.Windows.Forms.GroupBox();
         	this.label5 = new System.Windows.Forms.Label();
-        	this.disableChartsCheckBox = new System.Windows.Forms.CheckBox();
+        	this.stopAlarmButton = new System.Windows.Forms.Button();
+        	this.alarmTimer = new System.Windows.Forms.Timer(this.components);
         	this.intervals.SuspendLayout();
         	this.groupBox1.SuspendLayout();
         	this.SuspendLayout();
@@ -254,6 +259,8 @@ namespace TickZoom
         	// 
         	// intervals
         	// 
+        	this.intervals.Controls.Add(this.testTheAlarm);
+        	this.intervals.Controls.Add(this.stopAlarmLabel);
         	this.intervals.Controls.Add(this.disableChartsCheckBox);
         	this.intervals.Controls.Add(this.label7);
         	this.intervals.Controls.Add(this.timeChartRadio);
@@ -280,6 +287,36 @@ namespace TickZoom
         	this.intervals.TabIndex = 25;
         	this.intervals.TabStop = false;
         	this.intervals.Text = "Intervals";
+        	// 
+        	// testTheAlarm
+        	// 
+        	this.testTheAlarm.Location = new System.Drawing.Point(10, 320);
+        	this.testTheAlarm.Name = "testTheAlarm";
+        	this.testTheAlarm.Size = new System.Drawing.Size(256, 24);
+        	this.testTheAlarm.TabIndex = 55;
+        	this.testTheAlarm.Text = "Test the error alarm sound.";
+        	this.testTheAlarm.UseVisualStyleBackColor = true;
+        	this.testTheAlarm.Click += new System.EventHandler(this.TestTheAlarmClick);
+        	// 
+        	// stopAlarmLabel
+        	// 
+        	this.stopAlarmLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        	this.stopAlarmLabel.ForeColor = System.Drawing.Color.Red;
+        	this.stopAlarmLabel.Location = new System.Drawing.Point(6, 304);
+        	this.stopAlarmLabel.Name = "stopAlarmLabel";
+        	this.stopAlarmLabel.Size = new System.Drawing.Size(264, 40);
+        	this.stopAlarmLabel.TabIndex = 54;
+        	this.stopAlarmLabel.Text = "ERROR: Please check the logs after you stop the alarm.";
+        	this.stopAlarmLabel.Visible = false;
+        	// 
+        	// disableChartsCheckBox
+        	// 
+        	this.disableChartsCheckBox.Location = new System.Drawing.Point(10, 188);
+        	this.disableChartsCheckBox.Name = "disableChartsCheckBox";
+        	this.disableChartsCheckBox.Size = new System.Drawing.Size(256, 31);
+        	this.disableChartsCheckBox.TabIndex = 53;
+        	this.disableChartsCheckBox.Text = "Disable charting to run faster with less memory.";
+        	this.disableChartsCheckBox.UseVisualStyleBackColor = true;
         	// 
         	// label7
         	// 
@@ -478,20 +515,28 @@ namespace TickZoom
         	this.label5.TabIndex = 29;
         	this.label5.Text = "Model Loader";
         	// 
-        	// disableChartsCheckBox
+        	// stopAlarmButton
         	// 
-        	this.disableChartsCheckBox.Location = new System.Drawing.Point(10, 188);
-        	this.disableChartsCheckBox.Name = "disableChartsCheckBox";
-        	this.disableChartsCheckBox.Size = new System.Drawing.Size(256, 31);
-        	this.disableChartsCheckBox.TabIndex = 53;
-        	this.disableChartsCheckBox.Text = "Disable charting to run faster with less memory.";
-        	this.disableChartsCheckBox.UseVisualStyleBackColor = true;
+        	this.stopAlarmButton.Location = new System.Drawing.Point(194, 260);
+        	this.stopAlarmButton.Name = "stopAlarmButton";
+        	this.stopAlarmButton.Size = new System.Drawing.Size(75, 23);
+        	this.stopAlarmButton.TabIndex = 31;
+        	this.stopAlarmButton.Text = "Stop Alarm";
+        	this.stopAlarmButton.UseVisualStyleBackColor = true;
+        	this.stopAlarmButton.Visible = false;
+        	this.stopAlarmButton.Click += new System.EventHandler(this.StopAlarmButtonClick);
+        	// 
+        	// alarmTimer
+        	// 
+        	this.alarmTimer.Interval = 2000;
+        	this.alarmTimer.Tick += new System.EventHandler(this.AlarmTimerTick);
         	// 
         	// Form1
         	// 
         	this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         	this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         	this.ClientSize = new System.Drawing.Size(782, 371);
+        	this.Controls.Add(this.stopAlarmButton);
         	this.Controls.Add(this.btnGenetic);
         	this.Controls.Add(this.label2);
         	this.Controls.Add(this.replaySpeedTextBox);
@@ -524,6 +569,10 @@ namespace TickZoom
         	this.ResumeLayout(false);
         	this.PerformLayout();
         }
+        private System.Windows.Forms.CheckBox testTheAlarm;
+        private System.Windows.Forms.Timer alarmTimer;
+        private System.Windows.Forms.Label stopAlarmLabel;
+        private System.Windows.Forms.Button stopAlarmButton;
         private System.Windows.Forms.CheckBox disableChartsCheckBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox1;

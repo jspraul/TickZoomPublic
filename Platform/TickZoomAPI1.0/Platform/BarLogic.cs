@@ -28,6 +28,8 @@ using System;
 
 namespace TickZoom.Api
 {
+
+        
 	public interface BarLogic : IDisposable {
 		void InitializeTick( Tick tick, BarData data);
 		/// <summary>
