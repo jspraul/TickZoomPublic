@@ -62,7 +62,7 @@ namespace TickZoom.Starters
 		Progress progress = new Progress();
 		private string address = "InProcess";
 		private int port = 6490;
-		private List<string> providers = new List<string>();
+		private List<string> providerPlugins = new List<string>();
 		
 		public StarterCommon() : this(true) {
     		storageFolder = Factory.Settings["AppDataFolder"];
@@ -448,11 +448,11 @@ namespace TickZoom.Starters
 		}
 		
 		public void AddProvider( string provider) {
-			providers.Add(provider);
+			providerPlugins.Add(provider);
 		}
 		
-		public List<string> Providers {
-			get { return providers; }
+		public List<string> ProviderPlugins {
+			get { return providerPlugins; }
 		}		
 	}
 }

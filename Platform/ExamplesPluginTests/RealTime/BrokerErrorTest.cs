@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -24,53 +24,56 @@
  */
 #endregion
 
+
 using System;
+using System.Configuration;
+using System.IO;
+
+using Loaders;
+using NUnit.Framework;
 using TickZoom.Api;
+using TickZoom.Starters;
 
-namespace TickZoom.Starters
+namespace MockProvider
 {
-	/// <summary>
-	/// Description of Test.
-	/// </summary>
-	public class RealTimeStarter : HistoricalStarter
-	{
-		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-		public override Provider[] SetupProviders(bool quietMode, bool singleLoad)
+#if TESTING
+	[TestFixture]
+	public class BrokerErrorTest : MarketOrderTest {
+		
+		public BrokerErrorTest() {
+			SyncTicks.Enabled = true;
+			DeleteFiles();
+			Symbols = "ErrorTest";
+			CreateStarterCallback = CreateStarter;
+			MatchTestResultsOf(typeof(MarketOrderTest));
+			ShowCharts = false;
+			StoreKnownGood = false;
+		}
+		
+		public Starter CreateStarter()
 		{
-			switch( Address) {
-				case "InProcess":
-					return base.SetupDataProviders("127.0.0.1",Port);
-				default:
-					return base.SetupDataProviders(Address,Port);
+			Starter starter = new RealTimeStarter();
+			starter.Address = "InProcess";
+			starter.AddProvider("TickZoomProviderMock");
+			starter.ProjectProperties.Engine.SimulateRealTime = true;
+			return starter;
+		}
+		
+		private void DeleteFiles() {
+			while( true) {
+				try {
+					string appData = Factory.Settings["AppDataFolder"];
+		 			File.Delete( appData + @"\TestServerCache\USDJPY.tck");
+					break;
+				} catch( Exception) {
+				}
 			}
 		}
 		
-		public override void Run(ModelInterface model)
-		{
-			ServiceConnection service = null;
-			switch( Address) {
-				case "InProcess":
-					service = Factory.Provider.ProviderService();
-					foreach( var provider in ProviderPlugins) {
-						service.AddProvider(provider);
-					}
-					service.SetAddress("127.0.0.1",Port);
-					break;
-				default:
-					break;
-			}
-			runMode = RunMode.RealTime;
-			try {
-				if( service != null) {
-					service.OnStart();
-				}
-				base.Run(model);
-			} finally {
-				if( service != null) {
-					service.OnStop();
-				}
-			}
+		[Test]
+		public void CheckMockTradeCount() {
+			Assert.AreEqual(207,SyncTicks.MockTradeCount);
 		}
 	}
+#endif
 }

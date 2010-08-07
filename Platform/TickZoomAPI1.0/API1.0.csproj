@@ -67,6 +67,7 @@
     <Compile Include="Aspects\DiagramInstance.cs" />
     <Compile Include="Aspects\DiagramObject.cs" />
     <Compile Include="Classes\BootStrapLoader.cs" />
+    <Compile Include="Engine\LogEvent.cs" />
     <Compile Include="Locks\SimpleLock.cs" />
     <Compile Include="Locks\SyncTicks.cs" />
     <Compile Include="Locks\TaskLock.cs">
@@ -79,6 +80,7 @@
     <Compile Include="Misc\Collections\ActiveList.cs" />
     <Compile Include="Misc\Enums\ArrowDirection.cs" />
     <Compile Include="Misc\Enums\BarUnit.cs" />
+    <Compile Include="Misc\Enums\EventType.cs" />
     <Compile Include="Misc\Enums\QuoteType.cs" />
     <Compile Include="Misc\Enums\TimeAndSales.cs" />
     <Compile Include="Misc\Events\ErrorDetail.cs" />
@@ -97,7 +99,6 @@
     <Compile Include="Platform\ChartProperties.cs" />
     <Compile Include="Platform\DrawingInterface.cs" />
     <Compile Include="Platform\EngineProperties.cs" />
-    <Compile Include="Platform\EventType.cs" />
     <Compile Include="Platform\IndicatorInterface.cs" />
     <Compile Include="Platform\EventContext.cs" />
     <Compile Include="Platform\EventInterceptor.cs" />

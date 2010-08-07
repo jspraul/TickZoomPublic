@@ -40,7 +40,7 @@ using ZedGraph;
 namespace MockProvider
 {
 
-
+	
 	[TestFixture]
 	public class BrokerMarketOrder : MarketOrderTest {
 		

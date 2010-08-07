@@ -39,6 +39,7 @@ using TickZoom.Api;
 
 namespace TickZoom.Logging
 {
+
 	/// <summary>
 	/// Description of TickConsole.
 	/// </summary>

@@ -38,11 +38,6 @@ namespace TickZoom.Api
 		}
 	}
 
-	public interface LogEvent {
-		bool IsAudioAlarm { get; set; }
-		object MessageObject { get; set; }
-	}
-	
 	public interface Log 
     {
         [Obsolete("Use Notice method instead. ")]

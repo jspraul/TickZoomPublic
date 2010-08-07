@@ -88,6 +88,7 @@
     <Compile Include="MiscTest\MQ_BadFakeTick_2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealTime\BrokerDualLimitOrder.cs" />
+    <Compile Include="RealTime\BrokerErrorTest.cs" />
     <Compile Include="RealTime\BrokerLimitOrderTickBar.cs" />
     <Compile Include="RealTime\BrokerMarketOrder.cs" />
     <Compile Include="RealTime\BrokerReversalTest.cs" />

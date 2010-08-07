@@ -751,7 +751,7 @@ namespace TickZoom
 				    simpleSound.Play();
 		    	} catch( Exception ex) {
 		   			failedAlarmSound = true;
-		    		log.Error("Failure playing alarm sound file " + filePath + " : " + ex.Message,ex);
+		    		log.Error("Failure playing alarm sound file " + alarmFile + " : " + ex.Message,ex);
 		    	}
         	}
         }

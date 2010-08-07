@@ -25,8 +25,19 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Threading;
 
-namespace TickZoom.Api
+using log4net.Core;
+using log4net.Filter;
+using TickZoom.Api;
+
+namespace TickZoom.Logging
 {
 	public class LogEventDefault : LogEvent {
 		private bool isAudioAlarm;			

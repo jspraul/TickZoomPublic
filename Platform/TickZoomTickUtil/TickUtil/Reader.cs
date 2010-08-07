@@ -207,12 +207,6 @@ namespace TickZoom.TickUtil
 		{
 			if (debug)
 				log.Debug("Stop(" + receiver + ")");
-//			if( receiver != null) {
-//            	if( !receiver.CanReceive(symbol)) {
-//            		log.Warn("Can't receive Terminate message");
-//            	}
-//				receiver.OnEvent(null,(int)EventType.Terminate,null);
-//			}
 			Dispose();
 		}
 
