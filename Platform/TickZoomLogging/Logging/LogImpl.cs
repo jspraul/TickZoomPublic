@@ -169,7 +169,6 @@ namespace TickZoom.Logging
         		return messageQueue.Count > 0;
         	}
         }
-        Level x;
         public LogEvent ReadLine() {
         	if( messageQueue == null) {
         		throw new ApplicationException( "Sorry. You must Connect before ReadLine");

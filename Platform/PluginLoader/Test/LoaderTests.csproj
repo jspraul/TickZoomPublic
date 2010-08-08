@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AutoUpdateTest.cs" />
     <Compile Include="TopologicalSortTest.cs" />
     <Compile Include="StringParserTests.cs" />
     <Compile Include="AddInTreeTests\AddInTreeLoadingTests.cs" />
@@ -55,9 +56,13 @@
     <Compile Include="ValidDirectoryNameTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Project\Loader.csproj">
+    <ProjectReference Include="..\..\TickZoomAPI1.0\API1.0.csproj">
+      <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
+      <Name>API1.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\PluginLoader.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>Loader</Name>
+      <Name>PluginLoader</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

@@ -112,7 +112,6 @@
     <Compile Include="TradingFramework\StrategyTickTest.cs" />
     <Compile Include="TradingFramework\StrategyTest.cs" />
     <Compile Include="TradingFramework\TradeStatsTest.cs" />
-    <Compile Include="Utilities\AutoUpdateTest.cs" />
     <Compile Include="Utilities\ISINTest.cs" />
     <Compile Include="Utilities\SymbolTest.cs" />
     <Compile Include="Utilities\tzdataTest.cs" />
@@ -124,10 +123,6 @@
     <ProjectReference Include="..\Charting\Charting.csproj">
       <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
       <Name>Charting</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Loader\Project\Loader.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>Loader</Name>
     </ProjectReference>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
