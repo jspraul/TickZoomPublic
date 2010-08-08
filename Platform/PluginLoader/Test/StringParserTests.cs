@@ -14,6 +14,8 @@ using TickZoom.Loader;
 
 namespace Loader
 {
+
+	
 	[TestFixture]
 	public class StringParserTest
 	{
@@ -79,6 +81,11 @@ namespace Loader
 		{
 			Assert.AreEqual("${invalidObj:TestProperty}", StringParser.Parse("${invalidObj:TestProperty}"));
 			Assert.AreEqual("${obj:InvalidProperty}", StringParser.Parse("${obj:InvalidProperty}"));
+		}
+		
+		[Test]
+		public void EvalObject() {
+			Assert.AreEqual("34", StringParser.Parse("{12 + 22}"));
 		}
 	}
 }
