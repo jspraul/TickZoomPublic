@@ -87,7 +87,6 @@
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
     </ProjectReference>
-    <Folder Include="Lib" />
     <Folder Include="TickUtil" />
   </ItemGroup>
 </Project>

@@ -114,6 +114,10 @@
     <Folder Include="Src\Services\LoggingService" />
     <Folder Include="Src\Services\FactoryService" />
     <Folder Include="Src\Services\ResourceService" />
+    <ProjectReference Include="..\..\DynamicQuery\DynamicQuery\DynamicQuery.csproj">
+      <Project>{F285CEB0-4108-440C-AD94-1C1A7C159D7C}</Project>
+      <Name>DynamicQuery</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
