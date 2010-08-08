@@ -17,7 +17,7 @@ namespace TickZoom.Loader
 	public sealed class PluginTreeNode
 	{
 		Dictionary<string, PluginTreeNode> childNodes = new Dictionary<string, PluginTreeNode>();
-		List<Extension> codons = new List<Extension>();
+		List<Extension> extensions = new List<Extension>();
 		bool isSorted = false;
 		
 		/// <summary>
@@ -30,11 +30,11 @@ namespace TickZoom.Loader
 		}
 		
 		/// <summary>
-		/// A list of child <see cref="Codon"/>s.
+		/// A list of child <see cref="Extension"/>s.
 		/// </summary>
-		public List<Extension> Codons {
+		public List<Extension> Extensions {
 			get {
-				return codons;
+				return extensions;
 			}
 		}
 		
@@ -42,12 +42,12 @@ namespace TickZoom.Loader
 //		public void BinarySerialize(BinaryWriter writer)
 //		{
 //			if (!isSorted) {
-//				(new SortCodons(this)).Execute();
+//				(new SortExtensions(this)).Execute();
 //				isSorted = true;
 //			}
-//			writer.Write((ushort)codons.Count);
-//			foreach (Codon codon in codons) {
-//				codon.BinarySerialize(writer);
+//			writer.Write((ushort)extensions.Count);
+//			foreach (Extension extension in extensions) {
+//				extension.BinarySerialize(writer);
 //			}
 //
 //			writer.Write((ushort)childNodes.Count);
@@ -58,43 +58,43 @@ namespace TickZoom.Loader
 //		}
 		
 		/// <summary>
-		/// Supports sorting codons using InsertBefore/InsertAfter
+		/// Supports sorting extensions using InsertBefore/InsertAfter
 		/// </summary>
 		sealed class TopologicalSort
 		{
-			List<Extension> codons;
+			List<Extension> extensions;
 			bool[] visited;
-			List<Extension> sortedCodons;
+			List<Extension> sortedExtensions;
 			Dictionary<string, int> indexOfName;
 			
-			public TopologicalSort(List<Extension> codons)
+			public TopologicalSort(List<Extension> extensions)
 			{
-				this.codons = codons;
-				visited = new bool[codons.Count];
-				sortedCodons = new List<Extension>(codons.Count);
-				indexOfName = new Dictionary<string, int>(codons.Count);
+				this.extensions = extensions;
+				visited = new bool[extensions.Count];
+				sortedExtensions = new List<Extension>(extensions.Count);
+				indexOfName = new Dictionary<string, int>(extensions.Count);
 				// initialize visited to false and fill the indexOfName dictionary
-				for (int i = 0; i < codons.Count; ++i) {
+				for (int i = 0; i < extensions.Count; ++i) {
 					visited[i] = false;
-					indexOfName[codons[i].Id] = i;
+					indexOfName[extensions[i].Id] = i;
 				}
 			}
 			
 			void InsertEdges()
 			{
 				// add the InsertBefore to the corresponding InsertAfter
-				for (int i = 0; i < codons.Count; ++i) {
-					string before = codons[i].InsertBefore;
+				for (int i = 0; i < extensions.Count; ++i) {
+					string before = extensions[i].InsertBefore;
 					if (before != null && before != "") {
 						if (indexOfName.ContainsKey(before)) {
-							string after = codons[indexOfName[before]].InsertAfter;
+							string after = extensions[indexOfName[before]].InsertAfter;
 							if (after == null || after == "") {
-								codons[indexOfName[before]].InsertAfter = codons[i].Id;
+								extensions[indexOfName[before]].InsertAfter = extensions[i].Id;
 							} else {
-								codons[indexOfName[before]].InsertAfter = after + ',' + codons[i].Id;
+								extensions[indexOfName[before]].InsertAfter = after + ',' + extensions[i].Id;
 							}
 						} else {
-							LoggingService.WarnFormatted("Codon ({0}) specified in the insertbefore of the {1} codon does not exist!", before, codons[i]);
+							LoggingService.WarnFormatted("Extension ({0}) specified in the insertbefore of the {1} extension does not exist!", before, extensions[i]);
 						}
 					}
 				}
@@ -104,19 +104,19 @@ namespace TickZoom.Loader
 			{
 				InsertEdges();
 				
-				// Visit all codons
-				for (int i = 0; i < codons.Count; ++i) {
+				// Visit all extensions
+				for (int i = 0; i < extensions.Count; ++i) {
 					Visit(i);
 				}
-				return sortedCodons;
+				return sortedExtensions;
 			}
 			
-			void Visit(int codonIndex)
+			void Visit(int extensionIndex)
 			{
-				if (visited[codonIndex]) {
+				if (visited[extensionIndex]) {
 					return;
 				}
-				string[] after = codons[codonIndex].InsertAfter.Split(new char[] {','});
+				string[] after = extensions[extensionIndex].InsertAfter.Split(new char[] {','});
 				foreach (string s in after) {
 					if (s == null || s.Length == 0) {
 						continue;
@@ -124,11 +124,11 @@ namespace TickZoom.Loader
 					if (indexOfName.ContainsKey(s)) {
 						Visit(indexOfName[s]);
 					} else {
-						LoggingService.WarnFormatted("Codon ({0}) specified in the insertafter of the {1} codon does not exist!", codons[codonIndex].InsertAfter, codons[codonIndex]);
+						LoggingService.WarnFormatted("Extension ({0}) specified in the insertafter of the {1} extension does not exist!", extensions[extensionIndex].InsertAfter, extensions[extensionIndex]);
 					}
 				}
-				sortedCodons.Add(codons[codonIndex]);
-				visited[codonIndex] = true;
+				sortedExtensions.Add(extensions[extensionIndex]);
+				visited[extensionIndex] = true;
 			}
 		}
 		
@@ -138,17 +138,17 @@ namespace TickZoom.Loader
 		/// <param name="caller">The owner used to create the objects.</param>
 		public List<T> BuildChildItems<T>(object caller)
 		{
-			List<T> items = new List<T>(codons.Count);
+			List<T> items = new List<T>(extensions.Count);
 			if (!isSorted) {
-				codons = (new TopologicalSort(codons)).Execute();
+				extensions = (new TopologicalSort(extensions)).Execute();
 				isSorted = true;
 			}
-			foreach (Extension codon in codons) {
+			foreach (Extension extension in extensions) {
 				ArrayList subItems = null;
-				if (childNodes.ContainsKey(codon.Id)) {
-					subItems = childNodes[codon.Id].BuildChildItems(caller);
+				if (childNodes.ContainsKey(extension.Id)) {
+					subItems = childNodes[extension.Id].BuildChildItems(caller);
 				}
-				object result = codon.BuildItem(caller, subItems);
+				object result = extension.BuildItem(caller, subItems);
 				if (result == null)
 					continue;
 				IBuildItemsModifier mod = result as IBuildItemsModifier;
@@ -157,7 +157,7 @@ namespace TickZoom.Loader
 				} else if (result is T) {
 					items.Add((T)result);
 				} else {
-					throw new InvalidCastException("The PluginTreeNode <" + codon.Type + " id='" + codon.Id
+					throw new InvalidCastException("The PluginTreeNode <" + extension.Type + " id='" + extension.Id
 					                               + "' returned an instance of " + result.GetType().FullName
 					                               + " but the type " + typeof(T).FullName + " is expected.");
 				}
@@ -171,17 +171,17 @@ namespace TickZoom.Loader
 		/// <param name="caller">The owner used to create the objects.</param>
 		public ArrayList BuildChildItems(object caller)
 		{
-			ArrayList items = new ArrayList(codons.Count);
+			ArrayList items = new ArrayList(extensions.Count);
 			if (!isSorted) {
-				codons = (new TopologicalSort(codons)).Execute();
+				extensions = (new TopologicalSort(extensions)).Execute();
 				isSorted = true;
 			}
-			foreach (Extension codon in codons) {
+			foreach (Extension extension in extensions) {
 				ArrayList subItems = null;
-				if (childNodes.ContainsKey(codon.Id)) {
-					subItems = childNodes[codon.Id].BuildChildItems(caller);
+				if (childNodes.ContainsKey(extension.Id)) {
+					subItems = childNodes[extension.Id].BuildChildItems(caller);
 				}
-				object result = codon.BuildItem(caller, subItems);
+				object result = extension.BuildItem(caller, subItems);
 				if (result == null)
 					continue;
 				IBuildItemsModifier mod = result as IBuildItemsModifier;
@@ -207,9 +207,9 @@ namespace TickZoom.Loader
 		/// </exception>
 		public object BuildChildItem(string childItemID, object caller, ArrayList subItems)
 		{
-			foreach (Extension codon in codons) {
-				if (codon.Id == childItemID) {
-					return codon.BuildItem(caller, subItems);
+			foreach (Extension extension in extensions) {
+				if (extension.Id == childItemID) {
+					return extension.BuildItem(caller, subItems);
 				}
 			}
 			throw new TreePathNotFoundException("The extension '" + childItemID + "' was not found at the path.");

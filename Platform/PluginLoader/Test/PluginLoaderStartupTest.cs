@@ -98,7 +98,7 @@ namespace TickZoom.Loader
 		
 		public string Name {
 			get {
-				throw new NotImplementedException();
+				return this.GetType().Name;
 			}
 		}
 		
@@ -110,7 +110,7 @@ namespace TickZoom.Loader
 		
 		public bool IsVisibleInGUI {
 			get {
-				throw new NotImplementedException();
+				return false;
 			}
 		}
 		

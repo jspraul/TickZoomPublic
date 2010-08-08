@@ -225,8 +225,8 @@ namespace TickZoom.Loader
 		static void AddExtensionPath(ExtensionPath path)
 		{
 			PluginTreeNode treePath = CreatePath(rootNode, path.Name);
-			foreach (Extension codon in path.Codons) {
-				treePath.Codons.Add(codon);
+			foreach (Extension extension in path.Extensions) {
+				treePath.Extensions.Add(extension);
 			}
 		}
 		

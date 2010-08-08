@@ -11,35 +11,35 @@ namespace TickZoom.Loader
 {
 	public class IconDescriptor 
 	{
-		Extension codon;
+		Extension extension;
 		
 		public string Id {
 			get {
-				return codon.Id;
+				return extension.Id;
 			}
 		}
 		
 		public string Language {
 			get {
-				return codon.Properties["language"];
+				return extension.Properties["language"];
 			}
 		}
 		
 		public string Resource {
 			get {
-				return codon.Properties["resource"];
+				return extension.Properties["resource"];
 			}
 		}
 		
 		public string[] Extensions {
 			get {
-				return codon.Properties["extensions"].Split(';');
+				return extension.Properties["extensions"].Split(';');
 			}
 		}
 		
-		public IconDescriptor(Extension codon)
+		public IconDescriptor(Extension extension)
 		{
-			this.codon = codon;
+			this.extension = extension;
 		}
 	}
 }

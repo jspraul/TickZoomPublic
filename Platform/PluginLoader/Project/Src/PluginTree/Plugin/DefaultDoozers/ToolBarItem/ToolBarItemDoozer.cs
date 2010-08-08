@@ -43,7 +43,7 @@ namespace TickZoom.Loader
 	public class ToolbarItemDoozer : IDoozer
 	{
 		/// <summary>
-		/// Gets if the doozer handles codon conditions on its own.
+		/// Gets if the doozer handles extension conditions on its own.
 		/// If this property return false, the item is excluded when the condition is not met.
 		/// </summary>
 		public bool HandleConditions {
@@ -52,9 +52,9 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public object BuildItem(object caller, Extension codon, ArrayList subItems)
+		public object BuildItem(object caller, Extension extension, ArrayList subItems)
 		{
-			return new ToolbarItemDescriptor(caller, codon, subItems);
+			return new ToolbarItemDescriptor(caller, extension, subItems);
 		}
 	}
 	
@@ -68,10 +68,10 @@ namespace TickZoom.Loader
 		public readonly Extension Extension;
 		public readonly IList SubItems;
 		
-		public ToolbarItemDescriptor(object caller, Extension codon, IList subItems)
+		public ToolbarItemDescriptor(object caller, Extension extension, IList subItems)
 		{
 			this.Caller = caller;
-			this.Extension = codon;
+			this.Extension = extension;
 			this.SubItems = subItems;
 		}
 	}

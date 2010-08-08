@@ -18,7 +18,7 @@ namespace TickZoom.Loader
 	{
 		string      name;
 		Plugin       plugin;
-		List<Extension> codons = new List<Extension>();
+		List<Extension> extensions = new List<Extension>();
 		
 		public Plugin Plugin {
 			get {
@@ -31,9 +31,9 @@ namespace TickZoom.Loader
 				return name;
 			}
 		}
-		public List<Extension> Codons {
+		public List<Extension> Extensions {
 			get {
-				return codons;
+				return extensions;
 			}
 		}
 		
@@ -78,10 +78,10 @@ namespace TickZoom.Loader
 								default:
 									throw new ApplicationException("Unknown element '" + elementName + "'");
 							}
-							Extension newCodon = new Extension(extensionPath.Plugin, extensionType, properties, conditionStack.ToArray());
-							extensionPath.codons.Add(newCodon);
+							Extension newExtension = new Extension(extensionPath.Plugin, extensionType, properties, conditionStack.ToArray());
+							extensionPath.extensions.Add(newExtension);
 							if (!reader.IsEmptyElement) {
-								ExtensionPath subPath = extensionPath.Plugin.GetExtensionPath(extensionPath.Name + "/" + newCodon.Id);
+								ExtensionPath subPath = extensionPath.Plugin.GetExtensionPath(extensionPath.Name + "/" + newExtension.Id);
 								//foreach (ICondition condition in extensionPath.conditionStack) {
 								//	subPath.conditionStack.Push(condition);
 								//}

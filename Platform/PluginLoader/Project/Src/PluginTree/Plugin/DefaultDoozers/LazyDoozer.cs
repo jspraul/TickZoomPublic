@@ -41,7 +41,7 @@ namespace TickZoom.Loader
 		}
 		
 		/// <summary>
-		/// Gets if the doozer handles codon conditions on its own.
+		/// Gets if the doozer handles extension conditions on its own.
 		/// If this property return false, the item is excluded when the condition is not met.
 		/// </summary>
 		public bool HandleConditions {
@@ -55,14 +55,14 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public object BuildItem(object caller, Extension codon, ArrayList subItems)
+		public object BuildItem(object caller, Extension extension, ArrayList subItems)
 		{
 			IDoozer doozer = (IDoozer)plugin.CreateObject(className);
 			if (doozer == null) {
 				return null;
 			}
 			PluginTree.Doozers[name] = doozer;
-			return doozer.BuildItem(caller, codon, subItems);
+			return doozer.BuildItem(caller, extension, subItems);
 		}
 		
 		public override string ToString()

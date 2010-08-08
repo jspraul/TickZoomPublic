@@ -119,7 +119,7 @@ namespace TickZoom.Loader
 		
 		public override string ToString()
 		{
-			return String.Format("[Codon: name = {0}, plugin={1}]",
+			return String.Format("[Extension: name = {0}, plugin={1}]",
 			                     type,
 			                     plugin.FileName);
 		}

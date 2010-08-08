@@ -22,7 +22,7 @@ namespace TickZoom.Loader
 	public class StringDoozer : IDoozer
 	{
 		/// <summary>
-		/// Gets if the doozer handles codon conditions on its own.
+		/// Gets if the doozer handles extension conditions on its own.
 		/// If this property return false, the item is excluded when the condition is not met.
 		/// </summary>
 		public bool HandleConditions {
@@ -31,9 +31,9 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public object BuildItem(object caller, Extension codon, ArrayList subItems)
+		public object BuildItem(object caller, Extension extension, ArrayList subItems)
 		{
-			return StringParser.Parse(codon.Properties["text"]);
+			return StringParser.Parse(extension.Properties["text"]);
 		}
 	}
 }

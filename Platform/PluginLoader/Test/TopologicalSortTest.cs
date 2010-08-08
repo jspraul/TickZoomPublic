@@ -19,9 +19,9 @@ namespace ICSharpCode.Core.Tests.PluginTreeTests.Tests
 		[Test, Ignore("TODO: Write test")]
 		public void Test()
 		{
-			List<Codon> codons = new List<Codon>();
+			List<Extension> extensions = new List<Extension>();
 			for (int i = 0; i < 5; ++i) {
-				codons.Add(new Codon(null, "codon" + i, null, null));
+				extensions.Add(new Extension(null, "extension" + i, null, null));
 			}
 		}
 	}

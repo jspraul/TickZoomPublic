@@ -122,7 +122,7 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 		}
 		
 		[Test]
-		public void TestSimpleCodon()
+		public void TestSimpleExtension()
 		{
 			string pluginText = @"
 <Plugin>
@@ -133,46 +133,46 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			Plugin plugin = Plugin.Load(new StringReader(pluginText));
 			Assert.AreEqual(1, plugin.Paths.Count);
 			Assert.IsNotNull(plugin.Paths["/Path1"]);
-			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Simple", plugin.Paths["/Path1"].Codons[0].Type);
-			Assert.AreEqual("Simple", plugin.Paths["/Path1"].Codons[0].Id);
-			Assert.AreEqual("a", plugin.Paths["/Path1"].Codons[0].Properties["attr"]);
-			Assert.AreEqual("b", plugin.Paths["/Path1"].Codons[0].Properties["attr2"]);
+			Assert.AreEqual(1, plugin.Paths["/Path1"].Extensions.Count);
+			Assert.AreEqual("Simple", plugin.Paths["/Path1"].Extensions[0].Type);
+			Assert.AreEqual("Simple", plugin.Paths["/Path1"].Extensions[0].Id);
+			Assert.AreEqual("a", plugin.Paths["/Path1"].Extensions[0].Properties["attr"]);
+			Assert.AreEqual("b", plugin.Paths["/Path1"].Extensions[0].Properties["attr2"]);
 		}
 		
 		[Test]
-		public void TestSubCodons()
+		public void TestSubExtensions()
 		{
 			string pluginText = @"
 <Plugin>
 	<Path name = '/Path1'>
 		<Sub id='Path2'>
-			<Extension type='Codon2' id='Sub2'/>
+			<Extension type='Extension2' id='Sub2'/>
 		</Sub>
 	</Path>
 </Plugin>";
 			Plugin plugin = Plugin.Load(new StringReader(pluginText));
 			Assert.AreEqual(2, plugin.Paths.Count);
 			Assert.IsNotNull(plugin.Paths["/Path1"]);
-			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Sub", plugin.Paths["/Path1"].Codons[0].Type);
-			Assert.AreEqual("Path2", plugin.Paths["/Path1"].Codons[0].Id);
+			Assert.AreEqual(1, plugin.Paths["/Path1"].Extensions.Count);
+			Assert.AreEqual("Sub", plugin.Paths["/Path1"].Extensions[0].Type);
+			Assert.AreEqual("Path2", plugin.Paths["/Path1"].Extensions[0].Id);
 			
 			Assert.IsNotNull(plugin.Paths["/Path1/Path2"]);
-			Assert.AreEqual(1, plugin.Paths["/Path1/Path2"].Codons.Count);
-			Assert.AreEqual("Codon2", plugin.Paths["/Path1/Path2"].Codons[0].Type);
-			Assert.AreEqual("Sub2", plugin.Paths["/Path1/Path2"].Codons[0].Id);
+			Assert.AreEqual(1, plugin.Paths["/Path1/Path2"].Extensions.Count);
+			Assert.AreEqual("Extension2", plugin.Paths["/Path1/Path2"].Extensions[0].Type);
+			Assert.AreEqual("Sub2", plugin.Paths["/Path1/Path2"].Extensions[0].Id);
 		}
 		
 		[Test]
-		public void TestSubCodonsWithCondition()
+		public void TestSubExtensionsWithCondition()
 		{
 			string pluginText = @"
 <Plugin>
 	<Path name = '/Path1'>
 		<Condition name='Equal' string='a' equal='b'>
 			<Sub id='Path2'>
-				<Extension type='Codon2' id='Sub2'/>
+				<Extension type='Extension2' id='Sub2'/>
 			</Sub>
 		</Condition>
 	</Path>
@@ -180,16 +180,16 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			Plugin plugin = Plugin.Load(new StringReader(pluginText));
 			Assert.AreEqual(2, plugin.Paths.Count);
 			Assert.IsNotNull(plugin.Paths["/Path1"]);
-			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Sub", plugin.Paths["/Path1"].Codons[0].Type);
-			Assert.AreEqual("Path2", plugin.Paths["/Path1"].Codons[0].Id);
-			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons[0].Conditions.Length);
+			Assert.AreEqual(1, plugin.Paths["/Path1"].Extensions.Count);
+			Assert.AreEqual("Sub", plugin.Paths["/Path1"].Extensions[0].Type);
+			Assert.AreEqual("Path2", plugin.Paths["/Path1"].Extensions[0].Id);
+			Assert.AreEqual(1, plugin.Paths["/Path1"].Extensions[0].Conditions.Length);
 			
 			Assert.IsNotNull(plugin.Paths["/Path1/Path2"]);
-			Assert.AreEqual(1, plugin.Paths["/Path1/Path2"].Codons.Count);
-			Assert.AreEqual("Codon2", plugin.Paths["/Path1/Path2"].Codons[0].Type);
-			Assert.AreEqual("Sub2", plugin.Paths["/Path1/Path2"].Codons[0].Id);
-			Assert.AreEqual(0, plugin.Paths["/Path1/Path2"].Codons[0].Conditions.Length);
+			Assert.AreEqual(1, plugin.Paths["/Path1/Path2"].Extensions.Count);
+			Assert.AreEqual("Extension2", plugin.Paths["/Path1/Path2"].Extensions[0].Type);
+			Assert.AreEqual("Sub2", plugin.Paths["/Path1/Path2"].Extensions[0].Id);
+			Assert.AreEqual(0, plugin.Paths["/Path1/Path2"].Extensions[0].Conditions.Length);
 		}
 		
 		[Test]
@@ -207,16 +207,16 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			Assert.AreEqual(1, plugin.Paths.Count, "Paths != 1");
 			ExtensionPath path = plugin.Paths["/Path1"];
 			Assert.IsNotNull(path);
-			Assert.AreEqual(1, path.Codons.Count);
-			Extension codon = path.Codons[0];
-			Assert.AreEqual("Simple", codon.Type);
-			Assert.AreEqual("Simple", codon.Id);
-			Assert.AreEqual("a",      codon["attr"]);
-			Assert.AreEqual("b",      codon["attr2"]);
+			Assert.AreEqual(1, path.Extensions.Count);
+			Extension extension = path.Extensions[0];
+			Assert.AreEqual("Simple", extension.Type);
+			Assert.AreEqual("Simple", extension.Id);
+			Assert.AreEqual("a",      extension["attr"]);
+			Assert.AreEqual("b",      extension["attr2"]);
 			
 			// Test for condition.
-			Assert.AreEqual(1, codon.Conditions.Length);
-			Condition condition = codon.Conditions[0] as Condition;
+			Assert.AreEqual(1, extension.Conditions.Length);
+			Condition condition = extension.Conditions[0] as Condition;
 			Assert.IsNotNull(condition);
 			Assert.AreEqual("Equal", condition.Name);
 			Assert.AreEqual("a", condition["string"]);
@@ -244,37 +244,37 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			ExtensionPath path = plugin.Paths["/Path1"];
 			Assert.IsNotNull(path);
 			
-			Assert.AreEqual(3, path.Codons.Count);
-			Extension codon = path.Codons[0];
-			Assert.AreEqual("Simple", codon.Type);
-			Assert.AreEqual("Simple", codon.Id);
-			Assert.AreEqual("a",      codon["attr"]);
-			Assert.AreEqual("b",      codon["attr2"]);
+			Assert.AreEqual(3, path.Extensions.Count);
+			Extension extension = path.Extensions[0];
+			Assert.AreEqual("Simple", extension.Type);
+			Assert.AreEqual("Simple", extension.Id);
+			Assert.AreEqual("a",      extension["attr"]);
+			Assert.AreEqual("b",      extension["attr2"]);
 			
 			// Test for condition
-			Assert.AreEqual(2, codon.Conditions.Length);
-			Condition condition = codon.Conditions[1] as Condition;
+			Assert.AreEqual(2, extension.Conditions.Length);
+			Condition condition = extension.Conditions[1] as Condition;
 			Assert.IsNotNull(condition);
 			Assert.AreEqual("Equal", condition.Name);
 			Assert.AreEqual("a", condition["string"]);
 			Assert.AreEqual("b", condition["equal"]);
 			
-			condition = codon.Conditions[0] as Condition;
+			condition = extension.Conditions[0] as Condition;
 			Assert.IsNotNull(condition);
 			Assert.AreEqual("StackedCondition", condition.Name);
 			Assert.AreEqual("1", condition["string"]);
 			Assert.AreEqual("2", condition["equal"]);
 			
-			codon = path.Codons[1];
-			Assert.AreEqual(1, codon.Conditions.Length);
-			condition = codon.Conditions[0] as Condition;
+			extension = path.Extensions[1];
+			Assert.AreEqual(1, extension.Conditions.Length);
+			condition = extension.Conditions[0] as Condition;
 			Assert.IsNotNull(condition);
 			Assert.AreEqual("Equal", condition.Name);
 			Assert.AreEqual("a", condition["string"]);
 			Assert.AreEqual("b", condition["equal"]);
 			
-			codon = path.Codons[2];
-			Assert.AreEqual(0, codon.Conditions.Length);
+			extension = path.Extensions[2];
+			Assert.AreEqual(0, extension.Conditions.Length);
 			
 		}
 		
@@ -301,15 +301,15 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			Assert.AreEqual(1, plugin.Paths.Count);
 			ExtensionPath path = plugin.Paths["/Path1"];
 			Assert.IsNotNull(path);
-			Assert.AreEqual(1, path.Codons.Count);
-			Extension codon = path.Codons[0];
-			Assert.AreEqual("Simple", codon.Type);
-			Assert.AreEqual("Simple", codon.Id);
-			Assert.AreEqual("a",      codon["attr"]);
-			Assert.AreEqual("b",      codon["attr2"]);
+			Assert.AreEqual(1, path.Extensions.Count);
+			Extension extension = path.Extensions[0];
+			Assert.AreEqual("Simple", extension.Type);
+			Assert.AreEqual("Simple", extension.Id);
+			Assert.AreEqual("a",      extension["attr"]);
+			Assert.AreEqual("b",      extension["attr2"]);
 			
 			// Test for condition.
-			Assert.AreEqual(1, codon.Conditions.Length);
+			Assert.AreEqual(1, extension.Conditions.Length);
 		}
 		
 		#endregion
