@@ -18,7 +18,7 @@ namespace TickZoom.Loader
 	{
 		string      name;
 		Plugin       plugin;
-		List<Codon> codons = new List<Codon>();
+		List<Extension> codons = new List<Extension>();
 		
 		public Plugin Plugin {
 			get {
@@ -31,7 +31,7 @@ namespace TickZoom.Loader
 				return name;
 			}
 		}
-		public List<Codon> Codons {
+		public List<Extension> Codons {
 			get {
 				return codons;
 			}
@@ -62,7 +62,23 @@ namespace TickZoom.Loader
 						} else if (elementName == "ComplexCondition") {
 							conditionStack.Push(Condition.ReadComplexCondition(reader));
 						} else {
-							Codon newCodon = new Codon(extensionPath.Plugin, elementName, Properties.ReadFromAttributes(reader), conditionStack.ToArray());
+							Properties properties = Properties.ReadFromAttributes(reader);
+							string extensionType = "Class";
+							switch( elementName) {
+								case "Extension":
+									string type = properties["type"];
+									if( !string.IsNullOrEmpty(type)) {
+										extensionType = type;
+									}
+									break;
+								case "Sub":
+								case "Simple":
+									extensionType = elementName;
+									break;
+								default:
+									throw new ApplicationException("Unknown element '" + elementName + "'");
+							}
+							Extension newCodon = new Extension(extensionPath.Plugin, extensionType, properties, conditionStack.ToArray());
 							extensionPath.codons.Add(newCodon);
 							if (!reader.IsEmptyElement) {
 								ExtensionPath subPath = extensionPath.Plugin.GetExtensionPath(extensionPath.Name + "/" + newCodon.Id);

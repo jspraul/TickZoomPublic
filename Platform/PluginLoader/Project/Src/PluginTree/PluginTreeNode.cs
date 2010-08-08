@@ -17,7 +17,7 @@ namespace TickZoom.Loader
 	public sealed class PluginTreeNode
 	{
 		Dictionary<string, PluginTreeNode> childNodes = new Dictionary<string, PluginTreeNode>();
-		List<Codon> codons = new List<Codon>();
+		List<Extension> codons = new List<Extension>();
 		bool isSorted = false;
 		
 		/// <summary>
@@ -32,7 +32,7 @@ namespace TickZoom.Loader
 		/// <summary>
 		/// A list of child <see cref="Codon"/>s.
 		/// </summary>
-		public List<Codon> Codons {
+		public List<Extension> Codons {
 			get {
 				return codons;
 			}
@@ -62,16 +62,16 @@ namespace TickZoom.Loader
 		/// </summary>
 		sealed class TopologicalSort
 		{
-			List<Codon> codons;
+			List<Extension> codons;
 			bool[] visited;
-			List<Codon> sortedCodons;
+			List<Extension> sortedCodons;
 			Dictionary<string, int> indexOfName;
 			
-			public TopologicalSort(List<Codon> codons)
+			public TopologicalSort(List<Extension> codons)
 			{
 				this.codons = codons;
 				visited = new bool[codons.Count];
-				sortedCodons = new List<Codon>(codons.Count);
+				sortedCodons = new List<Extension>(codons.Count);
 				indexOfName = new Dictionary<string, int>(codons.Count);
 				// initialize visited to false and fill the indexOfName dictionary
 				for (int i = 0; i < codons.Count; ++i) {
@@ -100,7 +100,7 @@ namespace TickZoom.Loader
 				}
 			}
 			
-			public List<Codon> Execute()
+			public List<Extension> Execute()
 			{
 				InsertEdges();
 				
@@ -143,7 +143,7 @@ namespace TickZoom.Loader
 				codons = (new TopologicalSort(codons)).Execute();
 				isSorted = true;
 			}
-			foreach (Codon codon in codons) {
+			foreach (Extension codon in codons) {
 				ArrayList subItems = null;
 				if (childNodes.ContainsKey(codon.Id)) {
 					subItems = childNodes[codon.Id].BuildChildItems(caller);
@@ -157,7 +157,7 @@ namespace TickZoom.Loader
 				} else if (result is T) {
 					items.Add((T)result);
 				} else {
-					throw new InvalidCastException("The PluginTreeNode <" + codon.Name + " id='" + codon.Id
+					throw new InvalidCastException("The PluginTreeNode <" + codon.Type + " id='" + codon.Id
 					                               + "' returned an instance of " + result.GetType().FullName
 					                               + " but the type " + typeof(T).FullName + " is expected.");
 				}
@@ -176,7 +176,7 @@ namespace TickZoom.Loader
 				codons = (new TopologicalSort(codons)).Execute();
 				isSorted = true;
 			}
-			foreach (Codon codon in codons) {
+			foreach (Extension codon in codons) {
 				ArrayList subItems = null;
 				if (childNodes.ContainsKey(codon.Id)) {
 					subItems = childNodes[codon.Id].BuildChildItems(caller);
@@ -207,12 +207,12 @@ namespace TickZoom.Loader
 		/// </exception>
 		public object BuildChildItem(string childItemID, object caller, ArrayList subItems)
 		{
-			foreach (Codon codon in codons) {
+			foreach (Extension codon in codons) {
 				if (codon.Id == childItemID) {
 					return codon.BuildItem(caller, subItems);
 				}
 			}
-			throw new TreePathNotFoundException(childItemID);
+			throw new TreePathNotFoundException("The extension '" + childItemID + "' was not found at the path.");
 		}
 	}
 }

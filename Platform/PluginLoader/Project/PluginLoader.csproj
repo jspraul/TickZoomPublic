@@ -58,7 +58,7 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\PluginTree\Plugin\Plugin.cs" />
-    <Compile Include="Src\PluginTree\Plugin\Codon.cs" />
+    <Compile Include="Src\PluginTree\Plugin\Extension.cs" />
     <Compile Include="Src\PluginTree\Plugin\ComplexCondition.cs" />
     <Compile Include="Src\PluginTree\Plugin\Condition.cs" />
     <Compile Include="Src\PluginTree\Plugin\ExtensionPath.cs" />

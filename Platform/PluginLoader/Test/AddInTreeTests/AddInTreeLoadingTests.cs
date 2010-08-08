@@ -134,7 +134,7 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			Assert.AreEqual(1, plugin.Paths.Count);
 			Assert.IsNotNull(plugin.Paths["/Path1"]);
 			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Simple", plugin.Paths["/Path1"].Codons[0].Name);
+			Assert.AreEqual("Simple", plugin.Paths["/Path1"].Codons[0].Type);
 			Assert.AreEqual("Simple", plugin.Paths["/Path1"].Codons[0].Id);
 			Assert.AreEqual("a", plugin.Paths["/Path1"].Codons[0].Properties["attr"]);
 			Assert.AreEqual("b", plugin.Paths["/Path1"].Codons[0].Properties["attr2"]);
@@ -147,7 +147,7 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 <Plugin>
 	<Path name = '/Path1'>
 		<Sub id='Path2'>
-			<Codon2 id='Sub2'/>
+			<Extension type='Codon2' id='Sub2'/>
 		</Sub>
 	</Path>
 </Plugin>";
@@ -155,12 +155,12 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			Assert.AreEqual(2, plugin.Paths.Count);
 			Assert.IsNotNull(plugin.Paths["/Path1"]);
 			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Sub", plugin.Paths["/Path1"].Codons[0].Name);
+			Assert.AreEqual("Sub", plugin.Paths["/Path1"].Codons[0].Type);
 			Assert.AreEqual("Path2", plugin.Paths["/Path1"].Codons[0].Id);
 			
 			Assert.IsNotNull(plugin.Paths["/Path1/Path2"]);
 			Assert.AreEqual(1, plugin.Paths["/Path1/Path2"].Codons.Count);
-			Assert.AreEqual("Codon2", plugin.Paths["/Path1/Path2"].Codons[0].Name);
+			Assert.AreEqual("Codon2", plugin.Paths["/Path1/Path2"].Codons[0].Type);
 			Assert.AreEqual("Sub2", plugin.Paths["/Path1/Path2"].Codons[0].Id);
 		}
 		
@@ -172,7 +172,7 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 	<Path name = '/Path1'>
 		<Condition name='Equal' string='a' equal='b'>
 			<Sub id='Path2'>
-				<Codon2 id='Sub2'/>
+				<Extension type='Codon2' id='Sub2'/>
 			</Sub>
 		</Condition>
 	</Path>
@@ -181,13 +181,13 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			Assert.AreEqual(2, plugin.Paths.Count);
 			Assert.IsNotNull(plugin.Paths["/Path1"]);
 			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Sub", plugin.Paths["/Path1"].Codons[0].Name);
+			Assert.AreEqual("Sub", plugin.Paths["/Path1"].Codons[0].Type);
 			Assert.AreEqual("Path2", plugin.Paths["/Path1"].Codons[0].Id);
 			Assert.AreEqual(1, plugin.Paths["/Path1"].Codons[0].Conditions.Length);
 			
 			Assert.IsNotNull(plugin.Paths["/Path1/Path2"]);
 			Assert.AreEqual(1, plugin.Paths["/Path1/Path2"].Codons.Count);
-			Assert.AreEqual("Codon2", plugin.Paths["/Path1/Path2"].Codons[0].Name);
+			Assert.AreEqual("Codon2", plugin.Paths["/Path1/Path2"].Codons[0].Type);
 			Assert.AreEqual("Sub2", plugin.Paths["/Path1/Path2"].Codons[0].Id);
 			Assert.AreEqual(0, plugin.Paths["/Path1/Path2"].Codons[0].Conditions.Length);
 		}
@@ -208,8 +208,8 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			ExtensionPath path = plugin.Paths["/Path1"];
 			Assert.IsNotNull(path);
 			Assert.AreEqual(1, path.Codons.Count);
-			Codon codon = path.Codons[0];
-			Assert.AreEqual("Simple", codon.Name);
+			Extension codon = path.Codons[0];
+			Assert.AreEqual("Simple", codon.Type);
 			Assert.AreEqual("Simple", codon.Id);
 			Assert.AreEqual("a",      codon["attr"]);
 			Assert.AreEqual("b",      codon["attr2"]);
@@ -234,9 +234,9 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			<Condition name='StackedCondition' string='1' equal='2'>
 				<Simple id ='Simple' attr='a' attr2='b'/>
 			</Condition>
-			<Simple id ='Simple2' attr='a' attr2='b'/>
+			<Extension factory='Simple' id ='Simple2' attr='a' attr2='b'/>
 		</Condition>
-			<Simple id ='Simple3' attr='a' attr2='b'/>
+			<Extension factory='Simple' id ='Simple3' attr='a' attr2='b'/>
 	</Path>
 </Plugin>";
 			Plugin plugin = Plugin.Load(new StringReader(pluginText));
@@ -245,8 +245,8 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			Assert.IsNotNull(path);
 			
 			Assert.AreEqual(3, path.Codons.Count);
-			Codon codon = path.Codons[0];
-			Assert.AreEqual("Simple", codon.Name);
+			Extension codon = path.Codons[0];
+			Assert.AreEqual("Simple", codon.Type);
 			Assert.AreEqual("Simple", codon.Id);
 			Assert.AreEqual("a",      codon["attr"]);
 			Assert.AreEqual("b",      codon["attr2"]);
@@ -293,7 +293,7 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 					<Condition name='Equal' string='a' equal='b'/>
 				</Or>
 			</And>
-			<Simple id ='Simple' attr='a' attr2='b'/>
+			<Simple id='Simple' attr='a' attr2='b'/>
 		</ComplexCondition>
 	</Path>
 </Plugin>";
@@ -302,8 +302,8 @@ namespace TickZoom.Loader.PluginTreeTests.Tests
 			ExtensionPath path = plugin.Paths["/Path1"];
 			Assert.IsNotNull(path);
 			Assert.AreEqual(1, path.Codons.Count);
-			Codon codon = path.Codons[0];
-			Assert.AreEqual("Simple", codon.Name);
+			Extension codon = path.Codons[0];
+			Assert.AreEqual("Simple", codon.Type);
 			Assert.AreEqual("Simple", codon.Id);
 			Assert.AreEqual("a",      codon["attr"]);
 			Assert.AreEqual("b",      codon["attr2"]);

@@ -60,7 +60,7 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(object caller, Extension codon, ArrayList subItems)
 		{
 			return new MenuItemDescriptor(caller, codon, subItems);
 		}
@@ -73,13 +73,13 @@ namespace TickZoom.Loader
 	public sealed class MenuItemDescriptor
 	{
 		public readonly object Caller;
-		public readonly Codon Codon;
+		public readonly Extension Extension;
 		public readonly IList SubItems;
 		
-		public MenuItemDescriptor(object caller, Codon codon, IList subItems)
+		public MenuItemDescriptor(object caller, Extension extension, IList subItems)
 		{
 			this.Caller = caller;
-			this.Codon = codon;
+			this.Extension = extension;
 			this.SubItems = subItems;
 		}
 	}

@@ -276,7 +276,7 @@ namespace TickZoom.Loader
 								SetupPlugin(reader, plugin, hintPath);
 								break;
 							default:
-								throw new PluginLoadException("Unknown add-in file.");
+								throw new PluginLoadException("Expected element \"Plugin\" at line " + reader.LineNumber + ".");
 						}
 					}
 				}

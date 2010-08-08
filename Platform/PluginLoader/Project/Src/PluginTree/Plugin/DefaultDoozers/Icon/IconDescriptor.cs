@@ -11,7 +11,7 @@ namespace TickZoom.Loader
 {
 	public class IconDescriptor 
 	{
-		Codon codon;
+		Extension codon;
 		
 		public string Id {
 			get {
@@ -37,7 +37,7 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public IconDescriptor(Codon codon)
+		public IconDescriptor(Extension codon)
 		{
 			this.codon = codon;
 		}

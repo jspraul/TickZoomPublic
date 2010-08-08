@@ -14,16 +14,16 @@ namespace TickZoom.Loader
 	/// <summary>
 	/// Represents a node in the add in tree that can produce an item.
 	/// </summary>
-	public class Codon
+	public class Extension
 	{
 		Plugin       plugin;
-		string      name;
+		string      type;
 		Properties  properties;
 		ICondition[] conditions;
 		
-		public string Name {
+		public string Type {
 			get {
-				return name;
+				return type;
 			}
 		}
 		
@@ -81,10 +81,10 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public Codon(Plugin plugin, string name, Properties properties, ICondition[] conditions)
+		public Extension(Plugin plugin, string type, Properties properties, ICondition[] conditions)
 		{
 			this.plugin      = plugin;
-			this.name       = name;
+			this.type       = type;
 			this.properties = properties;
 			this.conditions = conditions;
 		}
@@ -105,8 +105,8 @@ namespace TickZoom.Loader
 		public object BuildItem(object owner, ArrayList subItems)
 		{
 			IDoozer doozer;
-			if (!PluginTree.Doozers.TryGetValue(Name, out doozer))
-				throw new CoreException("Doozer " + Name + " not found!");
+			if (!PluginTree.Doozers.TryGetValue(Type, out doozer))
+				throw new CoreException("Doozer " + Type + " not found!");
 			
 			if (!doozer.HandleConditions && conditions.Length > 0) {
 				ConditionFailedAction action = GetFailedAction(owner);
@@ -120,7 +120,7 @@ namespace TickZoom.Loader
 		public override string ToString()
 		{
 			return String.Format("[Codon: name = {0}, plugin={1}]",
-			                     name,
+			                     type,
 			                     plugin.FileName);
 		}
 	}

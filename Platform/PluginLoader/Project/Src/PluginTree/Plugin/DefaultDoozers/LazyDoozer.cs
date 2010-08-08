@@ -55,7 +55,7 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(object caller, Extension codon, ArrayList subItems)
 		{
 			IDoozer doozer = (IDoozer)plugin.CreateObject(className);
 			if (doozer == null) {

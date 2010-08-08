@@ -117,7 +117,23 @@ namespace TickZoom.Loader
 				Assembly asm = LoadedAssembly;
 				if (asm == null)
 					return null;
-				return asm.CreateInstance(instance);
+				object result = asm.CreateInstance(instance);
+				if( result != null) {
+					return result;
+				}
+				List<Type> found = new List<Type>();
+				foreach( Type type in asm.GetTypes()) {
+					if( type.Name == instance) {
+						found.Add(type);
+					}
+				}
+				if( found.Count == 1) {
+					return asm.CreateInstance(found[0].FullName);
+				} else {
+					LoggingService.Error("Found multiple classes named " + instance + " in " + assembly );
+					return null;
+				}
+				return null;
 			} else {
 				return null;
 			}

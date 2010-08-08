@@ -1,0 +1,15 @@
+﻿<AddIn name        = "TestPlugin"
+       author      = "Wayne Walter"
+       url         = ""
+       description = "TODO: Put description here">
+	
+	<Runtime>
+		<Import assembly = "TestPlugin.dll"/>
+	</Runtime>
+	
+	<!-- Extend the SharpDevelop AddIn-Tree like this:
+	<Path name = ...>
+		<.../>
+	</Path>
+	-->
+</AddIn>

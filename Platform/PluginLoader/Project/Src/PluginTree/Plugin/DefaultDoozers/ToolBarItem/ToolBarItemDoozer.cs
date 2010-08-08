@@ -52,7 +52,7 @@ namespace TickZoom.Loader
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(object caller, Extension codon, ArrayList subItems)
 		{
 			return new ToolbarItemDescriptor(caller, codon, subItems);
 		}
@@ -65,13 +65,13 @@ namespace TickZoom.Loader
 	public sealed class ToolbarItemDescriptor
 	{
 		public readonly object Caller;
-		public readonly Codon Codon;
+		public readonly Extension Extension;
 		public readonly IList SubItems;
 		
-		public ToolbarItemDescriptor(object caller, Codon codon, IList subItems)
+		public ToolbarItemDescriptor(object caller, Extension codon, IList subItems)
 		{
 			this.Caller = caller;
-			this.Codon = codon;
+			this.Extension = codon;
 			this.SubItems = subItems;
 		}
 	}

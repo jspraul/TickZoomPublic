@@ -32,6 +32,8 @@ using TickZoom.Api;
 
 namespace TickZoom.Utilities
 {
+
+	
 	[TestFixture]
 	public class AutoUpdateTest
 	{

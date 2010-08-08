@@ -172,7 +172,7 @@ namespace TickZoom.Loader
 			string parent = path.Substring(0, pos);
 			string child = path.Substring(pos + 1);
 			PluginTreeNode node = GetTreeNode(parent);
-			return node.BuildChildItem(child, caller, new ArrayList(BuildItems<object>(path, caller, false)));
+			return node.BuildChildItem(child, caller, new ArrayList(BuildItems<object>(parent, caller, false)));
 		}
 		
 		/// <summary>
@@ -225,7 +225,7 @@ namespace TickZoom.Loader
 		static void AddExtensionPath(ExtensionPath path)
 		{
 			PluginTreeNode treePath = CreatePath(rootNode, path.Name);
-			foreach (Codon codon in path.Codons) {
+			foreach (Extension codon in path.Codons) {
 				treePath.Codons.Add(codon);
 			}
 		}

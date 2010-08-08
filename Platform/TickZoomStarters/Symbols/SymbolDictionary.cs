@@ -322,6 +322,7 @@ namespace TickZoom.Symbols
       <symbol name=""Daily4Test"" />
       <symbol name=""TXF"" />
       <symbol name=""spyTestBars"" />
+      <symbol name=""ErrorTest"" />
     </category>
   </category>
   <category name=""Forex"">

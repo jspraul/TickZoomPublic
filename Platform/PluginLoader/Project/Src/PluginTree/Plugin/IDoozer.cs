@@ -29,6 +29,6 @@ namespace TickZoom.Loader
 		/// <param name="codon">The codon to build.</param>
 		/// <param name="subItems">The list of objects created by (other) doozers for the sub items.</param>
 		/// <returns>The constructed item.</returns>
-		object BuildItem(object caller, Codon codon, ArrayList subItems);
+		object BuildItem(object caller, Extension codon, ArrayList subItems);
 	}
 }
