@@ -85,9 +85,9 @@ namespace TickZoom.Loader
 					loadedAssembly.GetExportedTypes();
 					#endif
 				} catch (FileNotFoundException ex) {
-					MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
+					LoggingService.Error("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
 				} catch (FileLoadException ex) {
-					MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
+					LoggingService.Error("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
 				}
 			}
 		}

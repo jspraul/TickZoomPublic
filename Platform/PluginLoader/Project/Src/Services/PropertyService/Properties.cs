@@ -321,7 +321,7 @@ namespace TickZoom.Loader
 					try {
 						o = c.ConvertFromInvariantString(o.ToString());
 					} catch (Exception ex) {
-						MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
+						LoggingService.Warn("Error loading property '" + property + "': " + ex.Message);
 						o = defaultValue;
 					}
 					properties[property] = o; // store for future look up
@@ -338,7 +338,7 @@ namespace TickZoom.Loader
 						}
 						o = arr;
 					} catch (Exception ex) {
-						MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
+						LoggingService.Warn("Error loading property '" + property + "': " + ex.Message);
 						o = defaultValue;
 					}
 					properties[property] = o; // store for future look up
@@ -353,7 +353,7 @@ namespace TickZoom.Loader
 					try {
 						o = ((SerializedValue)o).Deserialize<T>();
 					} catch (Exception ex) {
-						MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
+						LoggingService.Warn("Error loading property '" + property + "': " + ex.Message);
 						o = defaultValue;
 					}
 					properties[property] = o; // store for future look up

@@ -27,15 +27,5 @@ namespace TickZoom.Loader.Services
 			}
 		}
 		
-		static IMessageService messageService = new TextWriterMessageService(Console.Out);
-		
-		public static IMessageService MessageService {
-			get { return messageService; }
-			set {
-				if (value == null)
-					throw new ArgumentNullException();
-				messageService = value;
-			}
-		}
 	}
 }

@@ -100,8 +100,6 @@ namespace TickZoom.Loader
 				throw new ArgumentNullException("applicationName");
 			this.applicationName = applicationName;
 			propertiesName = applicationName + "Properties";
-			MessageService.DefaultMessageBoxTitle = applicationName;
-			MessageService.ProductName = applicationName;
 		}
 		
 		/// <summary>
@@ -187,7 +185,7 @@ namespace TickZoom.Loader
 					command.Run();
 				} catch (Exception ex) {
 					// allow startup to continue if some commands fail
-					MessageService.ShowError(ex);
+					LoggingService.Error("Error during autostart: " + ex.Message, ex);
 				}
 			}
 		}

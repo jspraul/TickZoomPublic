@@ -356,13 +356,6 @@ namespace TickZoom.Loader
 					plugin = Plugin.Load(fileName);
 				} catch (PluginLoadException ex) {
 					LoggingService.Error(ex);
-					if (ex.InnerException != null) {
-						MessageService.ShowError("Error loading Plugin " + fileName + ":\n"
-						                         + ex.InnerException.Message);
-					} else {
-						MessageService.ShowError("Error loading Plugin " + fileName + ":\n"
-						                         + ex.Message);
-					}
 					plugin = new Plugin();
 					plugin.pluginFileName = fileName;
 					plugin.CustomErrorMessage = ex.Message;
@@ -383,7 +376,7 @@ namespace TickZoom.Loader
 				if (plugin.Enabled) {
 					foreach (KeyValuePair<string, Version> pair in plugin.Manifest.Identities) {
 						if (dict.ContainsKey(pair.Key)) {
-							MessageService.ShowError("Name '" + pair.Key + "' is used by " +
+							LoggingService.Error("Name '" + pair.Key + "' is used by " +
 							                         "'" + pluginDict[pair.Key].FileName + "' and '" + fileName + "'");
 							plugin.Enabled = false;
 							plugin.Action = PluginAction.InstalledTwice;
@@ -405,7 +398,7 @@ namespace TickZoom.Loader
 				
 				foreach (PluginReference reference in plugin.Manifest.Conflicts) {
 					if (reference.Check(dict, out versionFound)) {
-						MessageService.ShowError(plugin.Name + " conflicts with " + reference.ToString()
+						LoggingService.Error(plugin.Name + " conflicts with " + reference.ToString()
 						                         + " and has been disabled.");
 						DisableAddin(plugin, dict, pluginDict);
 						goto checkDependencies; // after removing one addin, others could break
@@ -414,11 +407,11 @@ namespace TickZoom.Loader
 				foreach (PluginReference reference in plugin.Manifest.Dependencies) {
 					if (!reference.Check(dict, out versionFound)) {
 						if (versionFound != null) {
-							MessageService.ShowError(plugin.Name + " has not been loaded because it requires "
+							LoggingService.Error(plugin.Name + " has not been loaded because it requires "
 							                         + reference.ToString() + ", but version "
 							                         + versionFound.ToString() + " is installed.");
 						} else {
-							MessageService.ShowError(plugin.Name + " has not been loaded because it requires "
+							LoggingService.Error(plugin.Name + " has not been loaded because it requires "
 							                         + reference.ToString() + ".");
 						}
 						DisableAddin(plugin, dict, pluginDict);
@@ -430,9 +423,7 @@ namespace TickZoom.Loader
 				try {
 					InsertPlugin(plugin);
 				} catch (PluginLoadException ex) {
-					LoggingService.Error(ex);
-					MessageService.ShowError("Error loading Plugin " + plugin.FileName + ":\n"
-					                         + ex.Message);
+					LoggingService.Error("Error loading Plugin " + plugin.FileName + ":" + ex.Message,ex);
 				}
 			}
 		}

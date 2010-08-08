@@ -148,9 +148,9 @@ namespace TickZoom.Loader
 					Directory.Delete(targetDir, true);
 				} catch (Exception ex) {
 					disabled.Add(pluginName);
-					MessageService.ShowError("Error removing " + pluginName + ":\n" +
+					LoggingService.Error("Error removing " + pluginName + ":\n" +
 					                         ex.Message + "\nThe Plugin will be " +
-					                         "removed on the next start of " + MessageService.ProductName +
+					                         "removed on the next start " +
 					                         " and is disabled for now.");
 					return false;
 				}

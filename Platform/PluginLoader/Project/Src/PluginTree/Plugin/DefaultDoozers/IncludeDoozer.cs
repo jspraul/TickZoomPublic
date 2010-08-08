@@ -51,7 +51,7 @@ namespace TickZoom.Loader
 				// include path (=multiple items)
 				return new IncludeReturnItem(caller, path);
 			} else {
-				MessageService.ShowMessage("<Include> requires the attribute 'item' (to include one item) or the attribute 'path' (to include multiple items)");
+				LoggingService.Error("<Include> requires the attribute 'item' (to include one item) or the attribute 'path' (to include multiple items)");
 				return null;
 			}
 		}
@@ -76,7 +76,7 @@ namespace TickZoom.Loader
 						items.Add(o);
 					}
 				} catch (TreePathNotFoundException) {
-					MessageService.ShowError("IncludeDoozer: AddinTree-Path not found: " + path);
+					LoggingService.Error("IncludeDoozer: AddinTree-Path not found: " + path);
 				}
 			}
 		}

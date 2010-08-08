@@ -169,7 +169,7 @@ namespace TickZoom.Loader
 			if (propertyName.Equals("TIME", StringComparison.OrdinalIgnoreCase))
 				return DateTime.Now.ToShortTimeString();
 			if (propertyName.Equals("ProductName", StringComparison.OrdinalIgnoreCase))
-				return MessageService.ProductName;
+				return PropertyService.ProductName;
 			if (propertyName.Equals("GUID", StringComparison.OrdinalIgnoreCase))
 				return Guid.NewGuid().ToString().ToUpperInvariant();
 			

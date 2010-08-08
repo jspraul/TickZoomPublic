@@ -454,7 +454,7 @@ namespace TickZoom.Loader
 		public static bool TestFileExists(string filename)
 		{
 			if (!File.Exists(filename)) {
-				MessageService.ShowWarning(StringParser.Parse("${res:Fileutility.CantFindFileError}", new string[,] { {"FILE",  filename} }));
+				LoggingService.Warn(StringParser.Parse("${res:Fileutility.CantFindFileError}", new string[,] { {"FILE",  filename} }));
 				return false;
 			}
 			return true;
@@ -534,145 +534,7 @@ namespace TickZoom.Loader
 			}
 			return false;
 		}
-
-		// Observe SAVE functions
-		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, string fileName, string message, FileErrorPolicy policy)
-		{
-			System.Diagnostics.Debug.Assert(IsValidPath(fileName));
-			try {
-				saveFile();
-				RaiseFileSaved(new FileNameEventArgs(fileName));
-				return FileOperationResult.OK;
-			} catch (Exception e) {
-				switch (policy) {
-					case FileErrorPolicy.Inform:
-						ServiceManager.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
-						break;
-					case FileErrorPolicy.ProvideAlternative:
-						ChooseSaveErrorResult r = ServiceManager.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, false);
-						if (r.IsRetry) {
-							return ObservedSave(saveFile, fileName, message, policy);
-						} else if (r.IsIgnore) {
-							return FileOperationResult.Failed;
-						}
-						break;
-				}
-			}
-			return FileOperationResult.Failed;
-		}
-		
-		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, string fileName, FileErrorPolicy policy)
-		{
-			return ObservedSave(saveFile,
-			                    fileName,
-			                    ResourceService.GetString("TickZoom.Services.FileUtilityService.CantSaveFileStandardText"),
-			                    policy);
-		}
-		
-		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, string fileName)
-		{
-			return ObservedSave(saveFile, fileName, FileErrorPolicy.Inform);
-		}
-		
-		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy)
-		{
-			System.Diagnostics.Debug.Assert(IsValidPath(fileName));
-			try {
-				string directory = Path.GetDirectoryName(fileName);
-				if (!Directory.Exists(directory)) {
-					Directory.CreateDirectory(directory);
-				}
-				saveFileAs(fileName);
-				RaiseFileSaved(new FileNameEventArgs(fileName));
-				return FileOperationResult.OK;
-			} catch (Exception e) {
-				switch (policy) {
-					case FileErrorPolicy.Inform:
-						ServiceManager.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
-						break;
-					case FileErrorPolicy.ProvideAlternative:
-						ChooseSaveErrorResult r = ServiceManager.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, true);
-						if (r.IsRetry) {
-							return ObservedSave(saveFileAs, fileName, message, policy);
-						} else if (r.IsIgnore) {
-							return FileOperationResult.Failed;
-						} else if (r.IsSaveAlternative) {
-							return ObservedSave(saveFileAs, r.AlternativeFileName, message, policy);
-						}
-						break;
-				}
-			}
-			return FileOperationResult.Failed;
-		}
-		
-		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, string fileName, FileErrorPolicy policy)
-		{
-			return ObservedSave(saveFileAs,
-			                    fileName,
-			                    ResourceService.GetString("TickZoom.Services.FileUtilityService.CantSaveFileStandardText"),
-			                    policy);
-		}
-		
-		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, string fileName)
-		{
-			return ObservedSave(saveFileAs, fileName, FileErrorPolicy.Inform);
-		}
-		
-		// Observe LOAD functions
-		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, string fileName, string message, FileErrorPolicy policy)
-		{
-			try {
-				loadFile();
-				OnFileLoaded(new FileNameEventArgs(fileName));
-				return FileOperationResult.OK;
-			} catch (Exception e) {
-				switch (policy) {
-					case FileErrorPolicy.Inform:
-						ServiceManager.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e);
-						break;
-					case FileErrorPolicy.ProvideAlternative:
-						ChooseSaveErrorResult r = ServiceManager.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e, false);
-						if (r.IsRetry)
-							return ObservedLoad(loadFile, fileName, message, policy);
-						else if (r.IsIgnore)
-							return FileOperationResult.Failed;
-						break;
-				}
-			}
-			return FileOperationResult.Failed;
-		}
-		
-		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, string fileName, FileErrorPolicy policy)
-		{
-			return ObservedLoad(loadFile,
-			                    fileName,
-			                    ResourceService.GetString("TickZoom.Services.FileUtilityService.CantLoadFileStandardText"),
-			                    policy);
-		}
-		
-		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, string fileName)
-		{
-			return ObservedLoad(loadFile, fileName, FileErrorPolicy.Inform);
-		}
-		
-		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy)
-		{
-			return ObservedLoad(new FileOperationDelegate(delegate { saveFileAs(fileName); }), fileName, message, policy);
-		}
-		
-		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, string fileName, FileErrorPolicy policy)
-		{
-			return ObservedLoad(saveFileAs,
-			                    fileName,
-			                    ResourceService.GetString("TickZoom.Services.FileUtilityService.CantLoadFileStandardText"),
-			                    policy);
-		}
-		
-		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, string fileName)
-		{
-			return ObservedLoad(saveFileAs, fileName, FileErrorPolicy.Inform);
-		}
-		
+				
 		static void OnFileLoaded(FileNameEventArgs e)
 		{
 			if (FileLoaded != null) {

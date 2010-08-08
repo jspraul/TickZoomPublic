@@ -36,11 +36,9 @@ namespace TickZoom.Loader
 					return o;
 				}
 			}
-			if (hasShownErrorMessage) {
-				LoggingService.Error("Cannot create object: " + className);
-			} else {
+			if (!hasShownErrorMessage) {
 				hasShownErrorMessage = true;
-				MessageService.ShowError("Cannot create object: " + className + "\nFuture missing objects will not cause an error message.");
+				LoggingService.Error("Cannot create object: " + className + "\nFuture missing objects will not cause an error message.");
 			}
 			return null;
 		}

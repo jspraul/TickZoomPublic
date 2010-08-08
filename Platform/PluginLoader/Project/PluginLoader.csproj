@@ -87,9 +87,6 @@
     <Compile Include="Src\Services\FileUtility\FileUtility.Minimal.cs" />
     <Compile Include="Src\Services\LoggingService\TextWriterLoggingService.cs" />
     <Compile Include="Src\Services\LoggingService\ILoggingService.cs" />
-    <Compile Include="Src\Services\MessageService\TextWriterMessageService.cs" />
-    <Compile Include="Src\Services\MessageService\IMessageService.cs" />
-    <Compile Include="Src\Services\MessageService\MessageService.cs" />
     <Compile Include="Src\Services\PropertyService\Properties.cs" />
     <Compile Include="Src\Services\PropertyService\PropertyChangedEvent.cs" />
     <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
@@ -113,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\AutoUpdate" />
+    <Folder Include="Src\Services\FileUtility" />
     <Folder Include="Src\Services\LoggingService" />
     <Folder Include="Src\Services\FactoryService" />
     <Folder Include="Src\Services\ResourceService" />

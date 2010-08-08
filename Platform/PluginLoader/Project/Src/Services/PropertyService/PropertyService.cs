@@ -20,6 +20,12 @@ namespace TickZoom.Loader
 		
 		static string configDirectory;
 		static string dataDirectory;
+		static string productName;
+		
+		public static string ProductName {
+			get { return productName; }
+			set { productName = value; }
+		}
 		
 		static Properties properties;
 		
@@ -104,7 +110,7 @@ namespace TickZoom.Loader
 					}
 				}
 			} catch (XmlException ex) {
-				MessageService.ShowError("Error loading properties: " + ex.Message + "\nSettings have been restored to default values.");
+				LoggingService.Error("Error loading properties: " + ex.Message + "\nSettings have been restored to default values.");
 			}
 			return false;
 		}
