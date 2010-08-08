@@ -50,6 +50,7 @@ namespace TickZoom
    		DateTime startTime = new DateTime(2003,1,1); 
    		DateTime endTime = DateTime.Now;
 		Dictionary<int,Progress> progressChildren = new Dictionary<int,Progress>();
+		bool enableAlarmSounds = false;
 		Log log;
 		
         Interval initialInterval;
@@ -194,7 +195,7 @@ namespace TickZoom
 	            	while(  !stopMessages && log.HasLine) {
 		            	try {
 	            			var message = log.ReadLine();
-	            			if( message.IsAudioAlarm) {
+	            			if( enableAlarmSounds && message.IsAudioAlarm) {
 	            				StartAlarm();
 	            			}
 	            			Echo(message.MessageObject.ToString());
@@ -454,9 +455,10 @@ namespace TickZoom
     		starter.ProjectProperties.Starter.StartTime = (TimeStamp) startTime;
     		starter.BackgroundWorker = bw;
     		if( !disableChartsCheckBox.Checked) {
-    			log.Notice("You have the \"disable charts\" check box enabled.");
 	    		starter.CreateChartCallback = new CreateChartCallback(CreateChartInvoke);
     			starter.ShowChartCallback = new ShowChartCallback(ShowChartInvoke);
+    		} else {
+    			log.Notice("You have the \"disable charts\" check box enabled.");
     		}
 	    	starter.ProjectProperties.Chart.ChartType = chartType;
 	    	starter.ProjectProperties.Starter.SetSymbols(txtSymbol.Text);
@@ -478,6 +480,7 @@ namespace TickZoom
 		public void RealTime(BackgroundWorker bw)
 		{
         	Starter starter = Factory.Starter.RealTimeStarter();
+        	enableAlarmSounds = true;
     		SetupStarter(starter,bw);
 		}
 		
@@ -519,9 +522,9 @@ namespace TickZoom
 				throw new ApplicationException(taskException.Message,taskException);
 			}
 		}
-		
         void ProcessWorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+        	enableAlarmSounds = false;
         	taskException = e.Error;
 			if(taskException !=null)
 			{ 

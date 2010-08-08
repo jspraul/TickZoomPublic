@@ -28,7 +28,16 @@ using System;
 
 namespace TickZoom.Api
 {
+	public enum MessageLevel {
+		Trace,
+		Debug,
+		Info,
+		Notice,
+		Warning,
+		Error
+	}
 	public class ErrorDetail {
+		public MessageLevel Level;
 		public string ErrorMessage;
 	}
 }
