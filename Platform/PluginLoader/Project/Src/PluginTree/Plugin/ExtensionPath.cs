@@ -73,6 +73,8 @@ namespace TickZoom.Loader
 									break;
 								case "Sub":
 								case "Simple":
+								case "String":
+								case "Include":
 									extensionType = elementName;
 									break;
 								default:

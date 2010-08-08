@@ -72,18 +72,7 @@
     <Compile Include="Src\PluginTree\Plugin\DefaultConditionEvaluators\LazyConditionEvaluator.cs" />
     <Compile Include="Src\PluginTree\Plugin\DefaultConditionEvaluators\OwnerStateConditionEvaluator.cs" />
     <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\ClassDoozer.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\FileFilterDoozer.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\Icon\IconDescriptor.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\Icon\IconDoozer.cs" />
     <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\LazyDoozer.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\MenuItem\AbstractCheckableMenuCommand.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\MenuItem\AbstractMenuCommand.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\MenuItem\ICheckableMenuCommand.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\MenuItem\IMenuCommand.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\MenuItem\MenuItemDoozer.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\ToolBarItem\AbstractComboBoxCommand.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\ToolBarItem\IComboBoxCommand.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\ToolBarItem\ToolBarItemDoozer.cs" />
     <Compile Include="Src\PluginTree\PluginTree.cs" />
     <Compile Include="Src\PluginTree\PluginTreeNode.cs" />
     <Compile Include="Src\PluginTree\PluginAction.cs" />
@@ -121,8 +110,6 @@
     <Compile Include="Src\PluginTree\PluginManager.cs" />
     <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\StringDoozer.cs" />
     <Compile Include="Src\Util\AppDomainLaunchHelper.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\ToolBarItem\AbstractTextBoxCommand.cs" />
-    <Compile Include="Src\PluginTree\Plugin\DefaultDoozers\ToolBarItem\ITextBoxCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\AutoUpdate" />
