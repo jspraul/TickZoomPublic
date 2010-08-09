@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-        <DontImportPostSharp>True</DontImportPostSharp>
-        <SkipPostSharp>false</SkipPostSharp>
-        <PostSharpDirectory>C:\Local\TickZoom\Project\EngineTools\1.0\PostSharp 2.0\</PostSharpDirectory>
-        <PostSharpLicenseKey>
-		16801-AEE2WQQQAEQEQXKCA4LKNBAW7CUUXMHRB4ZZQQEAEAHUQSVFZMJFDB273U6L2JF65H79PY3UL7CK94QURTVRE2GUGFDLD6BAY2EZLXRXSPZQTP2
-	</PostSharpLicenseKey>
-   </PropertyGroup>
+        <SkipPostSharp>true</SkipPostSharp>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(AssemblyName)' == 'TickZoomLogging'">
         <SkipPostSharp>true</SkipPostSharp>
   </PropertyGroup>
@@ -29,13 +24,19 @@
   <PropertyGroup Condition=" '$(AssemblyName)' == 'ZedGraph'">
         <SkipPostSharp>true</SkipPostSharp>
   </PropertyGroup>
-  <Import Project="$(PostSharpDirectory)PostSharp.targets" />
+  <PropertyGroup Condition=" '$(SkipPostSharp)' == 'true' ">
+       <DefineConstants>$(DefineConstants);SkipPostSharp</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(SkipPostSharp)' != 'true' ">
+        <PostSharpDirectory>C:\Local\TickZoom\Project\EngineTools\1.0\PostSharp 2.0\</PostSharpDirectory>
+        <PostSharpLicenseKey>
+		16801-AEE2WQQQAEQEQXKCA4LKNBAW7CUUXMHRB4ZZQQEAEAHUQSVFZMJFDB273U6L2JF65H79PY3UL7CK94QURTVRE2GUGFDLD6BAY2EZLXRXSPZQTP2
+	</PostSharpLicenseKey>
+  </PropertyGroup>
+  <Import Condition=" '$(SkipPostSharp)' != 'true' " Project="$(PostSharpDirectory)PostSharp.targets" />
   <ItemGroup Condition=" '$(SkipPostSharp)' != 'true' ">
        <Reference Include="PostSharp">
            <HintPath>$(PostSharpDirectory)Reference Assemblies\.NET Framework 2.0\PostSharp.dll</HintPath>
        </Reference>
-       <!--Reference Include="PostSharp.Laos">
-           <HintPath>$(PostSharpDirectory)\Reference Assemblies\.NET Framework 2.0\PostSharp.Laos.dll</HintPath>
-       </Reference-->
    </ItemGroup>
 </Project>

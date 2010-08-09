@@ -43,10 +43,34 @@ namespace TickZoom.Api
 		private static Dictionary<DiagramObject,DiagramInstance> instances;
 		private static object locker = new object();
 		private static Dictionary<Type,int> instanceCounters;
+		private static string appName;
 		
 		public static void AddAspect(DiagramAttribute aspect) {
 			lock( locker) {
 				diagramAspects.Add(aspect);
+			}
+		}
+		
+		public static string AppAbbreviation {
+			get {
+				if( appName == null) {
+				 	var assembly = Assembly.GetEntryAssembly();
+				 	if( assembly == null) {
+				 		appName = null;	
+				 	} else {
+					 	var assemblyName = assembly.GetName();
+				 		string name = assemblyName.Name;
+				 		name = name.Replace("TickZoom","");
+				 		appName = "";
+				 		foreach( var ch in name.ToCharArray()) {
+				 			if( char.IsUpper(ch)) {
+				 				appName += ch;
+				 			}
+				 		}
+			 			appName = appName.ToLower();
+				 	}
+				}
+				return appName;
 			}
 		}
 		
@@ -93,6 +117,9 @@ namespace TickZoom.Api
 	    			type = _object.GetType();
 	    			typeName = GetTypeName(type);
 	    			fullName = type.FullName;
+	    		}
+	    		if( AppAbbreviation != null) {
+		    		typeName = AppAbbreviation+":"+typeName;
 	    		}
 	    		callee = new DiagramInstance(typeName,fullName);
 	    		if( !(_object is Type)) {

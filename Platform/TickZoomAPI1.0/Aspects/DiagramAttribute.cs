@@ -52,7 +52,7 @@ namespace TickZoom.Api
 			Logger = Factory.SysLog.GetLogger("Diagram."+fullName);
 			Debug = Logger.IsDebugEnabled;
 			Trace = Logger.IsTraceEnabled;
-			IsEvent = method.Name == "OnEvent";
+			IsEvent = method.Name == "OnEvent" || method.Name == "SendEvent";
 		}
 		public override bool Equals(object obj)
 		{
@@ -194,23 +194,19 @@ namespace TickZoom.Api
 	    			if( callCount > 10) {
 	    				callee.Trace = false;
 	    			}
-//		    		bool sentEvent = false;
-//		    		if( callee.IsEvent) {
-//		    			var args = eventArgs.Arguments;
-//		    			var result = args.GetArgument(1);
-//		    			if( result is Int32) {
-//		    				EventType eventType = (EventType) result;
-//							AsyncEvent(caller, callee, eventType);
-//							sentEvent = true;
-//		    			}
-//		    		}
-//		    		if( !sentEvent) {
+		    		if( callee.IsEvent) {
+						AsyncEvent(caller, callee, eventArgs.Arguments);
+		    		} else {
 		    			AsyncSend(caller, callee, isConstructorChain);
-//		    		}
+		    		}
 		    	} else if( isAsyncSender) {
 		    		callee.IsAsync = true;
 		    	} else if( !isSilent && !caller.IsAsync) {
-					Call(caller, callee, isConstructorChain);
+		    		if( callee.IsEvent) {
+						CallEvent(caller, callee, eventArgs.Arguments);
+		    		} else {
+						Call(caller, callee, isConstructorChain);
+		    		}
 		    	}
 				Stack.Push(callee);
 	    	}
@@ -230,8 +226,58 @@ namespace TickZoom.Api
 			if( callee.Trace) callee.Logger.Trace(caller.InstanceX.Name + " >-> " + callee.InstanceX.Name + " " + MethodSignature);
 		}	   
 	    
-		public void AsyncEvent(MethodState caller, MethodState callee, EventType eventType) {
-			if( callee.Trace) callee.Logger.Trace(caller.InstanceX.Name + " >-> " + callee.InstanceX.Name + " OnSend " + eventType);
+	    private void BuildEventArgs( StringBuilder sb, MethodState callee, Arguments args) {
+	    	int i=0;
+	    	if( callee.Method.Name == "SendEvent" ) {
+	    		i++;
+	    	}
+	    	bool isFirst = true;
+	    	for( ; i<args.Count-1; i++) {
+	    		if( !isFirst) {
+	    			sb.Append(", ");
+	    		}
+	    		var arg = args.GetArgument(i);
+	    		if( arg == null) {
+	    			continue;
+	    		} else if( arg is Int32) {
+	    			sb.Append((EventType)arg);
+					isFirst = false;	    		
+	    		} else if( arg is string) {
+	    			sb.Append('"');
+	    			sb.Append(arg);
+	    			sb.Append('"');
+					isFirst = false;	    		
+	    		} else {
+	    			sb.Append(arg);
+					isFirst = false;	    		
+	    		}
+	    	}
+	    }
+	    
+		public void CallEvent(MethodState caller, MethodState callee, Arguments args) {
+	    	StringBuilder sb = new StringBuilder();
+	    	sb.Append(caller.InstanceX.Name);
+	    	sb.Append(" ==> ");
+	    	sb.Append(callee.InstanceX.Name);
+	    	sb.Append(" ");
+	    	sb.Append(callee.Method.Name);
+	    	sb.Append("( ");
+	    	BuildEventArgs( sb, callee, args);
+	    	sb.Append(")");
+	    	if( callee.Trace) callee.Logger.Trace( sb.ToString());
+		}	   
+	    
+		public void AsyncEvent(MethodState caller, MethodState callee, Arguments args) {
+	    	StringBuilder sb = new StringBuilder();
+	    	sb.Append(caller.InstanceX.Name);
+	    	sb.Append(" >-> ");
+	    	sb.Append(callee.InstanceX.Name);
+	    	sb.Append(" ");
+	    	sb.Append(callee.Method.Name);
+	    	sb.Append("( ");
+	    	BuildEventArgs( sb, callee, args);
+	    	sb.Append(")");
+	    	if( callee.Trace) callee.Logger.Trace( sb.ToString());
 		}	   
 	    
 	    private void Exception( MethodState caller, MethodState callee, string message) {

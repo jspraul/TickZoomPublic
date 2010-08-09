@@ -33,9 +33,12 @@ using TickZoom.Api;
 using TickZoom.Common;
 using TickZoom.Examples;
 using TickZoom.Starters;
-using PostSharp.Extensibility;
 using ZedGraph;
+
+#if !SkipPostSharp
+using PostSharp.Extensibility;
 [assembly: DisablePostSharpMessage("PS0131")]
+#endif
 
 namespace Loaders
 {
