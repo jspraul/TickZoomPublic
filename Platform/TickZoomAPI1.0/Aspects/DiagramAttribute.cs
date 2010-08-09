@@ -34,6 +34,7 @@ using System.Threading;
 #if !SkipPostSharp
 using PostSharp.Extensibility;
 using PostSharp.Laos;
+[assembly: DisablePostSharpMessage("PS0131")]
 
 namespace TickZoom.Api
 {

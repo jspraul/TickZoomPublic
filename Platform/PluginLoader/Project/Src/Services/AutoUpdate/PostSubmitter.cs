@@ -32,7 +32,9 @@ using System.Net;
 using System.Text;
 using System.Web;
 
-namespace TickZoom.Api
+using TickZoom.Api;
+
+namespace TickZoom.Update
 {
 	/// <summary>
 	/// Submits post data to a url.

@@ -31,7 +31,9 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 
-namespace TickZoom.Api
+using TickZoom.Api;
+
+namespace TickZoom.Update
 {
 	/// <summary>
 	/// Description of Factory.

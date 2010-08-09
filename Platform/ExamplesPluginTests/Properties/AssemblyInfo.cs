@@ -18,10 +18,6 @@ using TickZoom.Api;
 [assembly: AssemblyCopyright("Copyright 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: Diagram( AttributePriority=1, AttributeTargetTypes = "TickZoom.*")]
-[assembly: Diagram( AttributePriority=2, AttributeExclude=true, 
-                   AttributeTargetTypes = "TickZoom.*",
-                   AttributeTargetMembers = "regex:(set_.*|get_.*)")]
 
 // This sets the default COM visibility of types in the assembly to invisible.
 // If you need to expose a type to COM, use [ComVisible(true)] on that type.

@@ -29,6 +29,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using TickZoom.Api;
+using TickZoom.Update;
 
 namespace TickZoom.Utilities
 {

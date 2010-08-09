@@ -139,6 +139,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\TickZoom.CSharp.Targets" />
   <Target Name="BeforeBuild">
     <CreateItem Include="..\Engine\TickZoomEngine.*">
       <Output TaskParameter="Include" ItemName="EngineFilesToCopy" />

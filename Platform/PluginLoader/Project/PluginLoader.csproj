@@ -131,4 +131,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="..\..\..\TickZoom.CSharp.Targets" />
 </Project>

@@ -24,7 +24,7 @@
     <OutputPath>..\..\bin\Debug\</OutputPath>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DebugType>Full</DebugType>
-    <DefineConstants>DEBUG;SkipPostSharp</DefineConstants>
+    <DefineConstants>DEBUG</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -33,7 +33,6 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>SkipPostSharp</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Obfuscate' ">
     <OutputPath>..\bin\Obfuscate\</OutputPath>

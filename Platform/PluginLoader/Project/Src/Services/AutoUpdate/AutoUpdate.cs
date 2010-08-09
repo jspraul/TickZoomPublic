@@ -7,8 +7,9 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 using ICSharpCode.SharpZipLib.Zip;
+using TickZoom.Api;
 
-namespace TickZoom.Api
+namespace TickZoom.Update
 {
 	public class AutoUpdate
 	{
