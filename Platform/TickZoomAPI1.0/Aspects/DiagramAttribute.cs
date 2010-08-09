@@ -33,7 +33,7 @@ using System.Threading;
 
 #if !SkipPostSharp
 using PostSharp.Extensibility;
-using PostSharp.Laos;
+using PostSharp.Aspects;
 [assembly: DisablePostSharpMessage("PS0131")]
 
 namespace TickZoom.Api
@@ -41,6 +41,7 @@ namespace TickZoom.Api
 	public class MethodState {
 		public DiagramInstance InstanceX;
 		public MethodBase Method;
+		public bool IsEvent;
 		public bool IsAsync;
 		public int CallCounter;
 		public readonly Log Logger;
@@ -51,6 +52,7 @@ namespace TickZoom.Api
 			Logger = Factory.SysLog.GetLogger("Diagram."+fullName);
 			Debug = Logger.IsDebugEnabled;
 			Trace = Logger.IsTraceEnabled;
+			IsEvent = method.Name == "OnEvent";
 		}
 		public override bool Equals(object obj)
 		{
@@ -92,9 +94,9 @@ namespace TickZoom.Api
 		public DiagramAttribute() {
 		}
 		
-		public override void CompileTimeInitialize(System.Reflection.MethodBase method)
+		public override void CompileTimeInitialize(System.Reflection.MethodBase method, AspectInfo info)
 		{
-			base.CompileTimeInitialize(method);
+			base.CompileTimeInitialize(method,info);
 			objectType = method.DeclaringType;
 			this.method = method;
 			if( method.Name == ".ctor" ) {
@@ -140,8 +142,9 @@ namespace TickZoom.Api
 		}
 		
 		private object locker = new object();
-	    public sealed override void OnEntry( MethodExecutionEventArgs eventArgs )
+	    public sealed override void OnEntry( MethodExecutionArgs eventArgs )
 	    {
+	    	
 	    	if( DiagramHelper.Debug && !isExcluded) {
     			bool isConstructorChain = false;
 	    		bool isNew;
@@ -191,7 +194,19 @@ namespace TickZoom.Api
 	    			if( callCount > 10) {
 	    				callee.Trace = false;
 	    			}
-					AsyncSend(caller, callee, isConstructorChain);
+//		    		bool sentEvent = false;
+//		    		if( callee.IsEvent) {
+//		    			var args = eventArgs.Arguments;
+//		    			var result = args.GetArgument(1);
+//		    			if( result is Int32) {
+//		    				EventType eventType = (EventType) result;
+//							AsyncEvent(caller, callee, eventType);
+//							sentEvent = true;
+//		    			}
+//		    		}
+//		    		if( !sentEvent) {
+		    			AsyncSend(caller, callee, isConstructorChain);
+//		    		}
 		    	} else if( isAsyncSender) {
 		    		callee.IsAsync = true;
 		    	} else if( !isSilent && !caller.IsAsync) {
@@ -215,13 +230,17 @@ namespace TickZoom.Api
 			if( callee.Trace) callee.Logger.Trace(caller.InstanceX.Name + " >-> " + callee.InstanceX.Name + " " + MethodSignature);
 		}	   
 	    
+		public void AsyncEvent(MethodState caller, MethodState callee, EventType eventType) {
+			if( callee.Trace) callee.Logger.Trace(caller.InstanceX.Name + " >-> " + callee.InstanceX.Name + " OnSend " + eventType);
+		}	   
+	    
 	    private void Exception( MethodState caller, MethodState callee, string message) {
 	    	if( callee.Trace) {
 	    		callee.Logger.Trace(callee.InstanceX.Name + " >-> " + caller.InstanceX.Name + " " + message);
 	    	}
 	    }
 	    
-	    public sealed override void OnException( MethodExecutionEventArgs eventArgs )
+	    public sealed override void OnException( MethodExecutionArgs eventArgs )
 	    {
 	    	if( DiagramHelper.Debug && !isExcluded) {
 	    		bool isNew;
@@ -239,7 +258,7 @@ namespace TickZoom.Api
 	    	}
 	    }
 	    
-	    public sealed override void OnExit( MethodExecutionEventArgs eventArgs )
+	    public sealed override void OnExit( MethodExecutionArgs eventArgs )
 	    {
 	    	if( DiagramHelper.Debug && !isExcluded) {
 	    		bool isNew;

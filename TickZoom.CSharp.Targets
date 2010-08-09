@@ -34,8 +34,8 @@
        <Reference Include="PostSharp">
            <HintPath>$(PostSharpDirectory)Reference Assemblies\.NET Framework 2.0\PostSharp.dll</HintPath>
        </Reference>
-       <Reference Include="PostSharp.Laos">
+       <!--Reference Include="PostSharp.Laos">
            <HintPath>$(PostSharpDirectory)\Reference Assemblies\.NET Framework 2.0\PostSharp.Laos.dll</HintPath>
-       </Reference>
+       </Reference-->
    </ItemGroup>
 </Project>
