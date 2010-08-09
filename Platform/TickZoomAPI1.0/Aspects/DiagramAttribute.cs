@@ -215,6 +215,29 @@ namespace TickZoom.Api
 			if( callee.Trace) callee.Logger.Trace(caller.InstanceX.Name + " >-> " + callee.InstanceX.Name + " " + MethodSignature);
 		}	   
 	    
+	    private void Exception( MethodState caller, MethodState callee, string message) {
+	    	if( callee.Trace) {
+	    		callee.Logger.Trace(callee.InstanceX.Name + " >-> " + caller.InstanceX.Name + " " + message);
+	    	}
+	    }
+	    
+	    public sealed override void OnException( MethodExecutionEventArgs eventArgs )
+	    {
+	    	if( DiagramHelper.Debug && !isExcluded) {
+	    		bool isNew;
+	    		object _object = eventArgs.Instance == null ? objectType : eventArgs.Instance;
+	    		MethodState callee = GetMethodState(_object,out isNew);
+	    		if( !callee.Debug) return;
+		    	if( Stack.Count > 0) {
+	    			var enumerator = Stack.GetEnumerator();
+	    			if( enumerator.MoveNext() && enumerator.MoveNext()) {
+	    				MethodState caller = enumerator.Current;
+		    			var ex = eventArgs.Exception;
+		    			Exception(caller, callee, "Exception: " + ex.GetType().Name);
+	    			}
+		    	}
+	    	}
+	    }
 	    
 	    public sealed override void OnExit( MethodExecutionEventArgs eventArgs )
 	    {

@@ -132,7 +132,8 @@ namespace TickZoom.Api
 		}
 		
 		private static string StripTilda(string typeName) {
-			return typeName.Substring(0,typeName.IndexOf('`'));
+			int index = typeName.IndexOf('`');
+			return index > 0 ? typeName.Substring(0,index) : typeName;
 		}
 		
 		public static Dictionary<DiagramObject,DiagramInstance> Instances {
