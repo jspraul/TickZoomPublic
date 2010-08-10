@@ -46,7 +46,7 @@ namespace MiscTest
 		[SetUp]
 		public void Setup() {
 			DeleteFiles();
-			Process[] processes = Process.GetProcessesByName("TickZoomProviderMock");
+			Process[] processes = Process.GetProcessesByName("TickZoomCombinedMock");
     		foreach( Process proc in processes) {
     			proc.Kill();
     		}
@@ -57,7 +57,7 @@ namespace MiscTest
 			string workspaceFolder = Path.Combine(storageFolder,"Workspace");
 			string projectFile = Path.Combine(workspaceFolder,"test.tzproj");
 			ConfigFile projectConfig = new ConfigFile(projectFile,Form1.DefaultConfig);
-			projectConfig.SetValue("ProviderAssembly","TickZoomProviderMock");
+			projectConfig.SetValue("ProviderAssembly","TickZoomCombinedMock");
 			Form1 form = new Form1("test");
 			form.Show();
 			WaitForEngine(form);

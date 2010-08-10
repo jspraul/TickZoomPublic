@@ -51,9 +51,11 @@ namespace TickZoom.Update
 			Assembly.GetExecutingAssembly().GetName().Version = new Version();
 			string path = GetShadowCopyFolder();
 			string[] args = Environment.GetCommandLineArgs();
-			string debugString = Factory.Settings["DebugFactory"];
-			if (!string.IsNullOrEmpty(debugString)) {
-				debugFlag = debugString.ToLower() == "true";
+			foreach( var arg in args) {
+				if( arg == "--debug" || arg == "-d") {
+					debugFlag = true;
+					break;
+				}
 			}
 			if (Directory.Exists(path)) {
 				long startTime = Environment.TickCount;

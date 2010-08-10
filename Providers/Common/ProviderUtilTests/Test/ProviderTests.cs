@@ -69,7 +69,7 @@ namespace TickZoom.Test
 			symbol = Factory.Symbol.LookupSymbol(symbolString);
 		}
 		
-		private string providerAssembly = "TickZoomProviderMock";
+		private string providerAssembly = "TickZoomCombinedMock";
 		
 		public void SetProviderAssembly( string providerAssembly) {
 			this.providerAssembly = providerAssembly;	
