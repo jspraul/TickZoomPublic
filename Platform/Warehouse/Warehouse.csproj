@@ -87,10 +87,6 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ProviderCommon\ProviderCommon.csproj">
-      <Project>{AC3D6049-AD4C-4E73-86D3-2A537574B432}</Project>
-      <Name>ProviderCommon</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
