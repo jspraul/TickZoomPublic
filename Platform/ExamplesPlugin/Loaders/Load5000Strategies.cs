@@ -51,7 +51,7 @@ namespace TickZoom.Examples
 			Portfolio portfolio = new Portfolio5000Strategies();
 			for( int i=0; i<500; i++) {
 				Strategy strategy = new ExampleReversalStrategy();
-				strategy.IsActive = true;
+				strategy.IsActive = false;
 				portfolio.AddDependency(strategy);
 			}
 			portfolio.Name = "Market Order Portfolio";

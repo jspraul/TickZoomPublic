@@ -48,13 +48,14 @@ namespace TickZoom.Examples
 				strategy.Performance.Equity.GraphEquity = false;
 			}
 		}
-		
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Portfolio5000Strategies));
 		public override bool OnIntervalClose()
 		{
-//			if( Strategies[current].Performance.ComboTrades.Count > 10) {
-//				current++;
-//				Strategies[current].Status = OrderStatus.Active;
-//			}
+			if( Strategies[current].Performance.ComboTrades.Count > 10) {
+				current++;
+				if( current % 10 == 0) log.Notice("Created " + current + " active strategies.");
+				Strategies[current].IsActive = true;
+			}
 			return true;
 		}
 	}
