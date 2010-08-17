@@ -4,6 +4,7 @@ using TickZoom.Common;
 
 namespace TickZoom.Examples
 {
+
     public class ExampleBreakoutReversal : Strategy
     {
         private int length1 = 25;//private field

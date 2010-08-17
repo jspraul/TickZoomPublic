@@ -507,7 +507,7 @@ namespace TickZoom.Interceptors
 			bool retVal = true;
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
 			if (price <= order.Price) {
-				CreateLogicalFillHelper(order.Positions, price, tick.Time, order);
+				CreateLogicalFillHelper(-order.Positions, price, tick.Time, order);
 				CancelEnterOrders();
 				retVal = true;
 			}

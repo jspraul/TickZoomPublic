@@ -26,22 +26,20 @@
 
 
 using System;
-using TickZoom;
 using TickZoom.Api;
 using TickZoom.Common;
 
 namespace TickZoom.Examples
 {
-
-	public class ExampleBreakoutReversalLoader : ModelLoaderCommon
+	public class ExampleBreakoutStopsLoader : ModelLoaderCommon
 	{
-		public ExampleBreakoutReversalLoader() {
+		public ExampleBreakoutStopsLoader() {
 			category = "Example";
-			name = "Breakout Reversal";
+			name = "Breakout Stops";
 		}
 		
 		public override void OnLoad(ProjectProperties properties) {
-			TopModel = new ExampleBreakoutReversal();
+			TopModel = new ExampleBreakoutStops();
 		}
 	}
 }

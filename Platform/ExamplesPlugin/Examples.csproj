@@ -84,6 +84,7 @@
     <Compile Include="Indicators\YearMiddle.cs" />
     <Compile Include="Loaders\BenchmarkSimpleLoader.cs" />
     <Compile Include="Loaders\ExampleBreakoutReversalLoader.cs" />
+    <Compile Include="Loaders\ExampleBreakoutStopsLoader.cs" />
     <Compile Include="Loaders\ExampleChartIndicator.cs" />
     <Compile Include="Loaders\ExampleCustomBarsLoader.cs" />
     <Compile Include="Loaders\ExampleDataConverterLoader.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Loaders\MarketOrderLoader.cs" />
     <Compile Include="Portfolios\Portfolio5000Strategies.cs" />
     <Compile Include="Strategies\ExampleBreakoutReversal.cs" />
+    <Compile Include="Strategies\ExampleBreakoutStops.cs" />
     <Compile Include="Strategies\Unsupported\BreakoutTrend.cs" />
     <Compile Include="Strategies\Unsupported\ChartIndicator.cs" />
     <Compile Include="Strategies\Unsupported\DOMSmooth.cs" />
