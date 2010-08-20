@@ -36,12 +36,12 @@ namespace Test
 	[TestFixture]
 	public class FuturesLevel1AndTrades : ProviderTests
 	{
-		public static readonly Log log = Factory.Log.GetLogger(typeof(EquityLevel1));
+		public static readonly Log log = Factory.SysLog.GetLogger(typeof(EquityLevel1));
 		public FuturesLevel1AndTrades()
 		{
 			log.Notice("Waiting 20 seconds for FIX server to reset.");
 			Thread.Sleep(20000);
-			SetSymbol("/NQZ0");
+			SetSymbol("/ESU0");
 			SetTickTest(TickTest.Level1);
 		}
 

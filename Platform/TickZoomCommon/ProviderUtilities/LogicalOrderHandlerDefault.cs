@@ -220,11 +220,11 @@ namespace TickZoom.Common
 			}
 		}
 		
-		private void ProcessMissingLogical(PhysicalOrder physical) {
+		private void ProcessExtraPhysical(PhysicalOrder physical) {
 			TryCancelBrokerOrder( physical);
 		}
 		
-		private void ComparePosition() {
+		private double FindPendingAdjustments() {
 			double positionDelta = desiredPosition - actualPosition;
 			double pendingAdjustments = 0D;
 			var next = physicalOrders.First;
@@ -267,13 +267,18 @@ namespace TickZoom.Common
 					physicalOrders.Remove(order);
 				}
 			}
+			return pendingAdjustments;
+		}
+		
+		private bool TrySyncPosition(double pendingAdjustments) {
+			double positionDelta = desiredPosition - actualPosition;
 			double delta = positionDelta - pendingAdjustments;
 			PhysicalOrder physical;
 			if( delta > 0) {
 				physical = new PhysicalOrderDefault(true, symbol,OrderSide.Buy,OrderType.BuyMarket,0,delta,0,null,null);
 				CreateBrokerOrder(physical);
-			}
-			if( delta < 0) {
+				return true;
+			} else if( delta < 0) {
 				OrderSide side;
 				if( actualPosition > 0) {
 					side = OrderSide.Sell;
@@ -284,8 +289,10 @@ namespace TickZoom.Common
 				side = (long) actualPosition >= (long) Math.Abs(delta) ? OrderSide.Sell : OrderSide.SellShort;
 				physical = new PhysicalOrderDefault(true, symbol,side,OrderType.SellMarket,0,Math.Abs(delta),0,null,null);
 				CreateBrokerOrder(physical);
+				return true;
+			} else {
+				return false;
 			}
-			actualPosition = desiredPosition;
 		}
 		
 		public void SetLogicalOrders( Iterable<LogicalOrder> originalLogicals) {
@@ -379,10 +386,8 @@ namespace TickZoom.Common
 				return;
 			}
 			
-			// First synchronize the position.
-			ComparePosition();
-				
-			// Now synchronize the orders.
+			// First synchronize the orders to cancel any
+			// invalid physical orders.
 			logicalOrders.Clear();
 			if(originalLogicals != null) {
 				logicalOrders.AddLast(originalLogicals);
@@ -399,17 +404,27 @@ namespace TickZoom.Common
 				}
 				logicalOrders.Remove(logical);
 			}
+
+			// Find any pending adjustments.
+			double pendingAdjustments = FindPendingAdjustments();
+			
+			if( debug) log.Debug("Found " + physicalOrders.Count + " extra physicals.");
+			while( physicalOrders.Count > 0) {
+				physical = physicalOrders.First.Value;
+				ProcessExtraPhysical(physical);
+				physicalOrders.Remove(physical);
+			}
+
+			if( TrySyncPosition( pendingAdjustments)) {
+				// Wait for fill to process creating any orders.
+				return;
+			}
+			
 			if( debug) log.Debug("Found " + extraLogicals.Count + " extra logicals.");
 			while( extraLogicals.Count > 0) {
 				var logical = extraLogicals[0];
 				ProcessMissingPhysical(logical);
 				extraLogicals.Remove(logical);
-			}
-			if( debug) log.Debug("Found " + physicalOrders.Count + " extra physicals.");
-			while( physicalOrders.Count > 0) {
-				physical = physicalOrders.First.Value;
-				ProcessMissingLogical(physical);
-				physicalOrders.Remove(physical);
 			}
 		}
 		

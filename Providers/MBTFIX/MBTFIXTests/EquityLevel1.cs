@@ -37,7 +37,7 @@ namespace Test
 	[TestFixture]
 	public class EquityLevel1 : ProviderTests
 	{
-		public static readonly Log log = Factory.Log.GetLogger(typeof(EquityLevel1));
+		public static readonly Log log = Factory.SysLog.GetLogger(typeof(EquityLevel1));
 		public EquityLevel1()
 		{
 			log.Notice("Waiting 20 seconds for FIX server to reset.");
