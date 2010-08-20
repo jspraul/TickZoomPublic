@@ -412,7 +412,7 @@ namespace TickZoom.MBTFIX
 						UpdateOrder( packetFIX, true, null);
 						break;
 					case "1": // Partial
-						UpdatePartial( packetFIX);
+						UpdateOrder( packetFIX, true, null);
 						if( IsRecovered) {
 							SendFill( packetFIX);
 						}
@@ -607,8 +607,9 @@ namespace TickZoom.MBTFIX
 				logicalOrderId = int.Parse(parts[0]);
 			} catch( FormatException) {
 			}
+			int quantity = packetFIX.LeavesQuantity;
 			PhysicalOrder order = Factory.Utility.PhysicalOrder(
-				isActive, symbolInfo, side, orderType, packetFIX.Price, packetFIX.OrderQuantity, logicalOrderId, packetFIX.ClientOrderId, note);
+				isActive, symbolInfo, side, orderType, packetFIX.Price, quantity, logicalOrderId, packetFIX.ClientOrderId, note);
 			if( info && (LogRecovery || !IsRecovery) ) {
 				log.Info("Updated order: " + order + ".  Executed: " + packetFIX.CumulativeQuantity + " Remaining: " + packetFIX.LeavesQuantity);
 			}

@@ -92,9 +92,9 @@ namespace TickZoom.MBTFIX
 		}
 		
 		public void BeforeRead() {
-			if( trace && !IsQuietRecovery) {
-				log.Trace("Reading message: \n" + this);
-			}
+//			if( trace && !IsQuietRecovery) {
+//				log.Trace("Reading message: \n" + this);
+//			}
 			data.Position = 0;
 		}
 		
