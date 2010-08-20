@@ -30,7 +30,7 @@ using System.Text;
 
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.MBTQuotes
 {
 	public class PacketMBTQuotes : Packet {
 		private const byte EndOfField = 59;
@@ -147,11 +147,11 @@ namespace TickZoom.MBTFIX
 	        	val = val * 10 + *ptr - 48;
 	        	++ptr;
 	        }
-	        ++ptr;
 	        if( *ptr == EndOfField || *ptr == EndOfMessage) {
 		        Position += (int) (ptr - bptr);
 		        return val;
 	        } else {
+		        ++ptr;
 		        int divisor = 10;
 		        int fract = *ptr - 48;
 		        while (*(++ptr) != EndOfField && *ptr != EndOfMessage) {

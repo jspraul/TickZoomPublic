@@ -30,6 +30,7 @@ using System.IO;
 using System.Security.Cryptography;
 
 using TickZoom.Api;
+using TickZoom.MBTQuotes;
 
 namespace TickZoom.MBTFIX
 {

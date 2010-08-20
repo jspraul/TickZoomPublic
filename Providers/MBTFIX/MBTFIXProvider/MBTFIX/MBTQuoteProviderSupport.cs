@@ -33,7 +33,7 @@ using System.Threading;
 
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.MBTQuotes
 {
 	public abstract class MBTQuoteProviderSupport : Provider
 	{
@@ -67,7 +67,7 @@ namespace TickZoom.MBTFIX
 		
 		public MBTQuoteProviderSupport()
 		{
-			log = Factory.SysLog.GetLogger(typeof(FIXProviderSupport)+"."+GetType().Name);
+			log = Factory.SysLog.GetLogger(typeof(MBTQuoteProviderSupport)+"."+GetType().Name);
 			debug = log.IsDebugEnabled;
 			trace = log.IsTraceEnabled;
 	        	log.Info(providerName+" Startup");
@@ -86,7 +86,7 @@ namespace TickZoom.MBTFIX
 				socket.Dispose();
 			}
 			socket = Factory.Provider.Socket("MBTFIXSocket");
-			socket.PacketFactory = new PacketFactoryFIX4_4();
+			socket.PacketFactory = new PacketFactoryMBTQuotes();
 			if( debug) log.Debug("Created new " + socket);
 			connectionStatus = Status.New;
 			if( trace) {

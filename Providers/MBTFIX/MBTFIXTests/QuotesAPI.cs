@@ -33,6 +33,7 @@ using System.Text;
 using NUnit.Framework;
 using TickZoom.Api;
 using TickZoom.MBTFIX;
+using TickZoom.MBTQuotes;
 
 namespace Test
 {

@@ -27,7 +27,7 @@
 using System;
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.MBTQuotes
 {
 	public class PacketFactoryMBTQuotes : PacketFactory {
 //		private Pool<PacketDefault> pool = new Pool<PacketDefault>();

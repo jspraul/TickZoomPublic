@@ -31,7 +31,7 @@ using System.Security.Cryptography;
 
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.MBTQuotes
 {
 	public class MBTQuotesProvider : MBTQuoteProviderSupport
 	{
@@ -173,6 +173,9 @@ namespace TickZoom.MBTFIX
 							break;
 						case 2002: // Last Trade Price
 							handler.Last = packet.GetDouble(ref ptr);
+							if( trace) {
+								log.Trace( "Got last trade price: " + handler.Last);// + "\n" + packet);
+							}
 							break;
 						case 2007: // Last Trade Size
 							handler.LastSize = packet.GetInt(ref ptr);
