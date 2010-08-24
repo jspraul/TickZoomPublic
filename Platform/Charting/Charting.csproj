@@ -67,7 +67,6 @@
     <EmbeddedResource Include="Charting\ChartControl.resx">
       <DependentUpon>ChartControl.cs</DependentUpon>
     </EmbeddedResource>
-    <Content Include="ProfilingSessions\Session20100803_204211.sdps" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Charting" />

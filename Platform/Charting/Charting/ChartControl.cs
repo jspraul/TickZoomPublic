@@ -480,12 +480,11 @@ namespace TickZoom
 			objectId++;
 			graphObjs.Add(objectId,line);
 		    priceGraphPane.GraphObjList.Add(line);
-			return priceGraphPane.GraphObjList.Count-1;
+			return objectId;
 		}
 		
 		public void ChangeLine( int lineId, Color color, int bar1, double y1, int bar2, double y2, LineStyle style) {
 			LineObj line = CreateLine(color,barToXAxis(bar1),y1,barToXAxis(bar2),y2,style);
-	//			graphObjs[lineId] = line;
 			priceGraphPane.GraphObjList[lineId] = line;
 		}
 		
@@ -1161,6 +1160,7 @@ namespace TickZoom
 		
 		public bool ProcessKeys(Keys keyData) {
 			bool blnProcess = false;
+			if( strategyForTrades == null) return false;
 			if( keyData == Keys.Up ) {
 				strategyForTrades.Position.Change(1);
 				blnProcess = true;

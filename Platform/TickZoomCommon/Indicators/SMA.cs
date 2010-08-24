@@ -43,28 +43,29 @@ namespace TickZoom.Common
 			AnyInput = anyPrice;
 			StartValue = 0;
 			this.period = period;
-		}
-		
-		public override void OnInitialize()
-		{
-			Name = "SMA_New";
 			Drawing.Color = Color.Red;
 			Drawing.PaneType = PaneType.Primary;
 			Drawing.IsVisible = true;
 		}
 		
+		public override void OnInitialize()
+		{
+			Name = "SMA_New";
+		}
+		
 		public override void Update() {
-			if (double.IsNaN(this[0])) {
+			if (this[0]==0D) {
 				this[0] = Input[0];
 			} else {
 				double last = this[1];
 				double sum = last * Math.Min(Count-1, period);
 
 				if (Count > period && Input.BarCount > period) {
-					this[0] = (sum + Input[0] - Input[period]) / Math.Min(Count, period);
+					double past = Input[period];
+					double pres = Input[0];
+					double value = this[0] = (sum + Input[0] - Input[period]) / Math.Min(Count, period);
 				}
 			}
-			double result = this[0];
 		}
 		
 		public int Period {

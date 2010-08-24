@@ -90,13 +90,14 @@ namespace TickZoom.Statistics
 				OnIntervalClose();
 			}
 			context.Invoke();
-			if( eventType == EventType.LogicalFill ||
-			   (eventType == EventType.Tick
+			if( eventType == EventType.LogicalFill) {
+				OnProcessFill((LogicalFill) eventDetail);
+			}
+			if( eventType == EventType.Tick) {
 // Uncommenting this will boost performance but the
 // tick event is still needed by a few parts of TZ.
 // After they are resolved, we can uncomment this.
 //			    && model is PortfolioInterface
-			   )) {
 				OnProcessFill();
 			}
 		}
@@ -111,21 +112,21 @@ namespace TickZoom.Statistics
 
 		}
 		
-		public bool OnProcessFill()
+		public bool OnProcessFill(LogicalFill fill)
 		{
-			if( context.Position.Current != position.Current) {
-				positionChanges.Add(context.Position.Current);
+			if( fill.Position != position.Current) {
+				positionChanges.Add(fill.Position);
 				if( position.IsFlat) {
-					EnterComboTradeInternal(context.Position);
-				} else if( context.Position.IsFlat) {
-					ExitComboTradeInternal(context.Position);
-				} else if( (context.Position.IsLong && position.IsShort) || (context.Position.IsShort && position.IsLong)) {
+					EnterComboTrade(fill);
+				} else if( fill.Position == 0) {
+					ExitComboTrade(fill);
+				} else if( (fill.Position > 0 && position.IsShort) || (fill.Position < 0 && position.IsLong)) {
 					// The signal must be opposite. Either -1 / 1 or 1 / -1
-					ExitComboTradeInternal(context.Position);
-					EnterComboTradeInternal(context.Position);
+					ExitComboTrade(fill);
+					EnterComboTrade(fill);
 				} else {
 					// Instead it has increased or decreased position size.
-					ChangeComboSizeInternal();
+					ChangeComboSize(fill);
 				}
 			} 
 			position.Copy(context.Position);
@@ -143,8 +144,52 @@ namespace TickZoom.Statistics
 			return true;
 		}
 		
-		private void EnterComboTradeInternal(PositionInterface position) {
-			EnterComboTrade(position);
+		public bool OnProcessFill()
+		{
+			if( context.Position.Current != position.Current) {
+				positionChanges.Add(context.Position.Current);
+				if( position.IsFlat) {
+					EnterComboTrade(context.Position);
+				} else if( context.Position.IsFlat) {
+					ExitComboTrade(context.Position);
+				} else if( (context.Position.IsLong && position.IsShort) || (context.Position.IsShort && position.IsLong)) {
+					// The signal must be opposite. Either -1 / 1 or 1 / -1
+					ExitComboTrade(context.Position);
+					EnterComboTrade(context.Position);
+				} else {
+					// Instead it has increased or decreased position size.
+					ChangeComboSize();
+				}
+			} 
+			position.Copy(context.Position);
+			if( model is Strategy) {
+				Strategy strategy = (Strategy) model;
+				strategy.Result.Position.Copy(context.Position);
+			}
+
+			if( model is Portfolio) {
+				Portfolio portfolio = (Portfolio) model;
+				double tempNetPortfolioEquity = 0;
+				tempNetPortfolioEquity += portfolio.Performance.Equity.ClosedEquity;
+				tempNetPortfolioEquity -= portfolio.Performance.Equity.StartingEquity;
+			}
+			return true;
+		}
+		
+		public void EnterComboTrade(LogicalFill fill) {
+			TransactionPairBinary pair = TransactionPairBinary.Create();
+			pair.Direction = fill.Position;
+			pair.EntryPrice = fill.Price;
+			pair.EntryTime = fill.Time;
+			pair.EntryBar = model.Chart.ChartBars.BarCount;
+			comboTradesBinary.Add(pair);
+			if( trace) {
+				log.Trace( "Enter trade: " + pair);
+			}
+			if( model is Strategy) {
+				Strategy strategy = (Strategy) model;
+				strategy.OnEnterTrade();
+			}
 		}
 
 		public void EnterComboTrade(PositionInterface position) {
@@ -163,16 +208,37 @@ namespace TickZoom.Statistics
 			}
 		}
 		
-		private void ChangeComboSizeInternal() {
+		private void ChangeComboSize(LogicalFill fill) {
+			TransactionPairBinary combo = comboTradesBinary.Tail;
+			combo.ChangeSize(fill.Position,fill.Price);
+			comboTradesBinary.Tail = combo;
+		}
+		
+		private void ChangeComboSize() {
 			TransactionPairBinary combo = comboTradesBinary.Tail;
 			combo.ChangeSize(context.Position.Current,context.Position.Price);
 			comboTradesBinary.Tail = combo;
 		}
 		
-		private void ExitComboTradeInternal(PositionInterface position) {
-			ExitComboTrade(position);
+		public void ExitComboTrade(LogicalFill fill) {
+			TransactionPairBinary comboTrade = comboTradesBinary.Tail;
+			comboTrade.ExitPrice = fill.Price;
+			comboTrade.ExitTime = fill.Time;
+			comboTrade.ExitBar = model.Chart.ChartBars.BarCount;
+			comboTrade.Completed = true;
+			comboTradesBinary.Tail = comboTrade;
+			double pnl = profitLoss.CalculateProfit(comboTrade.Direction,comboTrade.EntryPrice,comboTrade.ExitPrice);
+			Equity.OnChangeClosedEquity( pnl);
+			if( trace) {
+				log.Trace( "Exit Trade: " + comboTrade);
+			}
+			if( tradeDebug && !model.QuietMode) tradeLog.Debug( model.Name + "," + Equity.ClosedEquity + "," + pnl + "," + comboTrade);
+			if( model is Strategy) {
+				Strategy strategy = (Strategy) model;
+				strategy.OnExitTrade();
+			}
 		}
-					
+		
 		public void ExitComboTrade(PositionInterface position) {
 			TransactionPairBinary comboTrade = comboTradesBinary.Tail;
 			comboTrade.ExitPrice = position.Price;
@@ -190,14 +256,6 @@ namespace TickZoom.Statistics
 				Strategy strategy = (Strategy) model;
 				strategy.OnExitTrade();
 			}
-		}
-		
-		protected virtual void EnterTrade() {
-
-		}
-		
-		protected virtual void ExitTrade() {
-			
 		}
 		
 		public bool OnIntervalClose()
