@@ -448,6 +448,10 @@ namespace TickZoom.Common
 		public bool IsActive {
 			get { return isActive; }
 			set { if( isActive != value) {
+					log.Info( Name + " going to sleep.");
+					if( Name.ToLower().Contains("master")) {
+						int x = 0;
+					}
 					isActive = value;
 					IsActiveChanged();
 				}
@@ -459,7 +463,7 @@ namespace TickZoom.Common
 				OnActiveChange(this);
 			}
 			foreach( var dependency in chain.Dependencies) {
-				if( dependency.Model != null) {
+				if( dependency.Model != null && dependency.Model is IndicatorInterface) {
 					dependency.Model.IsActive = isActive;
 				}
 			}

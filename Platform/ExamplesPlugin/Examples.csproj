@@ -94,7 +94,6 @@
     <Compile Include="Loaders\ExampleMultiStrategyLoader.cs" />
     <Compile Include="Loaders\ExampleScannerLoader.cs" />
     <Compile Include="Loaders\ExampleReversalLoader.cs" />
-    <Compile Include="Loaders\ExampleReversalPortfolioLoader.cs" />
     <Compile Include="Loaders\ExampleSimulatedLoader.cs" />
     <Compile Include="Loaders\ExampleDualSymbolLoader.cs" />
     <Compile Include="Loaders\Load5000Strategies.cs" />

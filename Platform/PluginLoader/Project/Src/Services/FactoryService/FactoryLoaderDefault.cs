@@ -79,6 +79,7 @@ namespace TickZoom.Update
 		{
 			if (debugFlag) {
 				Console.WriteLine(message);
+				System.Diagnostics.Debug.WriteLine(message);
 			}
 		}
 
