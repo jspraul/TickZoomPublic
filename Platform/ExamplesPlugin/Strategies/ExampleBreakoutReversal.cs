@@ -18,7 +18,7 @@ namespace TickZoom.Examples
 
         private int qtys = 1;//private field
         public int Qtys { get { return qtys; } set { qtys = value; } }
-
+        
         public ExampleBreakoutReversal()
         {
 
@@ -26,6 +26,7 @@ namespace TickZoom.Examples
 
         public override void OnInitialize()
         {
+        	qtys = qtyb = Data.SymbolInfo.Level2LotSize;
         }
 
 

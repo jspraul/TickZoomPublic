@@ -40,6 +40,7 @@ namespace TickZoom.Examples
 	{
 		double multiplier = 1.0D;
 		double minimumTick;
+		int tradeSize;
 		
 		public ExampleOrderStrategy() {
 			Performance.GraphTrades = true;
@@ -49,6 +50,7 @@ namespace TickZoom.Examples
 		
 		public override void OnInitialize()
 		{
+			tradeSize = Data.SymbolInfo.Level2LotSize;
 			minimumTick = multiplier * Data.SymbolInfo.MinimumTick;
 			ExitStrategy.BreakEven = 30 * minimumTick;
 			ExitStrategy.StopLoss = 45 * minimumTick;
@@ -62,7 +64,7 @@ namespace TickZoom.Examples
 			double close = Bars.Close[0];
 			if( Bars.Close[0] > Bars.Open[0]) {
 				if( Position.IsFlat) {
-					Orders.Enter.NextBar.BuyStop(Bars.Close[0] + 10 * minimumTick);
+					Orders.Enter.NextBar.BuyStop(Bars.Close[0] + 10 * minimumTick,tradeSize);
 					Orders.Exit.NextBar.SellStop(Bars.Close[0] - 10 * minimumTick);
 				}
 				if( Position.IsShort) {
@@ -74,13 +76,13 @@ namespace TickZoom.Examples
 			}
 			if( Bars.Close[0] < Bars.Open[0]) {
 				if( Position.IsFlat) {
-					Orders.Enter.NextBar.SellLimit(Bars.Close[0] + 30 * minimumTick);
+					Orders.Enter.NextBar.SellLimit(Bars.Close[0] + 30 * minimumTick,tradeSize);
 					ExitStrategy.StopLoss = 45 * minimumTick;
 				}
 			}
 			if( Bars.Close[0] < Bars.Open[0] && Bars.Open[0] < Bars.Close[1]) {
 				if( Position.IsFlat) {
-					Orders.Enter.NextBar.SellMarket();
+					Orders.Enter.NextBar.SellMarket(tradeSize);
 					ExitStrategy.StopLoss = 15 * minimumTick;
 				}
 			}

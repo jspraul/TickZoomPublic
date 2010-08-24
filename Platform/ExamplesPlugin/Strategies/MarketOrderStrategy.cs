@@ -40,7 +40,7 @@ namespace TickZoom.Examples
 {
 	public class MarketOrderStrategy : Strategy
 	{
-		
+		private int tradeSize;
 		public MarketOrderStrategy() {
 			Performance.GraphTrades = true;
 			Performance.Equity.GraphEquity = false;
@@ -48,6 +48,7 @@ namespace TickZoom.Examples
 		
 		public override void OnInitialize()
 		{
+			tradeSize = Data.SymbolInfo.Level2LotSize;
 		}
 		
 		public override bool OnIntervalClose()
@@ -56,13 +57,13 @@ namespace TickZoom.Examples
 				if( Position.IsShort) {
 					Orders.Exit.ActiveNow.GoFlat();
 				}
-				Orders.Enter.ActiveNow.BuyMarket(2);
+				Orders.Enter.ActiveNow.BuyMarket(2 * tradeSize);
 			}
 			if( !Position.IsShort && Bars.Close[0] < Bars.Low[1]) {
 				if( Position.IsLong) {
 					Orders.Exit.ActiveNow.GoFlat();
 				}
-				Orders.Enter.ActiveNow.SellMarket(2);
+				Orders.Enter.ActiveNow.SellMarket(2 * tradeSize);
 			}
 			return true;
 		}
