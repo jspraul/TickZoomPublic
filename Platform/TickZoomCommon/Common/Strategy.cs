@@ -96,6 +96,7 @@ namespace TickZoom.Common
 			performance = new Performance(this);
 		    exitStrategy = new ExitStrategy(this);
 		    preOrderManager = Factory.Engine.OrderManager(this);
+			preOrderManager.PostProcess = true;
 			postOrderManager = Factory.Engine.OrderManager(this);
 			postOrderManager.PostProcess = true;
 			postOrderManager.DoEntryOrders = false;

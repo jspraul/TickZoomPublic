@@ -104,7 +104,7 @@ namespace TickZoom.Interceptors
 		{
 			bool retVal = false;
 			if (trace)
-				Log.Trace("OnProcessEnterOrder()");
+				Log.Trace("OnProcessExitOrder()");
 			if (IsLong) {
 				if (order.Type == OrderType.BuyStop || order.Type == OrderType.BuyLimit) {
 					order.Status = OrderStatus.Inactive;
