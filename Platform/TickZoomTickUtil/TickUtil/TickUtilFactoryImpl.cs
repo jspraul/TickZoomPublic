@@ -34,6 +34,9 @@ namespace TickZoom.TickUtil
 	/// </summary>
 	public class TickUtilFactoryImpl : TickUtilFactory
 	{
+		private Pool<TickBinaryBox> tickPool;
+		private object locker = new object();
+		
 		public TickQueue TickQueue( Type type) {
 			return new TickQueueImpl(type.Name);
 		}
@@ -68,6 +71,17 @@ namespace TickZoom.TickUtil
 		
 		public Pool<T> Pool<T>() where T : new() {
 			return new PoolDefault<T>();
+		}
+		
+		public Pool<TickBinaryBox> TickPool() {
+			if( tickPool == null) {
+				lock( locker) {
+					if( tickPool == null) {
+						tickPool = new PoolDefault<TickBinaryBox>();
+					}
+				}
+			}
+			return tickPool;
 		}
 	}
 }

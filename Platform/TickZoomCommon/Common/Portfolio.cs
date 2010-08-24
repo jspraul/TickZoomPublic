@@ -344,6 +344,8 @@ namespace TickZoom.Common
 			}
 		}
 		
+		private NodePool<LogicalOrder> nodePool = new NodePool<LogicalOrder>();
+		
 		public void OrderModified( LogicalOrder order) {
 			return;
 		}

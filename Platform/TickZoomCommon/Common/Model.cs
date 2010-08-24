@@ -448,10 +448,7 @@ namespace TickZoom.Common
 		public bool IsActive {
 			get { return isActive; }
 			set { if( isActive != value) {
-					log.Info( Name + " going to sleep.");
-					if( Name.ToLower().Contains("master")) {
-						int x = 0;
-					}
+					if( trace) log.Trace( Name + " going to sleep.");
 					isActive = value;
 					IsActiveChanged();
 				}

@@ -50,7 +50,8 @@ namespace TickZoom.Common
 		private ActiveList<LogicalOrder> activeOrders = new ActiveList<LogicalOrder>();
 		private List<LogicalOrder> nextBarOrders = new List<LogicalOrder>();
 		private bool isActiveOrdersChanged = false;
-		
+		private NodePool<LogicalOrder> nodePool = new NodePool<LogicalOrder>();
+				
 		OrderHandlers orders;
 		ReverseCommon reverseActiveNow;
 		ReverseCommon reverseNextBar;
@@ -198,23 +199,27 @@ namespace TickZoom.Common
 				// a price change means the list change.
 				IsActiveOrdersChanged = true;
 				if( !activeOrders.Contains(order)) {
+					var newNode = nodePool.Create(order);
 					bool found = false;
 					var next = activeOrders.First;
 					for( var node = next; node != null; node = next) {
 						next = node.Next;
 						LogicalOrder other = node.Value;
 						if( order.CompareTo(other) < 0) {
-							activeOrders.AddBefore(node,order);
+							activeOrders.AddBefore(node,newNode);
 							found = true;
 							break;
 						}
 					}
 					if( !found) {
-						activeOrders.AddLast(order);
+						activeOrders.AddLast(newNode);
 					}
 				}
 			} else {
-				if( activeOrders.Remove(order)) {
+				var node = activeOrders.Find(order);
+				if( node != null) {
+					activeOrders.Remove(node);
+					nodePool.Free(node);
 					// Since this order became inactive, it
 					// means the active list changed.
 					IsActiveOrdersChanged = true;

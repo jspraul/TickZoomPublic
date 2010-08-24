@@ -35,11 +35,13 @@ namespace TickZoom.TickUtil
 	{
 		private Stack<T> _items = new Stack<T>();
 		private object _sync = new object();
+		private int count = 0;
 
 		public T Create()
 		{
 			lock (_sync) {
 				if (_items.Count == 0) {
+					Interlocked.Increment(ref count);
 					return new T();
 				} else {
 					return _items.Pop();
@@ -59,6 +61,10 @@ namespace TickZoom.TickUtil
 			lock (_sync) {
 				_items.Clear();
 			}
+		}
+		
+		public int Count {
+			get { return count; }
 		}
 	}
 }

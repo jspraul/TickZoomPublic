@@ -44,6 +44,7 @@ namespace TickZoom.Common
 		private volatile BrokerState brokerState = BrokerState.Disconnected;
 		private Task task;
 		private static object taskLocker = new object();
+		private Pool<TickBinaryBox> tickPool = Factory.TickUtil.TickPool();
 
 		public TickQueue TickQueue {
 			get { return tickQueue; }
@@ -361,10 +362,13 @@ namespace TickZoom.Common
 			return true;
 		}
 
-		public bool OnSend(ref TickBinary o)
+		public bool OnSend(TickBinaryBox o)
 		{
 			try {
-				return tickQueue.TryEnqueue(ref o);
+				bool result = tickQueue.TryEnqueue(ref o.TickBinary);
+				if( result) {
+					tickPool.Free(o);
+				}
 			} catch (QueueException) {
 				// Queue already terminated.
 			}
@@ -497,8 +501,8 @@ namespace TickZoom.Common
 			try {
 				switch( (EventType) eventType) {
 					case EventType.Tick:
-						TickBinary binary = (TickBinary) eventDetail;
-						result = OnSend(ref binary);
+						TickBinaryBox binary = (TickBinaryBox) eventDetail;
+						result = OnSend(binary);
 						break;
 					case EventType.EndHistorical:
 						result = OnEndHistorical(symbol);

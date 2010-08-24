@@ -449,12 +449,15 @@ namespace TickZoom
         	starter.ProjectProperties.Starter.EndTime = (TimeStamp) endTime;
     		SetupStarter(starter,bw);
         }
-    		
         private void SetupStarter( Starter starter, BackgroundWorker bw) {
+        	SetupStarter( starter, bw, false);
+        }
+    		
+        private void SetupStarter( Starter starter, BackgroundWorker bw, bool isRealTime) {
         	FlushChartsInvoke();
     		starter.ProjectProperties.Starter.StartTime = (TimeStamp) startTime;
     		starter.BackgroundWorker = bw;
-    		if( !disableChartsCheckBox.Checked) {
+    		if( !disableChartsCheckBox.Checked || isRealTime) {
 	    		starter.CreateChartCallback = new CreateChartCallback(CreateChartInvoke);
     			starter.ShowChartCallback = new ShowChartCallback(ShowChartInvoke);
     		} else {
@@ -481,7 +484,7 @@ namespace TickZoom
 		{
         	Starter starter = Factory.Starter.RealTimeStarter();
         	enableAlarmSounds = true;
-    		SetupStarter(starter,bw);
+    		SetupStarter(starter,bw,true);
 		}
 		
 		void ProcessWorkerProgressChanged(object sender, ProgressChangedEventArgs e)

@@ -44,6 +44,7 @@ namespace TickZoom.Common
 		public double last = 0D;
         private LogicalOrderHandler logicalOrderHandler;
         private bool isRunning = false;
+        private Pool<TickBinaryBox> tickPool = Factory.TickUtil.TickPool();
 		public void Start()
 		{
 			isRunning = true;
@@ -66,8 +67,9 @@ namespace TickZoom.Common
 					tickIO.SetSymbol(symbol.BinaryIdentifier);
 					tickIO.SetTime(TimeStamp.UtcNow);
 					tickIO.SetQuote(Bid,Ask,(short)BidSize,(short)AskSize);
-					TickBinary binary = tickIO.Extract();
-					receiver.OnEvent(symbol,(int)EventType.Tick,binary);
+					var box = tickPool.Create();
+					box.TickBinary = tickIO.Extract();
+					receiver.OnEvent(symbol,(int)EventType.Tick,box);
 				}
 			} else {
 				VerifyQuote();
@@ -118,8 +120,9 @@ namespace TickZoom.Common
 				if( symbol.QuoteType == QuoteType.Level1) {
 					tickIO.SetQuote(Bid,Ask,(short)BidSize,(short)AskSize);
 				}
-				TickBinary binary = tickIO.Extract();
-				receiver.OnEvent(symbol,(int)EventType.Tick,binary);
+				var box = tickPool.Create();
+				box.TickBinary = tickIO.Extract();
+				receiver.OnEvent(symbol,(int)EventType.Tick,box);
 			}
 		}
         

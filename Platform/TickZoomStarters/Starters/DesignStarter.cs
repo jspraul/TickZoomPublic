@@ -107,6 +107,7 @@ namespace TickZoom.Starters
 	public class DesignProvider : Provider {
 		private object taskLocker = new object();
  		private volatile bool isDisposed = false;
+ 		private Pool<TickBinaryBox> tickPool = Factory.TickUtil.TickPool();
 		
 		public void StartSymbol(Receiver receiver, SymbolInfo symbol, object eventDetail)
 		{
@@ -115,19 +116,21 @@ namespace TickZoom.Starters
 			tickIO.SetSymbol( symbol.BinaryIdentifier);
 			tickIO.SetTime( new TimeStamp(2000,1,1));
 			tickIO.SetQuote(100D, 100D);
-			TickBinary tickBinary = tickIO.Extract();
 			while( !receiver.OnEvent(symbol,(int)EventType.StartHistorical,symbol)) {
 				Factory.Parallel.Yield();
 			}
-			while( !receiver.OnEvent(symbol,(int)EventType.Tick, tickBinary )) {
+			var binaryBox = tickPool.Create();
+			binaryBox.TickBinary = tickIO.Extract();
+			while( !receiver.OnEvent(symbol,(int)EventType.Tick, binaryBox)) {
 				Factory.Parallel.Yield();
 			}
 			tickIO.Initialize();
 			tickIO.SetSymbol( symbol.BinaryIdentifier);
 			tickIO.SetTime( new TimeStamp(2000,1,2));
 			tickIO.SetQuote(101D, 101D);
-			tickBinary = tickIO.Extract();
-			while( !receiver.OnEvent(symbol,(int)EventType.Tick, tickBinary )) {
+			binaryBox = tickPool.Create();
+			binaryBox.TickBinary = tickIO.Extract();
+			while( !receiver.OnEvent(symbol,(int)EventType.Tick, binaryBox)) {
 				Factory.Parallel.Yield();
 			}
 			while( !receiver.OnEvent(symbol,(int)EventType.EndHistorical,symbol)) {

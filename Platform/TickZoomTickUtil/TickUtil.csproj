@@ -58,7 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TickUtil\DataReceiverInternal.cs" />
+    <Compile Include="TickUtil\DataReceiverDefault.cs" />
     <Compile Include="TickUtil\FastQueueImpl.cs" />
     <Compile Include="TickUtil\Reader.cs" />
     <Compile Include="TickUtil\TickMemoryStream.cs" />

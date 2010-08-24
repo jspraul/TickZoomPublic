@@ -93,6 +93,7 @@
     <Compile Include="Misc\Factories\FactoryLoader.cs" />
     <Compile Include="Misc\Structs\Progress.cs" />
     <Compile Include="Misc\Structs\QueueItem.cs" />
+    <Compile Include="Misc\Structs\TickBinaryBox.cs" />
     <Compile Include="Platform\BarData.cs" />
     <Compile Include="Platform\BarLogic.cs" />
     <Compile Include="Platform\ChartProperties.cs" />
@@ -193,6 +194,7 @@
     <Compile Include="Provider\FillSimulator.cs" />
     <Compile Include="Provider\LogicalFill.cs" />
     <Compile Include="Provider\LogicalFillBinary.cs" />
+    <Compile Include="Provider\LogicalFillBinaryBox.cs" />
     <Compile Include="Provider\LogicalOrderHandler.cs" />
     <Compile Include="Provider\Packet.cs" />
     <Compile Include="Provider\PacketFactory.cs" />

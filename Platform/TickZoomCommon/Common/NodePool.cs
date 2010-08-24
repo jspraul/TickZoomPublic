@@ -26,39 +26,47 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.ServiceProcess;
-using System.Text;
 using System.Threading;
-
 using TickZoom.Api;
 
-namespace TickZoom.Warehouse
+namespace TickZoom.Common
 {
-	static class Program
+	public class NodePool<T>
 	{
-		/// <summary>
-		/// This method starts the service.
-		/// </summary>
-		static void Main(string[] args)
+		private Stack<LinkedListNode<T>> _nodes = new Stack<LinkedListNode<T>>();
+		private object _sync = new object();
+		private int count = 0;
+
+		public LinkedListNode<T> Create(T item)
 		{
-			try {
-				ServiceConnection connection = Factory.Provider.ProviderService();
-				if( args.Length > 0 ) {
-					Api.ProviderService commandLine = Factory.Utility.CommandLineProcess();
-					commandLine.Connection = connection;
-					commandLine.Run(args);
+			lock (_sync) {
+				if (_nodes.Count == 0) {
+					Interlocked.Increment(ref count);
+					return new LinkedListNode<T>(item);
 				} else {
-					Api.ProviderService service = Factory.Utility.WindowsService();
-					service.Connection = connection;
-					service.Run(args);
+					var node = _nodes.Pop();
+					node.Value = item;
+					return node;
 				}
-			} catch( Exception ex) {
-				string exception = ex.ToString();
-				System.Diagnostics.Debug.WriteLine( exception);
-				Console.WriteLine( exception);
-				Environment.Exit(1);
 			}
+		}
+
+		public void Free(LinkedListNode<T> node)
+		{
+			lock (_sync) {
+				_nodes.Push(node);
+			}
+		}
+
+		public void Clear()
+		{
+			lock (_sync) {
+				_nodes.Clear();
+			}
+		}
+		
+		public int Count {
+			get { return count; }
 		}
 	}
 }

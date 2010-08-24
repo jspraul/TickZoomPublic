@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -25,40 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading;
 
-using TickZoom.Api;
-
-namespace TickZoom.Warehouse
+namespace TickZoom.Api
 {
-	static class Program
-	{
-		/// <summary>
-		/// This method starts the service.
-		/// </summary>
-		static void Main(string[] args)
-		{
-			try {
-				ServiceConnection connection = Factory.Provider.ProviderService();
-				if( args.Length > 0 ) {
-					Api.ProviderService commandLine = Factory.Utility.CommandLineProcess();
-					commandLine.Connection = connection;
-					commandLine.Run(args);
-				} else {
-					Api.ProviderService service = Factory.Utility.WindowsService();
-					service.Connection = connection;
-					service.Run(args);
-				}
-			} catch( Exception ex) {
-				string exception = ex.ToString();
-				System.Diagnostics.Debug.WriteLine( exception);
-				Console.WriteLine( exception);
-				Environment.Exit(1);
-			}
-		}
+	[CLSCompliant(false)]
+	public class TickBinaryBox {
+		public TickBinary TickBinary;
 	}
 }

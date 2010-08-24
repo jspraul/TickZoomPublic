@@ -1,29 +1,26 @@
 #region Copyright
 /*
- * Copyright 2008 M. Wayne Walter
  * Software: TickZoom Trading Platform
- * User: Wayne Walter
+ * Copyright 2009 M. Wayne Walter
  * 
- * You can use and modify this software under the terms of the
- * TickZOOM General Public License Version 1.0 or (at your option)
- * any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  * 
- * Businesses are restricted to 30 days of use.
- *
+ * Business use restricted to 30 days except as otherwise stated in
+ * in your Service Level Agreement (SLA).
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * TickZOOM General Public License for more details.
- *
- * You should have received a copy of the TickZOOM General Public
- * License along with this program.  If not, see
+ * GNU General Public License for more details.
  * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see <http://www.tickzoom.org/wiki/Licenses>
+ * or write to Free Software Foundation, Inc., 51 Franklin Street,
+ * Fifth Floor, Boston, MA  02110-1301, USA.
  * 
- *
- * User: Wayne Walter
- * Date: 5/18/2009
- * Time: 12:54 PM
- * <http://www.tickzoom.org/wiki/Licenses>.
  */
 #endregion
 
@@ -58,7 +55,7 @@ namespace TickZoom.Interceptors
 			if( postProcess) context.Invoke();
 			
 			if( eventType == EventType.LogicalFill) {
-				fillHandler.ProcessFill(Strategy,(LogicalFill)eventDetail);
+				fillHandler.ProcessFill(Strategy,(LogicalFill) eventDetail);
 			}
 			
 			if( !postProcess) context.Invoke();

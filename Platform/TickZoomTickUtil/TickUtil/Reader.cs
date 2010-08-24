@@ -61,9 +61,12 @@ namespace TickZoom.TickUtil
 		MemoryStream memory;
 		byte[] buffer;
 		Progress progress = new Progress();
+		private Pool<TickBinaryBox> tickBoxPool;
+		private TickBinaryBox box;
 
 		public Reader()
 		{
+			tickBoxPool = Factory.TickUtil.TickPool();
 			storageFolder = Factory.Settings["AppDataFolder"];
 			if (storageFolder == null) {
 				throw new ApplicationException("Must set AppDataFolder property in app.config");
@@ -387,6 +390,9 @@ namespace TickZoom.TickUtil
 							} else {
 								tickCount++;
 							}
+							
+							box = tickBoxPool.Create();
+							box.TickBinary = tick;
 
 							return Yield.DidWork.Invoke(TickEventMethod);
 						}
@@ -407,7 +413,7 @@ namespace TickZoom.TickUtil
 				return Yield.DidWork.Repeat;
 			}
 		}
-
+		
 		private Yield StartEvent()
 		{
 			if (!receiver.OnEvent(symbol, (int)EventType.StartHistorical, null)) {
@@ -416,13 +422,16 @@ namespace TickZoom.TickUtil
 				if (!quietMode) {
 					LogInfo("Starting loading for " + symbol + " from " + tickIO.ToPosition());
 				}
+				box = tickBoxPool.Create();
+				box.TickBinary = tick;
+
 				return Yield.DidWork.Invoke(TickEventMethod);
 			}
 		}
 
 		private Yield TickEvent()
 		{
-			if (!receiver.OnEvent(symbol, (int)EventType.Tick, tick)) {
+			if (!receiver.OnEvent(symbol, (int)EventType.Tick, box)) {
 				return Yield.NoWork.Repeat;
 			} else {
 				return Yield.DidWork.Return;

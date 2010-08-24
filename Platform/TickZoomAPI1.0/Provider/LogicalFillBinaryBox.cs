@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -26,39 +26,34 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.ServiceProcess;
 using System.Text;
-using System.Threading;
 
 using TickZoom.Api;
 
-namespace TickZoom.Warehouse
+namespace TickZoom.Api
 {
-	static class Program
-	{
-		/// <summary>
-		/// This method starts the service.
-		/// </summary>
-		static void Main(string[] args)
+	public class LogicalFillBinaryBox : LogicalFill {
+		public LogicalFillBinary LogicalFillBinary;
+		
+		public int OrderId {
+			get { return LogicalFillBinary.OrderId; }
+		}
+
+		public TimeStamp Time {
+			get { return LogicalFillBinary.Time; }
+		}
+
+		public double Price {
+			get { return LogicalFillBinary.Price; }
+		}
+
+		public double Position {
+			get { return LogicalFillBinary.Position; }
+		}
+		
+		public override string ToString()
 		{
-			try {
-				ServiceConnection connection = Factory.Provider.ProviderService();
-				if( args.Length > 0 ) {
-					Api.ProviderService commandLine = Factory.Utility.CommandLineProcess();
-					commandLine.Connection = connection;
-					commandLine.Run(args);
-				} else {
-					Api.ProviderService service = Factory.Utility.WindowsService();
-					service.Connection = connection;
-					service.Run(args);
-				}
-			} catch( Exception ex) {
-				string exception = ex.ToString();
-				System.Diagnostics.Debug.WriteLine( exception);
-				Console.WriteLine( exception);
-				Environment.Exit(1);
-			}
+			return LogicalFillBinary.ToString();
 		}
 	}
 }

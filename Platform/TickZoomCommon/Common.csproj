@@ -68,6 +68,7 @@
     <Compile Include="Common\Model.cs" />
     <Compile Include="Common\ModelEvents.cs" />
     <Compile Include="Common\ModelLoaderCommon.cs" />
+    <Compile Include="Common\NodePool.cs" />
     <Compile Include="Common\Portfolio.cs" />
     <Compile Include="Common\ProjectFileLoader.cs" />
     <Compile Include="Common\RandomCommon.cs" />

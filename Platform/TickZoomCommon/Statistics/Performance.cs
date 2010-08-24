@@ -53,7 +53,6 @@ namespace TickZoom.Statistics
 		bool graphTrades = true;
 		Equity equity;
 		ProfitLoss profitLoss;
-		List<double> positionChanges = new List<double>();
 		PositionCommon position;
 		Model model;
 		
@@ -116,7 +115,6 @@ namespace TickZoom.Statistics
 		public bool OnProcessFill(LogicalFill fill)
 		{
 			if( fill.Position != position.Current) {
-				positionChanges.Add(fill.Position);
 				if( position.IsFlat) {
 					EnterComboTrade(fill);
 				} else if( fill.Position == 0) {
@@ -148,7 +146,6 @@ namespace TickZoom.Statistics
 		public bool OnProcessFill()
 		{
 			if( context.Position.Current != position.Current) {
-				positionChanges.Add(context.Position.Current);
 				if( position.IsFlat) {
 					EnterComboTrade(context.Position);
 				} else if( context.Position.IsFlat) {
@@ -321,10 +318,6 @@ namespace TickZoom.Statistics
 			set { throw new NotImplementedException(); }
 		}
 		
-		public List<double> PositionChanges {
-			get { return positionChanges; }
-		}
-
 		/// <summary>
 		/// Obsolete. Please use the ProfitLoss interface instead.
 		/// </summary>

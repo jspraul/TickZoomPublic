@@ -176,7 +176,7 @@ namespace MiscTest
 						while(true) {
 							while(!reader1.ReadQueue.TryDequeue(ref tick1)) { Thread.Sleep(1); }
 							TimeStamp ts1 = new TimeStamp(tick1.UtcTime);
-							log.Info("Tick# " + count + ". " + ts1);
+//							log.Info("Tick# " + count + ". " + ts1);
 							count++;
 						}
 					} catch( QueueException ex) {
