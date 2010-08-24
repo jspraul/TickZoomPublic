@@ -49,7 +49,7 @@ namespace TickZoom.TradingFramework
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(ExitStrategyTickTest));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
-		ExitStrategyMock exitStrategy;
+		private Strategy strategy;
 		
     	[TestFixtureSetUp]
     	public virtual void Init() {
@@ -58,41 +58,39 @@ namespace TickZoom.TradingFramework
     	}
     	
 		public void TickProcessing() {
-			Strategy random = new RandomCommon();
-			exitStrategy = new ExitStrategyMock(random);
-			random.IntervalDefault = Intervals.Day1;
-			random.ExitStrategy = exitStrategy;
+			strategy = new RandomCommon();
+			strategy.IntervalDefault = Intervals.Day1;
 			Starter starter = new HistoricalStarter();
 			starter.EndCount = 2048;
 			starter.ProjectProperties.Starter.SetSymbols("USD_JPY_YEARS");
 			starter.DataFolder = "TestData";
-			starter.Run(random);
-			
-			Assert.AreEqual(exitStrategy,random.ExitStrategy);
+			starter.Run(strategy);
 		}
 	
 		[Test]
 		public void LongEntry() {
 			TimeStamp expected = new TimeStamp("2004-01-02 09:56:32.682");
-			Assert.Greater(exitStrategy.signalChanges.Count,4,"Number of signal Changes");
-			Assert.AreEqual(expected,exitStrategy.signalChanges[2],"Long entry time");
-			Assert.AreEqual(1,exitStrategy.signalDirection[2],"Long entry signal");
+			foreach( var trade in strategy.Performance.ComboTrades) {
+				log.Info( trade);
+			}
+			Assert.Greater(strategy.Performance.ComboTrades.Count,4,"Number of signal Changes");
+			Assert.AreEqual(expected,strategy.Performance.ComboTrades[1].EntryTime,"Long entry time");
+			Assert.AreEqual(1,strategy.Performance.ComboTrades[1].Direction,"Long entry signal");
 		}
 			
 		[Test]
 		public void FlatEntry() {
 			TimeStamp expected = new TimeStamp("2004-01-02 09:57:49.975");
-			Assert.Greater(exitStrategy.signalDirection.Count,5,"count of signal direction");
-			Assert.AreEqual(0,exitStrategy.signalDirection[3],"Flat entry signal");
-			Assert.AreEqual(expected,exitStrategy.signalChanges[3],"Flat entry time");
+			Assert.Greater(strategy.Performance.ComboTrades.Count,5,"count of signal direction");
+			Assert.AreEqual(expected,strategy.Performance.ComboTrades[1].ExitTime,"Flat entry time");
 		}
 			
 		[Test]
 		public void ShortEntry() {
 			TimeStamp expected = new TimeStamp(2004,1,2,10,40,04,991);
-			Assert.Greater(exitStrategy.signalDirection.Count,10,"count of signal direction");
-			Assert.AreEqual(-1,exitStrategy.signalDirection[8],"Short entry signal");
-			Assert.AreEqual(expected,exitStrategy.signalChanges[8],"Short entry time");
+			Assert.Greater(strategy.Performance.ComboTrades.Count,10,"count of signal direction");
+			Assert.AreEqual(-1,strategy.Performance.ComboTrades[4].Direction,"Short entry signal");
+			Assert.AreEqual(expected,strategy.Performance.ComboTrades[4].EntryTime,"Short entry time");
 		}
 	}
 }

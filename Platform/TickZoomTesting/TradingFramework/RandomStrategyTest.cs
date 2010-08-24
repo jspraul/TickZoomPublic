@@ -38,7 +38,7 @@ namespace TickZoom.TradingFramework
 	public class RandomStrategyTest 
 	{
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-		RandomTestInner strategy;
+		RandomCommon strategy;
 		
     	[SetUp]
     	public virtual void Init() {
@@ -48,52 +48,13 @@ namespace TickZoom.TradingFramework
 		[Test]
 		public void Constructor()
 		{
-			strategy = new RandomTestInner();
+			strategy = new RandomCommon();
 			Assert.IsNotNull(strategy,"RandomStrategy constructor");
-		}
-
-		public class RandomTestInner : RandomCommon {
-			Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-			public List<Tick> signalChanges = new List<Tick>();
-			public List<double> signalDirection = new List<double>();
-			public double prevSignal = 0;
-			public override void OnInitialize()
-			{
-				Position = new TradingTest(this);
-				base.OnInitialize();
-				signalChanges = new List<Tick>();
-				List<int> signalDirection = new List<int>();
-			}
-			public class TradingTest : PositionCommon {
-				new RandomTestInner model;
-				public TradingTest( RandomTestInner formula ) : base(formula) {
-					this.model = formula;
-				}
-				public override double Current  {
-					get { return base.current; }
-				}
-				public override void Change(double position, double price, TimeStamp time)
-				{
-					base.Change(position, price, time);
-					if( model.prevSignal != position) {
-						model.signalChanges.Add(model.Ticks[0]);
-						model.signalDirection.Add(position);
-						model.prevSignal = position;
-					}
-				}
-			}
-			public void TickConsoleWrite() {
-				for( int i = 0; i< signalChanges.Count; i++) {
-					Tick tick = signalChanges[i];
-					double signal = signalDirection[i];
-					log.Notice( i + ": " + tick + " Direction: " + signal);
-				}
-			}
 		}
 			
 		public void TickProcessing()
 		{
-			strategy = new RandomTestInner();
+			strategy = new RandomCommon();
 			Starter starter = new HistoricalStarter();
     		starter.ProjectProperties.Starter.StartTime = new TimeStamp(2004,1,1,0,0,0);
     		starter.ProjectProperties.Starter.EndTime = new TimeStamp(2007,1,1,0,0,0);
@@ -107,27 +68,26 @@ namespace TickZoom.TradingFramework
 		public void LongEntry() {
 			TickProcessing();
 			TimeStamp expected = new TimeStamp("2004-01-02 09:56:32.682");
-			Assert.Greater(strategy.signalDirection.Count,4,"Long entry signal");
-			Assert.AreEqual(expected,strategy.signalChanges[2].Time,"Long entry time");
-			Assert.AreEqual(1,strategy.signalDirection[2],"Long entry signal");
+			Assert.Greater(strategy.Performance.ComboTrades.Count,4,"Long entry signal");
+			Assert.AreEqual(expected,strategy.Performance.ComboTrades[1].EntryTime,"Long entry time");
+			Assert.AreEqual(1,strategy.Performance.ComboTrades[1].Direction,"Long entry signal");
 		}
 			
 		[Test]
 		public void FlatEntry() {
 			TickProcessing();
 			TimeStamp expected = new TimeStamp("2004-01-02 09:57:49.975");
-			Assert.Greater(strategy.signalDirection.Count,5,"Flat entry signal");
-			Assert.AreEqual(expected,strategy.signalChanges[3].Time,"Flat entry time");
-			Assert.AreEqual(0,strategy.signalDirection[3],"Flat entry signal");
+			Assert.Greater(strategy.Performance.ComboTrades.Count,5,"Flat entry signal");
+			Assert.AreEqual(expected,strategy.Performance.ComboTrades[1].ExitTime,"Flat entry time");
 		}
 			
 		[Test]
 		public void ShortEntry() {
 			TickProcessing();
 			TimeStamp expected = new TimeStamp("2004-01-02 10:40:04.991");
-			Assert.Greater(strategy.signalDirection.Count,10,"Short entry signal");
-			Assert.AreEqual(expected,strategy.signalChanges[8].Time,"Short entry time");
-			Assert.AreEqual(-1,strategy.signalDirection[8],"Short entry signal");
+			Assert.Greater(strategy.Performance.ComboTrades.Count,10,"Short entry signal");
+			Assert.AreEqual(expected,strategy.Performance.ComboTrades[4].EntryTime,"Short entry time");
+			Assert.AreEqual(-1,strategy.Performance.ComboTrades[4].Direction,"Short entry signal");
 		}
 	}
 }

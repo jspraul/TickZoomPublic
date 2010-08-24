@@ -44,7 +44,6 @@ namespace TickZoom.Interceptors
 		private bool useSyntheticMarkets = true;
 		private bool useSyntheticStops = true;
 		private bool useSyntheticLimits = true;
-		private bool doReverseOrders = true;
 		private bool doEntryOrders = true;
 		private bool doExitOrders = true;
 		private bool doExitStrategyOrders = false;
@@ -85,7 +84,7 @@ namespace TickZoom.Interceptors
 							retVal = true;
 						}
 					}
-					if (doReverseOrders && order.TradeDirection == TradeDirection.Reverse) {
+					if (doEntryOrders && order.TradeDirection == TradeDirection.Reverse) {
 						if( OnProcessReverseOrder(order, tick)) {
 							retVal = true;
 						}
