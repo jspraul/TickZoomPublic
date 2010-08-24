@@ -49,7 +49,6 @@ namespace TickZoom.Interceptors
 		
 		private bool enableWrongSideOrders = false;
 		private bool isNextBar = false;
-		private int lotSize;
 		
 		public ReverseCommon(Strategy strategy) : base(strategy) {
 		}
@@ -57,7 +56,6 @@ namespace TickZoom.Interceptors
 		public void OnInitialize()
 		{
 			if( IsDebug) Log.Debug("OnInitialize()");
-			lotSize = Strategy.Data.SymbolInfo.Level2LotSize;
 			Strategy.Drawing.Color = Color.Black;
 			orders.buyMarket = Factory.Engine.LogicalOrder(Strategy.Data.SymbolInfo,Strategy);
 			orders.buyMarket.Type = OrderType.BuyMarket;
@@ -109,8 +107,11 @@ namespace TickZoom.Interceptors
 	        }
 	        
 	        public void SellMarket( double lots) {
+	        	if( Strategy.Position.IsShort) {
+	        		throw new ApplicationException("Cannot sell when reversing from a short position.");
+	        	}
 	        	orders.sellMarket.Price = 0;
-	        	orders.sellMarket.Positions = lots * lotSize;
+	        	orders.sellMarket.Positions = lots;
 	        	if( isNextBar) {
 	        	orders.sellMarket.Status = OrderStatus.NextBar;
 	        	} else {
@@ -123,10 +124,13 @@ namespace TickZoom.Interceptors
 	        }
 	        
 	        public void BuyMarket(double lots) {
+	        	if( Strategy.Position.IsLong) {
+	        		throw new ApplicationException("Cannot buy when reversing from a long position.");
+	        	}
 	        	orders.buyMarket.Price = 0;
-	        	orders.buyMarket.Positions = lots * lotSize;
+	        	orders.buyMarket.Positions = lots;
 	        	if( isNextBar) {
-	        	orders.buyMarket.Status = OrderStatus.NextBar;
+	        		orders.buyMarket.Status = OrderStatus.NextBar;
 	        	} else {
 	        		orders.buyMarket.Status = OrderStatus.Active;
 	        	}
@@ -145,7 +149,7 @@ namespace TickZoom.Interceptors
 	
 	        public void BuyLimit( double price, double lots) {
 	        	orders.buyLimit.Price = price;
-	        	orders.buyLimit.Positions = lots * lotSize;
+	        	orders.buyLimit.Positions = lots;
 	        	if( isNextBar) {
 	        	orders.buyLimit.Status = OrderStatus.NextBar;
 	        	} else {
@@ -166,7 +170,7 @@ namespace TickZoom.Interceptors
 	
 	        public void SellLimit( double price, double lots) {
 	        	orders.sellLimit.Price = price;
-	        	orders.sellLimit.Positions = lots * lotSize;
+	        	orders.sellLimit.Positions = lots;
 	        	if( isNextBar) {
 	        	orders.sellLimit.Status = OrderStatus.NextBar;
 	        	} else {
@@ -187,7 +191,7 @@ namespace TickZoom.Interceptors
 	
 	        public void BuyStop( double price, double lots) {
 	        	orders.buyStop.Price = price;
-	        	orders.buyStop.Positions = lots * lotSize;
+	        	orders.buyStop.Positions = lots;
 	        	if( isNextBar) {
 	        	orders.buyStop.Status = OrderStatus.NextBar;
 	        	} else {
@@ -208,7 +212,7 @@ namespace TickZoom.Interceptors
 	        
 	        public void SellStop( double price, double lots) {
 	        	orders.sellStop.Price = price;
-	        	orders.sellStop.Positions = lots * lotSize;
+	        	orders.sellStop.Positions = lots;
 	        	if( isNextBar) {
 	        	orders.sellStop.Status = OrderStatus.NextBar;
 	        	} else {

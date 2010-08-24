@@ -50,7 +50,6 @@ namespace TickZoom.Interceptors
 		private bool enableWrongSideOrders = false;
 		private bool allowReversal = true;
 		private bool isNextBar = false;
-		private int lotSize;
 		
 		public EnterCommon(Strategy strategy) : base(strategy) {
 		}
@@ -58,7 +57,6 @@ namespace TickZoom.Interceptors
 		public void OnInitialize()
 		{
 			if( IsDebug) Log.Debug("OnInitialize()");
-			lotSize = Strategy.Data.SymbolInfo.Level2LotSize;
 			Strategy.Drawing.Color = Color.Black;
 			orders.buyMarket = Factory.Engine.LogicalOrder(Strategy.Data.SymbolInfo,Strategy);
 			orders.buyMarket.Type = OrderType.BuyMarket;
@@ -127,7 +125,7 @@ namespace TickZoom.Interceptors
         	/// </summary>
         	/// <param name="allowReversal"></param>
         	orders.sellMarket.Price = 0;
-        	orders.sellMarket.Positions = lots * lotSize;
+        	orders.sellMarket.Positions = lots;
         	if( isNextBar) {
 	        	orders.sellMarket.Status = OrderStatus.NextBar;
         	} else {
@@ -157,7 +155,7 @@ namespace TickZoom.Interceptors
         		throw new TickZoomException("Strategy cannot enter long market when position is short. Set AllowReversal to true to allow this.");
         	}
         	orders.buyMarket.Price = 0;
-        	orders.buyMarket.Positions = lots * lotSize;
+        	orders.buyMarket.Positions = lots;
         	if( isNextBar) {
 	        	orders.buyMarket.Status = OrderStatus.NextBar;
         	} else {
@@ -189,7 +187,7 @@ namespace TickZoom.Interceptors
         		throw new TickZoomException("Strategy must be flat before setting a long limit entry.");
         	}
         	orders.buyLimit.Price = price;
-        	orders.buyLimit.Positions = lots * lotSize;
+        	orders.buyLimit.Positions = lots;
         	if( isNextBar) {
 	        	orders.buyLimit.Status = OrderStatus.NextBar;
         	} else {
@@ -213,7 +211,7 @@ namespace TickZoom.Interceptors
         		throw new TickZoomException("Strategy must be flat before setting a short limit entry.");
         	}
         	orders.sellLimit.Price = price;
-        	orders.sellLimit.Positions = lots * lotSize;
+        	orders.sellLimit.Positions = lots;
         	if( isNextBar) {
 	        	orders.sellLimit.Status = OrderStatus.NextBar;
         	} else {
@@ -237,7 +235,7 @@ namespace TickZoom.Interceptors
         		throw new TickZoomException("Strategy must be flat before setting a long stop entry.");
         	}
         	orders.buyStop.Price = price;
-        	orders.buyStop.Positions = lots * lotSize;
+        	orders.buyStop.Positions = lots;
         	if( isNextBar) {
 	        	orders.buyStop.Status = OrderStatus.NextBar;
         	} else {
@@ -261,7 +259,7 @@ namespace TickZoom.Interceptors
         		throw new TickZoomException("Strategy must be flat before setting a short stop entry.");
         	}
         	orders.sellStop.Price = price;
-        	orders.sellStop.Positions = lots * lotSize;
+        	orders.sellStop.Positions = lots;
         	if( isNextBar) {
 	        	orders.sellStop.Status = OrderStatus.NextBar;
         	} else {

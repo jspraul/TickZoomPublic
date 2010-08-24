@@ -64,7 +64,27 @@ namespace TickZoom.Common
 				{
 					int sig = randomEntries[randomIndex].Second % 3 - 1;
 					if( sig != Position.Current) {
-						 Position.Change(sig);
+						if( sig == 0) {
+							Orders.Exit.ActiveNow.GoFlat();
+						} else {
+							if( Position.IsFlat) {
+								if( sig > 0) {
+									Orders.Enter.ActiveNow.BuyMarket(sig);
+								} else if( sig < 0) {
+									Orders.Enter.ActiveNow.SellMarket(Math.Abs(sig));
+								}
+							} else {
+								if( sig > 0) {
+									if( !Position.IsLong) {
+										Orders.Reverse.ActiveNow.BuyMarket(sig);
+									}
+								} else if( sig < 0) {
+									if( !Position.IsShort) {
+										Orders.Reverse.ActiveNow.SellMarket(Math.Abs(sig));
+									}
+								}
+							}
+						}
 					}
 					randomIndex ++;
 				}

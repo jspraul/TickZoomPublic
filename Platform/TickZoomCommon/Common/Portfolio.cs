@@ -60,7 +60,6 @@ namespace TickZoom.Common
 			performance = new Performance(this);
 			FullName = this.GetType().Name;
 			Performance.GraphTrades = false;
-			int OptimizeTickEvent = 0;
 			RequestEvent(EventType.Tick);
 		}
 		
@@ -171,9 +170,8 @@ namespace TickZoom.Common
 				context.Position.Copy(Position);
 			}
 		}
-		
-		public override bool OnProcessTick(Tick tick)
-		{
+
+		private void ProcessMerge() {
 			if (portfolioType == PortfolioType.SingleSymbol) {
 				MergeSingleSymbol();
 			} else if (portfolioType == PortfolioType.MultiSymbol) {
@@ -181,6 +179,11 @@ namespace TickZoom.Common
 			} else {
 				throw new ApplicationException("PortfolioType was never set.");
 			}
+		}
+		
+		public override bool OnProcessTick(Tick tick)
+		{
+			ProcessMerge();
 			return true;
 		}
 

@@ -92,11 +92,13 @@ namespace TickZoom.Statistics
 			if( eventType == EventType.LogicalFill) {
 				OnProcessFill((LogicalFill) eventDetail);
 			}
-			if( eventType == EventType.Tick) {
+			if( eventType == EventType.Tick
+			  && model is PortfolioInterface
 // Uncommenting this will boost performance but the
 // tick event is still needed by a few parts of TZ.
 // After they are resolved, we can uncomment this.
-//			    && model is PortfolioInterface
+			 ) {
+			    
 				OnProcessFill();
 			}
 		}
