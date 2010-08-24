@@ -183,22 +183,22 @@ namespace TickZoom.Reports
 		
 		public void WriteMonths(TransactionPairs trades, TradeStats stats) {
 			if( trades.Count > 0) {
-				int year = 2003;
+				int year = 0;
 				double currentBalance = stats.BeginningBalance;
 				double yearBalance = stats.BeginningBalance;
 				double ytdProfitLoss = 0;
 				WriteYearHeader();
 				List<string> tableData = new List<string>();
 	        	for( int i=0; i<trades.Count; i++) {
-					if( trades[i].EntryTime.Year != year) {
+					if( trades[i].ExitTime.Year != year) {
 						tableData.Add( WriteYearTitles(year) );
 						yearBalance = yearBalance + ytdProfitLoss;
 						ytdProfitLoss = 0;
-						year = trades[i].EntryTime.Year;
+						year = trades[i].ExitTime.Year;
 					}
 					double profitLoss = trades.CalcProfitLoss(i);
 					string tableRow = "<tr>";
-					tableRow += "<td class=\"leftcol\">"+trades[i].EntryTime.Month+"/"+year+"</td>";
+					tableRow += "<td class=\"leftcol\">"+trades[i].ExitTime.Month+"/"+year+"</td>";
 					tableRow += "<td class=\"data\">"+Math.Round(profitLoss,2)+"</td>";
 					double monthlyReturn = ((currentBalance+profitLoss)/currentBalance)-1;
 					tableRow += "<td class=\"data\">"+Math.Round(monthlyReturn*100,2)+"%</td>";

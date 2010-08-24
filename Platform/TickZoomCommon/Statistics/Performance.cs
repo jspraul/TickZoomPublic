@@ -244,8 +244,8 @@ namespace TickZoom.Statistics
 		
 		public bool WriteReport(string name, string folder) {
 			name = name.StripInvalidPathChars();
-			TradeStatsReport tradeStats = new TradeStatsReport(this);
-			tradeStats.WriteReport(name, folder);
+//			TradeStatsReport tradeStats = new TradeStatsReport(this);
+//			tradeStats.WriteReport(name, folder);
 			StrategyStats stats = new StrategyStats(ComboTrades);
 			Equity.WriteReport(name,folder,stats);
 			IndexForReport index = new IndexForReport(this);
