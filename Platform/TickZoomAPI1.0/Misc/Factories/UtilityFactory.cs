@@ -37,6 +37,8 @@ namespace TickZoom.Api
 		PhysicalOrder PhysicalOrder( bool isActive, SymbolInfo symbol, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder, object tag);
 		SymbolHandler SymbolHandler(SymbolInfo symbol, Receiver receiver);
 		VerifyFeed VerifyFeed();
+		FillHandler FillHandler();
+		FillHandler FillHandler(StrategyInterface strategy);
 		FillSimulator FillSimulator();
 		FillSimulator FillSimulator(StrategyInterface strategy);
 		BreakPointInterface BreakPoint();

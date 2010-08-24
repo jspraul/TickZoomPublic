@@ -58,6 +58,12 @@ namespace TickZoom.Common
 		public FillSimulator FillSimulator(StrategyInterface strategy) {
 			return new FillSimulatorDefault(strategy);
 		}
+		public FillHandler FillHandler() {
+			return new FillHandlerDefault();
+		}
+		public FillHandler FillHandler(StrategyInterface strategy) {
+			return new FillHandlerDefault(strategy);
+		}
 		public BreakPointInterface BreakPoint() {
 			return new BreakPoint();
 		}

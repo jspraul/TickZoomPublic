@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Text;
 using NUnit.Framework;
 using TickZoom.Api;
 using TickZoom.Common;
@@ -39,12 +40,12 @@ namespace TickZoom.TradingFramework
 	[TestFixture]
 	public class BaseStatsTest
 	{
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(BaseStatsTest));
 		protected BaseStats baseStats;
 		protected int maxCount = 200000;
 		ExitStrategy exits;
 		RandomCommon random;
 		Starter  starter;
-		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		
 		[TestFixtureSetUp]
 		public void Setup() 
@@ -206,9 +207,11 @@ namespace TickZoom.TradingFramework
 		
 		[Test]
 		public void ProfitLoss() {
-//			for( int i = 0; i< manager.Trades.Count; i++) {
-//				TickConsole.WriteLine(i + ": " + manager.Trades[i]);
-//			}
+			StringBuilder sb = new StringBuilder();
+			for( int i = 0; i< random.Performance.ComboTrades.Count; i++) {
+				sb.AppendLine(i + "," + random.Performance.ComboTrades[i]);
+			}
+			log.Info("All trades: \n" + sb);
 			Assert.AreEqual(-4.7340,Math.Round(baseStats.ProfitLoss,4),"Profit Loss");
 		}
 

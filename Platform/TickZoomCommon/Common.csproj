@@ -77,7 +77,9 @@
     <Compile Include="Common\StrategyWatcher.cs" />
     <Compile Include="Data\TSTickConverter.cs" />
     <Compile Include="Enums\Trend.cs" />
+    <Compile Include="Interceptors\FillHandlerDefault.cs" />
     <Compile Include="Interceptors\FillSimulatorDefault.cs" />
+    <Compile Include="Interceptors\FillManager.cs" />
     <Compile Include="Interceptors\StrategyInterceptor.cs" />
     <Compile Include="ProviderUtilities\ServiceInstaller.cs" />
     <Compile Include="Reports\EquityStatsReport.cs" />
