@@ -62,8 +62,11 @@ namespace TickZoom.Common
 
 				if (Count > period && Input.BarCount > period) {
 					double past = Input[period];
-					double pres = Input[0];
-					double value = this[0] = (sum + Input[0] - Input[period]) / Math.Min(Count, period);
+					double present = Input[0];
+					double value = this[0] = (sum + present - past) / Math.Min(Count, period);
+				} else {
+					double present = Input[0];
+					double value = this[0] = (sum + present) / Count;
 				}
 			}
 		}

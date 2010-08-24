@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Text;
 using NUnit.Framework;
 using TickZoom.Api;
 using TickZoom.Common;
@@ -33,16 +34,16 @@ namespace TickZoom.Indicators
 {
 	public abstract class IndicatorTest
 	{
-		private static readonly Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(IndicatorTest));
 		IndicatorCommon indicator;
 		TestBars bars;
+		int rounding = 3;
 		
 		protected abstract IndicatorCommon CreateIndicator();
 		
 		protected abstract double [] GetExpectedResults();
-		
-		[SetUp]
-		public void Setup() {
+
+		private void InitializeIndicator() {
 			bars = Factory.Engine.TestBars(Intervals.Day1);
 			indicator = CreateIndicator();
 			Assert.IsNotNull(indicator, "constructor");
@@ -58,11 +59,13 @@ namespace TickZoom.Indicators
 			}
 		}
 		
-		[Test]
-		public void Values()
-		{
+		private void ProcessResults(bool isLogOnly) {
 			SymbolInfo symbol = Factory.Symbol.LookupSymbol("USD_JPY");
-			double[] results = GetExpectedResults();
+			StringBuilder sb = new StringBuilder();
+			double[] results = new double[] { 0D };
+			if( !isLogOnly) {
+				results = GetExpectedResults();
+			}
 			for( int i = 0; i < data.Length; i++) {
 				// open, high, low, close all the same.
 				bars.AddBar( symbol, data[i], data[i], data[i], data[i], 0);
@@ -74,10 +77,30 @@ namespace TickZoom.Indicators
 				}
 				indicator.OnBeforeIntervalOpen();
 				indicator.OnIntervalClose();
-				Assert.AreEqual(results[i],Math.Round(indicator[0]),"current result at " + i);
-				if( i > 1) Assert.AreEqual(results[i-1],Math.Round(indicator[1]),"result 1 back at " + i);
-				if( i > 2) Assert.AreEqual(results[i-2],Math.Round(indicator[2]),"result 2 back at " + i);
+				if( isLogOnly) {
+					sb.AppendLine( Math.Round(indicator[0],rounding) + ",");
+				} else {
+					Assert.AreEqual(results[i],Math.Round(indicator[0],rounding),"current result at " + i);
+					if( i > 1) Assert.AreEqual(results[i-1],Math.Round(indicator[1],rounding),"result 1 back at " + i);
+					if( i > 2) Assert.AreEqual(results[i-2],Math.Round(indicator[2],rounding),"result 2 back at " + i);
+				}
 			}
+			if( isLogOnly) {
+				log.Info( this.GetType().Name + " indicator results:\n" + sb);
+			}
+		}
+		
+		[SetUp]
+		public void Setup() {
+			InitializeIndicator();
+			ProcessResults( true);
+			InitializeIndicator();
+		}
+		
+		[Test]
+		public void Values()
+		{
+			ProcessResults(false);
 		}
 		
 		protected double[] data = new double[] {
