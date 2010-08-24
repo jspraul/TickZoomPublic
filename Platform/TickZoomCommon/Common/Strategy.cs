@@ -62,6 +62,8 @@ namespace TickZoom.Common
 		ExitStrategy exitStrategy;
 		OrderManager preOrderManager;
 		OrderManager postOrderManager;
+		FillManager preFillManager;
+		FillManager postFillManager;
 		
 		public Strategy()
 		{
@@ -96,10 +98,17 @@ namespace TickZoom.Common
 		    preOrderManager = Factory.Engine.OrderManager(this);
 			postOrderManager = Factory.Engine.OrderManager(this);
 			postOrderManager.PostProcess = true;
-			postOrderManager.ChangePosition = exitStrategy.Position.Change;
 			postOrderManager.DoEntryOrders = false;
 			postOrderManager.DoExitOrders = false;
 			postOrderManager.DoExitStrategyOrders = true;
+			
+		    preFillManager = new FillManager(this);
+			postFillManager = new FillManager(this);
+			postFillManager.PostProcess = true;
+			postFillManager.ChangePosition = exitStrategy.Position.Change;
+			postFillManager.DoEntryOrders = false;
+			postFillManager.DoExitOrders = false;
+			postFillManager.DoExitStrategyOrders = true;
 		}
 		
 		public override void OnConfigure()
@@ -115,10 +124,12 @@ namespace TickZoom.Common
 
 			BreakPoint.TrySetStrategy(this);
 			AddInterceptor(preOrderManager);
+			AddInterceptor(preFillManager);
 			AddInterceptor(performance.Equity);
 			AddInterceptor(performance);
 			AddInterceptor(exitStrategy);
 			AddInterceptor(postOrderManager);
+			AddInterceptor(postFillManager);
 		}
 		
 		public override void OnEvent(EventContext context, EventType eventType, object eventDetail)
