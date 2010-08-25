@@ -44,5 +44,7 @@ namespace TickZoom.Api
 		TickQueue TickQueue { get; }
 		bool IsRealTime { get; }
 		TickIO LastTick { get; }
+		bool KeepReceived { get; set; }
+		List<TickBinary> GetReceived();
 	}
 }

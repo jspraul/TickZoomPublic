@@ -45,6 +45,12 @@ namespace TickZoom.Common
 		private Task task;
 		private static object taskLocker = new object();
 		private Pool<TickBinaryBox> tickPool = Factory.TickUtil.TickPool();
+		private bool keepReceived = false;
+		private List<TickBinary> received = new List<TickBinary>();
+		
+		public List<TickBinary> GetReceived() {
+			return received;
+		}
 
 		public TickQueue TickQueue {
 			get { return tickQueue; }
@@ -306,7 +312,8 @@ namespace TickZoom.Common
 				}
 				Thread.Sleep(100);
 			}
-			log.Notice("Last tick received: " + tickIO.ToPosition());
+			log.Notice("Expected " + expectedTickCount + " and received " + count + " ticks.");
+			log.Notice("Last tick received at : " + tickIO.ToPosition());
 			Factory.TickUtil.TickQueue("Stats").LogStats();
 			Dispose();
 			if( propagateException != null) {
@@ -332,6 +339,9 @@ namespace TickZoom.Common
 //#endif
 //						Thread.Sleep(2);
 //					}
+					if( keepReceived) {
+						received.Add(tickBinary);
+					}
 					startTime = Factory.TickCount;
 					tickIO.Inject(tickBinary);
 					if (debug && count < 5) {
@@ -549,6 +559,11 @@ namespace TickZoom.Common
 		
 		public TickIO LastTick {
 			get { return lastTick; }
+		}
+		
+		public bool KeepReceived {
+			get { return keepReceived; }
+			set { keepReceived = value; }
 		}
 	}
 }
