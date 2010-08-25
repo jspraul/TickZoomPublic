@@ -43,13 +43,8 @@ namespace Loaders
 		ExampleBreakoutStops strategy;
 		
 		public ExampleBreakoutStopsTest() {
-<<<<<<< HEAD
 			ShowCharts = false;
 			StoreKnownGood = false;
-=======
-			ShowCharts = true;
-			StoreKnownGood = true;
->>>>>>> Added unit test and fix for sell stop breakout strategy.
 		}
 			
 		[TestFixtureSetUp]
