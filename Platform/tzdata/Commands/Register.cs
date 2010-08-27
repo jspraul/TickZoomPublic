@@ -64,20 +64,21 @@ namespace TickZoom.TZData
 				key.SetValue("Path",directory);
 				key.SetValue(variable,directory);
 				broadcastChange = true;
-			}
-			// Does it have an old path?
-			if(path.Contains(tickZoom) && tickZoom != directory) {
-				// Strip out the old path.
-				// Try first with semi-colons, then without.
-				path = path.Replace(";"+tickZoom,"");
-				if( path.Contains(tickZoom)) path = path.Replace(tickZoom+";","");
-				if( path.Contains(tickZoom)) path = path.Replace(tickZoom,"");
-				broadcastChange = true;
-			}
-			// Does it have the current path?
-			if(!path.Contains(directory)) {
-				path += ";" + directory;
-				broadcastChange = true;
+			} else {
+				// Does it have an old path?
+				if(path.Contains(tickZoom) && tickZoom != directory) {
+					// Strip out the old path.
+					// Try first with semi-colons, then without.
+					path = path.Replace(";"+tickZoom,"");
+					if( path.Contains(tickZoom)) path = path.Replace(tickZoom+";","");
+					if( path.Contains(tickZoom)) path = path.Replace(tickZoom,"");
+					broadcastChange = true;
+				}
+				// Does it have the current path?
+				if(!path.Contains(directory)) {
+					path += ";" + directory;
+					broadcastChange = true;
+				}
 			}
 			if( broadcastChange) {
 				key.SetValue("Path",directory);
