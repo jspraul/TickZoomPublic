@@ -35,8 +35,8 @@ using TickZoom.Api;
 
 namespace TickZoom.Common
 {
-	public class LogicalOrderHandlerDefault : LogicalOrderHandler {
-		private static readonly Log log = Factory.SysLog.GetLogger(typeof(LogicalOrderHandlerDefault));
+	public class OrderAlgorithmDefault : LogicalOrderHandler {
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(OrderAlgorithmDefault));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		SymbolInfo symbol;
@@ -48,7 +48,7 @@ namespace TickZoom.Common
 		double actualPosition;
 		double desiredPosition;
 		
-		public LogicalOrderHandlerDefault(SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
+		public OrderAlgorithmDefault(SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
 			this.symbol = symbol;
 			this.brokerOrders = brokerOrders;
 			this.originalLogicals = new ActiveList<LogicalOrder>();
@@ -108,11 +108,17 @@ namespace TickZoom.Common
 			return false;
 		}
 		
-		private void TryCancelBrokerOrder(PhysicalOrder physical) {
-			if( physical.IsActive) {
+		private bool TryCancelBrokerOrder(PhysicalOrder physical) {
+			bool result = false;
+			if( physical.IsActive &&
+			    // Market orders can't be canceled.
+			    physical.Type != OrderType.BuyMarket &&
+			    physical.Type != OrderType.SellMarket) {
 				if( trace) log.Trace("Cancel Broker Order " + physical);
 				brokerOrders.OnCancelBrokerOrder(physical);
+				result = true;	
 			}
+			return result;
 		}
 		
 		private void TryChangeBrokerOrder(PhysicalOrder physical) {
@@ -220,8 +226,8 @@ namespace TickZoom.Common
 			}
 		}
 		
-		private void ProcessExtraPhysical(PhysicalOrder physical) {
-			TryCancelBrokerOrder( physical);
+		private bool ProcessExtraPhysical(PhysicalOrder physical) {
+			return TryCancelBrokerOrder( physical);
 		}
 		
 		private double FindPendingAdjustments() {
@@ -280,7 +286,7 @@ namespace TickZoom.Common
 				return true;
 			} else if( delta < 0) {
 				OrderSide side;
-				if( actualPosition > 0) {
+				if( actualPosition > 0 && desiredPosition < 0) {
 					side = OrderSide.Sell;
 					delta = actualPosition;
 				} else {
@@ -310,7 +316,9 @@ namespace TickZoom.Common
 		
 		private bool CheckForPending() {
 			foreach( var order in physicalOrders) {
-				if( !order.IsActive) {
+				if( !order.IsActive ||
+				    order.Type == OrderType.BuyMarket ||
+				    order.Type == OrderType.SellMarket) {
 					return true;	
 				}
 			}
@@ -374,12 +382,19 @@ namespace TickZoom.Common
 		}
 		
 		public void PerformCompare() {
-			int orderCount = originalLogicals == null ? 0 : originalLogicals.Count;
-			if( debug) log.Debug( "PerformCompare() for " + symbol + " with " +
+			if( debug) log.Debug( "PerformCompare for " + symbol + " with " +
 			                     actualPosition + " actual " + 
 			                     desiredPosition + " desired and " +
-			                     orderCount + " logical, " +
+			                     originalLogicals.Count + " logical, " +
 			                     physicalOrders.Count + " physical.");
+			
+			foreach( var order in originalLogicals) {
+				log.Info("Logical Order: " + order);
+			}
+			
+			foreach( var order in physicalOrders) {
+				log.Info("Physical Order: " + order);
+			}
 			
 			if( CheckForPending()) {
 				if( debug) log.Debug("Found pending physical orders. Skipping compare.");
@@ -409,14 +424,22 @@ namespace TickZoom.Common
 			double pendingAdjustments = FindPendingAdjustments();
 			
 			if( debug) log.Debug("Found " + physicalOrders.Count + " extra physicals.");
+			int cancelCount = 0;
 			while( physicalOrders.Count > 0) {
 				physical = physicalOrders.First.Value;
-				ProcessExtraPhysical(physical);
+				if( ProcessExtraPhysical(physical)) {
+					cancelCount++;
+				}
 				physicalOrders.Remove(physical);
+			}
+			
+			if( cancelCount > 0) {
+				// Wait for cancels to complete before creating any orders.
+				return;
 			}
 
 			if( TrySyncPosition( pendingAdjustments)) {
-				// Wait for fill to process creating any orders.
+				// Wait for fill to process before creating any orders.
 				return;
 			}
 			

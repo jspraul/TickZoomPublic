@@ -771,6 +771,31 @@ namespace Orders
 		}
 		
 		[Test]
+		public void Test14ReduceFromLong() {
+			handler.ClearPhysicalOrders();
+			
+			double desiredPosition = 1;
+			handler.SetActualPosition(2);
+
+			handler.SetDesiredPosition(desiredPosition);
+			handler.SetLogicalOrders(null);
+			handler.PerformCompare();
+			
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
+			Assert.AreEqual(0,handler.ChangedOrders.Count);
+			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			
+			PhysicalOrder order = handler.CreatedOrders[0];
+			Assert.AreEqual(OrderType.SellMarket,order.Type);
+			Assert.AreEqual(OrderSide.Sell,order.Side);
+			Assert.AreEqual(0,order.Price);
+			Assert.AreEqual(1,order.Size);
+			Assert.AreEqual(0,order.LogicalOrderId);
+			Assert.IsNull(order.BrokerOrder);
+			
+		}
+		
+		[Test]
 		public void Test15LongToFlat() {
 			handler.ClearPhysicalOrders();
 			
@@ -849,7 +874,7 @@ namespace Orders
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
 			Assert.AreEqual(0,handler.CreatedOrders.Count);
-			Assert.AreEqual(1,handler.CanceledOrders.Count);
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
 		}
 		
 		[Test]
@@ -869,7 +894,7 @@ namespace Orders
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
 			Assert.AreEqual(0,handler.CreatedOrders.Count);
-			Assert.AreEqual(1,handler.CanceledOrders.Count);
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
 		}
 		
 		[Test]
@@ -888,7 +913,7 @@ namespace Orders
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
 			Assert.AreEqual(0,handler.CreatedOrders.Count);
-			Assert.AreEqual(1,handler.CanceledOrders.Count);
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
 		}
 		
 		[Test]
@@ -907,7 +932,7 @@ namespace Orders
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
 			Assert.AreEqual(0,handler.CreatedOrders.Count);
-			Assert.AreEqual(1,handler.CanceledOrders.Count);
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
 		}
 		
 		[Test]
@@ -925,8 +950,8 @@ namespace Orders
 			handler.PerformCompare();
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
-			Assert.AreEqual(1,handler.CreatedOrders.Count);
-			Assert.AreEqual(1,handler.CanceledOrders.Count);
+			Assert.AreEqual(0,handler.CreatedOrders.Count);
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
 		}
 		
 		[Test]
@@ -944,8 +969,8 @@ namespace Orders
 			handler.PerformCompare();
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
-			Assert.AreEqual(1,handler.CreatedOrders.Count);
-			Assert.AreEqual(1,handler.CanceledOrders.Count);
+			Assert.AreEqual(0,handler.CreatedOrders.Count);
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
 		}
 		
 		[Test]
@@ -963,19 +988,15 @@ namespace Orders
 			handler.PerformCompare();
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
-			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			Assert.AreEqual(0,handler.CreatedOrders.Count);
 			Assert.AreEqual(1,handler.CanceledOrders.Count);
 			
-//			handler.ClearPhysicalOrders();
-//			handler.AddPhysicalOrder(true,OrderSide.Buy,OrderType.BuyLimit,134.12,15,0,sellOrder1);
-//			
-//			LogicalFill fill = new LogicalFillBinary(10,23.35,TimeStamp.UtcNow,0);
-//			handler.ProcessFill( fill);
-//			handler.PerformCompare();
-//			
-//			Assert.AreEqual(0,handler.ChangedOrders.Count);
-//			Assert.AreEqual(0,handler.CreatedOrders.Count);
-//			Assert.AreEqual(1,handler.CanceledOrders.Count);
+			handler.ClearPhysicalOrders();
+			handler.PerformCompare();
+			
+			Assert.AreEqual(0,handler.ChangedOrders.Count);
+			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
 		}
 		
 		[Test]
@@ -993,19 +1014,9 @@ namespace Orders
 			handler.PerformCompare();
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
-			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			Assert.AreEqual(0,handler.CreatedOrders.Count);
 			Assert.AreEqual(1,handler.CanceledOrders.Count);
 			
-//			handler.ClearPhysicalOrders();
-//			handler.AddPhysicalOrder(true,OrderSide.SellShort,OrderType.SellLimit,134.12,15,0,sellOrder1);
-//			
-//			LogicalFill fill = new LogicalFillBinary(-10,23.35,TimeStamp.UtcNow,0);
-//			handler.ProcessFill( fill);
-//			handler.PerformCompare();
-//			
-//			Assert.AreEqual(0,handler.ChangedOrders.Count);
-//			Assert.AreEqual(0,handler.CreatedOrders.Count);
-//			Assert.AreEqual(1,handler.CanceledOrders.Count);
 		}
 		
 		[Test]
@@ -1027,7 +1038,7 @@ namespace Orders
 			handler.PerformCompare();
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
-			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			Assert.AreEqual(0,handler.CreatedOrders.Count);
 			Assert.AreEqual(2,handler.CanceledOrders.Count);
 		}
 		
@@ -1219,19 +1230,15 @@ namespace Orders
 			handler.PerformCompare();
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
-			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			Assert.AreEqual(0,handler.CreatedOrders.Count);
 			Assert.AreEqual(1,handler.CanceledOrders.Count);
 			
-//			handler.ClearPhysicalOrders();
-//			handler.AddPhysicalOrder(true,OrderSide.SellShort,OrderType.SellLimit,134.12,15,0,sellOrder1);
-//			
-//			LogicalFill fill = new LogicalFillBinary(-10,23.35,TimeStamp.UtcNow,0);
-//			handler.ProcessFill( fill);
-//			handler.PerformCompare();
-//			
-//			Assert.AreEqual(0,handler.ChangedOrders.Count);
-//			Assert.AreEqual(0,handler.CreatedOrders.Count);
-//			Assert.AreEqual(1,handler.CanceledOrders.Count);
+			handler.ClearPhysicalOrders();
+			handler.PerformCompare();
+			
+			Assert.AreEqual(0,handler.ChangedOrders.Count);
+			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
 		}
 		
 		[Test]
@@ -1253,8 +1260,16 @@ namespace Orders
 			handler.PerformCompare();
 			
 			Assert.AreEqual(0,handler.ChangedOrders.Count);
-			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			Assert.AreEqual(0,handler.CreatedOrders.Count);
 			Assert.AreEqual(2,handler.CanceledOrders.Count);
+			
+			handler.ClearPhysicalOrders();
+			handler.PerformCompare();
+			
+			Assert.AreEqual(0,handler.ChangedOrders.Count);
+			Assert.AreEqual(1,handler.CreatedOrders.Count);
+			Assert.AreEqual(0,handler.CanceledOrders.Count);
+			
 		}
 
 		public class TestBrokerProvider : PhysicalOrderHandler, LogicalOrderHandler {

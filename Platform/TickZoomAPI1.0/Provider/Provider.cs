@@ -29,6 +29,15 @@ using System.Collections.Generic;
 
 namespace TickZoom.Api
 {
+	/// <summary>
+	/// Allows automated testing code to directly cause broker orders
+	/// to occur for testing of fail-safe and other logic in the Provider.
+	/// </summary>
+	public interface TestableProvider : Provider, PhysicalOrderHandler
+	{
+		
+	}
+	
 	public interface Provider : IDisposable
 	{
 		void SendEvent(Receiver receiver, SymbolInfo symbol, int eventType, object eventDetail);

@@ -58,8 +58,10 @@ namespace TickZoom.Common
 			sb.Append(type);
 			sb.Append(" ");
 			sb.Append(symbol);
-			sb.Append(" at ");
-			sb.Append(price);
+			if( type != OrderType.BuyMarket && type != OrderType.SellMarket) {
+				sb.Append(" at ");
+				sb.Append(price);
+			}
 			if( tag != null) {
 				sb.Append(" ");
 				sb.Append(tag);

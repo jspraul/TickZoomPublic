@@ -608,12 +608,19 @@ namespace TickZoom.MBTFIX
 			} catch( FormatException) {
 			}
 			int quantity = packetFIX.LeavesQuantity;
-			PhysicalOrder order = Factory.Utility.PhysicalOrder(
-				isActive, symbolInfo, side, orderType, packetFIX.Price, quantity, logicalOrderId, packetFIX.ClientOrderId, note);
-			if( info && (LogRecovery || !IsRecovery) ) {
-				log.Info("Updated order: " + order + ".  Executed: " + packetFIX.CumulativeQuantity + " Remaining: " + packetFIX.LeavesQuantity);
+			if( quantity > 0) {
+				PhysicalOrder order = Factory.Utility.PhysicalOrder(
+					isActive, symbolInfo, side, orderType, packetFIX.Price, quantity, logicalOrderId, packetFIX.ClientOrderId, note);
+				if( info && (LogRecovery || !IsRecovery) ) {
+					log.Info("Updated order: " + order + ".  Executed: " + packetFIX.CumulativeQuantity + " Remaining: " + packetFIX.LeavesQuantity);
+				}
+				openOrders[packetFIX.ClientOrderId] = order;
+			} else {
+				if( info && (LogRecovery || !IsRecovery) ) {
+					log.Info("Order Completely Filled. Id: " + packetFIX.ClientOrderId + ".  Executed: " + packetFIX.CumulativeQuantity);
+				}
+				openOrders.Remove(packetFIX.ClientOrderId);
 			}
-			openOrders[packetFIX.ClientOrderId] = order;
 			
 			if( trace) {
 				log.Trace("Updated order list:");
@@ -624,13 +631,6 @@ namespace TickZoom.MBTFIX
 			}
 		}
 
-		public void UpdatePartial( PacketFIX4_4 packetFIX) {
-			string clientOrderId = packetFIX.OriginalClientOrderId;
-			if( clientOrderId == null) {
-				clientOrderId = packetFIX.ClientOrderId;
-			}
-		}
-		
 		private void TestMethod(PacketFIX4_4 packetFIX) {
 			string account = packetFIX.Account;
 			string destination = packetFIX.Destination;
@@ -694,23 +694,9 @@ namespace TickZoom.MBTFIX
 			if( !IsRecovered) {
 				throw new ApplicationException("PositionChange event received prior to completing FIX recovery. Current connection status is: " + ConnectionStatus);
 			}
-			log.Info("Received PositionChange for " + symbol + " with position " + signal + " and the following orders:");
 			
-			if( orders != null) {
-				var next = orders.First;
-				for( var node = next; node != null; node = next) {
-					next = node.Next;
-					LogicalOrder order = node.Value;
-					log.Info("Logical Order: " + order);
-				}
-			}
-			
-			if( openOrders != null) {
-				foreach( var kvp in openOrders) {
-					PhysicalOrder order = kvp.Value;
-					log.Info("Physical Order: " + order);
-				}
-			}
+			int orderCount = orders == null ? 0 : orders.Count;
+			log.Info("Received PositionChange for " + symbol + " with position " + signal + " and " + orderCount + " orders.");
 			
 			LogicalOrderHandler handler = GetOrderHandler(symbol.BinaryIdentifier);
 			handler.SetDesiredPosition(signal);
@@ -820,7 +806,9 @@ namespace TickZoom.MBTFIX
 					fixMsg.SetTimeInForce(1);
 					break;
 			}
-			fixMsg.SetOriginalClientOrderId((string)physicalOrder.BrokerOrder);
+			if( isChange) {
+				fixMsg.SetOriginalClientOrderId((string)physicalOrder.BrokerOrder);
+			}
 			fixMsg.SetLocateRequired("N");
 			fixMsg.SetTransactTime(timeStamp);
 			fixMsg.SetOrderQuantity((int)physicalOrder.Size);

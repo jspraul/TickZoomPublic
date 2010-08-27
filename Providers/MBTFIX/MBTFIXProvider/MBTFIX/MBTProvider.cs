@@ -34,7 +34,7 @@ using TickZoom.MBTQuotes;
 
 namespace TickZoom.MBTFIX
 {
-	public class MBTProvider : Provider
+	public class MBTProvider : TestableProvider
 	{
 		MBTFIXProvider fixProvider = new MBTFIXProvider();
 		MBTQuotesProvider quotesProvider = new MBTQuotesProvider();
@@ -85,5 +85,20 @@ namespace TickZoom.MBTFIX
 	            }
     		}
 	    }
+		
+		public void OnChangeBrokerOrder(PhysicalOrder order)
+		{
+			fixProvider.OnChangeBrokerOrder(order);
+		}
+		
+		public void OnCreateBrokerOrder(PhysicalOrder order)
+		{
+			fixProvider.OnCreateBrokerOrder(order);
+		}
+		
+		public void OnCancelBrokerOrder(PhysicalOrder order)
+		{
+			fixProvider.OnCancelBrokerOrder(order);
+		}
 	}
 }

@@ -221,6 +221,9 @@ namespace TickZoom.Common
 		{
 			if (debug)
 				log.Debug("VerifyFeed");
+			int pauseSeconds = 3;
+			log.Info("Sleeping " + pauseSeconds + " seconds to allow checking for over filling of orders.");
+			Thread.Sleep( pauseSeconds * 1000);
 			long startTime = Factory.TickCount;
 			count = 0;
 			double position;

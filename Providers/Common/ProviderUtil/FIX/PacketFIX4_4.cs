@@ -137,6 +137,9 @@ namespace TickZoom.MBTFIX
 				case 150:
 					result = GetString(out executionType);
 					break;
+				case 151:
+					result = GetInt(out leavesQuantity);
+					break;
 				case 460:
 					result = GetInt(out productType);
 					break;

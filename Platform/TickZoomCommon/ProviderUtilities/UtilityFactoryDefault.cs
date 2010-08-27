@@ -44,7 +44,7 @@ namespace TickZoom.Common
 			return new WindowsService();
 		}
 		public LogicalOrderHandler LogicalOrderHandler(SymbolInfo symbol, PhysicalOrderHandler handler) {
-			return new LogicalOrderHandlerDefault(symbol,handler);
+			return new OrderAlgorithmDefault(symbol,handler);
 		}
 		public SymbolHandler SymbolHandler(SymbolInfo symbol, Receiver receiver) {
 			return new SymbolHandlerDefault(symbol,receiver);

@@ -145,47 +145,37 @@ namespace TickZoom.Test
 #endif
 
 		[Test]
-		public void TestMarketOrder() {
+		public void TestSignalChangeWithExtraPosition() {
+			
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
+				if( !(provider is TestableProvider)) return;
+				var testableProvider = provider as TestableProvider;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				int secondsDelay = 5;
-				if(debug) log.Debug("===TestMarketOrder===");
+				if(debug) log.Debug("===TestSignalChanges===");
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);
-				ClearOrders();
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			double expectedPosition = 0;
+	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
 	  			long count = verify.Wait(symbol,secondsDelay);
-	  			Assert.GreaterOrEqual(count,1,"at least one tick");
-	  			double desiredPosition = 2;
-	  			log.Warn("Sending 1");
-	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,0);
-	  			double actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
-	
-	  			desiredPosition = 0;
-	  			log.Warn("Sending 2");
-	  			CreateExit(provider,verify,OrderType.SellMarket,desiredPosition,actualPosition);
-	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
-	
-	  			desiredPosition = 2;
-	  			log.Warn("Sending 3");
-	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,actualPosition);
-	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
-	
-	  			desiredPosition = 2;
-	  			log.Warn("Sending 4");
-	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,actualPosition);
-	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
+
+	  			expectedPosition = 2;
+	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
+	  			double position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
+	  			Assert.AreEqual(expectedPosition,position,"position");
 	  			
-	  			desiredPosition = 0;
-	  			log.Warn("Sending 5");
-	  			CreateExit(provider,verify,OrderType.SellMarket,desiredPosition,actualPosition);
-	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
+	  			var brokerOrder = new object();
+	  			var note = "Spurious order created for testing fail-safe operation.";
+	  			var order = Factory.Utility.PhysicalOrder( true, symbol, OrderSide.Buy, OrderType.BuyMarket, 0, 2, 0, brokerOrder, note);
+	  			testableProvider.OnCreateBrokerOrder(order);
+	  			
+	  			// VerifyPosition gives time for order to get filled and also for fail-safe
+	  			// to close it out again before actually verifying the position again.
+
+	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
+	  			Assert.AreEqual(expectedPosition,position,"position");
+	
 			}
 		}
 
@@ -234,6 +224,51 @@ namespace TickZoom.Test
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
 	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(expectedPosition,position,"position");
+			}
+		}
+		
+		[Test]
+		public void TestMarketOrder() {
+			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
+			using( Provider provider = ProviderFactory()) {
+				provider.SendEvent(verify,null,(int)EventType.Connect,null);
+				int secondsDelay = 5;
+				if(debug) log.Debug("===TestMarketOrder===");
+				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
+				VerifyConnected(verify);
+				ClearOrders();
+	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			long count = verify.Wait(symbol,secondsDelay);
+	  			Assert.GreaterOrEqual(count,1,"at least one tick");
+	  			double desiredPosition = 2;
+	  			log.Notice("Sending 1");
+	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,0);
+	  			double actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
+	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
+	
+	  			desiredPosition = 0;
+	  			log.Warn("Sending 2");
+	  			CreateExit(provider,verify,OrderType.SellMarket,desiredPosition,actualPosition);
+	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
+	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
+	
+	  			desiredPosition = 2;
+	  			log.Warn("Sending 3");
+	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,actualPosition);
+	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
+	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
+	
+	  			desiredPosition = 2;
+	  			log.Warn("Sending 4");
+	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,actualPosition);
+	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
+	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
+	  			
+	  			desiredPosition = 0;
+	  			log.Warn("Sending 5");
+	  			CreateExit(provider,verify,OrderType.SellMarket,desiredPosition,actualPosition);
+	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
+	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 			}
 		}
 

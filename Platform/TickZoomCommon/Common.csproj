@@ -130,7 +130,7 @@
     <Compile Include="Statistics\StrategyStats.cs" />
     <Compile Include="Statistics\TradeStats.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProviderUtilities\LogicalOrderHandlerDefault.cs" />
+    <Compile Include="ProviderUtilities\OrderAlgorithmDefault.cs" />
     <Compile Include="ProviderUtilities\AssemblyAttributes.cs" />
     <Compile Include="ProviderUtilities\CommandLine.cs" />
     <Compile Include="ProviderUtilities\PhysicalOrderDefault.cs" />
