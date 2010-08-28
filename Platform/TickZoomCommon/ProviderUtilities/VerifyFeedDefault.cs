@@ -377,15 +377,16 @@ namespace TickZoom.Common
 
 		public bool OnSend(TickBinaryBox o)
 		{
+			bool result = false;
 			try {
-				bool result = tickQueue.TryEnqueue(ref o.TickBinary);
+				result = tickQueue.TryEnqueue(ref o.TickBinary);
 				if( result) {
 					tickPool.Free(o);
 				}
 			} catch (QueueException) {
 				// Queue already terminated.
 			}
-			return true;
+			return result;
 		}
 
 		Dictionary<long, double> actualPositions = new Dictionary<long, double>();
