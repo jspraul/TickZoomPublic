@@ -49,7 +49,7 @@ namespace Loaders
 		}
 		
 		public override void OnLoad(ProjectProperties properties) {
-			ExampleOrderStrategy strategy = (ExampleOrderStrategy) CreateStrategy("ExampleOrderStrategy",name);
+			var strategy =  new ExampleOrderStrategy();
 			strategy.Multiplier = 10D;
 			TopModel = strategy;
 		}

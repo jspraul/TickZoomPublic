@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -24,32 +24,38 @@
  */
 #endregion
 
+
 using System;
-using System.Collections.Generic;
+using TickZoom;
 using TickZoom.Api;
 using TickZoom.Common;
 
 namespace TickZoom.Examples
 {
 
-	/// <summary>
-	/// Description of Starter.
-	/// </summary>
-	public class ExampleOrdersLoader : ModelLoaderCommon
+	public class Test5000Strategies : ModelLoaderCommon
 	{
-		public ExampleOrdersLoader() {
+		public Test5000Strategies() {
 			/// <summary>
 			/// IMPORTANT: You can personalize the name of each model loader.
 			/// </summary>
-			category = "Example";
-			name = "Orders";
+			category = "Test";
+			name = "5,000 Strategies";
+			this.IsVisibleInGUI = true;
 		}
 		
 		public override void OnInitialize(ProjectProperties properties) {
 		}
 		
 		public override void OnLoad(ProjectProperties properties) {
-			TopModel = GetStrategy("ExampleOrderStrategy");
+			Portfolio portfolio = new Portfolio5000Strategies();
+			for( int i=0; i<500; i++) {
+				Strategy strategy = new ExampleReversalStrategy();
+				strategy.IsActive = false;
+				portfolio.AddDependency(strategy);
+			}
+			portfolio.Name = "Market Order Portfolio";
+			TopModel = portfolio;
 		}
 	}
 }

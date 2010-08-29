@@ -103,9 +103,6 @@ namespace TickZoom.Interceptors
         #region Orders
 
         public void GoFlat() {
-        	if( Strategy.Position.IsFlat) {
-        		throw new TickZoomException("Strategy must have a position before attempting to go flat.");
-        	}
         	if( Strategy.Position.IsLong) {
 	        	orders.sellMarket.Price = 0;
 	        	orders.sellMarket.Positions = Strategy.Position.Size;

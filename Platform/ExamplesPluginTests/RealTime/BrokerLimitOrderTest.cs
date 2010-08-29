@@ -46,6 +46,7 @@ namespace MockProvider
 		
 		public BrokerLimitOrderTest() {
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
+			MatchTestResultsOf(typeof(LimitOrderTest));
 			SyncTicks.Enabled = true;
 			ShowCharts = false;
 			StoreKnownGood = false;

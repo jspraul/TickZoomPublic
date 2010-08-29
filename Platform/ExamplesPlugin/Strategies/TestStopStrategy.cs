@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -24,32 +24,49 @@
  */
 #endregion
 
+#region Namespaces
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+
 using TickZoom.Api;
 using TickZoom.Common;
 
+#endregion
+
 namespace TickZoom.Examples
 {
-
-	/// <summary>
-	/// Description of Starter.
-	/// </summary>
-	public class ExampleOrdersLoader : ModelLoaderCommon
+	public class TestStopStrategy : Strategy
 	{
-		public ExampleOrdersLoader() {
-			/// <summary>
-			/// IMPORTANT: You can personalize the name of each model loader.
-			/// </summary>
-			category = "Example";
-			name = "Orders";
+		double multiplier = 1.0D;
+		double minimumTick;
+		int tradeSize;
+		
+		public TestStopStrategy() {
+			Performance.GraphTrades = true;
+			Performance.Equity.GraphEquity = true;
+			ExitStrategy.ControlStrategy = false;
 		}
 		
-		public override void OnInitialize(ProjectProperties properties) {
+		public override void OnInitialize()
+		{
+			tradeSize = Data.SymbolInfo.Level2LotSize;
+			minimumTick = multiplier * Data.SymbolInfo.MinimumTick;
 		}
 		
-		public override void OnLoad(ProjectProperties properties) {
-			TopModel = GetStrategy("ExampleOrderStrategy");
+		public override bool OnIntervalClose()
+		{
+			double close = Bars.Close[0];
+			if( Position.IsFlat) {
+				Orders.Enter.ActiveNow.BuyLimit(close - 2 * minimumTick, tradeSize);
+				Orders.Exit.ActiveNow.SellStop(close - 50 * minimumTick);
+			}
+			return true;
+		}
+		
+		public double Multiplier {
+			get { return multiplier; }
+			set { multiplier = value; }
 		}
 	}
 }

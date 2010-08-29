@@ -36,6 +36,7 @@ using TickZoom.Common;
 
 namespace TickZoom.Examples
 {
+
 	public class ExampleOrderStrategy : Strategy
 	{
 		double multiplier = 1.0D;

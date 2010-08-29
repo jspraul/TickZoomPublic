@@ -282,7 +282,6 @@ namespace TickZoom.Symbols
     	<symbol name=""TimeSync""/>
   </category>
   <category name=""Stock"">
-    <property name=""InstrumentType"" value=""Stock"" />
     <property name=""DisplayTimeZone"" value=""Local"" />
     <property name=""Level2LotSize"" value=""100"" />
     <property name=""Level2LotSizeMinimum"" value=""1"" />
@@ -326,7 +325,6 @@ namespace TickZoom.Symbols
     </category>
   </category>
   <category name=""Forex"">
-    <property name=""InstrumentType"" value=""Forex"" />
     <property name=""TimeZone"" value=""Eastern Standard Time"" />
     <property name=""DisplayTimeZone"" value=""Local"" />
     <property name=""Level2LotSize"" value=""10000"" />
@@ -410,7 +408,6 @@ namespace TickZoom.Symbols
     </category>
   </category>
   <category name=""Futures"">
-    <property name=""InstrumentType"" value=""Future"" />
     <property name=""DisplayTimeZone"" value=""Local"" />
     <property name=""Level2LotSize"" value=""1"" />
     <property name=""Level2LotSizeMinimum"" value=""1"" />

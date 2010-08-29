@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -31,25 +31,24 @@ using TickZoom.Common;
 
 namespace TickZoom.Examples
 {
-
 	/// <summary>
 	/// Description of Starter.
 	/// </summary>
-	public class ExampleOrdersLoader : ModelLoaderCommon
+	public class TestStopLoader : ModelLoaderCommon
 	{
-		public ExampleOrdersLoader() {
+		public TestStopLoader() {
 			/// <summary>
 			/// IMPORTANT: You can personalize the name of each model loader.
 			/// </summary>
-			category = "Example";
-			name = "Orders";
+			category = "Test";
+			name = "Synthetic Limit/Live Stop";
 		}
 		
 		public override void OnInitialize(ProjectProperties properties) {
 		}
 		
 		public override void OnLoad(ProjectProperties properties) {
-			TopModel = GetStrategy("ExampleOrderStrategy");
+			TopModel = new TestStopStrategy();
 		}
 	}
 }
