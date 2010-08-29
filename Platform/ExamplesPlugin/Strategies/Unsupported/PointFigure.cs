@@ -43,7 +43,6 @@ namespace TickZoom
 		
 		public PointFigure()
 		{
-			IntervalDefault = Intervals.Define(BarUnit.PointFigure,boxSize);
 		}
 		
 		public override void OnInitialize() {

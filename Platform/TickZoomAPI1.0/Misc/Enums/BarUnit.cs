@@ -40,7 +40,6 @@ namespace TickZoom.Api
 	   /// Constant range bars. These reset every day by default.
 	   /// </summary>
 	   Range,
-	   PointFigure,
 	   Change,
 	   Tick,
 	   Second,

@@ -52,17 +52,5 @@ namespace TickZoom.Api
 			get;
 		}
 
-		void Set<T>(string name, T value);
-		T Get<T>(string name, T value);
-
-		[Obsolete("Please use Set() or Get() for custom properties instead.",true)]
-		bool HasSecondary {
-			get;
-		}
-		
-		[Obsolete("Please use Set() or Get() for custom properties instead.",true)]
-		Interval Secondary {
-			get;
-		}
 	}
 }

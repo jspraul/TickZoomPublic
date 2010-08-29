@@ -51,9 +51,8 @@ namespace TickZoom.Examples
 			var strategies = new List<Strategy>();
 			foreach( var symbol in project.Starter.SymbolProperties) {
 				var barLogic = new PointFigureBars(symbol,50,4);
-				project.Starter.IntervalDefault = Intervals.Custom(barLogic);
+				project.Starter.IntervalDefault = barLogic;
 				var strategy = new ExampleReversalStrategy();
-				strategy.AddDependency(barLogic);
 				strategies.Add(strategy);
 			}
 			if( strategies.Count == 1) {

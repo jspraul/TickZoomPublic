@@ -30,7 +30,7 @@ namespace TickZoom.Api
 {
 
         
-	public interface BarLogicInterface : IDisposable {
+	public interface BarLogicInterface : Interval, IDisposable {
 		void InitializeBar( Tick tick, BarData data);
 		/// <summary>
 		/// Determines if this tick will cause a new bar to get

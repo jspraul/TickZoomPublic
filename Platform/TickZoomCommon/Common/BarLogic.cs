@@ -56,5 +56,29 @@ namespace TickZoom.Common
 		{
 			throw new NotImplementedException();
 		}
+		
+		public BarUnit BarUnit {
+			get {
+				return BarUnit.Custom;
+			}
+		}
+		
+		public int Period {
+			get {
+				return 0;
+			}
+		}
+		
+		public bool IsTimeBased {
+			get {
+				return false;
+			}
+		}
+		
+		public int Seconds {
+			get {
+				return 0;
+			}
+		}
 	}
 }
