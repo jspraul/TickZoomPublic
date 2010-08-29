@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\BarLogic.cs" />
     <Compile Include="Common\DrawingCommon.cs" />
     <Compile Include="Common\Formula.cs" />
     <Compile Include="Common\IndicatorCommon.cs" />

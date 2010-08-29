@@ -65,6 +65,7 @@
     <Compile Include="Loaders\DualStrategyLimitOrder.cs" />
     <Compile Include="Loaders\ExampleBreakoutReversalTest.cs" />
     <Compile Include="Loaders\ExampleBreakoutStopsTest.cs" />
+    <Compile Include="Loaders\ExampleCustomBarsTest.cs" />
     <Compile Include="Loaders\ExampleDualStrategyTest.cs" />
     <Compile Include="Loaders\ExampleMixedTest.cs" />
     <Compile Include="Loaders\ExampleMultiStrategyTest.cs" />

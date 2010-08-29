@@ -30,8 +30,8 @@ namespace TickZoom.Api
 {
 
         
-	public interface BarLogic : IDisposable {
-		void InitializeTick( Tick tick, BarData data);
+	public interface BarLogicInterface : IDisposable {
+		void InitializeBar( Tick tick, BarData data);
 		/// <summary>
 		/// Determines if this tick will cause a new bar to get
 		/// created. If so, the engine will fire the OnIntervalClose()
@@ -51,7 +51,7 @@ namespace TickZoom.Api
 	    /// </summary>
 	    /// <param name="tick">The current tick.</param>
 	    /// <param name="data">This interface has method to create a bar or update the current bar.</param>
-	    void ProcessTick(Tick tick, BarData data);
+	    void UpdateBar(Tick tick, BarData data);
 	    /// <summary>
 	    /// This method will determine if the current bar must end.
 	    /// Ordinarily bars end and begin at the same boundaries. One

@@ -65,7 +65,7 @@ namespace TickZoom.Common
 		public readonly static Interval Range20 = Factory.Engine.DefineInterval(BarUnit.Range,20);
 		public readonly static Interval Range10 = Factory.Engine.DefineInterval(BarUnit.Range,10);
 		public readonly static Interval Range5 = Factory.Engine.DefineInterval(BarUnit.Range,5);
-		public static Interval Custom(BarLogic logic) {
+		public static Interval Custom(BarLogicInterface logic) {
 			var interval = Factory.Engine.DefineInterval(BarUnit.Custom,1);
 			interval.Set("Instance",logic);
 			return interval;

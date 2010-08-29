@@ -1,40 +1,44 @@
-#region Copyright
+﻿#region Copyright
 /*
+ * Copyright 2008 M. Wayne Walter
  * Software: TickZoom Trading Platform
- * Copyright 2009 M. Wayne Walter
+ * User: Wayne Walter
  * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * You can use and modify this software under the terms of the
+ * TickZOOM General internal License Version 1.0 or (at your option)
+ * any later version.
  * 
- * Business use restricted to 30 days except as otherwise stated in
- * in your Service Level Agreement (SLA).
- * 
+ * Businesses are restricted to 30 days of use.
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see <http://www.tickzoom.org/wiki/Licenses>
- * or write to Free Software Foundation, Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA  02110-1301, USA.
- * 
+ * TickZOOM General internal License for more details.
+ *
+ * You should have received a copy of the TickZOOM General Public
+ * License along with this program.  If not, see
+ * <http://www.tickzoom.org/wiki/Licenses>.
  */
 #endregion
 
 using System;
-using System.Collections.Generic;
 using TickZoom.Api;
+using TickZoom.Common;
 
 namespace TickZoom.Examples
 {
 	public class PointFigureBars : BarLogic
 	{
-#region Variables
+#region Field Variables
 		bool isUpBar = true;
 		long boxSize;
+		long minimumTick;
+		
+		public double BoxSize {
+			get { return boxSize / minimumTick; }
+			set { boxSize = (long) value * minimumTick; }
+		}
+		
 		long reversal;
 		bool newBarNeeded = false;
 		long open;
@@ -49,11 +53,13 @@ namespace TickZoom.Examples
 
 		public PointFigureBars(SymbolInfo symbolInfo, long boxSize, long reversal)
 		{
-			this.boxSize = boxSize * symbolInfo.MinimumTick.ToLong();
+			this.minimumTick = symbolInfo.MinimumTick.ToLong();
+			this.boxSize = boxSize * minimumTick;
 			this.reversal = reversal;
+			IntervalDefault = Intervals.Define(BarUnit.Tick,100);
 		}
 		
-		public void InitializeTick(Tick tick, BarData data) {
+		public override void InitializeBar(Tick tick, BarData data) {
 			long price = tick.IsTrade ? tick.lPrice : (tick.lBid + tick.lAsk)/2;
 			volume = tick.IsTrade ? tick.Volume : 0;
 			prevHigh = prevLow = price;
@@ -61,8 +67,8 @@ namespace TickZoom.Examples
 			tickCount = 1;
 			data.NewBar(open, high, low, close, volume, tick.Time, tickCount);
 		}
-
-		public bool IsNewBarNeeded(Tick tick) {
+		
+		public override bool IsNewBarNeeded(Tick tick) {
 			long price = tick.IsTrade ? tick.lPrice : (tick.lBid + tick.lAsk)/2;
 			newBarNeeded = false;
 			long tempHigh = (long ) (high / boxSize) * boxSize;
@@ -75,56 +81,45 @@ namespace TickZoom.Examples
 			return newBarNeeded;
 		}
 		
-		public void ProcessTick(Tick tick, BarData data) {
+		public override void UpdateBar(Tick tick, BarData data) {
 			if( newBarNeeded ) {
 				newBarNeeded = false;
-				AddBar(tick,data);
+				AddBarInternal(tick,data);
 			} else {
-				UpdateBar(tick,data);
+				UpdateBarInternal(tick,data);
 			}
 		}
 		
-		private void UpdateBar(Tick tick,BarData data) {
+		private void UpdateBarInternal(Tick tick, BarData data) {
 			long price = tick.IsTrade ? tick.lPrice : (tick.lAsk + tick.lBid) / 2;
 			volume += tick.IsTrade ? tick.Volume : 0;
-			if( price >= high+boxSize) {
-				high = high+boxSize;
+			if( price >= high + boxSize) {
+				high = high + boxSize;
+				close = high;
 			}
-			if( price <= low-boxSize) {
-				low = low-boxSize;
+			if( price <= low - boxSize) {
+				low = low - boxSize;
+				close = low;
 			}
-			close = price;
 			tickCount++;
 			data.UpdateBar(high, low, close, volume, tick.Time, tickCount);
 		}
 		
 
-		private void AddBar(Tick tick, BarData data)
+		private void AddBarInternal(Tick tick, BarData data)
 		{
-			prevHigh = high;
-			prevLow = low;
-			long price = tick.IsTrade ? tick.lPrice : (tick.lAsk + tick.lBid) / 2;
+			if( isUpBar) {
+				open = high = high - boxSize;
+				close = low = open - boxSize * reversal;
+			} else {
+				open = low = low + boxSize;
+				close = high = open + boxSize * reversal;
+			}
 			volume += tick.IsTrade ? tick.Volume : 0;
-			open = high = low =	close = price;
 			tickCount = 1;
 			data.NewBar(open, high, low, close, volume, tick.Time, tickCount);
-			
-			long highPrice = (prevHigh / boxSize) * boxSize;
-			long lowPrice = (prevLow / boxSize) * boxSize + boxSize;
-			if( isUpBar) {
-				high = highPrice;
-			} else {
-				low = lowPrice;
-			}
 			isUpBar = !isUpBar;
 		}
 		
-		public bool IsEndBarNeeded(Tick tick) {
-			throw new NotImplementedException();
-		}
-		
-		public void Dispose() {
-			
-		}
 	}
 }

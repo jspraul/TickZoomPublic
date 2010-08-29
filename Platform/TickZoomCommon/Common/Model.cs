@@ -33,6 +33,7 @@ using System.Reflection;
 
 using TickZoom.Api;
 using TickZoom.Interceptors;
+using TickZoom.Statistics;
 
 namespace TickZoom.Common
 {
@@ -157,10 +158,11 @@ namespace TickZoom.Common
 				Portfolio thisPortfolio = this as Portfolio;
 				indicator.Performance = thisPortfolio.Performance;
 			} else {
-				throw new ApplicationException("Sorry, indicators can only be added to objects derived from " +
-				                               typeof(Strategy).Name + ", " +
-				                               typeof(Portfolio).Name + ", or " +
-				                               typeof(IndicatorCommon).Name + ".");
+				indicator.Performance = new Performance(this);
+//				throw new ApplicationException("Sorry, indicators can only be added to objects derived from " +
+//				                               typeof(Strategy).Name + ", " +
+//				                               typeof(Portfolio).Name + ", or " +
+//				                               typeof(IndicatorCommon).Name + ".");
 			}
 			// Apply Properties from project.xml, if any.
 			if( properties != null) {

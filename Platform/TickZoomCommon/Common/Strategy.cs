@@ -35,6 +35,7 @@ using TickZoom.Statistics;
 
 namespace TickZoom.Common
 {
+
 	public class Strategy : Model, StrategyInterface
 	{
 		PositionInterface position;
