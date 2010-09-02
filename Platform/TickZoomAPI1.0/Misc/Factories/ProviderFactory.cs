@@ -29,6 +29,12 @@ using System.Reflection;
 
 namespace TickZoom.Api
 {
+	public interface EventLog {
+		bool CheckEnabled( Log log);
+		int GetReceiverId( object component);
+		void Capture( int componentId, SymbolInfo symbol, int eventType, object eventDetail);
+	}
+	
 	[CLSCompliant(false)]
 	public interface ProviderFactory {
 		void Release();
@@ -42,6 +48,9 @@ namespace TickZoom.Api
 		Serializers Serializers();
 		Socket Socket(string name);
 		Selector Selector(Action<Exception> onException);
+		EventLog EventLog {
+			get;
+		}
 	}
 }
 	

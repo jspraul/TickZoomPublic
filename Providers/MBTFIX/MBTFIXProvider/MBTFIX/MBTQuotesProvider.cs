@@ -107,6 +107,9 @@ namespace TickZoom.MBTQuotes
 						case '3':
 							TimeAndSalesUpdate( (PacketMBTQuotes) packet);
 							break;
+						case '2':
+							log.Error( "Message type '2' unknown packet is: " + packet);
+							break;
 						default:
 							throw new ApplicationException("MBTQuotes message type '" + firstChar + "' was unknown.");
 					}

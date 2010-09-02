@@ -386,7 +386,9 @@ namespace TickZoom.Symbols
         <symbol name=""USD_JPY_YEARS"">
           <property name=""DisplayTimeZone"" value=""UTC"" />
         </symbol>
-        <symbol name=""USDJPYBenchMark"" />
+        <symbol name=""USDJPYBenchMark"">
+		   <property name=""FullPointValue"" value=""0.0076651847309520159435842403801932"" />
+        </symbol>
         <symbol name=""USD_JPY_Volume"" />
         <symbol name=""USD_JPY_TEST"">
           <property name=""SessionEnd"" value=""09:22:13.000"" />

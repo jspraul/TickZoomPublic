@@ -44,6 +44,8 @@ namespace TickZoom.TickUtil
 		private TimeStamp startTime;
 		public TickBinary NextTick;
 		private ReceiverState receiverState = ReceiverState.Ready;
+	    private static readonly bool captureEvents = Factory.Provider.EventLog.CheckEnabled(log);
+	    private int receiverId;
 		
 		public ReceiverState OnGetReceiverState(SymbolInfo symbol) {
 			return receiverState;
@@ -57,6 +59,9 @@ namespace TickZoom.TickUtil
 			this.startTime = startTime;
 			NextTick = new TickBinary();
 			NextTick.Symbol = symbol.BinaryIdentifier;
+			if( captureEvents) {
+				receiverId = Factory.Provider.EventLog.GetReceiverId(this);
+			}
 			provider.SendEvent(this,null,(int)EventType.Connect,null);
 		}
 		
