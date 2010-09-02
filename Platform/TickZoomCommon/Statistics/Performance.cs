@@ -128,10 +128,10 @@ namespace TickZoom.Statistics
 					ChangeComboSize(fill);
 				}
 			} 
-			position.Copy(context.Position);
+			position.Change(model.Data.SymbolInfo,fill);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
-				strategy.Result.Position.Copy(context.Position);
+				strategy.Result.Position.Copy(position);
 			}
 
 			if( model is Portfolio) {
@@ -162,7 +162,7 @@ namespace TickZoom.Statistics
 			position.Copy(context.Position);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
-				strategy.Result.Position.Copy(context.Position);
+				strategy.Result.Position.Copy(position);
 			}
 
 			if( model is Portfolio) {
@@ -210,6 +210,10 @@ namespace TickZoom.Statistics
 			TransactionPairBinary combo = comboTradesBinary.Tail;
 			combo.ChangeSize(fill.Position,fill.Price);
 			comboTradesBinary.Tail = combo;
+			if( model is Strategy) {
+				Strategy strategy = (Strategy) model;
+				strategy.OnChangeTrade();
+			}
 		}
 		
 		private void ChangeComboSize() {

@@ -163,6 +163,7 @@ namespace TickZoom.Statistics
 
 		public bool OnIntervalClose(Interval interval)
 		{
+			var tick = model.Ticks[0];
 			if( interval.Equals(Intervals.Day1)) {
 				CalcEnd(dailyBinary);
 				CalcNew(dailyBinary);

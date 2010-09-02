@@ -318,6 +318,10 @@ namespace TickZoom.Common
 			
 		}
 		
+		public virtual void OnChangeTrade() {
+			
+		}
+		
 		public virtual void OnExitTrade() {
 			
 		}
