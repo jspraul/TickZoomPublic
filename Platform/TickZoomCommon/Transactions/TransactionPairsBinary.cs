@@ -83,9 +83,7 @@ namespace TickZoom.Transactions
 			if( count > 0) {
 				TransactionPairBinary pair = this[count-1];
 				if( !pair.Completed ) {
-					pair.ExitPrice = price;
-					pair.ExitTime = time;
-					pair.ExitBar = bar;
+					pair.Update(price, time, bar);
 					this[count-1] = pair;
 				}
 			}

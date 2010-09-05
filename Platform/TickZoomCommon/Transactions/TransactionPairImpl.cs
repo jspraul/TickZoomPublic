@@ -54,6 +54,12 @@ namespace TickZoom.Transactions
 			}
 		}
 		
+		public double Volume {
+			get {
+				return binary.Volume;
+			}
+		}
+		
 		public double EntryPrice {
 			get {
 				return binary.EntryPrice;

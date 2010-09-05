@@ -39,6 +39,7 @@ namespace TickZoom.Transactions
 		private long entryTime;
 		private long exitTime;
 		private double direction;
+		private double volume;
 		private double entryPrice;
 		private double exitPrice;
 		private double maxPrice;
@@ -66,7 +67,6 @@ namespace TickZoom.Transactions
 		
 		public bool Completed {
 			get { return completed; }
-			set { completed = value; }
 		}
 		
 		public static TransactionPairBinary Create() {
@@ -76,11 +76,11 @@ namespace TickZoom.Transactions
 		public void SetProperties(string parameters)
 		{
 			string[] strings = parameters.Split(new char[] {','});
-			Direction = Convert.ToInt32(strings[0]);
-			EntryPrice = Convert.ToDouble(strings[1]);
-			EntryTime = new TimeStamp(strings[2]);
-			ExitPrice = Convert.ToDouble(strings[3]);
-			ExitTime = new TimeStamp(strings[4]);
+			direction = Convert.ToInt32(strings[0]);
+			entryPrice = Convert.ToDouble(strings[1]);
+			entryTime = new TimeStamp(strings[2]).Internal;
+			exitPrice = Convert.ToDouble(strings[3]);
+			exitTime = new TimeStamp(strings[4]).Internal;
 		}
 		
 		public TransactionPairBinary(TransactionPairBinary other) {
@@ -94,6 +94,7 @@ namespace TickZoom.Transactions
 			exitBar = other.exitBar;
 			entryBar = other.entryBar;
 			completed = other.completed;
+			volume = other.volume;
 		}
 		
 		public void TryUpdate(Tick tick) {
@@ -119,28 +120,48 @@ namespace TickZoom.Transactions
 			exitPrice = price;
 		}
 		
+		public void Enter( double direction, double price, TimeStamp time, int bar) {
+			this.direction = direction;
+			this.volume = Math.Abs(direction);
+			this.entryPrice = price;
+			this.entryTime = time.Internal;
+			this.entryBar = bar;
+		}
+		
+		public void Exit( double price, TimeStamp time, int bar) {
+			this.volume += Math.Abs( direction);
+			this.exitPrice = price;
+			this.exitTime = time.Internal;
+			this.exitBar = bar;
+			this.completed = true;
+		}
+		
+		public void Update( double price, TimeStamp time, int bar) {
+			this.exitPrice = price;
+			this.exitTime = time.Internal;
+			this.exitBar = bar;
+		}
+		
 		public void ChangeSize( double newSize, double price) {
 			double sum = entryPrice * Direction;
 			double sizeChange = newSize - Direction;
+			volume += Math.Abs(sizeChange);
 			double sum2 = sizeChange * price;
 			double newPrice = (sum + sum2) / newSize;
 			entryPrice = newPrice;
-			Direction = newSize;
+			direction = newSize;
 		}
 		
 		public double Direction {
 			get { return direction; }
-			set { direction = value; }
 		}
 		
 		public double EntryPrice {
 			get { return entryPrice; }
-			set { entryPrice = value; }
 		}
 		
 		public double ExitPrice {
 			get { return exitPrice; }
-			set { UpdatePrice(value); }
 		}
 		
 		[Obsolete("Please use TransactionPairs.GetProfitLoss() instead.",true)]
@@ -183,22 +204,22 @@ namespace TickZoom.Transactions
 		
 		public int EntryBar {
 			get { return entryBar; }
-			set { entryBar = value; }
 		}
 		
 		public int ExitBar {
 			get { return exitBar; }
-			set { exitBar = value; }
 		}
 		
 		public TimeStamp EntryTime {
 			get { return new TimeStamp(entryTime); }
-			set { entryTime = value.Internal; }
 		}
 		
 		public TimeStamp ExitTime {
 			get { return new TimeStamp(exitTime); }
-			set { exitTime = value.Internal; }
+		}
+		
+		public double Volume {
+			get { return volume; }
 		}
 	}
 }

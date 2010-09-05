@@ -41,6 +41,9 @@ namespace TickZoom.Transactions
 		double Direction {
 			get;
 		}
+		double Volume {
+			get;
+		}
 		double EntryPrice {
 			get;
 		}

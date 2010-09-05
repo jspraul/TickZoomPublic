@@ -124,6 +124,12 @@ namespace TickZoom.Common
 			return range;
 		}
 		
+		public ADX ADX(int period) {
+			var indicator = new ADX(period);
+			model.AddDependency(indicator);
+			return indicator;
+		}
+		
 		public CCI CCI(object obj, int period) {
 			CCI cci = new CCI(obj,period);
 			model.AddDependency(cci);

@@ -145,7 +145,7 @@
     <Compile Include="Transactions\PagePool.cs" />
     <Compile Include="Transactions\RoundTurn.cs" />
     <Compile Include="Transactions\RoundTurnBinary.cs" />
-    <Compile Include="Transactions\RoundTurnImpl.cs" />
+    <Compile Include="Transactions\TransactionPairImpl.cs" />
     <Compile Include="Transactions\RoundTurnsBinary.cs" />
     <Compile Include="Transactions\Transaction.cs" />
     <Compile Include="Transactions\TransactionPairBinary.cs" />

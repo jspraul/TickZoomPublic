@@ -37,10 +37,15 @@ namespace TickZoom.BrokerageFramework
 	public class TradeTest
 	{
 		TransactionPairBinary pair;
+		TimeStamp entryTime = new TimeStamp(2005,5,2,8,33,34,432);
+		TimeStamp exitTime = new TimeStamp(2005,5,2,8,43,34,432);
+		
 		[Test]
 		public void Constructor()
 		{
 			pair = TransactionPairBinary.Create();
+			pair.Enter(1,12344,entryTime,1);
+			pair.Exit(125440,exitTime,1);
 			Assert.IsNotNull(pair,"Trade constructor");
 		}
 		
@@ -48,7 +53,6 @@ namespace TickZoom.BrokerageFramework
 		public void Direction()
 		{
 			Constructor();
-			pair.Direction = 1;
 			Assert.AreEqual(1,pair.Direction,"Direction");
 		}
 		
@@ -56,7 +60,6 @@ namespace TickZoom.BrokerageFramework
 		public void EntryPrice()
 		{
 			Constructor();
-			pair.EntryPrice = 12344;
 			Assert.AreEqual(12344,pair.EntryPrice,"EntryPrice");
 		}
 		
@@ -64,16 +67,13 @@ namespace TickZoom.BrokerageFramework
 		public void EntryTime()
 		{
 			Constructor();
-			TimeStamp testTime = new TimeStamp(2005,5,2,8,33,34,432);
-			pair.EntryTime = testTime;
-			Assert.AreEqual(testTime,pair.EntryTime,"EntryTime");
+			Assert.AreEqual(entryTime,pair.EntryTime,"EntryTime");
 		}
 		
 		[Test]
 		public void ExitPrice()
 		{
 			Constructor();
-			pair.ExitPrice = 125440;
 			Assert.AreEqual(125440,pair.ExitPrice,"ExitPrice");
 		}
 		
@@ -81,17 +81,14 @@ namespace TickZoom.BrokerageFramework
 		public void ExitTime()
 		{
 			Constructor();
-			TimeStamp testTime = new TimeStamp(2005,5,2,8,43,34,432);
-			pair.ExitTime = testTime;
-			Assert.AreEqual(testTime,pair.ExitTime,"ExitTime");
+			Assert.AreEqual(exitTime,pair.ExitTime,"ExitTime");
 		}
 		
 		[Test]
 		[ExpectedException(typeof(ApplicationException))]
 		public void ProfitLossException()
 		{
-			Constructor();
-			pair.Direction = 0;
+			pair = TransactionPairBinary.Create();
 			using( BinaryStore tradeData = Factory.Engine.PageStore("TradeData")) {
 				TransactionPairsBinary tradesBinary = new TransactionPairsBinary(tradeData);
 				tradesBinary.Add(pair);
@@ -126,15 +123,12 @@ namespace TickZoom.BrokerageFramework
 		public void ProfitLoss()
 		{
 			Constructor();
-			pair.Direction = 1;
-			pair.EntryPrice = 123440;
-			pair.ExitPrice = 134500;
 			double ProfitLoss = (pair.ExitPrice - pair.EntryPrice) * 1;
 			using( BinaryStore tradeData = Factory.Engine.PageStore("TradeData")) {
 				TransactionPairsBinary tradesBinary = new TransactionPairsBinary(tradeData);
 				tradesBinary.Add(pair);
 				TransactionPairs trades = new TransactionPairs(null,new ProfitLossCallback(),tradesBinary);
-				Assert.AreEqual(11060,trades.CalcProfitLoss(0),"ProfitLoss");
+				Assert.AreEqual(113096,trades.CalcProfitLoss(0),"ProfitLoss");
 			}
 		}
 		
@@ -142,12 +136,7 @@ namespace TickZoom.BrokerageFramework
 		public void ToStringTest()
 		{
 			Constructor();
-			pair.Direction = 1;
-			pair.EntryPrice = 134230;
-			pair.EntryTime = new TimeStamp(2005,5,2,8,33,34,432);
-			pair.ExitPrice = 145230;
-			pair.ExitTime = new TimeStamp(2005,5,2,8,33,34,321);
-			string expected = "1,0,134230,2005-05-02 08:33:34.432,0,145230,2005-05-02 08:33:34.321,145230,0";
+			string expected = "1,1,12344,2005-05-02 08:33:34.432,1,125440,2005-05-02 08:43:34.432,0,0";
 			string actual = pair.ToString();
 			Assert.AreEqual(expected,actual,"ToString");
 			

@@ -176,10 +176,7 @@ namespace TickZoom.Statistics
 		
 		public void EnterComboTrade(LogicalFill fill) {
 			TransactionPairBinary pair = TransactionPairBinary.Create();
-			pair.Direction = fill.Position;
-			pair.EntryPrice = fill.Price;
-			pair.EntryTime = fill.Time;
-			pair.EntryBar = model.Chart.ChartBars.BarCount;
+			pair.Enter(fill.Position, fill.Price, fill.Time, model.Chart.ChartBars.BarCount);
 			comboTradesBinary.Add(pair);
 			if( trace) {
 				log.Trace( "Enter trade: " + pair);
@@ -192,10 +189,7 @@ namespace TickZoom.Statistics
 
 		public void EnterComboTrade(PositionInterface position) {
 			TransactionPairBinary pair = TransactionPairBinary.Create();
-			pair.Direction = position.Current;
-			pair.EntryPrice = position.Price;
-			pair.EntryTime = position.Time;
-			pair.EntryBar = model.Chart.ChartBars.BarCount;
+			pair.Enter(position.Current,position.Price, position.Time, model.Chart.ChartBars.BarCount);
 			comboTradesBinary.Add(pair);
 			if( trace) {
 				log.Trace( "Enter trade: " + pair);
@@ -224,10 +218,7 @@ namespace TickZoom.Statistics
 		
 		public void ExitComboTrade(LogicalFill fill) {
 			TransactionPairBinary comboTrade = comboTradesBinary.Tail;
-			comboTrade.ExitPrice = fill.Price;
-			comboTrade.ExitTime = fill.Time;
-			comboTrade.ExitBar = model.Chart.ChartBars.BarCount;
-			comboTrade.Completed = true;
+			comboTrade.Exit( fill.Price, fill.Time, model.Chart.ChartBars.BarCount);
 			comboTradesBinary.Tail = comboTrade;
 			double pnl = profitLoss.CalculateProfit(comboTrade.Direction,comboTrade.EntryPrice,comboTrade.ExitPrice);
 			Equity.OnChangeClosedEquity( pnl);
@@ -243,10 +234,7 @@ namespace TickZoom.Statistics
 		
 		public void ExitComboTrade(PositionInterface position) {
 			TransactionPairBinary comboTrade = comboTradesBinary.Tail;
-			comboTrade.ExitPrice = position.Price;
-			comboTrade.ExitTime = position.Time;
-			comboTrade.ExitBar = model.Chart.ChartBars.BarCount;
-			comboTrade.Completed = true;
+			comboTrade.Exit(position.Price, position.Time, model.Chart.ChartBars.BarCount);
 			comboTradesBinary.Tail = comboTrade;
 			double pnl = profitLoss.CalculateProfit(comboTrade.Direction,comboTrade.EntryPrice,comboTrade.ExitPrice);
 			Equity.OnChangeClosedEquity( pnl);

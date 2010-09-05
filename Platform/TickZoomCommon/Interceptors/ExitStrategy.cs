@@ -235,20 +235,19 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void processStopLoss(Tick tick) {
-				if( position.IsLong) {
-					stopLossOrder.Type = OrderType.SellStop;
-					stopLossOrder.Price = entryPrice - stopLoss;
-				}
-				if( position.IsShort) {
-					stopLossOrder.Type = OrderType.BuyStop;
-					stopLossOrder.Price = entryPrice + stopLoss;
-				}
-				stopLossOrder.Status = OrderStatus.Active;
-//			}
-			if( pnl <= -stopLoss) {
-				LogExit("StopLoss " + stopLoss + " Exit at " + tick);
-				flattenSignal(stopLossOrder,tick);
+			if( position.IsLong) {
+				stopLossOrder.Type = OrderType.SellStop;
+				stopLossOrder.Price = entryPrice - stopLoss;
 			}
+			if( position.IsShort) {
+				stopLossOrder.Type = OrderType.BuyStop;
+				stopLossOrder.Price = entryPrice + stopLoss;
+			}
+			stopLossOrder.Status = OrderStatus.Active;
+//			if( pnl <= -stopLoss) {
+//				LogExit("StopLoss " + stopLoss + " Exit at " + tick);
+//				flattenSignal(stopLossOrder,tick);
+//			}
 		}
 		
 		private void processTrailStop(Tick tick) {

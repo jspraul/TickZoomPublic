@@ -203,12 +203,8 @@ namespace TickZoom.Common
 		public void TradeTesting() {
 			PerformanceInner manager = TradeTickProcessing(0,0,30000);
 			TransactionPairBinary expected = TransactionPairBinary.Create();
-			expected.Direction = 1;
-			
-			expected.EntryPrice = 105.660;
-			expected.EntryTime = new TimeStamp(2005,2,8,11,57,22,429);
-			expected.ExitPrice = 105.670;
-			expected.ExitTime = new TimeStamp(2005,2,8,11,57,51,479);
+			expected.Enter(1,105.660,new TimeStamp(2005,2,8,11,57,22,429),1);
+			expected.Exit(105.670,new TimeStamp(2005,2,8,11,57,51,479),1);
 			TransactionPairs rts = manager.ComboTrades;
 			Assert.AreEqual(-.034,Math.Round(rts.CalcProfitLoss(0),3),"First Trade PnL");
 		}
@@ -217,21 +213,16 @@ namespace TickZoom.Common
 		public void TradeTesting7() {
 			Performance manager = TradeTickProcessing(0,0,30000);
 			TransactionPairBinary expected = TransactionPairBinary.Create();
-			expected.Direction = -1;
-			expected.EntryPrice = 105.650;
-			expected.EntryTime = new TimeStamp(2005,2,8,11,59,52,745);
-			expected.ExitPrice = 105.660;
-			expected.ExitTime = new TimeStamp(2005,2,08,11,59,58,763);
+			expected.Enter(-1,105.650,new TimeStamp(2005,2,8,11,59,52,745),1);
+			expected.Exit(105.660,new TimeStamp(2005,2,08,11,59,58,763),1);
 		}
+		
 		[Test]
 		public void TradeTesting8() {
 			Performance manager = TradeTickProcessing(0,0,30000);
 			TransactionPairBinary expected = TransactionPairBinary.Create();
-			expected.Direction = 1;
-			expected.EntryPrice = 105.66;
-			expected.EntryTime = new TimeStamp(2005,2,08,11,59,58,763);
-			expected.ExitPrice = 105.75;
-			expected.ExitTime = new TimeStamp(2005,2,9,8,51,10,816);
+			expected.Enter(1,105.66,new TimeStamp(2005,2,08,11,59,58,763),1);
+			expected.Exit(105.75,new TimeStamp(2005,2,9,8,51,10,816),1);
 		}
 		[Test]
 		public void DailyTesting() {
