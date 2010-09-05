@@ -25,11 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.ServiceProcess;
+using System.Diagnostics;
 using System.Text;
-using System.Threading;
 
 using TickZoom.Api;
 
@@ -54,7 +51,16 @@ namespace TickZoom.Warehouse
 					service.Run(args);
 				}
 			} catch( Exception ex) {
-				string exception = ex.ToString();
+			    string exception = ex.ToString();
+			    System.Diagnostics.EventLog log = new System.Diagnostics.EventLog();
+			    log.Log = "Application";
+			    log.Source = "TickZoomWarehouse";
+			    var sb = new StringBuilder();
+			    foreach( var arg in args) {
+			    	sb.Append( arg);
+			    	sb.Append( ",");
+			    }
+			    log.WriteEntry("Arguments: " + sb + ". Exception:\n" + exception, EventLogEntryType.Error);
 				System.Diagnostics.Debug.WriteLine( exception);
 				Console.WriteLine( exception);
 				Environment.Exit(1);

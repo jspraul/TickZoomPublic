@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace TickZoom.Api
@@ -39,7 +40,8 @@ namespace TickZoom.Api
 	    public FactoryLoader FactoryLoader()
 	    {
 	    	try { 
-				Assembly assembly = Assembly.LoadFrom(assemblyName);
+	    		
+	    		Assembly assembly = Assembly.LoadFrom(GetExecutablePath() + Path.DirectorySeparatorChar + assemblyName);
 				foreach (Type type in assembly.GetTypes())
 				{
 					if (type.IsClass && !type.IsAbstract && !type.IsInterface) {
@@ -54,5 +56,9 @@ namespace TickZoom.Api
 	      		throw new ApplicationException("Sorry, cannot find " + interfaceName + " in " + assemblyName, ex);
 	    	}
 	    }
+		private string GetExecutablePath()
+		{
+			return Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\", "");
+		}
 	}
 }

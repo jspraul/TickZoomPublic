@@ -91,6 +91,8 @@ namespace TickZoom.Native
 	
 	    public void InstallAndStart(string displayName, string fileName)
 	    {
+	    	StopAndUninstall();
+	    	
 	        IntPtr scm = OpenSCManager(ScmAccessRights.AllAccess);
 	
 	        try
