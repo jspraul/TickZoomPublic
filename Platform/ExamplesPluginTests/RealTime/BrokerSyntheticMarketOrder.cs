@@ -45,8 +45,8 @@ namespace MockProvider
 	public class BrokerSyntheticMarketOrder : MarketOrderTest {
 		
 		public BrokerSyntheticMarketOrder() {
-			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			SyncTicks.Enabled = true;
+			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			DeleteFiles();
 			Symbols = "USD/JPY_Synthetic";
 			CreateStarterCallback = CreateStarter;
@@ -71,11 +71,6 @@ namespace MockProvider
 				} catch( Exception) {
 				}
 			}
-		}
-		
-		[Test]
-		public void CheckMockTradeCount() {
-			Assert.AreEqual(0,SyncTicks.MockTradeCount);
 		}
 	}
 }

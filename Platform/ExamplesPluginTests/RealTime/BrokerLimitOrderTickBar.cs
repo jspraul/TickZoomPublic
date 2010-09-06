@@ -39,12 +39,12 @@ using ZedGraph;
 
 namespace MockProvider
 {
-	[TestFixture]
+#if TICKBARTEST
+//	[TestFixture]
 	public class BrokerLimitOrderTickBar : LimitOrderTickBarTest {
 		
 		public BrokerLimitOrderTickBar() {
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
-			SyncTicks.Enabled = true;
 			ShowCharts = false;
 			StoreKnownGood = false;
 			CreateStarterCallback = CreateStarter;
@@ -75,10 +75,6 @@ namespace MockProvider
 				}
 			}
 		}
-		
-		[Test]
-		public void CheckMockTradeCount() {
-			Assert.AreEqual(14,SyncTicks.MockTradeCount);
-		}
 	}
+#endif
 }

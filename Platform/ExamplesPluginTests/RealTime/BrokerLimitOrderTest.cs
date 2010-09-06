@@ -45,9 +45,9 @@ namespace MockProvider
 	public class BrokerLimitOrderTest : LimitOrderTest {
 		
 		public BrokerLimitOrderTest() {
+			SyncTicks.Enabled = true;
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			MatchTestResultsOf(typeof(LimitOrderTest));
-			SyncTicks.Enabled = true;
 			ShowCharts = false;
 			StoreKnownGood = false;
 			CreateStarterCallback = CreateStarter;
@@ -74,9 +74,5 @@ namespace MockProvider
 			}
 		}
 		
-		[Test]
-		public void CheckMockTradeCount() {
-			Assert.AreEqual(38,SyncTicks.MockTradeCount);
-		}
 	}
 }

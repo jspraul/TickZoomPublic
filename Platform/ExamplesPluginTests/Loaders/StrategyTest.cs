@@ -78,7 +78,6 @@ namespace Loaders
 			File.Delete(filePath);
 			filePath = Factory.SysLog.LogFolder + @"\Stats.log";
 			File.Delete(filePath);
-			SyncTicks.MockTradeCount = 0;
 		}
 		
 		[TestFixtureTearDown]

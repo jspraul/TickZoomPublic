@@ -45,8 +45,8 @@ namespace MockProvider
 	public class BrokerDualLimitOrder : DualStrategyLimitOrder {
 		
 		public BrokerDualLimitOrder() {
-			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			SyncTicks.Enabled = true;
+			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			DeleteFiles();
 			CreateStarterCallback = CreateStarter;
 			Symbols = "USD/JPY,EUR/USD";
@@ -79,9 +79,5 @@ namespace MockProvider
 			}
 		}
 		
-		[Test]
-		public void CheckMockTradeCount() {
-			Assert.AreEqual(77,SyncTicks.MockTradeCount);
-		}
 	}
 }

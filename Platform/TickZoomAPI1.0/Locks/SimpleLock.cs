@@ -29,6 +29,18 @@ using System.Threading;
 
 namespace TickZoom.Api
 {
+	public class TickSync : SimpleLock {
+		private volatile bool completedTick = false;
+		private volatile bool sentOrders = false;
+		public bool CompletedTick {
+			get { return completedTick; }
+			set { completedTick = value; }
+		}		
+		public bool SentOrders {
+			get { return sentOrders; }
+			set { sentOrders = value; }
+		}
+	}
 	public class SimpleLock : IDisposable {
 		private static Log log = Factory.SysLog.GetLogger(typeof(SimpleLock));
 		private string lastLock = "";
@@ -49,7 +61,6 @@ namespace TickZoom.Api
 	    
 		public void Lock() {
 			while( !TryLock()) {
-//				Factory.Parallel.Yield();
 	    	}
 	    }
 	    

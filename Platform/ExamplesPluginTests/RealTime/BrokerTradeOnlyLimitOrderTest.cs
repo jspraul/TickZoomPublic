@@ -48,8 +48,8 @@ namespace MockProvider
 		}
 		
 		public BrokerTradeOnlyLimitOrderTest() {
-			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			SyncTicks.Enabled = true;
+			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			ShowCharts = false;
 			StoreKnownGood = false;
 			CreateStarterCallback = CreateStarter;
@@ -74,11 +74,6 @@ namespace MockProvider
 				} catch( Exception) {
 				}
 			}
-		}
-		
-		[Test]
-		public void CheckMockTradeCount() {
-			Assert.AreEqual(0,SyncTicks.MockTradeCount);
 		}
 	}
 }

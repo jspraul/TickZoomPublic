@@ -43,8 +43,8 @@ namespace MockProvider
 	public class BrokerReversalTest : ExampleReversalTest {
 		
 		public BrokerReversalTest() {
-			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			SyncTicks.Enabled = true;
+			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			DeleteFiles();
 			Symbols = "Daily4Sim";
 			CreateStarterCallback = CreateStarter;
@@ -69,11 +69,6 @@ namespace MockProvider
 				} catch( Exception) {
 				}
 			}
-		}
-		
-		[Test]
-		public void CheckMockTradeCount() {
-			Assert.AreEqual(0,SyncTicks.MockTradeCount);
 		}
 	}
 }

@@ -45,8 +45,8 @@ namespace MockProvider
 	public class BrokerMarketOrder : MarketOrderTest {
 		
 		public BrokerMarketOrder() {
-			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			SyncTicks.Enabled = true;
+			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			DeleteFiles();
 			Symbols = "USD/JPY";
 			CreateStarterCallback = CreateStarter;
@@ -75,11 +75,6 @@ namespace MockProvider
 				} catch( Exception) {
 				}
 			}
-		}
-		
-		[Test]
-		public void CheckMockTradeCount() {
-			Assert.AreEqual(207,SyncTicks.MockTradeCount);
 		}
 	}
 }

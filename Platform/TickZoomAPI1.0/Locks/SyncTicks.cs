@@ -40,15 +40,15 @@ namespace TickZoom.Api
 	public static class SyncTicks {
 		private static int mockTradeCount = 0;
 		private static bool enabled = false;
-		private static Dictionary<long,SimpleLock> tickSyncs;
+		private static Dictionary<long,TickSync> tickSyncs;
 		private static object locker = new object();
 		
-		public static Dictionary<long, SimpleLock> TickSyncs {
+		public static Dictionary<long, TickSync> TickSyncs {
 			get { 
 				if( tickSyncs == null) {
 					lock( locker) {
 						if( tickSyncs == null) {
-							tickSyncs = new Dictionary<long,SimpleLock>();
+							tickSyncs = new Dictionary<long,TickSync>();
 						}
 					}
 				}
@@ -56,13 +56,13 @@ namespace TickZoom.Api
 			}
 		}
 		
-		public static SimpleLock GetTickSync(long symbolBinaryId) {
-			SimpleLock tickSync;
+		public static TickSync GetTickSync(long symbolBinaryId) {
+			TickSync tickSync;
 			lock( locker) {
 				if( TickSyncs.TryGetValue(symbolBinaryId,out tickSync)) {
 				   	return tickSync;
 				} else {
-					tickSync = new SimpleLock();
+					tickSync = new TickSync();
 					TickSyncs.Add(symbolBinaryId,tickSync);
 					return tickSync;
 				}

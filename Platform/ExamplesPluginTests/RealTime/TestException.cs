@@ -44,7 +44,6 @@ namespace MockProvider
 		
 		public TestException() {
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
-			SyncTicks.Enabled = true;
 			DeleteFiles();
 		}
 		

@@ -47,7 +47,6 @@ namespace TickZoom.Api
 		StartBroker,
 		EndBroker,
         TickBatch,
-		TimeSync,
 		
 		// TCP/IP Events
 		Acknowledgment=2000,
