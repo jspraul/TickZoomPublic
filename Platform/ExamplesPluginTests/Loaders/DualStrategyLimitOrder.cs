@@ -71,6 +71,7 @@ namespace Loaders
 	    		strategy1 = portfolio.Strategies[0];
 	    		strategy2 = portfolio.Strategies[1];
 	    		LoadTrades();
+	    		LoadTransactions();
 	    		LoadBarData();
 			} catch( Exception ex) {
 				log.Error("Setup error.", ex);
@@ -113,6 +114,26 @@ namespace Loaders
 		[Test]
 		public void VerifyStrategy2TradeCount() {
 			VerifyTradeCount(strategy2);
+		}
+		
+		[Test]
+		public void VerifyStrategy1Transactions() {
+			VerifyTransactions(strategy1);
+		}
+	
+		[Test]
+		public void VerifyStrategy2Trasanctions() {
+			VerifyTransactions(strategy2);
+		}
+		
+		[Test]
+		public void VerifyStrategy1TrasanctionCount() {
+			VerifyTransactionCount(strategy1);
+		}
+		
+		[Test]
+		public void VerifyStrategy2TrasanctionCount() {
+			VerifyTransactionCount(strategy2);
 		}
 		
 		[Test]

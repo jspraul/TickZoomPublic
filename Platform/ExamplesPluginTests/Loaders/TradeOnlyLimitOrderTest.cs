@@ -65,6 +65,7 @@ namespace Loaders
 	
 	    		// Get the stategy
 	    		strategy = loader.TopModel as ExampleOrderStrategy;
+	    		LoadTransactions();
 	    		LoadTrades();
 	    		LoadBarData();
 	    		LoadStats();

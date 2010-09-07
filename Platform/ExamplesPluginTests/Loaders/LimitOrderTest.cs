@@ -67,6 +67,7 @@ namespace Loaders
 	
 	    		// Get the stategy
 	    		strategy = loader.TopModel as ExampleOrderStrategy;
+	    		LoadTransactions();
 	    		LoadTrades();
 			} catch( Exception ex) {
 				log.Error("Setup error.", ex);

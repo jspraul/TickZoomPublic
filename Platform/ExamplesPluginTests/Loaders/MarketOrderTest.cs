@@ -66,6 +66,7 @@ namespace Loaders
 	
 	    		// Get the stategy
 	    		strategy = loader.TopModel as Strategy;
+	    		LoadTransactions();
 	    		LoadTrades();
 	    		LoadBarData();
 			} catch( Exception ex) {

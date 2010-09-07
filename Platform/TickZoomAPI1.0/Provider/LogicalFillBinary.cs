@@ -66,16 +66,25 @@ namespace TickZoom.Api
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.Append( "Logical Order Id: ");
 			sb.Append( orderId);
-			sb.Append( ", Price: ");
+			sb.Append( ",");
 			sb.Append( price);
-			sb.Append( ", Position: ");
+			sb.Append( ",");
 			sb.Append( position);
-			sb.Append( ", Time: ");
+			sb.Append( ",");
 			sb.Append( time);
 			return sb.ToString();
 		}
-		
+
+		public static LogicalFillBinary Parse(string value) {
+			string[] fields = value.Split(',');
+			int field = 0;
+			var orderId = int.Parse(fields[field++]);
+			var price = double.Parse(fields[field++]);
+			var position = double.Parse(fields[field++]);
+			var time = TimeStamp.Parse(fields[field++]);
+			var fill = new LogicalFillBinary(position,price,time,orderId);
+			return fill;
+		}
 	}
 }

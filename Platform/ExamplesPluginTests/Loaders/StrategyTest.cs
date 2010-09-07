@@ -57,6 +57,8 @@ namespace Loaders
 		Dictionary<string,List<BarInfo>> testBarDataMap = new Dictionary<string,List<BarInfo>>();
 		Dictionary<string,List<TradeInfo>> goodTradeMap = new Dictionary<string,List<TradeInfo>>();
 		Dictionary<string,List<TradeInfo>> testTradeMap = new Dictionary<string,List<TradeInfo>>();
+		Dictionary<string,List<TransactionInfo>> goodTransactionMap = new Dictionary<string,List<TransactionInfo>>();
+		Dictionary<string,List<TransactionInfo>> testTransactionMap = new Dictionary<string,List<TransactionInfo>>();
 		public bool ShowCharts = false;
 		public bool StoreKnownGood = false;
 		public CreateStarterCallback createStarterCallback;
@@ -89,6 +91,11 @@ namespace Loaders
 					Thread.Sleep(100);
 				}
 			}
+		}
+		
+		public class TransactionInfo {
+			public double ComboTradeId;
+			public LogicalFillBinary Fill;
 		}
 		
 		public class TradeInfo {
@@ -163,6 +170,47 @@ namespace Loaders
 						tradeList = new List<TradeInfo>();
 						tradeList.Add(testInfo);
 						tempTrades.Add(strategyName,tradeList);
+					}
+				}
+			}
+		}
+		
+		public void LoadTransactions() {
+			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
+			string knownGoodPath = fileDir + testFileName + "Transactions.log";
+			string newPath = Factory.SysLog.LogFolder + @"\Transactions.log";
+			if( !File.Exists(newPath)) return;
+			if( StoreKnownGood) {
+				File.Copy(newPath,knownGoodPath,true);
+			}
+			goodTransactionMap.Clear();
+			LoadTransactions(knownGoodPath,goodTransactionMap);
+			testTransactionMap.Clear();
+			LoadTransactions(newPath,testTransactionMap);
+		}
+		
+		public void LoadTransactions(string filePath, Dictionary<string,List<TransactionInfo>> tempTransactions) {
+			if( !File.Exists(filePath)) return;
+			using( FileStream fileStream = new FileStream(filePath,FileMode.Open,FileAccess.Read,FileShare.ReadWrite)) {
+				StreamReader file = new StreamReader(fileStream);
+				string line;
+				while( (line = file.ReadLine()) != null) {
+					string[] fields = line.Split(',');
+					int fieldIndex = 0;
+					string strategyName = fields[fieldIndex++];
+					TransactionInfo testInfo = new TransactionInfo();
+					
+					testInfo.ComboTradeId = int.Parse(fields[fieldIndex++]);
+					
+					line = string.Join(",",fields,fieldIndex,fields.Length-fieldIndex);
+					testInfo.Fill = LogicalFillBinary.Parse(line);
+					List<TransactionInfo> transactionList;
+					if( tempTransactions.TryGetValue(strategyName,out transactionList)) {
+						transactionList.Add(testInfo);
+					} else {
+						transactionList = new List<TransactionInfo>();
+						transactionList.Add(testInfo);
+						tempTransactions.Add(strategyName,transactionList);
 					}
 				}
 			}
@@ -263,6 +311,16 @@ namespace Loaders
 			Assert.AreEqual(goodTrades.Count,testTrades.Count,"trade count");
 		}
 		
+		public void VerifyTransactionCount(StrategyInterface strategy) {
+			List<TransactionInfo> goodTransactions = null;
+			goodTransactionMap.TryGetValue(strategy.Name,out goodTransactions);
+			List<TransactionInfo> testTransactions = null;
+			testTransactionMap.TryGetValue(strategy.Name,out testTransactions);
+			Assert.IsNotNull(goodTransactions, "good trades");
+			Assert.IsNotNull(testTransactions, "test trades");
+			Assert.AreEqual(goodTransactions.Count,testTransactions.Count,"transaction fill count");
+		}
+		
 		public void VerifyBarDataCount(StrategyInterface strategy) {
 			List<BarInfo> goodBarData = goodBarDataMap[strategy.Name];
 			List<BarInfo> testBarData = testBarDataMap[strategy.Name];
@@ -287,6 +345,24 @@ namespace Loaders
 				AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,"ClosedEquity at " + i);
 			}
 			Assert.IsFalse(assertFlag,"Checking for trade errors.");
+		}
+		
+		public void VerifyTransactions(StrategyInterface strategy) {
+			assertFlag = false;
+			List<TransactionInfo> goodTransactions = null;
+			goodTransactionMap.TryGetValue(strategy.Name,out goodTransactions);
+			List<TransactionInfo> testTransactions = null;
+			testTransactionMap.TryGetValue(strategy.Name,out testTransactions);
+			Assert.IsNotNull(goodTransactions, "good trades");
+			Assert.IsNotNull(testTransactions, "test trades");
+			for( int i=0; i<testTransactions.Count && i<goodTransactions.Count; i++) {
+				var testInfo = testTransactions[i];
+				var goodInfo = goodTransactions[i];
+				var goodFill = goodInfo.Fill;
+				var testFill = testInfo.Fill;
+				AssertEqual(goodFill,testFill,"Transaction Fill at " + i);
+			}
+			Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
 		}
 		
 		public void VerifyStatsCount(StrategyInterface strategy) {

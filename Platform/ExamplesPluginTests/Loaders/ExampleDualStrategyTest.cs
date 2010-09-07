@@ -73,6 +73,7 @@ namespace Loaders
 	    		portfolio = loader.TopModel as Portfolio;
 	    		fourTicksStrategy = portfolio.Strategies[0] as ExampleOrderStrategy;
 	    		exampleReversal = portfolio.Strategies[1] as ExampleReversalStrategy;
+	    		LoadTransactions();
 	    		LoadTrades();
 			} catch( Exception ex) {
 				log.Error("Setup error.",ex);

@@ -72,6 +72,7 @@ namespace Loaders
 	    		// Get the stategy
 	    		strategy = loader.TopModel as ExampleBreakoutReversal;
 	    		
+	    		LoadTransactions();
 	    		LoadTrades();
 	    		LoadBarData();
 			} catch( Exception ex) {

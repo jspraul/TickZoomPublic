@@ -89,6 +89,7 @@ namespace Loaders
     		strategies.Add(fullTickData);
     		strategies.Add(singleSymbolPortfolio);
     		strategies.Add(fourTicksPerBar);
+    		LoadTransactions();
     		LoadTrades();
     		LoadBarData();
     		LoadStats();
