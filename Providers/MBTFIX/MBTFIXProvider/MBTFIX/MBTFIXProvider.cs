@@ -437,7 +437,7 @@ namespace TickZoom.MBTFIX
 						RejectOrder( packetFIX);
 						break;
 					case "9": // Suspended
-						UpdateOrder( packetFIX, false, packetFIX);
+						UpdateOrder( packetFIX, true, packetFIX);
 						// Ignore 
 						break;
 					case "A": // Accepted
