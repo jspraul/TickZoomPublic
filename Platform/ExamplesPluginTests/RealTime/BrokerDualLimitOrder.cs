@@ -60,6 +60,17 @@ namespace MockProvider
 			StoreKnownGood = false;
 		}
 		
+		public override void RunStrategy()
+		{
+			base.RunStrategy();
+			LoadReconciliation();
+		}
+		
+		[Test]
+		public void PerformReconciliationTest() {
+			PerformReconciliation();
+		}
+	
 		public Starter CreateStarter()
 		{
 			Starter starter = new RealTimeStarter();

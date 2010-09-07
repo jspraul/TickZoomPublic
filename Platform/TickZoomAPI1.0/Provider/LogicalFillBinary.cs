@@ -85,6 +85,6 @@ namespace TickZoom.Api
 			var time = TimeStamp.Parse(fields[field++]);
 			var fill = new LogicalFillBinary(position,price,time,orderId);
 			return fill;
-		}
+		}		
 	}
 }

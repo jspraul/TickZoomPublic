@@ -59,6 +59,8 @@ namespace Loaders
 		Dictionary<string,List<TradeInfo>> testTradeMap = new Dictionary<string,List<TradeInfo>>();
 		Dictionary<string,List<TransactionInfo>> goodTransactionMap = new Dictionary<string,List<TransactionInfo>>();
 		Dictionary<string,List<TransactionInfo>> testTransactionMap = new Dictionary<string,List<TransactionInfo>>();
+		Dictionary<string,List<TransactionInfo>> goodReconciliationMap = new Dictionary<string,List<TransactionInfo>>();
+		Dictionary<string,List<TransactionInfo>> testReconciliationMap = new Dictionary<string,List<TransactionInfo>>();
 		public bool ShowCharts = false;
 		public bool StoreKnownGood = false;
 		public CreateStarterCallback createStarterCallback;
@@ -94,7 +96,7 @@ namespace Loaders
 		}
 		
 		public class TransactionInfo {
-			public double ComboTradeId;
+			public string Symbol;
 			public LogicalFillBinary Fill;
 		}
 		
@@ -200,7 +202,7 @@ namespace Loaders
 					string strategyName = fields[fieldIndex++];
 					TransactionInfo testInfo = new TransactionInfo();
 					
-					testInfo.ComboTradeId = int.Parse(fields[fieldIndex++]);
+					testInfo.Symbol = fields[fieldIndex++];
 					
 					line = string.Join(",",fields,fieldIndex,fields.Length-fieldIndex);
 					testInfo.Fill = LogicalFillBinary.Parse(line);
@@ -211,6 +213,47 @@ namespace Loaders
 						transactionList = new List<TransactionInfo>();
 						transactionList.Add(testInfo);
 						tempTransactions.Add(strategyName,transactionList);
+					}
+				}
+			}
+		}
+		
+		public void LoadReconciliation() {
+			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
+			string knownGoodPath = fileDir + testFileName + "Transactions.log";
+			string newPath = Factory.SysLog.LogFolder + @"\MockProviderTransactions.log";
+			if( !File.Exists(newPath)) return;
+			if( StoreKnownGood) {
+				File.Copy(newPath,knownGoodPath,true);
+			}
+			goodReconciliationMap.Clear();
+			LoadReconciliation(knownGoodPath,goodReconciliationMap);
+			testReconciliationMap.Clear();
+			LoadReconciliation(newPath,testReconciliationMap);
+		}
+		
+		public void LoadReconciliation(string filePath, Dictionary<string,List<TransactionInfo>> tempReconciliation) {
+			if( !File.Exists(filePath)) return;
+			using( FileStream fileStream = new FileStream(filePath,FileMode.Open,FileAccess.Read,FileShare.ReadWrite)) {
+				StreamReader file = new StreamReader(fileStream);
+				string line;
+				while( (line = file.ReadLine()) != null) {
+					string[] fields = line.Split(',');
+					int fieldIndex = 0;
+					string strategyName = fields[fieldIndex++];
+					TransactionInfo testInfo = new TransactionInfo();
+					
+					testInfo.Symbol = fields[fieldIndex++];
+					
+					line = string.Join(",",fields,fieldIndex,fields.Length-fieldIndex);
+					testInfo.Fill = LogicalFillBinary.Parse(line);
+					List<TransactionInfo> transactionList;
+					if( tempReconciliation.TryGetValue(testInfo.Symbol,out transactionList)) {
+						transactionList.Add(testInfo);
+					} else {
+						transactionList = new List<TransactionInfo>();
+						transactionList.Add(testInfo);
+						tempReconciliation.Add(testInfo.Symbol,transactionList);
 					}
 				}
 			}
@@ -360,9 +403,32 @@ namespace Loaders
 				var goodInfo = goodTransactions[i];
 				var goodFill = goodInfo.Fill;
 				var testFill = testInfo.Fill;
-				AssertEqual(goodFill,testFill,"Transaction Fill at " + i);
+				AssertReconcile(goodFill,testFill,"Transaction Fill at " + i);
+				AssertEqual(goodInfo.Symbol,testInfo.Symbol,"Transaction symbol at " + i);
 			}
 			Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
+		}
+		
+		public void PerformReconciliation() {
+			foreach( var kvp in goodReconciliationMap) {
+				var symbol = kvp.Key;
+				assertFlag = false;
+				List<TransactionInfo> goodTransactions = null;
+				goodReconciliationMap.TryGetValue(symbol,out goodTransactions);
+				List<TransactionInfo> testTransactions = null;
+				testReconciliationMap.TryGetValue(symbol,out testTransactions);
+				Assert.IsNotNull(goodTransactions, "front-end trades");
+				Assert.IsNotNull(testTransactions, "back-end trades");
+				for( int i=0; i<testTransactions.Count && i<goodTransactions.Count; i++) {
+					var testInfo = testTransactions[i];
+					var goodInfo = goodTransactions[i];
+					var goodFill = goodInfo.Fill;
+					var testFill = testInfo.Fill;
+					AssertReconcile(goodFill,testFill,symbol + " transaction Fill at " + i);
+					AssertEqual(goodInfo.Symbol,testInfo.Symbol,symbol + " transaction symbol at " + i);
+				}
+				Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
+			}
 		}
 		
 		public void VerifyStatsCount(StrategyInterface strategy) {
@@ -378,6 +444,16 @@ namespace Loaders
 				throw new ApplicationException("Expected type " + a.GetType() + " but was " + b.GetType() + ": " + message);
 			}
 			if( !a.Equals(b)) {
+				assertFlag = true;
+				log.Error("Expected '" + a + "' but was '" + b + "': " + message);
+			}
+		}
+		
+		private void AssertReconcile(LogicalFillBinary a, LogicalFillBinary b, string message) {
+			if( a.GetType() != b.GetType()) {
+				throw new ApplicationException("Expected type " + a.GetType() + " but was " + b.GetType() + ": " + message);
+			}
+			if( a.Position != b.Position || a.Price != b.Price || a.Time != b.Time) {
 				assertFlag = true;
 				log.Error("Expected '" + a + "' but was '" + b + "': " + message);
 			}

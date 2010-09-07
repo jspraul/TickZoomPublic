@@ -46,7 +46,7 @@ namespace TickZoom.Statistics
 		private static readonly bool barDataDebug = barDataLog.IsDebugEnabled;
 		private static readonly Log tradeLog = Factory.SysLog.GetLogger("TradeLog");
 		private static readonly bool tradeDebug = tradeLog.IsDebugEnabled;
-		private static readonly Log transactionLog = Factory.SysLog.GetLogger("TransactionLog");
+		private static readonly Log transactionLog = Factory.SysLog.GetLogger("TransactionLog.Performance");
 		private static readonly bool transactionDebug = transactionLog.IsDebugEnabled;
 		private static readonly Log statsLog = Factory.SysLog.GetLogger("StatsLog");
 		private static readonly bool statsDebug = statsLog.IsDebugEnabled;
@@ -183,7 +183,7 @@ namespace TickZoom.Statistics
 			if( trace) {
 				log.Trace( "Enter trade: " + pair);
 			}
-			if( transactionDebug && !model.QuietMode) transactionLog.Debug( model.Name + "," + comboTrades.Current + "," + fill);
+			if( transactionDebug && !model.QuietMode) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
 				strategy.OnEnterTrade();
@@ -207,7 +207,7 @@ namespace TickZoom.Statistics
 			TransactionPairBinary combo = comboTradesBinary.Tail;
 			combo.ChangeSize(fill.Position,fill.Price);
 			comboTradesBinary.Tail = combo;
-			if( transactionDebug && !model.QuietMode) transactionLog.Debug( model.Name + "," + comboTrades.Current + "," + fill);
+			if( transactionDebug && !model.QuietMode) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
 				strategy.OnChangeTrade();
@@ -229,7 +229,7 @@ namespace TickZoom.Statistics
 			if( trace) {
 				log.Trace( "Exit Trade: " + comboTrade);
 			}
-			if( transactionDebug && !model.QuietMode) transactionLog.Debug( model.Name + "," + comboTrades.Current + "," + fill);
+			if( transactionDebug && !model.QuietMode) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
 			if( tradeDebug && !model.QuietMode) tradeLog.Debug( model.Name + "," + Equity.ClosedEquity + "," + pnl + "," + comboTrade);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;

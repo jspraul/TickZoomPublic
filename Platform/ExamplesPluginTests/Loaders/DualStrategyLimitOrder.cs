@@ -122,17 +122,17 @@ namespace Loaders
 		}
 	
 		[Test]
-		public void VerifyStrategy2Trasanctions() {
+		public void VerifyStrategy2Transanctions() {
 			VerifyTransactions(strategy2);
 		}
 		
 		[Test]
-		public void VerifyStrategy1TrasanctionCount() {
+		public void VerifyStrategy1TransanctionCount() {
 			VerifyTransactionCount(strategy1);
 		}
 		
 		[Test]
-		public void VerifyStrategy2TrasanctionCount() {
+		public void VerifyStrategy2TransanctionCount() {
 			VerifyTransactionCount(strategy2);
 		}
 		
