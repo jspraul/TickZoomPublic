@@ -24,12 +24,9 @@
  */
 #endregion
 
-#define FOREX
 using System;
 using System.IO;
 using System.Media;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 
 using NUnit.Framework;
@@ -39,6 +36,7 @@ using TickZoom.MBTQuotes;
 
 namespace Test
 {
+
 	[TestFixture]
 	public class FIXAPI 
 	{
@@ -126,8 +124,9 @@ namespace Test
 		
 		[Test]
 		public unsafe void ConnectToFIX() {
-			string addrStr = "216.52.236.112";
-			ushort port = 5679;
+			var filter = new FIXPretradeFilter();
+			string addrStr = "127.0.0.1";
+			ushort port = filter.Port;
 			// Forex
 //			string password = "1step2wax";
 //			string userName = "DEMOYZPSFIX";
@@ -156,7 +155,6 @@ namespace Test
 				mbtMsg.AddHeader("A");
 				
 				string login = mbtMsg.ToString();
-//				string view = login.Replace(FIXTBuffer.EndField,'\n');
 				packet.DataOut.Write(login.ToCharArray());
 				log.Info("Login message: \n" + packet );
 				while( !socket.TrySendPacket(packet)) {

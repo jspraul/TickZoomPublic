@@ -25,33 +25,37 @@
 #endregion
 
 using System;
-using System.Reflection;
+using TickZoom.Api;
 
-namespace TickZoom.Api
+namespace TickZoom.MBTFIX
 {
-	public interface EventLog {
-		bool CheckEnabled( Log log);
-		int GetReceiverId( object component);
-		void Capture( int componentId, SymbolInfo symbol, int eventType, object eventDetail);
-	}
-	
-	[CLSCompliant(false)]
-	public interface ProviderFactory {
-		void Release();
-		Provider AsyncProvider( Provider provider);
-		AsyncReceiver AsyncReceiver( Receiver receiver);
-		Provider InProcessProvider();
-		Provider RemoteProvider(string address, ushort port);
-		Provider ProviderProcess(string address, ushort port, string executableFileName);
-		ServiceConnection ProviderService();
-		ServiceConnection ConnectionManager();
-		Serializers Serializers();
-		Socket Socket(string name);
-		Selector Selector(string address, ushort port, long timeout, Action<Exception> onException);
-		Selector Selector(Action<Exception> onException);
-		EventLog EventLog {
-			get;
+	static class Program
+	{
+		/// <summary>
+		/// This method starts the service.
+		/// </summary>
+		static void Main(string[] args)
+		{
+			try {
+				ServiceConnection connection = Factory.Provider.ConnectionManager();
+				connection.OnCreateProvider = () => new MBTFIXProvider();
+				if( args.Length > 0 ) {
+					// Connection port provided on command line.
+					ProviderService commandLine = Factory.Utility.CommandLineProcess();
+					commandLine.Connection = connection;
+					commandLine.Run(args);
+				} else {
+					// Connection port set via ServicePort in app.config 
+					ProviderService service = Factory.Utility.WindowsService();
+					service.Connection = connection;
+					service.Run(args);
+				}
+			} catch( Exception ex) {
+				string exception = ex.ToString();
+				System.Diagnostics.Debug.WriteLine( exception);
+				Console.WriteLine( exception);
+				Environment.Exit(1);
+			}
 		}
 	}
 }
-	
