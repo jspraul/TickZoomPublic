@@ -28,7 +28,7 @@ using System;
 using System.Text;
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.FIX
 {
 	public abstract class FIXTMessage {
 		protected FIXTBuffer header = new FIXTBuffer();

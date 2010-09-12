@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -25,50 +25,30 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Threading;
+using NUnit.Framework;
+using TickZoom.Api;
+using TickZoom.MBTFIX;
+using TickZoom.Test;
 
-namespace TickZoom.Api
+namespace Test
 {
-	public enum OrderState {
-		Pending,
-		Active,
-		Suspended
-	}
-	public interface PhysicalOrder {
-		OrderState OrderState {
-			get;
+	[TestFixture]
+	public class FIXPreTradeFilter : NegativeFilterTests
+	{
+		public static readonly Log log = Factory.SysLog.GetLogger(typeof(FIXPreTradeFilter));
+		public FIXPreTradeFilter()
+		{
+			log.Notice("Waiting 20 seconds for FIX server to reset.");
+			Thread.Sleep(20000);
+			SetSymbol("IBM");
+			SetTickTest(TickTest.Level1);
 		}
 		
-		SymbolInfo Symbol {
-			get;
+		public override Provider ProviderFactory()
+		{
+			return new MBTProvider();
 		}
 		
-		OrderSide Side {
-			get;
-		}
-		
-		OrderType Type {
-			get;
-		}
-		
-		double Price {
-			get;
-		}
-		
-		double Size {
-			get;
-		}
-		
-		int LogicalOrderId {
-			get;
-		}
-		
-		object BrokerOrder {
-			get;
-		}
-		
-		object Tag {
-			get;
-		}
 	}
 }

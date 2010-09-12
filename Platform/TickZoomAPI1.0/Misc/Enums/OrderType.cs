@@ -30,6 +30,7 @@ namespace TickZoom.Api
 {
 	public enum TradeDirection : byte {
 		Entry,
+		Change,
 		Exit,
 		Reverse,
 		ExitStrategy,

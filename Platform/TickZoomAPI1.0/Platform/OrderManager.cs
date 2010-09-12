@@ -32,8 +32,7 @@ namespace TickZoom.Api
 	public interface OrderManager : StrategyInterceptorInterface
 	{
 		bool PostProcess { get; set; }
-		bool DoEntryOrders { get; set; }
-		bool DoExitOrders { get; set; }
+		bool DoStrategyOrders { get; set; }
 		bool DoExitStrategyOrders { get; set; }
 	}
 }

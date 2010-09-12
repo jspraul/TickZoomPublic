@@ -26,12 +26,11 @@
 
 using System;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.FIX
 {
 	public class FIXTMessage1_1 : FIXTMessage {
 		string encoding;

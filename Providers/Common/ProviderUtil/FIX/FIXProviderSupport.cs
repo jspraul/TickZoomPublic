@@ -33,11 +33,13 @@ using System.Threading;
 
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.FIX
 {
 
 	public abstract class FIXProviderSupport : Provider
 	{
+		private FIXFilter fixFilter;
+		private FIXPretradeFilter fixFilterController;
 		private readonly Log log;
 		private readonly bool debug;
 		private readonly bool trace;
@@ -119,8 +121,10 @@ namespace TickZoom.MBTFIX
         	// Initiate socket connection.
         	while( true) {
         		try { 
+        			fixFilterController = new FIXPretradeFilter(addrStr,port);
+        			fixFilterController.Filter = fixFilter;
 					selector.AddWriter(socket);
-					socket.Connect(addrStr,port);
+					socket.Connect("127.0.0.1",fixFilterController.LocalPort);
 					if( debug) log.Debug("Requested Connect for " + socket);
 					return;
         		} catch( SocketErrorException ex) {
@@ -504,6 +508,9 @@ namespace TickZoom.MBTFIX
 	            	if( socket != null) {
 		            	socket.Dispose();
 	            	}
+	            	if( fixFilterController != null) {
+	            		fixFilterController.Dispose();
+	            	}
 	            	nextConnectTime = Factory.Parallel.TickCount + 10000;
 	            }
     		}
@@ -596,6 +603,11 @@ namespace TickZoom.MBTFIX
 		
 		public FIXProviderSupport.Status ConnectionStatus {
 			get { return connectionStatus; }
+		}
+		
+		public FIXFilter FIXFilter {
+			get { return fixFilter; }
+			set { fixFilter = value; }
 		}
 	}
 }

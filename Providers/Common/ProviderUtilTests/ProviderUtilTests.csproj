@@ -53,6 +53,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test\BaseProviderTests.cs" />
+    <Compile Include="Test\NegativeFilterTests.cs" />
     <Compile Include="Test\ProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>

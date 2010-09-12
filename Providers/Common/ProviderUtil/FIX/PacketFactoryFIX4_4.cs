@@ -27,10 +27,9 @@
 using System;
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.FIX
 {
 	public class PacketFactoryFIX4_4 : PacketFactory {
-//		private Pool<PacketDefault> pool = new Pool<PacketDefault>();
 		public Packet Create() {
 			PacketFIX4_4 packet = new PacketFIX4_4();
 			packet.Clear();

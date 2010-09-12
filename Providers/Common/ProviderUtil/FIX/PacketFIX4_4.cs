@@ -31,7 +31,7 @@ using System.Text;
 
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.FIX
 {
 	public class PacketFIX4_4 : PacketFIXT1_1 {
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(PacketFIX4_4));

@@ -34,6 +34,7 @@ using TickZoom.Test;
 namespace Test
 {
 
+	
 	[TestFixture]
 	public class EquityLevel1 : ProviderTests
 	{

@@ -26,12 +26,15 @@
 
 using System;
 using TickZoom.Api;
-using TickZoom.MBTFIX;
 
-namespace Test
+namespace TickZoom.FIX
 {
-	public class FIXPretradeFilter {
-		private ushort port;
+	public class FIXPretradeFilter : IDisposable {
+		private FIXFilter filter;
+		private string localAddress = "0.0.0.0";
+		private ushort localPort = 0;
+		private string remoteAddress;
+		private ushort remotePort;
 		private static Log log = Factory.SysLog.GetLogger(typeof(FIXPretradeFilter));
 		private static bool trace = log.IsTraceEnabled;
 		private Selector localSelector;
@@ -44,21 +47,23 @@ namespace Test
 		private YieldMethod WriteToRemoteMethod;
 		private Task remoteTask;
 		private Task localTask;
-	
-		public FIXPretradeFilter() {
+		private FIXContext fixContext;
+		
+		public FIXPretradeFilter(string address, ushort port) {
+			this.remoteAddress = address;
+			this.remotePort = port;
 			WriteToLocalMethod = WriteToLocal;
 			WriteToRemoteMethod = WriteToRemote;
 			ListenToLocal();
 		}
 		
 		private void ListenToLocal() {
-			string address = "0.0.0.0";
-			localSelector = Factory.Provider.Selector(address, port, 0, OnException);
+			localSelector = Factory.Provider.Selector(localAddress, localPort, 0, OnException);
 			localSelector.OnConnect = OnConnect;
 			localSelector.OnDisconnect = OnDisconnect;
 			localSelector.Start();
-			port = localSelector.ListenPort;
-			log.Info("Listening to " + address + " on port " + port);
+			localPort = localSelector.ListenPort;
+			log.Info("Listening to " + localAddress + " on port " + localPort);
 		}
 		
 		private void OnConnect( Socket localSocket) {
@@ -82,26 +87,30 @@ namespace Test
 		}
 		
 		private void ConnectToRemote() {
-			string addrStr = "216.52.236.112";
-			ushort port = 5679;
 			remoteSelector = Factory.Provider.Selector( OnException);
 			remoteSocket = Factory.Provider.Socket("FilterRemoteSocket");
 			remoteSocket.PacketFactory = new PacketFactoryFIX4_4();
 			remoteSelector.Start();
 			remoteSocket.SetBlocking(true);
-			remoteSocket.Connect(addrStr,port);
+			remoteSocket.Connect( remoteAddress,remotePort);
 			remoteSocket.SetBlocking(false);
 			remoteSelector.AddReader(remoteSocket);
 			remoteSelector.AddWriter(remoteSocket);
 			remoteTask = Factory.Parallel.Loop( "FilterRemoteRead", OnException, RemoteReadLoop);
 			localTask = Factory.Parallel.Loop( "FilterLocalRead", OnException, LocalReadLoop);
-			log.Info("Connected at " + addrStr + " and port " + port + " with socket: " + localSocket);
+			fixContext = new FIXContextDefault( localSocket, remoteSocket);
+			log.Info("Connected at " + remoteAddress + " and port " + remotePort + " with socket: " + localSocket);
 		}
 		
 		private Yield RemoteReadLoop() {
 			if( remoteSocket.TryGetPacket(out remotePacket)) {
 				if( trace) log.Trace("Remote Read: " + remotePacket);
-				return Yield.DidWork.Invoke( WriteToLocalMethod);
+				try {
+					if( filter != null) filter.Remote( fixContext, remotePacket);
+					return Yield.DidWork.Invoke( WriteToLocalMethod);
+				} catch( FilterException) {
+					return Yield.Terminate;
+				}
 			} else {
 				return Yield.NoWork.Repeat;
 			}
@@ -110,7 +119,12 @@ namespace Test
 		private Yield LocalReadLoop() {
 			if( localSocket.TryGetPacket(out localPacket)) {
 				if( trace) log.Trace("Local Read: " + localPacket);
-				return Yield.DidWork.Invoke( WriteToRemoteMethod);
+				try {
+					if( filter != null) filter.Local( fixContext, localPacket);
+					return Yield.DidWork.Invoke( WriteToRemoteMethod);
+				} catch( FilterException) {
+					return Yield.Terminate;
+				}
 			} else {
 				return Yield.NoWork.Repeat;
 			}
@@ -138,8 +152,47 @@ namespace Test
 			log.Error("Exception occurred", ex);
 		}
 		
-		public ushort Port {
-			get { return port; }
+	 	protected volatile bool isDisposed = false;
+	    public void Dispose() 
+	    {
+	        Dispose(true);
+	        GC.SuppressFinalize(this);      
+	    }
+	
+	    protected virtual void Dispose(bool disposing)
+	    {
+       		if( !isDisposed) {
+	            isDisposed = true;   
+	            if (disposing) {
+	            	if( localTask != null) {
+	            		localTask.Stop();
+	            	}
+	            	if( remoteTask != null) {
+	            		remoteTask.Stop();
+	            	}
+	            	if( localSelector != null) {
+	            		localSelector.Dispose();
+	            	}
+	            	if( remoteSelector != null) {
+		            	remoteSelector.Dispose();
+	            	}
+	            	if( localSocket != null) {
+		            	localSocket.Dispose();
+	            	}
+	            	if( remoteSocket != null) {
+	            		remoteSocket.Dispose();
+	            	}
+	            }
+    		}
+	    }    
+	        
+		public ushort LocalPort {
+			get { return localPort; }
+		}
+		
+		public FIXFilter Filter {
+			get { return filter; }
+			set { filter = value; }
 		}
 	}
 }

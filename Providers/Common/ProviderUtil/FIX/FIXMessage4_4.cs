@@ -28,10 +28,10 @@ using System;
 using System.Text;
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.FIX
 {
 	public class FIXMessage4_4 : FIXTMessage1_1 {
-		public FIXMessage4_4(string sender) : base("FIX.4.4",sender,"MBT") {
+		public FIXMessage4_4(string sender,string destination) : base("FIX.4.4",sender,destination) {
 		}
 		/// <summary>
 		/// 1 Account mnemonic as agreed between buy and sell sides, e.g. broker and institution or investor/intermediary and fund manager.
@@ -173,6 +173,13 @@ namespace TickZoom.MBTFIX
 		/// </summary>
 		public void SetSide(int value ) {
 			Append(54, value);
+		}
+		
+		/// <summary>
+		///	59 Error or other message text.
+		/// </summary>
+		public void SetText(string value ) {
+			Append(58,value);
 		}
 		
 		/// <summary>

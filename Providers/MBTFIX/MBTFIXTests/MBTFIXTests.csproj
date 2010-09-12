@@ -52,8 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EquityLevel1.cs" />
-    <Compile Include="FIXPretradeFilter.cs" />
     <Compile Include="FIXAPI.cs" />
+    <Compile Include="FIXPreTradeFilter.cs" />
     <Compile Include="FuturesLevel1AndTrades.cs" />
     <Compile Include="QuotesAPI.cs" />
     <Compile Include="TimeAndSales.cs" />

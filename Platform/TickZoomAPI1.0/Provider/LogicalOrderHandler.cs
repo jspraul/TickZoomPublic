@@ -36,7 +36,7 @@ namespace TickZoom.Api
 		void SetDesiredPosition(double position);
 		void ClearPhysicalOrders();
 		void AddPhysicalOrder( PhysicalOrder order);
-		void AddPhysicalOrder( bool isActive, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder);	
+		void AddPhysicalOrder( OrderState orderState, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder);	
 		void SetLogicalOrders(Iterable<LogicalOrder> logicalOrders);
 		void PerformCompare();
 		void ProcessFill( LogicalFill fill);

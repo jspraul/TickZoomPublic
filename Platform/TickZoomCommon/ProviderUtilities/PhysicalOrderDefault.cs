@@ -36,7 +36,7 @@ using TickZoom.Api;
 namespace TickZoom.Common
 {
 	public struct PhysicalOrderDefault : PhysicalOrder {
-		private bool isActive;
+		private OrderState orderState;
 		private SymbolInfo symbol;
 		private OrderType type;
 		private double price;
@@ -49,7 +49,7 @@ namespace TickZoom.Common
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.Append(isActive ? "Active" : "Pending");
+			sb.Append(orderState);
 			sb.Append(" ");
 			sb.Append(side);
 			sb.Append(" ");
@@ -69,34 +69,10 @@ namespace TickZoom.Common
 			return sb.ToString();
 		}
 		
-		public PhysicalOrderDefault(bool isActive, SymbolInfo symbol, LogicalOrder logical, double size, object brokerOrder) {
-			this.isActive = isActive;
+		public PhysicalOrderDefault(OrderState orderState, SymbolInfo symbol, LogicalOrder logical, OrderSide side, double size, object brokerOrder) {
+			this.orderState = orderState;
 			this.symbol = symbol;
-			switch( logical.Type) {
-				case OrderType.BuyLimit:
-				case OrderType.BuyMarket:
-				case OrderType.BuyStop:
-					this.side = OrderSide.Buy;
-					break;
-				case OrderType.SellLimit:
-				case OrderType.SellMarket:
-				case OrderType.SellStop:
-					switch( logical.TradeDirection) {
-						case TradeDirection.Entry:
-						case TradeDirection.Reverse:
-							this.side = OrderSide.SellShort;
-							break;
-						case TradeDirection.ExitStrategy:
-						case TradeDirection.Exit:
-							this.side = OrderSide.Sell;
-							break;
-						default:
-							throw new ApplicationException("Unknown TradeDirection: " + logical.TradeDirection);
-					}
-					break;
-				default:
-					throw new ApplicationException("Unknown OrderType: " + logical.Type);
-			}
+			this.side = side;
 			this.type = logical.Type;
 			this.price = logical.Price;
 			this.size = size;
@@ -105,8 +81,8 @@ namespace TickZoom.Common
 			this.tag = logical.Tag;
 		}
 		
-		public PhysicalOrderDefault(bool isActive, SymbolInfo symbol, OrderSide side, OrderType type, double price, double size, int logicalOrderId, object brokerOrder, object tag) {
-			this.isActive = isActive;
+		public PhysicalOrderDefault(OrderState orderState, SymbolInfo symbol, OrderSide side, OrderType type, double price, double size, int logicalOrderId, object brokerOrder, object tag) {
+			this.orderState = orderState;
 			this.symbol = symbol;
 			this.side = side;
 			this.type = type;
@@ -145,8 +121,8 @@ namespace TickZoom.Common
 			get { return side; }
 		}
 		
-		public bool IsActive {
-			get { return isActive; }
+		public OrderState OrderState {
+			get { return orderState; }
 		}
 		
 		public object Tag {

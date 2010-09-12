@@ -59,6 +59,7 @@ namespace MockProvider
 			ShowCharts = false;
 			StoreKnownGood = false;
 		}
+	
 		
 		public override void RunStrategy()
 		{

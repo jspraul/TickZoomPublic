@@ -75,7 +75,7 @@ namespace Loaders
 				log.Error("Setup error.", ex);
 				throw;
 			} finally {
-				strategyTest.CloseCharts();
+				strategyTest.EndStrategy();
 			}
 		}
 		

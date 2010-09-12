@@ -49,7 +49,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FIX\FilterException.cs" />
+    <Compile Include="FIX\FIXContext.cs" />
+    <Compile Include="FIX\FIXContextDefault.cs" />
+    <Compile Include="FIX\FIXFilter.cs" />
     <Compile Include="FIX\FIXMessage4_4.cs" />
+    <Compile Include="FIX\FIXPretradeFilter.cs" />
     <Compile Include="FIX\FIXProviderSupport.cs" />
     <Compile Include="FIX\FIXTBuffer.cs" />
     <Compile Include="FIX\FIXTMessage.cs" />

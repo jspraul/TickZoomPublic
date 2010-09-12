@@ -101,8 +101,7 @@ namespace TickZoom.Common
 			preOrderManager.PostProcess = true;
 			postOrderManager = Factory.Engine.OrderManager(this);
 			postOrderManager.PostProcess = true;
-			postOrderManager.DoEntryOrders = false;
-			postOrderManager.DoExitOrders = false;
+			postOrderManager.DoStrategyOrders = false;
 			postOrderManager.DoExitStrategyOrders = true;
 			
 		    preFillManager = new FillManager(this);

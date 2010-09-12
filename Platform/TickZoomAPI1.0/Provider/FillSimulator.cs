@@ -50,8 +50,7 @@ namespace TickZoom.Api
 		bool UseSyntheticLimits { get; set; }
 		bool UseSyntheticStops { get; set; }
 		
-		bool DoEntryOrders { get; set; }
-		bool DoExitOrders { get; set; }
+		bool DoStrategyOrders { get; set; }
 		bool DoExitStrategyOrders { get; set; }
 		
 		SymbolInfo Symbol { get; set; }

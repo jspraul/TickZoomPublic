@@ -82,10 +82,12 @@ namespace Loaders
 			File.Delete(filePath);
 			filePath = Factory.SysLog.LogFolder + @"\Stats.log";
 			File.Delete(filePath);
+			filePath = Factory.SysLog.LogFolder + @"\Transactions.log";
+			File.Delete(filePath);
 		}
 		
 		[TestFixtureTearDown]
-		public void CloseCharts() {
+		public virtual void EndStrategy() {
 			if( !ShowCharts) {
 	   			HistoricalCloseCharts();
 			} else {

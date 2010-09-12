@@ -33,8 +33,8 @@ namespace TickZoom.Common
 	[Diagram(AttributeExclude=true)]
 	public class UtilityFactoryDefault : UtilityFactory
 	{
-		public PhysicalOrder PhysicalOrder( bool isActive, SymbolInfo symbol, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder, object tag) {
-			return new PhysicalOrderDefault(isActive, symbol,side,type,price,size,logicalOrderId,brokerOrder,tag);
+		public PhysicalOrder PhysicalOrder( OrderState orderState, SymbolInfo symbol, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder, object tag) {
+			return new PhysicalOrderDefault(orderState, symbol,side,type,price,size,logicalOrderId,brokerOrder,tag);
 		}
 		
 		public ProviderService CommandLineProcess() {
@@ -52,11 +52,11 @@ namespace TickZoom.Common
 		public VerifyFeed VerifyFeed() {
 			return new VerifyFeedDefault();
 		}
-		public FillSimulator FillSimulator() {
-			return new FillSimulatorDefault();
+		public FillSimulator FillSimulator(Func<double> getActualPosition) {
+			return new FillSimulatorDefault(getActualPosition);
 		}
-		public FillSimulator FillSimulator(StrategyInterface strategy) {
-			return new FillSimulatorDefault(strategy);
+		public FillSimulator FillSimulator(Func<double> getActualPosition, StrategyInterface strategy) {
+			return new FillSimulatorDefault(getActualPosition, strategy);
 		}
 		public FillHandler FillHandler() {
 			return new FillHandlerDefault();

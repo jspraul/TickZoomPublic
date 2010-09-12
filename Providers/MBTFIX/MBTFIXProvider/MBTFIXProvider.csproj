@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MBTFIX\MBTFIXFilter.cs" />
     <Compile Include="MBTFIX\MBTFIXProvider.cs" />
     <Compile Include="MBTFIX\MBTProvider.cs" />
     <Compile Include="MBTFIX\MBTQuotesProvider.cs" />

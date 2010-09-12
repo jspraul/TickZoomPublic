@@ -250,7 +250,7 @@ namespace TickZoom.Common
 			if( actualPositions.TryGetValue(symbol.BinaryIdentifier,out position)) {
 				return position;
 			} else {
-				throw new ApplicationException("Position was never set via call back.");
+				return 0;
 			}
 		}
 

@@ -28,7 +28,7 @@ using System;
 using System.Text;
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.FIX
 {
 	public class FIXTBuffer {
 		private StringBuilder sb = new StringBuilder();

@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -25,50 +25,25 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using TickZoom.Api;
 
-namespace TickZoom.Api
+namespace TickZoom.FIX
 {
-	public enum OrderState {
-		Pending,
-		Active,
-		Suspended
-	}
-	public interface PhysicalOrder {
-		OrderState OrderState {
-			get;
+	public class FIXContextDefault : FIXContext {
+		private Socket localSocket;
+		private Socket remoteSocket;
+		
+		public FIXContextDefault( Socket local, Socket remote) {
+			this.localSocket = local;
+			this.remoteSocket = remote;
 		}
 		
-		SymbolInfo Symbol {
-			get;
+		public Socket RemoteSocket {
+			get { return remoteSocket; }
 		}
 		
-		OrderSide Side {
-			get;
-		}
-		
-		OrderType Type {
-			get;
-		}
-		
-		double Price {
-			get;
-		}
-		
-		double Size {
-			get;
-		}
-		
-		int LogicalOrderId {
-			get;
-		}
-		
-		object BrokerOrder {
-			get;
-		}
-		
-		object Tag {
-			get;
+		public Socket LocalSocket {
+			get { return localSocket; }
 		}
 	}
 }

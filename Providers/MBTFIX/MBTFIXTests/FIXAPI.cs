@@ -31,6 +31,7 @@ using System.Threading;
 
 using NUnit.Framework;
 using TickZoom.Api;
+using TickZoom.FIX;
 using TickZoom.MBTFIX;
 using TickZoom.MBTQuotes;
 
@@ -40,6 +41,7 @@ namespace Test
 	[TestFixture]
 	public class FIXAPI 
 	{
+		private string destination = "MBT";
 		private static Log log = Factory.SysLog.GetLogger(typeof(FIXAPI));
 	
 		public FIXAPI()
@@ -124,21 +126,21 @@ namespace Test
 		
 		[Test]
 		public unsafe void ConnectToFIX() {
-			var filter = new FIXPretradeFilter();
-			string addrStr = "127.0.0.1";
-			ushort port = filter.Port;
+			string addrStr = "216.52.236.112";
+			ushort port = 5679;
 			// Forex
 //			string password = "1step2wax";
 //			string userName = "DEMOYZPSFIX";
 			// Equity
 			string password = "1lake2dust";
 			string userName = "DEMOXJSPFIX";
+			using( var filter = new FIXPretradeFilter(addrStr,port))
 			using( Selector selector = Factory.Provider.Selector( OnException))
 			using( Socket socket = Factory.Provider.Socket("TestSocket")) {
 				socket.PacketFactory = new PacketFactoryFIX4_4();
 				selector.Start();
 				socket.SetBlocking(true);
-				socket.Connect(addrStr,port);
+				socket.Connect("127.0.0.1",filter.LocalPort);
 				socket.SetBlocking(false);
 				selector.AddReader(socket);
 				selector.AddWriter(socket);
@@ -146,7 +148,7 @@ namespace Test
 				Packet packet = socket.CreatePacket();
 				string hashPassword = MBTQuotesProvider.Hash(password);
 				
-				var mbtMsg = new FIXMessage4_4(userName);
+				var mbtMsg = new FIXMessage4_4(userName,destination);
 				mbtMsg.SetEncryption(0);
 				mbtMsg.SetHeartBeatInterval(30);
 				mbtMsg.ResetSequence();
@@ -206,7 +208,7 @@ namespace Test
 				Packet packet = socket.CreatePacket();
 				string hashPassword = MBTQuotesProvider.Hash(password);
 				
-				var mbtMsg = new FIXMessage4_4(userName);
+				var mbtMsg = new FIXMessage4_4(userName,destination);
 				mbtMsg.SetEncryption(0);
 				mbtMsg.SetHeartBeatInterval(30);
 				mbtMsg.ResetSequence();

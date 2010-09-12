@@ -31,7 +31,7 @@ using System.Text;
 
 using TickZoom.Api;
 
-namespace TickZoom.MBTFIX
+namespace TickZoom.FIX
 {
 	public unsafe class PacketFIXT1_1 : Packet {
 		private const byte EndOfField = 1;

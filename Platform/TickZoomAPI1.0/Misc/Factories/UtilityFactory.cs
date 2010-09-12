@@ -34,13 +34,13 @@ namespace TickZoom.Api
 		ProviderService CommandLineProcess();
 		ProviderService WindowsService();
 		LogicalOrderHandler LogicalOrderHandler(SymbolInfo symbol, PhysicalOrderHandler handler);
-		PhysicalOrder PhysicalOrder( bool isActive, SymbolInfo symbol, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder, object tag);
+		PhysicalOrder PhysicalOrder( OrderState orderState, SymbolInfo symbol, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder, object tag);
 		SymbolHandler SymbolHandler(SymbolInfo symbol, Receiver receiver);
 		VerifyFeed VerifyFeed();
 		FillHandler FillHandler();
 		FillHandler FillHandler(StrategyInterface strategy);
-		FillSimulator FillSimulator();
-		FillSimulator FillSimulator(StrategyInterface strategy);
+		FillSimulator FillSimulator(Func<double> getActualPosition);
+		FillSimulator FillSimulator(Func<double> getActualPosition, StrategyInterface strategy);
 		BreakPointInterface BreakPoint();
 		PositionInterface Position(ModelInterface model);
 	}

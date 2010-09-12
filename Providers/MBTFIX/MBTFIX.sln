@@ -12,8 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MBTFIXTests", "MBTFIXTests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProviderUtil", "..\Common\ProviderUtil\ProviderUtil.csproj", "{00E10E7D-4270-448C-921C-72A795FBF13F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MBTFIXFilter", "MBTFIXFilter\MBTFIXFilter.csproj", "6234653C-C6C3-4888-9DCD-3C666EA4D8C3"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,9 +38,5 @@ Global
 		{00E10E7D-4270-448C-921C-72A795FBF13F}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{00E10E7D-4270-448C-921C-72A795FBF13F}.Release|Any CPU.Build.0 = Release|x86
 		{00E10E7D-4270-448C-921C-72A795FBF13F}.Release|Any CPU.ActiveCfg = Release|x86
-		6234653C-C6C3-4888-9DCD-3C666EA4D8C3.Debug|Any CPU.Build.0 = Debug|Any CPU
-		6234653C-C6C3-4888-9DCD-3C666EA4D8C3.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		6234653C-C6C3-4888-9DCD-3C666EA4D8C3.Release|Any CPU.Build.0 = Release|Any CPU
-		6234653C-C6C3-4888-9DCD-3C666EA4D8C3.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal
