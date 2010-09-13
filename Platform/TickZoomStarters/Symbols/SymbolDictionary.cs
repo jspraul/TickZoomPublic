@@ -302,6 +302,8 @@ namespace TickZoom.Symbols
         <property name=""QuoteType"" value=""Level2"" />
       </symbol>
       <symbol name=""IBM"">
+        <property name=""MaxPositionSize"" value=""5"" />
+        <property name=""MaxOrderSize"" value=""5"" />
         <property name=""TimeAndSales"" value=""None"" />
         <property name=""QuoteType"" value=""Level1"" />
       </symbol>

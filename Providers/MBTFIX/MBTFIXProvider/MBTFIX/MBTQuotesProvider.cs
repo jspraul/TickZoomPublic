@@ -282,6 +282,7 @@ namespace TickZoom.MBTQuotes
 			if( tradeType != null) {
 				Packet packet = Socket.CreatePacket();
 				string message = "S|1003="+symbol.Symbol+";2000="+tradeType+"\n";
+				if( debug) log.Debug("Symbol request: " + message);
 				packet.DataOut.Write(message.ToCharArray());
 				while( !Socket.TrySendPacket(packet)) {
 					if( IsInterrupted) return;
@@ -292,6 +293,7 @@ namespace TickZoom.MBTQuotes
 			if( quoteType != null) {
 				Packet packet = Socket.CreatePacket();
 				string message = "S|1003="+symbol.Symbol+";2000="+quoteType+"\n";
+				if( debug) log.Debug("Symbol request: " + message);
 				packet.DataOut.Write(message.ToCharArray());
 				while( !Socket.TrySendPacket(packet)) {
 					if( IsInterrupted) return;

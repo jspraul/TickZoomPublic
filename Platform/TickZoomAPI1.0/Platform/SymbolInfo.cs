@@ -240,5 +240,25 @@ namespace TickZoom.Api
  		string Destination {
  			get;
  		}
+ 		
+ 		/// <summary>
+ 		/// Controls the maximum possible position size for the FIX Pre-Trade Risk 
+ 		/// Management filter.  If any individual order quantity will be sufficient
+ 		/// to push the position size beyond this maximum, then the filter will block
+ 		/// that order and shutdown trading. So this scenario is for a fail-safe protection
+ 		/// of from runaway order looping.
+ 		/// </summary>
+ 		double MaxPositionSize {
+ 			get;
+ 		}
+ 		
+ 		/// <summary>
+ 		/// Controls the maximum possible order size for the FIX Pre-Trade Risk 
+ 		/// Management filter.  If any individual order quantity exceed this setting,
+ 		/// then the filter blocks that order and shuts down trading.
+ 		/// </summary>
+ 		double MaxOrderSize {
+ 			get;
+ 		}
 	}
 }

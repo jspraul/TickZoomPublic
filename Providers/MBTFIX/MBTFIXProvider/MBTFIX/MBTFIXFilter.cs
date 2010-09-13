@@ -89,7 +89,7 @@ namespace TickZoom.MBTFIX
 					log.Error("Error looking up " + packet.Symbol + ": " + ex.Message);
 					return;
 				}
-				double maxOrderSize = 5;
+				double maxOrderSize = symbolInfo.MaxOrderSize;
 				if( quantity > maxOrderSize) {
 					CloseWithError(context, packet, "Order size " + quantity + " for " + symbolInfo + " was greater than MaxOrderSize of " + maxOrderSize + " in packet sequence #" + packet.Sequence);
 				}
@@ -120,7 +120,7 @@ namespace TickZoom.MBTFIX
 				double position = 0;
 				symbolPositionMap.TryGetValue(symbolInfo.BinaryIdentifier,out position);
 				position += quantity;
-				var maxPositionSize = 5D;
+				var maxPositionSize = symbolInfo.MaxPositionSize;
 				var positionSize = Math.Abs(position);
 				if( positionSize > maxPositionSize) {
 					CloseWithError(context, packet, "Position size " + positionSize + " for " + symbolInfo + " was greater than MaxPositionSize of " + maxPositionSize + " in packet sequence #" + packet.Sequence);

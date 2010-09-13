@@ -62,23 +62,8 @@ namespace TickZoom.Symbols
 		private string fees = "default";
 		private string slippage = "default";
 		private string destination = "default";
-		
-		
-		public TimeAndSales TimeAndSales {
-			get { return timeAndSales; }
-			set { timeAndSales = value; }
-		}
-
-		public int ChartGroup {
-			get { return chartGroup; }
-			set { chartGroup = value; }
-		}
-		
-		public int Level2LotSizeMinimum {
-			get { return level2LotSizeMinimum; }
-			set { level2LotSizeMinimum = value; }
-		}
-		
+		private double maxPositionSize = double.MaxValue;
+		private double maxOrderSize = double.MaxValue;
 	    public SymbolProperties Copy()
 	    {
 	    	SymbolProperties result;
@@ -216,5 +201,31 @@ namespace TickZoom.Symbols
 			get { return slippage; }
 			set { slippage = value; }
 		}
+		
+		public double MaxPositionSize {
+			get { return maxPositionSize; }
+			set { maxPositionSize = value; }
+		}
+		
+		public double MaxOrderSize {
+			get { return maxOrderSize; }
+			set { maxOrderSize = value; }
+		}
+		
+		public TimeAndSales TimeAndSales {
+			get { return timeAndSales; }
+			set { timeAndSales = value; }
+		}
+
+		public int ChartGroup {
+			get { return chartGroup; }
+			set { chartGroup = value; }
+		}
+		
+		public int Level2LotSizeMinimum {
+			get { return level2LotSizeMinimum; }
+			set { level2LotSizeMinimum = value; }
+		}
+		
 	}
 }
