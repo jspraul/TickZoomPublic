@@ -64,6 +64,7 @@ namespace Loaders
 		public bool ShowCharts = false;
 		public bool StoreKnownGood = false;
 		public CreateStarterCallback createStarterCallback;
+		private bool testFailed = false;		
 		
 		public StrategyTest() {
  			testFileName = GetType().Name;
@@ -94,6 +95,9 @@ namespace Loaders
 				while( TryCloseCharts() == false) {
 					Thread.Sleep(100);
 				}
+			}
+			if( testFailed) {
+				Environment.Exit(0);
 			}
 		}
 		
@@ -373,42 +377,52 @@ namespace Loaders
 		}
 		
 		public void VerifyTrades(StrategyInterface strategy) {
-			assertFlag = false;
-			List<TradeInfo> goodTrades = null;
-			goodTradeMap.TryGetValue(strategy.Name,out goodTrades);
-			List<TradeInfo> testTrades = null;
-			testTradeMap.TryGetValue(strategy.Name,out testTrades);
-			Assert.IsNotNull(goodTrades, "good trades");
-			Assert.IsNotNull(testTrades, "test trades");
-			for( int i=0; i<testTrades.Count && i<goodTrades.Count; i++) {
-				TradeInfo testInfo = testTrades[i];
-				TradeInfo goodInfo = goodTrades[i];
-				TransactionPairBinary goodTrade = goodInfo.Trade;
-				TransactionPairBinary testTrade = testInfo.Trade;
-				AssertEqual(goodTrade,testTrade,"Trade at " + i);
-				AssertEqual(goodInfo.ProfitLoss,testInfo.ProfitLoss,"ProfitLoss at " + i);
-				AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,"ClosedEquity at " + i);
+			try {
+				assertFlag = false;
+				List<TradeInfo> goodTrades = null;
+				goodTradeMap.TryGetValue(strategy.Name,out goodTrades);
+				List<TradeInfo> testTrades = null;
+				testTradeMap.TryGetValue(strategy.Name,out testTrades);
+				Assert.IsNotNull(goodTrades, "good trades");
+				Assert.IsNotNull(testTrades, "test trades");
+				for( int i=0; i<testTrades.Count && i<goodTrades.Count; i++) {
+					TradeInfo testInfo = testTrades[i];
+					TradeInfo goodInfo = goodTrades[i];
+					TransactionPairBinary goodTrade = goodInfo.Trade;
+					TransactionPairBinary testTrade = testInfo.Trade;
+					AssertEqual(goodTrade,testTrade,"Trade at " + i);
+					AssertEqual(goodInfo.ProfitLoss,testInfo.ProfitLoss,"ProfitLoss at " + i);
+					AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,"ClosedEquity at " + i);
+				}
+				Assert.IsFalse(assertFlag,"Checking for trade errors.");
+			} catch {
+				testFailed = true;
+				throw;
 			}
-			Assert.IsFalse(assertFlag,"Checking for trade errors.");
 		}
 		
 		public void VerifyTransactions(StrategyInterface strategy) {
-			assertFlag = false;
-			List<TransactionInfo> goodTransactions = null;
-			goodTransactionMap.TryGetValue(strategy.Name,out goodTransactions);
-			List<TransactionInfo> testTransactions = null;
-			testTransactionMap.TryGetValue(strategy.Name,out testTransactions);
-			Assert.IsNotNull(goodTransactions, "good trades");
-			Assert.IsNotNull(testTransactions, "test trades");
-			for( int i=0; i<testTransactions.Count && i<goodTransactions.Count; i++) {
-				var testInfo = testTransactions[i];
-				var goodInfo = goodTransactions[i];
-				var goodFill = goodInfo.Fill;
-				var testFill = testInfo.Fill;
-				AssertReconcile(goodFill,testFill,"Transaction Fill at " + i);
-				AssertEqual(goodInfo.Symbol,testInfo.Symbol,"Transaction symbol at " + i);
+			try {
+				assertFlag = false;
+				List<TransactionInfo> goodTransactions = null;
+				goodTransactionMap.TryGetValue(strategy.Name,out goodTransactions);
+				List<TransactionInfo> testTransactions = null;
+				testTransactionMap.TryGetValue(strategy.Name,out testTransactions);
+				Assert.IsNotNull(goodTransactions, "good trades");
+				Assert.IsNotNull(testTransactions, "test trades");
+				for( int i=0; i<testTransactions.Count && i<goodTransactions.Count; i++) {
+					var testInfo = testTransactions[i];
+					var goodInfo = goodTransactions[i];
+					var goodFill = goodInfo.Fill;
+					var testFill = testInfo.Fill;
+					AssertReconcile(goodFill,testFill,"Transaction Fill at " + i);
+					AssertEqual(goodInfo.Symbol,testInfo.Symbol,"Transaction symbol at " + i);
+				}
+				Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
+			} catch { 
+				testFailed = true;
+				throw;
 			}
-			Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
 		}
 		
 		public void PerformReconciliation() {
