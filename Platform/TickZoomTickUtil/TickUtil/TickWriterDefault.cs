@@ -207,8 +207,7 @@ namespace TickZoom.TickUtil
 			int count=0;
 			do {
 			    try { 
-			    	tick.ToWriter(memory);
-			    	CompressTick(tick.Extract(),memory);
+			    	tick.Compress(memory);
 			    	SetupHeader(memory);
 			    	fs.Write(memory.GetBuffer(),0,(int)memory.Position);			    	
 	    			ReserveHeader(memory);
@@ -224,9 +223,6 @@ namespace TickZoom.TickUtil
 			    } 
 				count++;
 			} while( errorCount > 0);
-		}
-		
-		protected virtual void CompressTick(TickBinary tick, MemoryStream memory) {
 		}
 		
 		public void Add(TickIO tick) {

@@ -39,7 +39,7 @@ namespace TickZoom.TickUtil
 	/// <inheritdoc/>
 	unsafe public struct TickImpl : TickIO
 	{
-		public const byte TickVersion = 8;
+		public const byte TickVersion = 9;
 		public const int minTickSize = 256;
 		
 		public static long ToLong( double value) { return value.ToLong(); }
@@ -50,9 +50,11 @@ namespace TickZoom.TickUtil
 		// Older formats were already multiplied by 1000.
 		public const long OlderFormatConvertToLong = 1000000;
 		private static Log log = Factory.SysLog.GetLogger(typeof(TickImpl));
+		private static bool trace = log.IsTraceEnabled;
 
 		byte dataVersion;
 		TickBinary binary;
+		TickBinary lastBinary;
 		SymbolTimeZone timeZone;
 		TimeStamp localTime;
 		TimeStamp nextUtcOffsetUpdate;
@@ -231,6 +233,113 @@ namespace TickZoom.TickUtil
 			return output;
 		}
 		
+		public enum BinaryField {
+			Time=1,
+			Bid,
+			Ask,
+			Price,
+			Size,
+			BidSize,
+			AskSize,
+			Empty=31
+		}
+		public enum FieldSize {
+			Byte=1,
+			Short,
+			Int,
+			Long,
+		}
+		
+		private unsafe bool WriteField( BinaryField fieldEnum, byte** ptr, long diff) {
+			var field = (byte) ((byte) fieldEnum << 3);
+			if( diff == 0) {
+				return false;
+			} else if( diff >= byte.MinValue && diff <= byte.MaxValue) {
+				field |= (byte) FieldSize.Byte;
+				*(*ptr) = field; (*ptr)++;
+				*(*ptr) = (byte) diff; (*ptr)++;
+			} else if( diff >= short.MinValue && diff <= short.MaxValue) {
+				field |= (byte) FieldSize.Short;
+				*(*ptr) = field; (*ptr)++;
+				*(short*)(*ptr) = (short) diff; (*ptr)+=sizeof(short);
+			} else if( diff >= int.MinValue && diff <= int.MaxValue) {
+				field |= (byte) FieldSize.Int;
+				*(*ptr) = field; (*ptr)++;
+				*(int*)(*ptr) = (int) diff; (*ptr)+=sizeof(int);
+			} else {
+				field |= (byte) FieldSize.Long;
+				*(*ptr) = field; (*ptr)++;
+				*(long*)(*ptr) = diff; (*ptr)+=sizeof(long);
+			}
+			return true;
+		}
+		
+		private unsafe void WriteBidSize(byte field, int i, byte** ptr) {
+			fixed( ushort *lp = lastBinary.DepthBidLevels)
+			fixed( ushort *p = binary.DepthBidLevels) {
+				var diff = *(p + i) - *(lp + i);
+				if( diff != 0) {
+					*(*ptr) = (byte) (field | i); (*ptr)++;
+					*(short*)(*ptr) = (short) diff; (*ptr)+=sizeof(short);
+				}
+			}
+		}
+		
+		private unsafe void WriteAskSize(byte field, int i, byte** ptr) {
+			fixed( ushort *lp = lastBinary.DepthAskLevels)
+			fixed( ushort *p = binary.DepthAskLevels) {
+				var diff = *(p + i) - *(lp + i);
+				if( diff != 0) {
+					*(*ptr) = (byte) (field | i); (*ptr)++;
+					*(short*)(*ptr) = (short) diff; (*ptr)+=sizeof(short);
+				}
+			}
+		}
+		
+		public unsafe void Compress(MemoryStream writer) {
+			if( binary.Bid == 106830000000L) {
+				int x = 0;
+			}
+			dataVersion = TickVersion;
+			writer.SetLength( writer.Position+minTickSize);
+			byte[] buffer = writer.GetBuffer();
+			fixed( byte *fptr = &buffer[writer.Position]) {
+				byte *ptr = fptr;
+				*(ptr) = dataVersion; ptr++;
+				*(ptr) = binary.ContentMask; ptr++;
+				if( trace) log.Trace("Content position = " + (ptr - fptr));
+				WriteField( BinaryField.Time, &ptr, binary.UtcTime - lastBinary.UtcTime);
+				if( trace) log.Trace("Time position = " + (ptr - fptr));
+				WriteField( BinaryField.Bid, &ptr, binary.Bid - lastBinary.Bid);
+				if( trace) log.Trace("Bid position = " + (ptr - fptr));
+				log.Info( "Bid = " + binary.Bid);
+				WriteField( BinaryField.Ask, &ptr, binary.Ask - lastBinary.Ask);
+				if( trace) log.Trace("Ask position = " + (ptr - fptr));
+				WriteField( BinaryField.Price, &ptr, binary.Price - lastBinary.Price);
+				if( trace) log.Trace("Price position = " + (ptr - fptr));
+				if( !WriteField( BinaryField.Size, &ptr, binary.Size - lastBinary.Size)) {
+					*ptr = (byte) ((byte) BinaryField.Empty << 3); ptr++;
+				}
+				if( trace) log.Trace("Size position = " + (ptr - fptr));
+//				var field = (byte) ((byte) BinaryField.BidSize << 3);
+//				for( int i=0; i<TickBinary.DomLevels; i++) {
+//					WriteBidSize( field, i, &ptr);
+//				}
+//				field = (byte) ((byte) BinaryField.AskSize << 3);
+//				for( int i=0; i<TickBinary.DomLevels; i++) {
+//					WriteAskSize( field, i, &ptr);
+//				}
+				writer.Position += ptr - fptr;
+				writer.SetLength(writer.Position);
+				StringBuilder sb = new StringBuilder();
+				for( int i=0; i<writer.Length; i++) {
+					sb.Append( writer.GetBuffer()[i].ToString("X2"));
+					sb.Append( ":");
+				}
+				log.Info( "Write Length = " + writer.Length + " " + sb);
+			}
+			lastBinary = binary;
+		}
 		
 		unsafe public void ToWriter(MemoryStream writer) {
 			dataVersion = TickVersion;
@@ -265,6 +374,76 @@ namespace TickZoom.TickUtil
 				writer.Position += ptr - fptr;
 				writer.SetLength(writer.Position);
 			}
+		}
+		
+		private unsafe long ReadField(BinaryField fieldEnum, byte** ptr) {
+			var field = (BinaryField) (**ptr >> 3);
+			if( field != fieldEnum) return 0L;
+			long result = 0L;
+			var size = (FieldSize) (**ptr & 0x07);
+			(*ptr)++;
+			switch( size) {
+				case FieldSize.Byte:
+					result = (**ptr); (*ptr)++;
+					break;
+				case FieldSize.Short:
+					result = (*(short*)(*ptr)); (*ptr)+= sizeof(short);
+					break;
+				case FieldSize.Int:
+					result = (*(int*)(*ptr)); (*ptr)+= sizeof(int);
+					break;
+				case FieldSize.Long:
+					result = (*(long*)(*ptr)); (*ptr)+= sizeof(long);
+					break;
+			}
+			return result;
+		}
+		
+		private unsafe int FromFileVersion9(byte *fptr, int length) {
+			StringBuilder sb = new StringBuilder();
+			for( int i=0; i<length; i++) {
+				sb.Append( (*(fptr+i)).ToString("X2"));
+				sb.Append( ":");
+			}
+			log.Info("Read bytes = " + sb);
+			
+			log.Info("Read Length = " + length);
+			byte *ptr = fptr;
+			binary.ContentMask = *ptr; ptr++;
+
+			long diff = 0;
+			/* if( (ptr - fptr) < length) */ diff = ReadField( BinaryField.Time, &ptr);
+			if( trace) log.Trace("Time position = " + (ptr - fptr));
+			binary.UtcTime = lastBinary.UtcTime + diff;
+			
+			diff = 0;
+			/* if( (ptr - fptr) < length) */ diff = ReadField( BinaryField.Bid, &ptr);
+			if( trace) log.Trace("Bid position = " + (ptr - fptr));
+			binary.Bid = lastBinary.Bid + diff;
+			log.Info( "Bid = " + binary.Bid + " diff = " + diff);
+			
+			diff = 0;
+			/* if( (ptr - fptr) < length) */ diff = ReadField( BinaryField.Ask, &ptr);
+			if( trace) log.Trace("Ask position = " + (ptr - fptr));
+			binary.Ask = lastBinary.Ask + diff;
+
+			diff = 0;
+			/* if( (ptr - fptr) < length) */ diff = ReadField( BinaryField.Price, &ptr);
+			if( trace) log.Trace("Price position = " + (ptr - fptr));
+			binary.Price = lastBinary.Price + diff;
+			
+			diff = 0;
+			/* if( (ptr - fptr) < length) */ diff = ReadField( BinaryField.Size, &ptr);
+			if( trace) log.Trace("Size position = " + (ptr - fptr));
+			binary.Size = lastBinary.Size + (int) diff;
+			
+			if( diff == 0) {
+				ptr ++;
+			}
+			
+			lastBinary = binary;
+			int len = (int) (ptr - fptr);
+			return len;
 		}
 		
 		private unsafe int FromFileVersion8(byte *fptr) {
@@ -522,6 +701,9 @@ namespace TickZoom.TickUtil
 				switch( dataVersion) {
 					case 8:
 						ptr += FromFileVersion8(ptr);
+						break;
+					case 9:
+						ptr += FromFileVersion9(ptr,(short)(reader.Length-1));
 						break;
 					default:
 						throw new ApplicationException("Unknown Tick Version Number " + dataVersion);

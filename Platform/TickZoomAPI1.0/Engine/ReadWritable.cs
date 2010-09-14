@@ -44,5 +44,6 @@ namespace TickZoom.Api
 		byte DataVersion {
 			get;
 		}
+		void Compress(MemoryStream memory);
 	}
 }

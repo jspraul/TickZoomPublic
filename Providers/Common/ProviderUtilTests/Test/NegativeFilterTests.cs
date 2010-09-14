@@ -41,9 +41,9 @@ namespace TickZoom.Test
 		[Test]
 		[ExpectedException( typeof(Exception), ExpectedMessage="was greater than MaxPositionSize of ", MatchType=MessageMatch.Contains)]
 		public void TestFIXPositionFilterBuy() {
-	  			double expectedPosition = 0;
-	  			double sizeIncrease = 2;
-	  			int secondsDelay = 3;
+	  		double expectedPosition = 0;
+	  		double sizeIncrease = 2;
+	  		int secondsDelay = 3;
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
