@@ -318,7 +318,6 @@ namespace TickZoom.TickUtil
 		private bool TryReadTick(long length)
 		{
 			int size = dataIn.ReadByte();
-			log.Info("Size to read = " + size);
 			// Check for old style prior to version 8 where
 			// single byte version # was first.
 			if (dataVersion < 8 && size < 8) {

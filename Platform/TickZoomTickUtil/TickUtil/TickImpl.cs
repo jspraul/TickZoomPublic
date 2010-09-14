@@ -307,41 +307,30 @@ namespace TickZoom.TickUtil
 				byte *ptr = fptr;
 				*(ptr) = dataVersion; ptr++;
 				*(ptr) = binary.ContentMask; ptr++;
-				if( trace) log.Trace("Content position = " + (ptr - fptr));
 				WriteField( BinaryField.Time, &ptr, binary.UtcTime - lastBinary.UtcTime);
-				if( trace) log.Trace("Time position = " + (ptr - fptr));
 				WriteField( BinaryField.Bid, &ptr, binary.Bid - lastBinary.Bid);
-				if( trace) log.Trace("Bid position = " + (ptr - fptr));
-				log.Info( "Bid = " + binary.Bid);
 				WriteField( BinaryField.Ask, &ptr, binary.Ask - lastBinary.Ask);
-				if( trace) log.Trace("Ask position = " + (ptr - fptr));
 				WriteField( BinaryField.Price, &ptr, binary.Price - lastBinary.Price);
-				if( trace) log.Trace("Price position = " + (ptr - fptr));
-				if( !WriteField( BinaryField.Size, &ptr, binary.Size - lastBinary.Size)) {
-					*ptr = (byte) ((byte) BinaryField.Empty << 3); ptr++;
+				WriteField( BinaryField.Size, &ptr, binary.Size - lastBinary.Size);
+				var field = (byte) ((byte) BinaryField.BidSize << 3);
+				for( int i=0; i<TickBinary.DomLevels; i++) {
+					WriteBidSize( field, i, &ptr);
 				}
-				if( trace) log.Trace("Size position = " + (ptr - fptr));
-//				var field = (byte) ((byte) BinaryField.BidSize << 3);
-//				for( int i=0; i<TickBinary.DomLevels; i++) {
-//					WriteBidSize( field, i, &ptr);
-//				}
-//				field = (byte) ((byte) BinaryField.AskSize << 3);
-//				for( int i=0; i<TickBinary.DomLevels; i++) {
-//					WriteAskSize( field, i, &ptr);
-//				}
+				field = (byte) ((byte) BinaryField.AskSize << 3);
+				for( int i=0; i<TickBinary.DomLevels; i++) {
+					WriteAskSize( field, i, &ptr);
+				}
 				writer.Position += ptr - fptr;
 				writer.SetLength(writer.Position);
-				StringBuilder sb = new StringBuilder();
-				for( int i=0; i<writer.Length; i++) {
-					sb.Append( writer.GetBuffer()[i].ToString("X2"));
-					sb.Append( ":");
-				}
-				log.Info( "Write Length = " + writer.Length + " " + sb);
 			}
 			lastBinary = binary;
 		}
 		
-		unsafe public void ToWriter(MemoryStream writer) {
+		public unsafe void ToWriter(MemoryStream writer) {
+			Compress(writer);
+		}
+		
+		public unsafe void ToWriterXXX(MemoryStream writer) {
 			dataVersion = TickVersion;
 			writer.SetLength( writer.Position+minTickSize);
 			byte[] buffer = writer.GetBuffer();
@@ -376,9 +365,7 @@ namespace TickZoom.TickUtil
 			}
 		}
 		
-		private unsafe long ReadField(BinaryField fieldEnum, byte** ptr) {
-			var field = (BinaryField) (**ptr >> 3);
-			if( field != fieldEnum) return 0L;
+		private unsafe long ReadField(byte** ptr) {
 			long result = 0L;
 			var size = (FieldSize) (**ptr & 0x07);
 			(*ptr)++;
@@ -399,48 +386,58 @@ namespace TickZoom.TickUtil
 			return result;
 		}
 		
-		private unsafe int FromFileVersion9(byte *fptr, int length) {
-			StringBuilder sb = new StringBuilder();
-			for( int i=0; i<length; i++) {
-				sb.Append( (*(fptr+i)).ToString("X2"));
-				sb.Append( ":");
+		private unsafe void ReadBidSize(byte** ptr) {
+			fixed( ushort *p = binary.DepthBidLevels) {
+				long result = 0L;
+				var index = **ptr & 0x07;
+				(*ptr)++;
+				*(p+index) = (ushort) (*(p+index) + *(short*)(*ptr));
+				(*ptr)+= sizeof(short);
 			}
-			log.Info("Read bytes = " + sb);
-			
-			log.Info("Read Length = " + length);
+		}
+		
+		private unsafe void ReadAskSize(byte** ptr) {
+			fixed( ushort *p = binary.DepthAskLevels) {
+				long result = 0L;
+				var index = **ptr & 0x07;
+				(*ptr)++;
+				*(p+index) = (ushort) (*(p+index) + *(short*)(*ptr));
+				(*ptr)+= sizeof(short);
+			}
+		}
+		
+		private unsafe int FromFileVersion9(byte *fptr, int length) {
+			binary = lastBinary;
 			byte *ptr = fptr;
 			binary.ContentMask = *ptr; ptr++;
-
-			long diff = 0;
-			/* if( (ptr - fptr) < length) */ diff = ReadField( BinaryField.Time, &ptr);
-			if( trace) log.Trace("Time position = " + (ptr - fptr));
-			binary.UtcTime = lastBinary.UtcTime + diff;
 			
-			diff = 0;
-			/* if( (ptr - fptr) < length) */ diff = ReadField( BinaryField.Bid, &ptr);
-			if( trace) log.Trace("Bid position = " + (ptr - fptr));
-			binary.Bid = lastBinary.Bid + diff;
-			log.Info( "Bid = " + binary.Bid + " diff = " + diff);
-			
-			diff = 0;
-			/* if( (ptr - fptr) < length) */ diff = ReadField( BinaryField.Ask, &ptr);
-			if( trace) log.Trace("Ask position = " + (ptr - fptr));
-			binary.Ask = lastBinary.Ask + diff;
-
-			diff = 0;
-			/* if( (ptr - fptr) < length) */ diff = ReadField( BinaryField.Price, &ptr);
-			if( trace) log.Trace("Price position = " + (ptr - fptr));
-			binary.Price = lastBinary.Price + diff;
-			
-			diff = 0;
-			/* if( (ptr - fptr) < length) */ diff = ReadField( BinaryField.Size, &ptr);
-			if( trace) log.Trace("Size position = " + (ptr - fptr));
-			binary.Size = lastBinary.Size + (int) diff;
-			
-			if( diff == 0) {
-				ptr ++;
+			while( (ptr - fptr) < length) {
+				var field = (BinaryField) (*ptr >> 3);
+				switch( field) {
+					case BinaryField.Time:
+						binary.UtcTime += ReadField( &ptr);
+						break;
+					case BinaryField.Bid:
+						binary.Bid += ReadField( &ptr);
+						break;
+					case BinaryField.Ask:
+						binary.Ask += ReadField( &ptr);
+						break;
+					case BinaryField.Price:
+						binary.Price += ReadField( &ptr);
+						break;
+					case BinaryField.Size:
+						binary.Size += (int) ReadField( &ptr);
+						break;
+					case BinaryField.BidSize:
+						ReadBidSize( &ptr);
+						break;
+					case BinaryField.AskSize:
+						ReadAskSize( &ptr);
+						break;
+				}
 			}
-			
+
 			lastBinary = binary;
 			int len = (int) (ptr - fptr);
 			return len;
