@@ -39,7 +39,6 @@ namespace TickZoom.TickUtil
 	/// <inheritdoc/>
 	unsafe public struct TickImpl : TickIO
 	{
-		public const byte TickVersion = 9;
 		public const int minTickSize = 256;
 		
 		public static long ToLong( double value) { return value.ToLong(); }
@@ -51,6 +50,7 @@ namespace TickZoom.TickUtil
 		public const long OlderFormatConvertToLong = 1000000;
 		private static Log log = Factory.SysLog.GetLogger(typeof(TickImpl));
 		private static bool trace = log.IsTraceEnabled;
+		private bool isCompressStarted;
 
 		byte dataVersion;
 		TickBinary binary;
@@ -241,6 +241,8 @@ namespace TickZoom.TickUtil
 			Size,
 			BidSize,
 			AskSize,
+			ContentMask,
+			Reset=30,
 			Empty=31
 		}
 		public enum FieldSize {
@@ -295,46 +297,58 @@ namespace TickZoom.TickUtil
 				}
 			}
 		}
-		
-		public unsafe void Compress(MemoryStream writer) {
-			dataVersion = TickVersion;
+		private unsafe void ToWriterVersion9(MemoryStream writer) {
+			dataVersion = 9;
 			writer.SetLength( writer.Position+minTickSize);
 			byte[] buffer = writer.GetBuffer();
 			fixed( byte *fptr = &buffer[writer.Position]) {
 				byte *ptr = fptr;
 				ptr++; // Save space for size header.
 				*(ptr) = dataVersion; ptr++;
-				*(ptr) = binary.ContentMask; ptr++;
-				WriteField( BinaryField.Time, &ptr, binary.UtcTime - lastBinary.UtcTime);
-				WriteField( BinaryField.Bid, &ptr, binary.Bid - lastBinary.Bid);
-				WriteField( BinaryField.Ask, &ptr, binary.Ask - lastBinary.Ask);
-				WriteField( BinaryField.Price, &ptr, binary.Price - lastBinary.Price);
-				WriteField( BinaryField.Size, &ptr, binary.Size - lastBinary.Size);
-				var field = (byte) ((byte) BinaryField.BidSize << 3);
-				for( int i=0; i<TickBinary.DomLevels; i++) {
-					WriteBidSize( field, i, &ptr);
+				if( !isCompressStarted) {
+					WriteField( BinaryField.Reset, &ptr, 1);
+					isCompressStarted = true;
 				}
-				field = (byte) ((byte) BinaryField.AskSize << 3);
-				for( int i=0; i<TickBinary.DomLevels; i++) {
-					WriteAskSize( field, i, &ptr);
+				WriteField( BinaryField.ContentMask, &ptr, binary.ContentMask - lastBinary.ContentMask);
+				WriteField( BinaryField.Time, &ptr, binary.UtcTime - lastBinary.UtcTime);
+				if( IsQuote) {
+					WriteField( BinaryField.Bid, &ptr, binary.Bid - lastBinary.Bid);
+					WriteField( BinaryField.Ask, &ptr, binary.Ask - lastBinary.Ask);
+				}
+				if( IsTrade) {
+					WriteField( BinaryField.Price, &ptr, binary.Price - lastBinary.Price);
+					WriteField( BinaryField.Size, &ptr, binary.Size - lastBinary.Size);
+				}
+				if( HasDepthOfMarket) {
+					var field = (byte) ((byte) BinaryField.BidSize << 3);
+					for( int i=0; i<TickBinary.DomLevels; i++) {
+						WriteBidSize( field, i, &ptr);
+					}
+					field = (byte) ((byte) BinaryField.AskSize << 3);
+					for( int i=0; i<TickBinary.DomLevels; i++) {
+						WriteAskSize( field, i, &ptr);
+					}
 				}
 				writer.Position += ptr - fptr;
 				writer.SetLength(writer.Position);
 				*fptr = (byte) (ptr - fptr);
+				log.Info("Length = " + (ptr - fptr));
 			}
 			lastBinary = binary;
 		}
 		
 		public unsafe void ToWriter(MemoryStream writer) {
-			Compress(writer);
+			ToWriterVersion9(writer);
+//			ToWriterVersion8(writer);
 		}
 		
-		public unsafe void ToWriterXXX(MemoryStream writer) {
-			dataVersion = TickVersion;
+		public unsafe void ToWriterVersion8(MemoryStream writer) {
+			dataVersion = 8;
 			writer.SetLength( writer.Position+minTickSize);
 			byte[] buffer = writer.GetBuffer();
 			fixed( byte *fptr = &buffer[writer.Position]) {
 				byte *ptr = fptr;
+				ptr++; // Save space for size header.
 				*(ptr) = dataVersion; ptr++;
 				*(long*)(ptr) = binary.UtcTime; ptr+=sizeof(long);
 				*(ptr) = binary.ContentMask; ptr++;
@@ -361,6 +375,7 @@ namespace TickZoom.TickUtil
 				}
 				writer.Position += ptr - fptr;
 				writer.SetLength(writer.Position);
+				*fptr = (byte) (ptr - fptr);
 			}
 		}
 		
@@ -387,7 +402,6 @@ namespace TickZoom.TickUtil
 		
 		private unsafe void ReadBidSize(byte** ptr) {
 			fixed( ushort *p = binary.DepthBidLevels) {
-				long result = 0L;
 				var index = **ptr & 0x07;
 				(*ptr)++;
 				*(p+index) = (ushort) (*(p+index) + *(short*)(*ptr));
@@ -397,7 +411,6 @@ namespace TickZoom.TickUtil
 		
 		private unsafe void ReadAskSize(byte** ptr) {
 			fixed( ushort *p = binary.DepthAskLevels) {
-				long result = 0L;
 				var index = **ptr & 0x07;
 				(*ptr)++;
 				*(p+index) = (ushort) (*(p+index) + *(short*)(*ptr));
@@ -406,13 +419,20 @@ namespace TickZoom.TickUtil
 		}
 		
 		private unsafe int FromFileVersion9(byte *fptr, int length) {
+			length --;
 			binary = lastBinary;
 			byte *ptr = fptr;
-			binary.ContentMask = *ptr; ptr++;
 			
 			while( (ptr - fptr) < length) {
 				var field = (BinaryField) (*ptr >> 3);
 				switch( field) {
+					case BinaryField.Reset:
+						ReadField( &ptr);
+						binary = lastBinary = default(TickBinary);
+						break;
+					case BinaryField.ContentMask:
+						binary.ContentMask += (byte) ReadField( &ptr);
+						break;
 					case BinaryField.Time:
 						binary.UtcTime += ReadField( &ptr);
 						break;
@@ -434,6 +454,8 @@ namespace TickZoom.TickUtil
 					case BinaryField.AskSize:
 						ReadAskSize( &ptr);
 						break;
+					default:
+						throw new ApplicationException("Unknown tick field type: " + field);
 				}
 			}
 
@@ -693,13 +715,14 @@ namespace TickZoom.TickUtil
 			fixed( byte *fptr = reader.GetBuffer()) {
 				byte *sptr = fptr + reader.Position;
 				byte *ptr = sptr;
+				byte size = *ptr; ptr ++;
 				dataVersion = *ptr; ptr ++;
 				switch( dataVersion) {
 					case 8:
 						ptr += FromFileVersion8(ptr);
 						break;
 					case 9:
-						ptr += FromFileVersion9(ptr,(short)(reader.Length-1));
+						ptr += FromFileVersion9(ptr,(short)(size-1));
 						break;
 					default:
 						throw new ApplicationException("Unknown Tick Version Number " + dataVersion);

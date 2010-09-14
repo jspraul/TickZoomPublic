@@ -165,26 +165,22 @@ namespace TickZoom.TickUtil
 			length = stream.Length;
 			dataIn = new BinaryReader(stream, Encoding.Unicode);
 			TickImpl lastTickIO = new TickImpl();
+			int count = 0;
 			try {
 				while (stream.Position < length && !CancelPending) {
 					long lastPosition = stream.Position;
-//					try { 
 					if (!TryReadTick(length)) {
 						break;
 					}
+					count ++;
 					lastTickIO.Inject(tickIO.Extract());
-//					} catch( ApplicationException) {
-//						break;
-					////						stream.Position = lastPosition + 1;
-//					} catch( ArgumentOutOfRangeException) {
-//                        break;
-					////						stream.Position = lastPosition + 1;
-//					}
 				}
 			} catch (ObjectDisposedException) {
 				// Only partial tick was read at the end of the file.
 				// Another writer must not have completed.
 				log.Warn("ObjectDisposedException returned from tickIO.FromReader(). Incomplete last tick. Ignoring.");
+			} catch {
+				log.Error("Error reading tick #" + count);
 			}
 			isTaskPrepared = false;
 			return lastTickIO;
@@ -317,24 +313,27 @@ namespace TickZoom.TickUtil
 
 		private bool TryReadTick(long length)
 		{
-			int size = dataIn.ReadByte();
+			byte size = dataIn.ReadByte();
 			// Check for old style prior to version 8 where
 			// single byte version # was first.
 			if (dataVersion < 8 && size < 8) {
 				tickIO.FromReader((byte)size, dataIn);
 			} else {
-				size--;
 				// Subtract the size byte.
-				if (dataIn.BaseStream.Position + size > length) {
+				if (dataIn.BaseStream.Position + size - 1 > length) {
 					return false;
 				}
-				int count = 0;
+				int count = 1;
 				memory.SetLength(size);
+				memory.GetBuffer()[0] = size;
 				while (count < size) {
 					count += dataIn.Read(buffer, count, size - count);
 				}
 				memory.Position = 0;
 				tickIO.FromReader(memory);
+				if (dataVersion == 0) {
+					dataVersion = tickIO.DataVersion;
+				}
 			}
 			tickIO.SetSymbol(lSymbol);
 			tickIO.SetTime(new TimeStamp(tickIO.Extract().UtcTime));
