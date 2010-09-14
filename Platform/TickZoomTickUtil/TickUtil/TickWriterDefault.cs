@@ -105,7 +105,6 @@ namespace TickZoom.TickUtil
     			fs = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.Read);
    				log.Debug("keepFileOpen - Open()");
     			memory = new MemoryStream();
-    			ReserveHeader(memory);
 			}
      		if( !CancelPending ) {
 				StartAppendThread();
@@ -151,7 +150,6 @@ namespace TickZoom.TickUtil
 		    			fs = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.Read);
 		    			if( trace) log.Trace("!keepFileOpen - Open()");
 		    			memory = new MemoryStream();
-		    			ReserveHeader(memory);
 					}
 					while( writeQueue.TryDequeue(ref tick)) {
 						tickIO.Inject(tick);
@@ -191,11 +189,6 @@ namespace TickZoom.TickUtil
     		}
 		}
 		
-		private void ReserveHeader( MemoryStream memory) {
-	    	memory.SetLength(1);
-	    	memory.Position = 1;
-		}
-			    	
 		private void SetupHeader( MemoryStream memory) {
 			memory.GetBuffer()[0] = (byte) memory.Length;
 		}
@@ -208,9 +201,8 @@ namespace TickZoom.TickUtil
 			do {
 			    try { 
 			    	tick.Compress(memory);
-			    	SetupHeader(memory);
 			    	fs.Write(memory.GetBuffer(),0,(int)memory.Position);			    	
-	    			ReserveHeader(memory);
+			    	memory.Position = 0;
 		    		if( errorCount > 0) {
 				    	log.Notice(symbol + ": Retry successful."); 
 		    		}

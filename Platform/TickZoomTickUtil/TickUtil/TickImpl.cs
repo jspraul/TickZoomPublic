@@ -297,14 +297,12 @@ namespace TickZoom.TickUtil
 		}
 		
 		public unsafe void Compress(MemoryStream writer) {
-			if( binary.Bid == 106830000000L) {
-				int x = 0;
-			}
 			dataVersion = TickVersion;
 			writer.SetLength( writer.Position+minTickSize);
 			byte[] buffer = writer.GetBuffer();
 			fixed( byte *fptr = &buffer[writer.Position]) {
 				byte *ptr = fptr;
+				ptr++; // Save space for size header.
 				*(ptr) = dataVersion; ptr++;
 				*(ptr) = binary.ContentMask; ptr++;
 				WriteField( BinaryField.Time, &ptr, binary.UtcTime - lastBinary.UtcTime);
@@ -322,6 +320,7 @@ namespace TickZoom.TickUtil
 				}
 				writer.Position += ptr - fptr;
 				writer.SetLength(writer.Position);
+				*fptr = (byte) (ptr - fptr);
 			}
 			lastBinary = binary;
 		}
