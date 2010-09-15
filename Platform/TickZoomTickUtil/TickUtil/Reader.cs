@@ -313,6 +313,7 @@ namespace TickZoom.TickUtil
 
 		private bool TryReadTick(long length)
 		{
+			tickIO.SetSymbol(lSymbol);
 			byte size = dataIn.ReadByte();
 			// Check for old style prior to version 8 where
 			// single byte version # was first.
@@ -335,7 +336,6 @@ namespace TickZoom.TickUtil
 					dataVersion = tickIO.DataVersion;
 				}
 			}
-			tickIO.SetSymbol(lSymbol);
 			tickIO.SetTime(new TimeStamp(tickIO.Extract().UtcTime));
 			return true;
 		}

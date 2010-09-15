@@ -46,7 +46,7 @@ namespace TickZoom.TickUtil
 	
 	public class FastQueueImpl<T> : FastQueue<T> // where T : struct
 	{
-		private static readonly Log log = Factory.SysLog.GetLogger(typeof(FastQueueImpl<T>));
+		private static readonly Log log = Factory.SysLog.GetLogger("TickZoom.TickUtil.FastQueueImpl<" + typeof(FastQueueImpl<T>).GetGenericArguments()[0].Name + ">");
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		private readonly Log instanceLog;

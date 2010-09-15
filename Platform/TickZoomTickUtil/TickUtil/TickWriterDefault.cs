@@ -200,6 +200,7 @@ namespace TickZoom.TickUtil
 			int count=0;
 			do {
 			    try { 
+					if( trace) log.Trace("Writing tick: " + tick);
 			    	tick.ToWriter(memory);
 			    	fs.Write(memory.GetBuffer(),0,(int)memory.Position);			    	
 			    	memory.Position = 0;
