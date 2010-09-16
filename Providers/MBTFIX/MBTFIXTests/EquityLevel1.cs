@@ -41,8 +41,8 @@ namespace Test
 		public static readonly Log log = Factory.SysLog.GetLogger(typeof(EquityLevel1));
 		public EquityLevel1()
 		{
-			log.Notice("Waiting 20 seconds for FIX server to reset.");
-			Thread.Sleep(20000);
+//			log.Notice("Waiting 20 seconds for FIX server to reset.");
+//			Thread.Sleep(20000);
 			SetSymbol("IBM");
 			SetTickTest(TickTest.Level1);
 		}

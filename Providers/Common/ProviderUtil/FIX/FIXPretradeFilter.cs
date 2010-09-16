@@ -37,6 +37,7 @@ namespace TickZoom.FIX
 		private ushort remotePort;
 		private static Log log = Factory.SysLog.GetLogger(typeof(FIXPretradeFilter));
 		private static bool trace = log.IsTraceEnabled;
+		private static bool debug = log.IsDebugEnabled;
 		private Selector localSelector;
 		private Socket localSocket;
 		private Selector remoteSelector;
@@ -66,38 +67,62 @@ namespace TickZoom.FIX
 			log.Info("Listening to " + localAddress + " on port " + localPort);
 		}
 		
-		private void OnConnect( Socket localSocket) {
-			this.localSocket = localSocket;
-			this.localSocket.PacketFactory = new PacketFactoryFIX4_4();
-			localSelector.AddReader(localSocket);
-			localSelector.AddWriter(localSocket);
-			log.Info("Received local connection: " + localSocket);
-			ConnectToRemote();
+		private void OnConnect( Socket socket) {
+			if( remoteSocket == socket) {
+				OnConnectRemote();
+			} else {
+				OnConnectLocal(socket);
+			}
+		}
+
+		private void OnConnectLocal( Socket socket) {
+			localSocket = socket;
+			localSocket.PacketFactory = new PacketFactoryFIX4_4();
+			localSelector.AddReader(socket);
+			localSelector.AddWriter(socket);
+			log.Info("Received local connection: " + socket);
+			RequestRemoteConnect();
+			localTask = Factory.Parallel.Loop( "FilterLocalRead", OnException, LocalReadLoop);
 		}
 		
-		private void OnDisconnect( Socket local) {
-			if( this.localSocket == local) {
-				log.Info("Disconnecting socket: " + local);
-				remoteTask.Stop();
-				localTask.Stop();
-				remoteSocket.Dispose();
-				remoteSelector.Dispose();
-				this.localSocket.Dispose();
+		private void OnDisconnect( Socket socket) {
+			if( this.localSocket == socket ) {
+				log.Info("Local socket disconnect: " + socket);
+				CloseSockets();
+			}
+			if( this.remoteSocket == socket) {
+				log.Info("Remote socket disconnect: " + socket);
+				CloseSockets();
 			}
 		}
 		
-		private void ConnectToRemote() {
+		private void CloseSockets() {
+			if( remoteTask != null) remoteTask.Stop();
+			if( localTask != null) localTask.Stop();
+			if( remoteSocket != null) remoteSocket.Dispose();
+			if( remoteSelector != null) remoteSelector.Dispose();
+			if( localSocket != null) localSocket.Dispose();
+		}
+		
+		private void RequestRemoteConnect() {
 			remoteSelector = Factory.Provider.Selector( OnException);
+			remoteSelector.OnConnect = OnConnect;
+			remoteSelector.OnDisconnect = OnDisconnect;
+			remoteSelector.Start();
+			
 			remoteSocket = Factory.Provider.Socket("FilterRemoteSocket");
 			remoteSocket.PacketFactory = new PacketFactoryFIX4_4();
-			remoteSelector.Start();
-			remoteSocket.SetBlocking(true);
 			remoteSocket.Connect( remoteAddress,remotePort);
-			remoteSocket.SetBlocking(false);
-			remoteSelector.AddReader(remoteSocket);
 			remoteSelector.AddWriter(remoteSocket);
+			
+			remoteConnectTimeout = Factory.TickCount + 2000;
+		}
+		
+		private long remoteConnectTimeout;
+		
+		private void OnConnectRemote() {
+			remoteSelector.AddReader(remoteSocket);
 			remoteTask = Factory.Parallel.Loop( "FilterRemoteRead", OnException, RemoteReadLoop);
-			localTask = Factory.Parallel.Loop( "FilterLocalRead", OnException, LocalReadLoop);
 			fixContext = new FIXContextDefault( localSocket, remoteSocket);
 			log.Info("Connected at " + remoteAddress + " and port " + remotePort + " with socket: " + localSocket);
 		}
@@ -117,16 +142,25 @@ namespace TickZoom.FIX
 		}
 		
 		private Yield LocalReadLoop() {
-			if( localSocket.TryGetPacket(out localPacket)) {
-				if( trace) log.Trace("Local Read: " + localPacket);
-				try {
-					if( filter != null) filter.Local( fixContext, localPacket);
-					return Yield.DidWork.Invoke( WriteToRemoteMethod);
-				} catch( FilterException) {
-					return Yield.Terminate;
+			if( remoteSocket.State == SocketState.Connected) {
+				if( localSocket.TryGetPacket(out localPacket)) {
+					if( trace) log.Trace("Local Read: " + localPacket);
+					try {
+						if( filter != null) filter.Local( fixContext, localPacket);
+						return Yield.DidWork.Invoke( WriteToRemoteMethod);
+					} catch( FilterException) {
+						return Yield.Terminate;
+					}
+				} else {
+					return Yield.NoWork.Repeat;
 				}
 			} else {
-				return Yield.NoWork.Repeat;
+				if( Factory.TickCount >	remoteConnectTimeout) {
+					CloseSockets();
+					return Yield.Terminate;
+				} else {
+					return Yield.NoWork.Repeat;
+				}
 			}
 		}
 	
@@ -164,6 +198,7 @@ namespace TickZoom.FIX
        		if( !isDisposed) {
 	            isDisposed = true;   
 	            if (disposing) {
+	            	if( debug) log.Debug("Dispose()");
 	            	if( localTask != null) {
 	            		localTask.Stop();
 	            	}

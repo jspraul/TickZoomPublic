@@ -499,6 +499,7 @@ namespace TickZoom.FIX
        		if( !isDisposed) {
 	            isDisposed = true;   
 	            if (disposing) {
+	            	if( debug) log.Debug("Dispose()");
 	            	if( socketTask != null) {
 		            	socketTask.Stop();
 	            	}
