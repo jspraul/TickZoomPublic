@@ -354,8 +354,8 @@ namespace TickZoom.TickUtil
 		private byte lastChecksum;
 		
 		public unsafe void ToWriter(MemoryStream writer) {
-			ToWriterVersion9(writer);
-//			ToWriterVersion8(writer);
+//			ToWriterVersion9(writer);
+			ToWriterVersion8(writer);
 		}
 		
 		public unsafe void ToWriterVersion8(MemoryStream writer) {
