@@ -176,7 +176,7 @@ namespace TickZoom.StarterTest
 		{
 			GeneticStarter geneticStarter = new GeneticStarter();
 			geneticStarter.SetRandomSeed(9999);
-			geneticStarter.TotalPasses = 200;
+			geneticStarter.TotalPasses = 100;
 			
 			Starter starter = geneticStarter;
     		starter.ProjectProperties.Starter.StartTime = (TimeStamp) new DateTime(2005,1,1);

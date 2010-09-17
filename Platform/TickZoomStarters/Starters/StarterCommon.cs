@@ -351,10 +351,9 @@ namespace TickZoom.Starters
 	    	return topModel;
 		}
 		
-		public TickEngine ProcessHistorical(ModelInterface topModel, bool quietMode) {
+		public TickEngine SetupEngine(bool quietMode) {
 			TickEngine engine = Factory.Engine.TickEngine;
 			ProjectProperties.Engine.CopyProperties(engine);
-			engine.Model = topModel;
 			engine.ChartProperties = ProjectProperties.Chart;
 			engine.SymbolInfo = ProjectProperties.Starter.SymbolProperties;
 			
@@ -375,6 +374,12 @@ namespace TickZoom.Starters
 		    	engine.ShowChartCallback = ShowChartCallback;
 				engine.CreateChartCallback = CreateChartCallback;
 			}
+			return engine;
+		}
+		
+		public TickEngine ProcessHistorical(ModelInterface topModel, bool quietMode) {
+			var engine = SetupEngine( quietMode);
+			engine.Model = topModel;
 			return engine;
 		}
 		

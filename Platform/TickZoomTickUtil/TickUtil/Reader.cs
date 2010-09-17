@@ -105,6 +105,7 @@ namespace TickZoom.TickUtil
 				throw new ApplicationException("Requires either a file or folder to read data. Tried both " + folderOrfile + " and " + filePath);
 			}
 			CheckFileExtension();
+			PrepareTask();
 		}
 
 		private string FindFile(string path)
@@ -154,6 +155,7 @@ namespace TickZoom.TickUtil
 				lSymbol = symbol.BinaryIdentifier;
 			}
 			Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+			PrepareTask();
 		}
 
 		public TickIO GetLastTick()
@@ -184,17 +186,20 @@ namespace TickZoom.TickUtil
 				// Another writer must not have completed.
 				log.Warn("ObjectDisposedException returned from tickIO.FromReader(). Incomplete last tick. Ignoring.");
 			}
+			isTaskPrepared = false;
 			return lastTickIO;
 		}
 
 		public void Start(Receiver receiver)
 		{
+			if( !isTaskPrepared) {
+				throw new ApplicationException("Read must be Initialized before Start() can be called and after GetLastTick() the reader must be disposed.");
+			}
 			this.receiver = receiver;
 			if (debug)
 				log.Debug("Start called.");
-			StartupTask();
+			start = Factory.TickCount;
 			fileReaderTask = Factory.Parallel.Loop(this, OnException, FileReader);
-
 		}
 
 		private void OnException(Exception ex)
@@ -239,7 +244,8 @@ namespace TickZoom.TickUtil
 		int count = 0;
 		protected volatile int tickCount = 0;
 		long start;
-		private bool StartupTask()
+		bool isTaskPrepared = false;
+		private bool PrepareTask()
 		{
 			for (int retry = 0; retry < 3; retry++) {
 				try {
@@ -273,7 +279,8 @@ namespace TickZoom.TickUtil
 							log.Debug("Starting to read data.");
 						log.Indent();
 					}
-					start = Factory.TickCount;
+					progressCallback("Loading bytes...", dataIn.BaseStream.Position, length);
+					isTaskPrepared = true;
 					return true;
 				} catch (Exception ex) {
 					ExceptionHandler(ex);

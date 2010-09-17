@@ -93,7 +93,22 @@ namespace TickZoom.Starters
 					}
 				}
 			}
+			
+			Shuffle( randomList);
+			
 			return randomList;
+		}
+		
+		private void Shuffle( List<int> list) {
+			for( int i = 0; i< list.Count; i++) {
+				int j;
+				// avoid self-swap
+				while( (j = random.Next( list.Count)) == i);
+				// swap
+				var temp = list[i];
+				list[i] = list[j];
+				list[j] = temp;
+			}
 		}
 		
 		public override void Run(ModelInterface model) {
@@ -193,6 +208,16 @@ namespace TickZoom.Starters
 			CLRProfilerControl.CallLoggingActive = false;
 			#endif
 			
+			int totalEngineCount = Environment.ProcessorCount * generationCount;
+				
+			// Pre-setup engines. This causes the progress
+			// bar to show a complete set of information for all
+			// generations.
+			var engines = new Stack<TickEngine>();
+			for( int i=0; i<totalEngineCount; i++) {
+				engines.Push( SetupEngine( true));
+			}
+			
 			for( int genCount =0; genCount < generationCount && !CancelPending; genCount++) {
 				
 				// Assign fitness values
@@ -218,7 +243,8 @@ namespace TickZoom.Starters
 					passCount++;
 					if (passCount % tasksPerEngine == 0)
 					{
-						var engine = ProcessHistorical(topModel, true);
+						var engine = engines.Pop();
+					    engine.Model = topModel;
 						engine.QueueTask();
 						engineIterations.Add(engine);
 						topModel = new Portfolio();
