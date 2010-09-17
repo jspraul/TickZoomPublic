@@ -133,7 +133,7 @@ namespace TickZoom.Loader
 					LoggingService.Error("Found multiple classes named " + instance + " in " + assembly );
 					return null;
 				}
-				return null;
+//				return null;
 			} else {
 				return null;
 			}

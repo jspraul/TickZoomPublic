@@ -80,6 +80,7 @@ namespace TickZoom.Starters
 		public override void Run(ModelInterface model)
 		{
 			engine = ProcessHistorical(model,true);
+			engine.QueueTask();			
 			engine.WaitTask();
 		}
 #else

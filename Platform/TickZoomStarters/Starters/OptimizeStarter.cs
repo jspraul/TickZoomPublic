@@ -44,30 +44,30 @@ namespace TickZoom.Starters
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		int totalTasks=0;
 		ModelLoaderInterface loader;
-	    int tasksRemaining;
+		int tasksRemaining;
 		long startMillis;
 		int passCount = 0;
 		
-	    public OptimizeStarter() {
-	    }
-	    
+		public OptimizeStarter() {
+		}
+		
 		public override void Run(ModelInterface model)
 		{
 			throw new MustUseLoaderException("Must set ModelLoader instead of Model for Optimization");
 		}
-			
+		
 		List<TickEngine> engineIterations;
 		public override void Run(ModelLoaderInterface loader)
 		{
-    		try {
-    			if( loader.OptimizeOutput == null) {
-		    		Directory.CreateDirectory( Path.GetDirectoryName(FileName));
-		    		File.Delete(FileName);
-    			}
-    		} catch( Exception ex) {
-    			log.Error("Error while creating directory and deleting '" + FileName + "'.",ex);
-    			return;
-    		}
+			try {
+				if( loader.OptimizeOutput == null) {
+					Directory.CreateDirectory( Path.GetDirectoryName(FileName));
+					File.Delete(FileName);
+				}
+			} catch( Exception ex) {
+				log.Error("Error while creating directory and deleting '" + FileName + "'.",ex);
+				return;
+			}
 			this.loader = loader;
 			this.loader.QuietMode = true;
 			startMillis = Factory.TickCount;
@@ -81,30 +81,9 @@ namespace TickZoom.Starters
 				totalTasks++;
 			}
 			
-			log.Notice("Processing " + totalTasks + " total optimization passes.");
-			
 			tasksRemaining = totalTasks;
 			
-			log.Notice("Found " + Environment.ProcessorCount + " processors.");
-			
-			int tasksPerEngine = Math.Max(totalTasks / Environment.ProcessorCount, 1);
-			int maxParallelPasses = 1000;
-			string maxParallelPassesStr = null;
-			maxParallelPassesStr = Factory.Settings["MaxParallelPasses"];
-			
-			log.Notice("Starting " + Environment.ProcessorCount + " engines per iteration.");
-			
-			if( !string.IsNullOrEmpty(maxParallelPassesStr)) {
-				maxParallelPasses = int.Parse(maxParallelPassesStr);
-				if( maxParallelPasses <= 0) {
-					string message = "MaxParallelPasses property must be a number greater than zero instead of '"+maxParallelPassesStr+"'.";
-					log.Error(message);
-					throw new ApplicationException(message);
-				}
-			}
-			tasksPerEngine = Math.Min(tasksPerEngine,maxParallelPasses/Environment.ProcessorCount);
-
-			log.Notice("Assigning " + tasksPerEngine + " passes to each engine per iteration.");
+			int tasksPerEngine = CalculateTasksPerEngine(totalTasks);
 			
 			int iterations = Math.Max(1,totalTasks / maxParallelPasses);
 			int leftOverPasses = Math.Max(0,totalTasks - (maxParallelPasses * iterations));
@@ -114,39 +93,41 @@ namespace TickZoom.Starters
 				log.Notice("Planning " + iterations + " iterations with " + maxParallelPasses + " passes each.");
 			}
 			
-            ModelInterface topModel = new Portfolio();
+			ModelInterface topModel = new Portfolio();
 
 			passCount = 0;
-            foreach (var num in RecursiveOptimize(0))
-            {
-                ModelInterface model = ProcessLoader(loader);
-                topModel.Chain.Dependencies.Add(model.Chain);
-                passCount++;
-                if (passCount % tasksPerEngine == 0)
-                {
-                    TickEngine engine = ProcessHistorical(topModel, true);
-                    engineIterations.Add(engine);
-                    topModel = new Portfolio();
-                    if (engineIterations.Count >= Environment.ProcessorCount) {
+			foreach (var num in RecursiveOptimize(0))
+			{
+				ModelInterface model = ProcessLoader(loader);
+				topModel.Chain.Dependencies.Add(model.Chain);
+				passCount++;
+				if (passCount % tasksPerEngine == 0)
+				{
+					TickEngine engine = ProcessHistorical(topModel, true);
+					engine.QueueTask();
+					engineIterations.Add(engine);
+					topModel = new Portfolio();
+					if (engineIterations.Count >= Environment.ProcessorCount) {
 						ProcessIteration();
-                    }
-                }
-            }
+					}
+				}
+			}
 
-            if (topModel.Chain.Dependencies.Count > 0)
-            {
-                TickEngine engine = ProcessHistorical(topModel, true);
-                engineIterations.Add(engine);
-            }
+			if (topModel.Chain.Dependencies.Count > 0)
+			{
+				TickEngine engine = ProcessHistorical(topModel, true);
+				engine.QueueTask();
+				engineIterations.Add(engine);
+			}
 			
-            if( engineIterations.Count > 0) {
+			if( engineIterations.Count > 0) {
 				ProcessIteration();
-            }
-            
+			}
+			
 			long elapsedMillis = Factory.TickCount - startMillis;
 			log.Notice("Finished optimizing in " + elapsedMillis + "ms.");
 		}
-		
+
 		public void ProcessIteration() {
 
 			GetEngineResults();
@@ -166,7 +147,7 @@ namespace TickZoom.Starters
 			for( int i=0; i<engineIterations.Count; i++) {
 				TickEngine engine = engineIterations[i];
 				engine.WaitTask();
-		        --tasksRemaining;
+				--tasksRemaining;
 			}
 		}
 
@@ -205,15 +186,15 @@ namespace TickZoom.Starters
 		/// </summary>
 		/// <returns></returns>
 		private int GetAvailableMemory() {
-            ObjectQuery winQuery = new ObjectQuery("SELECT * FROM Win32_LogicalMemoryConfiguration");
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(winQuery);
-            int memory = 0;
-            foreach (ManagementObject item in searcher.Get())
-            {
-            	UInt32 mem = (UInt32) item["AvailableVirtualMemory"];
+			ObjectQuery winQuery = new ObjectQuery("SELECT * FROM Win32_LogicalMemoryConfiguration");
+			ManagementObjectSearcher searcher = new ManagementObjectSearcher(winQuery);
+			int memory = 0;
+			foreach (ManagementObject item in searcher.Get())
+			{
+				UInt32 mem = (UInt32) item["AvailableVirtualMemory"];
 				memory += (int) mem;
-            }
-            return memory / 1024;
+			}
+			return memory / 1024;
 		}
 		
 		/// <summary>

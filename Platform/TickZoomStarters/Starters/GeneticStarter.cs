@@ -40,7 +40,8 @@ namespace TickZoom.Starters
 	public class GeneticStarter : StarterCommon
 	{
 		int generationCount = 4;
-		int totalTasks=0;
+		int populationCount;
+		int totalPasses=200;
 		int tasksRemaining=0;
 		List<Chromosome> generation;
 		List<Chromosome> alreadyTried;
@@ -76,13 +77,21 @@ namespace TickZoom.Starters
 			return var.Start + (index * var.Increment);
 		}
 		
-		public static List<int> GetRandomIndexes(ModelProperty var) {
-			List<int> input = GetIndexes(var);
-			List<int> randomList = new List<int>(input.Count);
-			while( input.Count > 0) {
-				int i = random.Next(input.Count);
-				randomList.Add(input[i]);
-				input.RemoveAt(i);
+		public List<int> GetRandomIndexes(ModelProperty var) {
+			var input = GetIndexes(var);
+			var randomList = new List<int>(populationCount);
+			if( input.Count > populationCount) {
+				var increment = (double) input.Count / (double) populationCount;
+				for( var index = 0D; index < input.Count; index += increment) {
+					var i = (int) index;
+					randomList.Add(input[i]);
+				}
+			} else {
+				for( int i = 0; i<populationCount; ) {
+					for( int j = 0; j < input.Count && i< populationCount; j++, i++) {
+						randomList.Add(input[j]);
+					}
+				}
 			}
 			return randomList;
 		}
@@ -127,19 +136,14 @@ namespace TickZoom.Starters
 				totalBits+=bits;
 			}
 			
-			// Get the highest count.
-			int populationCount = 0;
-			for(int i=0; i<optimizeVariables.Count; i++) {
-				ModelProperty var = optimizeVariables[i];
-				populationCount = var.Count > populationCount ? var.Count : populationCount;
-			}
 			if(optimizeVariables.Count == 1) {
 				generationCount = 1;
 			} 
 			
-			totalTasks = populationCount * generationCount;
-			tasksRemaining = totalTasks;
-
+			// Get the highest count.
+			populationCount = totalPasses / generationCount;
+			tasksRemaining = totalPasses;
+			
 			log.Notice( "Assigning genomes.");
 			
 			// Create initial set of random chromosomes.
@@ -176,7 +180,7 @@ namespace TickZoom.Starters
 					for(int i = 0; i<indexes.Length; i++) {
 						indexes[i]++;
 						ModelProperty var = optimizeVariables[i];
-						if( indexes[i] >= var.Count) {
+						if( indexes[i] >= populationCount) {
 							indexes[i] = 0;
 						}
 					}
@@ -191,32 +195,49 @@ namespace TickZoom.Starters
 			
 			for( int genCount =0; genCount < generationCount && !CancelPending; genCount++) {
 				
-				ModelInterface topModel = new Portfolio();
 				// Assign fitness values
+				var topModels = new List<ModelInterface>();
 				for( int i=generation.Count-1; i>=0;i--) {
 					Chromosome chromosome = generation[i];
 					if( !chromosome.FitnessAssigned ) {
 						ModifyVariables( chromosome);
-						ModelInterface model = ProcessLoader(loader);
-						topModel.Chain.Dependencies.Add(model.Chain);
+						var model = ProcessLoader(loader);
+						topModels.Add(model);
 					} else {
 						tasksRemaining--;
 						log.Debug("Saves processing on " + chromosome + "!");
 					}
 				}
-				TickEngine engine = ProcessHistorical(topModel,true);
-				engineIterations.Add(engine);
-
-				// Let threads all finish to calculate total fitness.
-				ReportProgress( "Optimizing...", 0, totalTasks);
-
-				GetEngineResults();
-
-				WriteEngineResults(loader,engineIterations);
 				
-				engineIterations.Clear();				
+				int tasksPerEngine = CalculateTasksPerEngine(topModels.Count);
 				
-				ReportProgress( "Optimizing Complete", totalTasks-tasksRemaining, totalTasks);
+				ModelInterface topModel = new Portfolio();
+				int passCount = 0;
+				foreach( var model in topModels) {
+					topModel.Chain.Dependencies.Add(model.Chain);
+					passCount++;
+					if (passCount % tasksPerEngine == 0)
+					{
+						var engine = ProcessHistorical(topModel, true);
+						engine.QueueTask();
+						engineIterations.Add(engine);
+						topModel = new Portfolio();
+						if (engineIterations.Count >= Environment.ProcessorCount) {
+							ProcessIteration();
+						}
+					}
+				}
+					
+				if (topModel.Chain.Dependencies.Count > 0)
+				{
+					TickEngine engine = ProcessHistorical(topModel, true);
+					engine.QueueTask();
+					engineIterations.Add(engine);
+				}
+				
+				if( engineIterations.Count > 0) {
+					ProcessIteration();
+				}
 				
 				generation.Sort();
 				
@@ -266,8 +287,6 @@ namespace TickZoom.Starters
 			
 			engineIterations.Clear();				
 			
-			ReportProgress( "Optimizing Complete", totalTasks-tasksRemaining, totalTasks);
-			
 			#if CLRPROFILER
 	        CLRProfilerControl.AllocationLoggingActive = false;
 			CLRProfilerControl.CallLoggingActive = false;
@@ -275,6 +294,17 @@ namespace TickZoom.Starters
 	        #endif
 			
 			log.Notice("Genetic Algorithm Finished.");
+		}
+		
+		public void ProcessIteration() {
+
+			GetEngineResults();
+			
+			WriteEngineResults(loader,engineIterations);
+
+			engineIterations.Clear();
+
+			Release();
 		}
 		
 		public override void Wait() {
@@ -290,7 +320,6 @@ namespace TickZoom.Starters
 		        CLRProfilerControl.LogWriteLine(tasksRemaining + " tasks remaining"); 
 		        #endif
 		        --tasksRemaining;
-				ReportProgress( "Optimizing...", totalTasks-tasksRemaining, totalTasks);
 			}
 		}
 	    
@@ -333,6 +362,10 @@ namespace TickZoom.Starters
 				}
 			}
 		}
-		
+				
+		public int TotalPasses {
+			get { return totalPasses; }
+			set { totalPasses = value; }
+		}
 	}
 }

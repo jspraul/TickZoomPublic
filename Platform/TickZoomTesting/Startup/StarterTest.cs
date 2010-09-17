@@ -176,6 +176,7 @@ namespace TickZoom.StarterTest
 		{
 			GeneticStarter geneticStarter = new GeneticStarter();
 			geneticStarter.SetRandomSeed(9999);
+			geneticStarter.TotalPasses = 200;
 			
 			Starter starter = geneticStarter;
     		starter.ProjectProperties.Starter.StartTime = (TimeStamp) new DateTime(2005,1,1);
@@ -183,7 +184,7 @@ namespace TickZoom.StarterTest
 			starter.ProjectProperties.Starter.IntervalDefault = Intervals.Hour1;
      		starter.DataFolder = "TestData";
      		starter.ProjectProperties.Starter.SetSymbols("USD_JPY");
-    		starter.Run(new OptimizeLoader());
+    		starter.Run(new GeneticLoader());
     		Assert.IsTrue(FileCompare(storageFolder+@"\Statistics\optimizeResults.csv",@"..\..\Platform\TickZoomTesting\Startup\geneticResults.csv"));
 		}
 	    
@@ -212,16 +213,16 @@ namespace TickZoom.StarterTest
 			}
 		}
 		
-		public class Optimize1000Loader : ModelLoaderCommon {
-			public Optimize1000Loader() {
+		public class GeneticLoader : ModelLoaderCommon {
+			public GeneticLoader() {
 				category = "Test";
-				name = "Optimize 1000";
+				name = "Genetic Optimize";
 				IsVisibleInGUI = true;
 			}
 			
 			public override void OnInitialize(ProjectProperties properties) {
-				AddVariable("ExampleReversalStrategy.ExitStrategy.StopLoss",0.01,1000.00,0.10,0.25,true);
-				AddVariable("ExampleReversalStrategy.ExitStrategy.TargetProfit",0.01,1.00,0.10,0.25,false);
+				AddVariable("ExampleReversalStrategy.ExitStrategy.StopLoss",0.01,1.00,0.10,0.25,true);
+				AddVariable("ExampleReversalStrategy.ExitStrategy.TargetProfit",0.01,100.00,0.01,0,true);
 			}		
 			
 			public override void OnLoad(ProjectProperties projectProperties)

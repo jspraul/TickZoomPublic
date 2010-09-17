@@ -35,7 +35,7 @@ using TickZoom.Properties;
 namespace TickZoom.Starters
 {
     
-    public delegate void ProgressCallback(string fileName, Int64 BytesRead, Int64 TotalBytes);
+//    public delegate void ProgressCallback(string fileName, Int64 BytesRead, Int64 TotalBytes);
     
 	/// <summary>
 	/// Description of Test.
@@ -63,6 +63,7 @@ namespace TickZoom.Starters
 		private string address = "InProcess";
 		private int port = 6490;
 		private List<string> providerPlugins = new List<string>();
+		protected int maxParallelPasses = 1000;
 		
 		public StarterCommon() : this(true) {
     		storageFolder = Factory.Settings["AppDataFolder"];
@@ -374,9 +375,27 @@ namespace TickZoom.Starters
 		    	engine.ShowChartCallback = ShowChartCallback;
 				engine.CreateChartCallback = CreateChartCallback;
 			}
-	
-			engine.QueueTask();
 			return engine;
+		}
+		
+		public int CalculateTasksPerEngine(int totalTasks)	{
+			log.Notice("Processing " + totalTasks + " total optimization passes.");
+			log.Notice("Found " + Environment.ProcessorCount + " processors.");
+			int tasksPerEngine = Math.Max(totalTasks / Environment.ProcessorCount, 1);
+			string maxParallelPassesStr = null;
+			maxParallelPassesStr = Factory.Settings["MaxParallelPasses"];
+			log.Notice("Starting " + Environment.ProcessorCount + " engines per iteration.");
+			if (!string.IsNullOrEmpty(maxParallelPassesStr)) {
+				maxParallelPasses = int.Parse(maxParallelPassesStr);
+				if (maxParallelPasses <= 0) {
+					string message = "MaxParallelPasses property must be a number greater than zero instead of '" + maxParallelPassesStr + "'.";
+					log.Error(message);
+					throw new ApplicationException(message);
+				}
+			}
+			tasksPerEngine = Math.Min(tasksPerEngine, maxParallelPasses / Environment.ProcessorCount);
+			log.Notice("Assigning " + tasksPerEngine + " passes to each engine per iteration.");
+			return tasksPerEngine;
 		}
 		
 		public ShowChartCallback ShowChartCallback {
