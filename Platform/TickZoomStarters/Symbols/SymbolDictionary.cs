@@ -369,7 +369,7 @@ namespace TickZoom.Symbols
       <symbol name=""AUD/CAD"" universal=""AUDCAD"" />
     </category>
     <category name=""2 Pip"">
-    <property name=""MinimumTick"" value=""0.001"" />
+      <property name=""MinimumTick"" value=""0.001"" />
       <symbol name=""USD/JPY"" >
         <property name=""UseSyntheticLimits"" value=""false"" />
         <property name=""UseSyntheticStops"" value=""false"" />
@@ -401,14 +401,17 @@ namespace TickZoom.Symbols
         <symbol name=""USD_JPY_TEST"">
           <property name=""SessionEnd"" value=""09:22:13.000"" />
         </symbol>
-        <symbol name=""TST_TST"" />
-        <symbol name=""TST_VR2"" />
-        <symbol name=""TST_VR3"" />
-        <symbol name=""TST_VR4"" />
-        <symbol name=""TST_VR5"" />
-        <symbol name=""TST_VR6"" />
-        <symbol name=""TST_VR7"" />
-        <symbol name=""TST_VR8"" />
+        <category name=""TCK file testing"">
+          <property name=""MinimumTick"" value=""0.0001"" />
+          <symbol name=""TST_TST"" />
+          <symbol name=""TST_VR2"" />
+          <symbol name=""TST_VR3"" />
+          <symbol name=""TST_VR4"" />
+          <symbol name=""TST_VR5"" />
+          <symbol name=""TST_VR6"" />
+          <symbol name=""TST_VR7"" />
+          <symbol name=""TST_VR8"" />
+        </category>
       </category>
       <symbol name=""CHF/JPY"" universal=""CHFJPY"" />
       <symbol name=""EUR/JPY"" universal=""EURJPY"" />
