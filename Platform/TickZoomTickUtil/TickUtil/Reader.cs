@@ -245,6 +245,7 @@ namespace TickZoom.TickUtil
 		protected volatile int tickCount = 0;
 		long start;
 		bool isTaskPrepared = false;
+		
 		private bool PrepareTask()
 		{
 			for (int retry = 0; retry < 3; retry++) {
