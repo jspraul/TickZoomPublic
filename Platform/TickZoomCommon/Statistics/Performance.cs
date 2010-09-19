@@ -82,7 +82,6 @@ namespace TickZoom.Statistics
 			this.context = context;
 			if( EventType.Initialize == eventType) {
 				model.AddInterceptor( EventType.Close, this);
-				model.AddInterceptor( EventType.Tick, this);
 				model.AddInterceptor( EventType.LogicalFill, this);
 				OnInitialize();
 			}
@@ -92,15 +91,6 @@ namespace TickZoom.Statistics
 			context.Invoke();
 			if( eventType == EventType.LogicalFill) {
 				OnProcessFill((LogicalFill) eventDetail);
-			}
-			if( eventType == EventType.Tick
-			  && model is PortfolioInterface
-// Uncommenting this will boost performance but the
-// tick event is still needed by a few parts of TZ.
-// After they are resolved, we can uncomment this.
-			 ) {
-			    
-				OnProcessFill();
 			}
 		}
 		
@@ -145,37 +135,6 @@ namespace TickZoom.Statistics
 			return true;
 		}
 		
-		public bool OnProcessFill()
-		{
-			if( context.Position.Current != position.Current) {
-				if( position.IsFlat) {
-					EnterComboTrade(context.Position);
-				} else if( context.Position.IsFlat) {
-					ExitComboTrade(context.Position);
-				} else if( (context.Position.IsLong && position.IsShort) || (context.Position.IsShort && position.IsLong)) {
-					// The signal must be opposite. Either -1 / 1 or 1 / -1
-					ExitComboTrade(context.Position);
-					EnterComboTrade(context.Position);
-				} else {
-					// Instead it has increased or decreased position size.
-					ChangeComboSize();
-				}
-			} 
-			position.Copy(context.Position);
-			if( model is Strategy) {
-				Strategy strategy = (Strategy) model;
-				strategy.Result.Position.Copy(position);
-			}
-
-			if( model is Portfolio) {
-				Portfolio portfolio = (Portfolio) model;
-				double tempNetPortfolioEquity = 0;
-				tempNetPortfolioEquity += portfolio.Performance.Equity.ClosedEquity;
-				tempNetPortfolioEquity -= portfolio.Performance.Equity.StartingEquity;
-			}
-			return true;
-		}
-		
 		public void EnterComboTrade(LogicalFill fill) {
 			TransactionPairBinary pair = TransactionPairBinary.Create();
 			pair.Enter(fill.Position, fill.Price, fill.Time, model.Chart.ChartBars.BarCount);
@@ -190,19 +149,6 @@ namespace TickZoom.Statistics
 			}
 		}
 
-		public void EnterComboTrade(PositionInterface position) {
-			TransactionPairBinary pair = TransactionPairBinary.Create();
-			pair.Enter(position.Current,position.Price, position.Time, model.Chart.ChartBars.BarCount);
-			comboTradesBinary.Add(pair);
-			if( trace) {
-				log.Trace( "Enter trade: " + pair);
-			}
-			if( model is Strategy) {
-				Strategy strategy = (Strategy) model;
-				strategy.OnEnterTrade();
-			}
-		}
-		
 		private void ChangeComboSize(LogicalFill fill) {
 			TransactionPairBinary combo = comboTradesBinary.Tail;
 			combo.ChangeSize(fill.Position,fill.Price);
@@ -212,12 +158,6 @@ namespace TickZoom.Statistics
 				Strategy strategy = (Strategy) model;
 				strategy.OnChangeTrade();
 			}
-		}
-		
-		private void ChangeComboSize() {
-			TransactionPairBinary combo = comboTradesBinary.Tail;
-			combo.ChangeSize(context.Position.Current,context.Position.Price);
-			comboTradesBinary.Tail = combo;
 		}
 		
 		public void ExitComboTrade(LogicalFill fill) {
@@ -230,22 +170,6 @@ namespace TickZoom.Statistics
 				log.Trace( "Exit Trade: " + comboTrade);
 			}
 			if( transactionDebug && !model.QuietMode) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
-			if( tradeDebug && !model.QuietMode) tradeLog.Debug( model.Name + "," + Equity.ClosedEquity + "," + pnl + "," + comboTrade);
-			if( model is Strategy) {
-				Strategy strategy = (Strategy) model;
-				strategy.OnExitTrade();
-			}
-		}
-		
-		public void ExitComboTrade(PositionInterface position) {
-			TransactionPairBinary comboTrade = comboTradesBinary.Tail;
-			comboTrade.Exit(position.Price, position.Time, model.Chart.ChartBars.BarCount);
-			comboTradesBinary.Tail = comboTrade;
-			double pnl = profitLoss.CalculateProfit(comboTrade.Direction,comboTrade.EntryPrice,comboTrade.ExitPrice);
-			Equity.OnChangeClosedEquity( pnl);
-			if( trace) {
-				log.Trace( "Exit Trade: " + comboTrade);
-			}
 			if( tradeDebug && !model.QuietMode) tradeLog.Debug( model.Name + "," + Equity.ClosedEquity + "," + pnl + "," + comboTrade);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
