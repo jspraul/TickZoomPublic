@@ -170,7 +170,6 @@ namespace TickZoom.Interceptors
 	       	} else {
 	        	orders.buyLimit.Status = OrderStatus.Active;
         	}
-    		log.Info("Setting: " + orders.buyLimit);
 		}
 	
         public void SellLimit( double price) {

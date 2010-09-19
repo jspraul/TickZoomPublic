@@ -111,6 +111,8 @@ namespace TickZoom.Api
 		void InsertInterceptor(StrategyInterceptorInterface interceptor);
 		void AddInterceptor(EventType eventType, EventInterceptor interceptor);
 		void InsertInterceptor(EventType eventType, EventInterceptor interceptor);
+		void AddEventListener(EventType eventType, ModelInterface model);
+		Iterable<ModelInterface> GetEventListeners(EventType eventType);
 		
 		List<StrategyInterceptorInterface> StrategyInterceptors {
 			get;

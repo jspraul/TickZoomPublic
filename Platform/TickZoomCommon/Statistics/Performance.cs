@@ -83,13 +83,17 @@ namespace TickZoom.Statistics
 			if( EventType.Initialize == eventType) {
 				model.AddInterceptor( EventType.Close, this);
 				model.AddInterceptor( EventType.LogicalFill, this);
+				model.AddInterceptor( EventType.Tick, this);
 				OnInitialize();
 			}
 			if( EventType.Close == eventType) {
 				OnIntervalClose();
 			}
+			if( EventType.Tick == eventType) {
+				TryUpdateComboTrades();
+			}
 			context.Invoke();
-			if( eventType == EventType.LogicalFill) {
+			if( EventType.LogicalFill == eventType ) {
 				OnProcessFill((LogicalFill) eventDetail);
 			}
 		}
@@ -106,6 +110,15 @@ namespace TickZoom.Statistics
 		
 		public bool OnProcessFill(LogicalFill fill)
 		{
+			if( model is Portfolio) {
+				var portfolio = (Portfolio) model;
+				if( debug) log.Debug("OnProcessFill at position " + portfolio.Result.Position.Current + " : " + fill);
+				var portfolioPosition = portfolio.Result.Position;
+				fill = new LogicalFillBinary( portfolioPosition.Current, portfolioPosition.Price, fill.Time, fill.OrderId);
+				if( fill.Price == 0) {
+					int x =0;
+				}
+			}
 			if( fill.Position != position.Current) {
 				if( position.IsFlat) {
 					EnterComboTrade(fill);
@@ -274,14 +287,18 @@ namespace TickZoom.Statistics
 		public TransactionPairs CompletedWeekly {
 			get { return Equity.Weekly; }
 		}
+		
+		private void TryUpdateComboTrades() {
+			if( comboTradesBinary.Count > 0) {
+				TransactionPairBinary binary = comboTradesBinary.Tail;
+				binary.TryUpdate(model.Ticks[0]);
+				comboTradesBinary.Tail = binary;
+			}
+		}
 
 		public TransactionPairs ComboTrades {
 			get { 
-				if( comboTradesBinary.Count > 0) {
-					TransactionPairBinary binary = comboTradesBinary.Tail;
-					binary.TryUpdate(model.Ticks[0]);
-					comboTradesBinary.Tail = binary;
-				}
+				TryUpdateComboTrades();
 				return comboTrades;
 			}
 		}

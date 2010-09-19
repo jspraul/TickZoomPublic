@@ -109,8 +109,8 @@ namespace TickZoom.Common
 			postFillManager = new FillManager(this);
 			postFillManager.PostProcess = true;
 			postFillManager.ChangePosition = exitStrategy.Position.Change;
-			postFillManager.DoEntryOrders = false;
-			postFillManager.DoExitOrders = false;
+			postFillManager.DoStrategyOrders = false;
+			postFillManager.DoStrategyOrders = false;
 			postFillManager.DoExitStrategyOrders = true;
 		}
 		

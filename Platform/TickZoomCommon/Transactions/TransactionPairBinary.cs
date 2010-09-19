@@ -124,6 +124,7 @@ namespace TickZoom.Transactions
 			this.direction = direction;
 			this.volume = Math.Abs(direction);
 			this.entryPrice = price;
+			this.maxPrice = this.minPrice = entryPrice;
 			this.entryTime = time.Internal;
 			this.entryBar = bar;
 		}

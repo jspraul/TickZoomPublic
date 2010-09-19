@@ -41,8 +41,7 @@ namespace TickZoom.Interceptors
 		private Func<LogicalOrder, double, double, int> drawTrade;
 		private SymbolInfo symbol;
 		private bool graphTrades = false;
-		private bool doEntryOrders = true;
-		private bool doExitOrders = true;
+		private bool doStrategyOrders = true;
 		private bool doExitStrategyOrders = false;
 		
 		public FillHandlerDefault()
@@ -71,19 +70,11 @@ namespace TickZoom.Interceptors
 			LogicalOrder filledOrder = null;
 			if( strategyInterface.TryGetOrderById( fill.OrderId, out filledOrder)) {
 				if( debug) Log.Debug( "Matched fill with orderId: " + orderId);
-				if( filledOrder.TradeDirection == TradeDirection.Entry && !doEntryOrders) {
-					if( debug) Log.Debug( "Skipping fill, entry order fills disabled.");
+				if( !doStrategyOrders && filledOrder.TradeDirection != TradeDirection.ExitStrategy ) {
+					if( debug) Log.Debug( "Skipping fill, strategy order fills disabled.");
 					return;
 				}
-				if( filledOrder.TradeDirection == TradeDirection.Exit && !doExitOrders) {
-					if( debug) Log.Debug( "Skipping fill, exit order fills disabled.");
-					return;
-				}
-				if( filledOrder.TradeDirection == TradeDirection.Reverse && !doExitOrders) {
-					if( debug) Log.Debug( "Skipping fill, reverse order fills disabled.");
-					return;
-				}
-				if( filledOrder.TradeDirection == TradeDirection.ExitStrategy && !doExitStrategyOrders) {
+				if( !doExitStrategyOrders && filledOrder.TradeDirection == TradeDirection.ExitStrategy) {
 					if( debug) Log.Debug( "Skipping fill, exit strategy orders fills disabled.");
 					return;
 				}
@@ -92,13 +83,11 @@ namespace TickZoom.Interceptors
 				changePosition(strategy.Data.SymbolInfo,fill);
 	
 				bool clean = false;
-				if( filledOrder.TradeDirection == TradeDirection.Entry &&
-				   doEntryOrders ) {
+				if( filledOrder.TradeDirection == TradeDirection.Entry && doStrategyOrders ) {
 					cancelAllEntries = true;
 					clean = true;
 				}
-				if( filledOrder.TradeDirection == TradeDirection.Exit &&
-				   doExitOrders ) {
+				if( filledOrder.TradeDirection == TradeDirection.Exit && doStrategyOrders ) {
 					cancelAllExits = true;
 					clean = true;
 				}
@@ -148,14 +137,9 @@ namespace TickZoom.Interceptors
 			set { graphTrades = value; }
 		}
 		
-		public bool DoEntryOrders {
-			get { return doEntryOrders; }
-			set { doEntryOrders = value; }
-		}
-		
-		public bool DoExitOrders {
-			get { return doExitOrders; }
-			set { doExitOrders = value; }
+		public bool DoStrategyOrders {
+			get { return doStrategyOrders; }
+			set { doStrategyOrders = value; }
 		}
 		
 		public bool DoExitStrategyOrders {

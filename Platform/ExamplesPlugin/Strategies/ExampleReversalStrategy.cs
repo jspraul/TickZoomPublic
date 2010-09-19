@@ -55,10 +55,6 @@ namespace TickZoom.Examples
 		{
 			// Example log message.
 			//if( Log.Info( "close: " + Ticks[0] + " " + Minutes.Close[0] + " " + Minutes.Time[0]);
-			if( Bars.CurrentBar == 13) {
-				int x = 0;
-			}
-			
 			if( !Position.IsLong && Bars.Close[0] > Bars.High[1]) {
 				Orders.Enter.ActiveNow.BuyMarket(tradeSize);
 			}

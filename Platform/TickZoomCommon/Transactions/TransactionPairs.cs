@@ -100,12 +100,16 @@ namespace TickZoom.Transactions
 		}
 		
 		public double CalcMaxAdverse(int index) {
-			double value = ProfitInPosition(index,transactionPairs[index].MaxPrice);
+			double value = transactionPairs[index].Direction < 0 ?
+       			ProfitInPosition(index,transactionPairs[index].MaxPrice) :
+       			ProfitInPosition(index,transactionPairs[index].MinPrice);
 			return Math.Round(value,3);
 		}
 		
 		public double CalcMaxFavorable(int index) {
-			double value = ProfitInPosition(index,transactionPairs[index].MaxPrice);
+			double value = transactionPairs[index].Direction > 0 ?
+       			ProfitInPosition(index,transactionPairs[index].MaxPrice) :
+       			ProfitInPosition(index,transactionPairs[index].MinPrice);
 			return Math.Round(value,3);
 		}
 		

@@ -52,7 +52,6 @@ namespace TickZoom.Common
 		private bool isActiveOrdersChanged;
 		private Action<StrategyInterface> onActiveOrdersChange;
 		
-		
 		public Portfolio()
 		{
 			result = new Result(this);
@@ -139,6 +138,10 @@ namespace TickZoom.Common
 					activeWatchers.Add( watcher);
 				}
 			}
+			// Listen for fill events.
+			foreach( var strategy in strategies) {
+				strategy.AddEventListener(EventType.LogicalFill,this);
+			}
 			foreach( var portfolio in portfolios) {
 				activeWatchers.Add( new StrategyWatcher(portfolio));
 			}
@@ -164,6 +167,7 @@ namespace TickZoom.Common
 			
 			if( eventType == EventType.Tick ||
 			    eventType == EventType.LogicalFill) {
+				ProcessMerge();
 				if( context.Position == null) {
 					context.Position = new PositionCommon(this);
 				}
@@ -183,7 +187,6 @@ namespace TickZoom.Common
 		
 		public override bool OnProcessTick(Tick tick)
 		{
-			ProcessMerge();
 			return true;
 		}
 

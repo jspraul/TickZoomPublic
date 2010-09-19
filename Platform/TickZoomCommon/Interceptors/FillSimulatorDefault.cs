@@ -99,7 +99,7 @@ namespace TickZoom.Interceptors
 					}
 					if (doExitStrategyOrders) {
 						if( order.TradeDirection == TradeDirection.ExitStrategy) {
-							retVal = OnProcessExitOrder(order, order.Strategy.Result.Position, tick);
+							retVal = OnProcessExitOrder(order, order.Strategy.Position, tick);
 						}
 					}
 				}
@@ -251,7 +251,7 @@ namespace TickZoom.Interceptors
 		
 		private void FlattenPosition(double price, Tick tick, LogicalOrder order)
 		{
-			log.Info("FlattenPosition for: " + order);
+			if( debug) log.Debug("FlattenPosition for: " + order);
 			CreateLogicalFillHelper(0,price,tick.Time,order);
 			CancelExitOrders(order.Strategy,order.TradeDirection);
 		}
@@ -544,9 +544,9 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void CreateLogicalFillHelper(double position, double price, TimeStamp time, LogicalOrder order) {
-			log.Info("Filled: " + order);
+			if( debug) log.Debug("Filled: " + order);
 			LogicalFillBinary fill = new LogicalFillBinary(position,price,time,order.Id);
-			log.Info("Fill price: " + fill);
+			if( debug) log.Debug("Fill price: " + fill);
 			createLogicalFill(fill);
 		}
 		

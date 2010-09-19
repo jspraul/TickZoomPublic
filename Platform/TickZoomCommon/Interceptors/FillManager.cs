@@ -30,15 +30,15 @@ using TickZoom.Api;
 
 namespace TickZoom.Interceptors
 {
+
 	internal class FillManager : StrategyInterceptor
 	{
-		private static readonly Log log = Factory.SysLog.GetLogger("OrderManager");
+		private static readonly Log log = Factory.SysLog.GetLogger("FillManager");
 		private static readonly bool trace = log.IsTraceEnabled;
 		private bool postProcess = false;
 		private FillHandler fillHandler;
 		private StrategyInterface Strategy;
-		private bool doEntryOrders = true;
-		private bool doExitOrders = true;
+		private bool doStrategyOrders = true;
 		private bool doExitStrategyOrders = false;
 		private Action<SymbolInfo,LogicalFill> changePosition;
 		
@@ -68,19 +68,13 @@ namespace TickZoom.Interceptors
 			fillHandler = Factory.Utility.FillHandler(Strategy);
 			fillHandler.ChangePosition = changePosition;
 			fillHandler.DrawTrade = Strategy.Chart.DrawTrade;
-			fillHandler.DoEntryOrders = doEntryOrders;
-			fillHandler.DoExitOrders = doExitOrders;
+			fillHandler.DoStrategyOrders = doStrategyOrders;
 			fillHandler.DoExitStrategyOrders = doExitStrategyOrders;
 		}
 		
-		public bool DoEntryOrders {
-			get { return doEntryOrders; }
-			set { doEntryOrders = value; }
-		}
-		
-		public bool DoExitOrders {
-			get { return doExitOrders; }
-			set { doExitOrders = value; }
+		public bool DoStrategyOrders {
+			get { return doStrategyOrders; }
+			set { doStrategyOrders = value; }
 		}
 		
 		public bool DoExitStrategyOrders {

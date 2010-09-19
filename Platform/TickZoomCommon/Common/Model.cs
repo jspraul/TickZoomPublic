@@ -27,17 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.Reflection;
 
 using TickZoom.Api;
-using TickZoom.Interceptors;
 using TickZoom.Statistics;
 
 namespace TickZoom.Common
 {
-
 	public partial class Model : ModelEvents, ModelInterface
 	{
 		string name;
@@ -49,7 +44,6 @@ namespace TickZoom.Common
 		DrawingInterface drawing;
 		bool isActive = true;
 		public event Action<ModelInterface> OnActiveChange;
-		
 		List<Interval> updateIntervals = new List<Interval>();
 		Data data;
 		Chart chart;
@@ -59,6 +53,8 @@ namespace TickZoom.Common
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		bool isOptimizeMode = false;
+		private Dictionary<EventType,ActiveList<ModelInterface>> eventListeners = new Dictionary<EventType,ActiveList<ModelInterface>>();
+		
 		List<StrategyInterceptorInterface> strategyInterceptors = new List<StrategyInterceptorInterface>();
 		Dictionary<EventType,List<EventInterceptor>> eventInterceptors = new Dictionary<EventType,List<EventInterceptor>>();
 		List<EventType> events = new List<EventType>();
@@ -68,7 +64,6 @@ namespace TickZoom.Common
 		{
 			name = GetType().Name;
 			fullName = name;
-			
 			drawing = new DrawingCommon(this);
 			formula = new Formula(this);
 			
@@ -79,8 +74,6 @@ namespace TickZoom.Common
 			RequestEvent( EventType.Close);
 			RequestEvent( EventType.OpenInterval);
 			RequestEvent( EventType.CloseInterval);
-			// TODO: OptimizeTickEvent
-//			RequestEvent( EventType.Tick);
 			RequestEvent( EventType.LogicalFill);
 			RequestEvent( EventType.EndHistorical);
 		}
@@ -88,6 +81,26 @@ namespace TickZoom.Common
 		[Diagram(AttributeExclude=true)]
 		public void AddInterceptor(StrategyInterceptorInterface interceptor) {
 			strategyInterceptors.Add(interceptor);
+		}
+		
+		public void AddEventListener(EventType eventType, ModelInterface listener) {
+			ActiveList<ModelInterface> listeners;
+			if( !eventListeners.TryGetValue(eventType, out listeners)) {
+				listeners = new ActiveList<ModelInterface>();
+				eventListeners.Add(eventType,listeners);
+			}
+			if( !listeners.Contains(listener)) {
+				listeners.AddLast(listener);
+			}
+		}
+		
+		public Iterable<ModelInterface> GetEventListeners( EventType eventType) {
+			ActiveList<ModelInterface> listeners;
+			if( !eventListeners.TryGetValue(eventType, out listeners)) {
+				listeners = new ActiveList<ModelInterface>();
+				eventListeners.Add(eventType,listeners);
+			}
+			return listeners;
 		}
 		
 		public void InsertInterceptor(StrategyInterceptorInterface interceptor) {
@@ -159,10 +172,6 @@ namespace TickZoom.Common
 				indicator.Performance = thisPortfolio.Performance;
 			} else {
 				indicator.Performance = new Performance(this);
-//				throw new ApplicationException("Sorry, indicators can only be added to objects derived from " +
-//				                               typeof(Strategy).Name + ", " +
-//				                               typeof(Portfolio).Name + ", or " +
-//				                               typeof(IndicatorCommon).Name + ".");
 			}
 			// Apply Properties from project.xml, if any.
 			if( properties != null) {
@@ -468,7 +477,6 @@ namespace TickZoom.Common
 			}
 		}
 	}
-
 
 	/// <summary>
 	/// Description of Formula.
