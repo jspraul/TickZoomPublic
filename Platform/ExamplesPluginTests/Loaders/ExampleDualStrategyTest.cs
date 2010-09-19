@@ -72,8 +72,14 @@ namespace Loaders
 	
 	 			// Get the stategy
 	    		portfolio = loader.TopModel as Portfolio;
-	    		fourTicksStrategy = portfolio.Strategies[0] as ExampleOrderStrategy;
-	    		exampleReversal = portfolio.Strategies[1] as ExampleReversalStrategy;
+	    		int cnt = 0;
+	    		if( portfolio.Strategies[cnt] is ExampleOrderStrategy) {
+	    			fourTicksStrategy = portfolio.Strategies[cnt] as ExampleOrderStrategy;
+	    			cnt++;
+	    		}
+	    		if( portfolio.Strategies.Count > cnt && portfolio.Strategies[cnt] is ExampleReversalStrategy) {
+		    		exampleReversal = portfolio.Strategies[cnt] as ExampleReversalStrategy;
+	    		}
 	    		LoadTransactions();
 	    		LoadTrades();
 			} catch( Exception ex) {
@@ -85,6 +91,8 @@ namespace Loaders
 		
 		[Test]
 		public void CheckPortfolio() {
+			Assert.NotNull(exampleReversal);
+			Assert.NotNull(fourTicksStrategy);
 			double expected = exampleReversal.Performance.Equity.CurrentEquity;
 			expected -= exampleReversal.Performance.Equity.StartingEquity;
 			expected += fourTicksStrategy.Performance.Equity.CurrentEquity;
@@ -97,6 +105,8 @@ namespace Loaders
 		
 		[Test]
 		public void CheckPortfolioClosedEquity() {
+			Assert.NotNull(exampleReversal);
+			Assert.NotNull(fourTicksStrategy);
 			double expected = exampleReversal.Performance.Equity.ClosedEquity;
 			expected -= exampleReversal.Performance.Equity.StartingEquity;
 			expected += fourTicksStrategy.Performance.Equity.ClosedEquity;
@@ -109,6 +119,8 @@ namespace Loaders
 		
 		[Test]
 		public void CheckPortfolioOpenEquity() {
+			Assert.NotNull(exampleReversal);
+			Assert.NotNull(fourTicksStrategy);
 			double expected = exampleReversal.Performance.Equity.OpenEquity;
 			expected += fourTicksStrategy.Performance.Equity.OpenEquity;
 			Assert.AreEqual(Math.Round(expected,2), Math.Round(portfolio.Performance.Equity.OpenEquity,2));
@@ -116,20 +128,14 @@ namespace Loaders
 		}
 		
 		[Test]
-		public void VerifyTradeCount() {
-			TransactionPairs exampleReversalRTs = exampleReversal.Performance.ComboTrades;
-			TransactionPairs fullTicksRTs = fourTicksStrategy.Performance.ComboTrades;
-			Assert.AreEqual(472,fullTicksRTs.Count, "trade count");
-			Assert.AreEqual(378,exampleReversalRTs.Count, "trade count");
-		}
-		
-		[Test]
 		public void CompareBars0() {
+			Assert.NotNull(fourTicksStrategy);
 			CompareChart(fourTicksStrategy,GetChart(fourTicksStrategy.SymbolDefault));
 		}
 		
 		[Test]
 		public void CompareBars1() {
+			Assert.NotNull(exampleReversal);
 			CompareChart(exampleReversal,GetChart(exampleReversal.SymbolDefault));
 		}
 		
@@ -140,11 +146,13 @@ namespace Loaders
 		
 		[Test]
 		public void VerifyStrategy1Trades() {
+			Assert.NotNull(fourTicksStrategy);
 			VerifyTrades(fourTicksStrategy);
 		}
 	
 		[Test]
 		public void VerifyStrategy2Trades() {
+			Assert.NotNull(exampleReversal);
 			VerifyTrades(exampleReversal);
 		}
 		
@@ -155,11 +163,13 @@ namespace Loaders
 		
 		[Test]
 		public void VerifyStrategy1TradeCount() {
+			Assert.NotNull(fourTicksStrategy);
 			VerifyTradeCount(fourTicksStrategy);
 		}
 		
 		[Test]
 		public void VerifyStrategy2TradeCount() {
+			Assert.NotNull(exampleReversal);
 			VerifyTradeCount(exampleReversal);
 		}
 	}
