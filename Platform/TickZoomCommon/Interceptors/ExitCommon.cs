@@ -38,6 +38,7 @@ namespace TickZoom.Interceptors
 	/// </summary>
 	public class ExitCommon : StrategySupport
 	{
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(ExitCommon));
 		[Diagram(AttributeExclude=true)]
 		public class InternalOrders {
 			public LogicalOrder buyMarket;
@@ -169,6 +170,7 @@ namespace TickZoom.Interceptors
 	       	} else {
 	        	orders.buyLimit.Status = OrderStatus.Active;
         	}
+    		log.Info("Setting: " + orders.buyLimit);
 		}
 	
         public void SellLimit( double price) {

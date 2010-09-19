@@ -33,12 +33,11 @@ namespace TickZoom.Interceptors
 {
 	public class FillSimulatorDefault : FillSimulator
 	{
-		private static readonly Log Log = Factory.SysLog.GetLogger(typeof(FillSimulatorDefault));
-		private static readonly bool trace = Log.IsTraceEnabled;
-		private static readonly bool debug = Log.IsDebugEnabled;
-		private static readonly bool notice = Log.IsNoticeEnabled;
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(FillSimulatorDefault));
+		private static readonly bool trace = log.IsTraceEnabled;
+		private static readonly bool debug = log.IsDebugEnabled;
+		private static readonly bool notice = log.IsNoticeEnabled;
 		private Iterable<LogicalOrder> activeOrders;
-		private double position;
 		private Action<LogicalFillBinary> createLogicalFill;
 		private Func<LogicalOrder, double, double, int> drawTrade;
 		private bool useSyntheticMarkets = true;
@@ -68,7 +67,6 @@ namespace TickZoom.Interceptors
 			if( symbol == null) {
 				throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
 			}
-			this.position = position;
 			this.activeOrders = orders;
 			var next = activeOrders.First;
 			for( var node = next; node != null; node = next) {
@@ -78,22 +76,22 @@ namespace TickZoom.Interceptors
 					if (doStrategyOrders) {
 						switch( order.TradeDirection) {
 							case TradeDirection.Entry:
-								if( OnProcessEnterOrder(order, tick)) {
+								if( OnProcessEnterOrder(order, order.Strategy.Position, tick)) {
 									retVal = true;
 								}
 								break;
 							case TradeDirection.Exit:
-								if( OnProcessExitOrder(order, tick)) {
+								if( OnProcessExitOrder(order, order.Strategy.Position, tick)) {
 									retVal = true;
 								}
 								break;
 							case TradeDirection.Reverse:
-								if( OnProcessReverseOrder(order, tick)) {
+								if( OnProcessReverseOrder(order, order.Strategy.Position, tick)) {
 									retVal = true;
 								}
 								break;
 							case TradeDirection.Change:
-								if( OnProcessChangeOrder(order, tick)) {
+								if( OnProcessChangeOrder(order, order.Strategy.Position, tick)) {
 									retVal = true;
 								}
 								break;
@@ -101,7 +99,7 @@ namespace TickZoom.Interceptors
 					}
 					if (doExitStrategyOrders) {
 						if( order.TradeDirection == TradeDirection.ExitStrategy) {
-							retVal = OnProcessExitOrder(order, tick);
+							retVal = OnProcessExitOrder(order, order.Strategy.Result.Position, tick);
 						}
 					}
 				}
@@ -111,23 +109,23 @@ namespace TickZoom.Interceptors
 		
 #region ExitOrder
 
-		private bool OnProcessExitOrder(LogicalOrder order, Tick tick)
+		private bool OnProcessExitOrder(LogicalOrder order, PositionInterface position, Tick tick)
 		{
 			bool retVal = false;
 			if (trace)
-				Log.Trace("OnProcessExitOrder()");
-			if (IsLong) {
+				log.Trace("OnProcessExitOrder()");
+			if (position.IsLong) {
 				if (order.Type == OrderType.BuyStop || order.Type == OrderType.BuyLimit) {
 					order.Status = OrderStatus.Inactive;
 				}
 			}
-			if (IsShort) {
+			if (position.IsShort) {
 				 if (order.Type == OrderType.SellStop || order.Type == OrderType.SellLimit) {
 					order.Status = OrderStatus.Inactive;
 				}
 			}
 
-			if (IsLong) {
+			if (position.IsLong) {
 				switch (order.Type) {
 					case OrderType.SellMarket:
 						if (useSyntheticMarkets) {
@@ -153,7 +151,7 @@ namespace TickZoom.Interceptors
 				}
 			}
 
-			if (IsShort) {
+			if (position.IsShort) {
 				switch (order.Type) {
 					case OrderType.BuyMarket:
 						if (useSyntheticMarkets) {
@@ -181,23 +179,23 @@ namespace TickZoom.Interceptors
 			return retVal;
 		}
 
-		private bool OnProcessReverseOrder(LogicalOrder order, Tick tick)
+		private bool OnProcessReverseOrder(LogicalOrder order, PositionInterface position, Tick tick)
 		{
 			bool retVal = false;
 			if (trace)
-				Log.Trace("OnProcessEnterOrder()");
-			if (IsLong) {
+				log.Trace("OnProcessEnterOrder()");
+			if (position.IsLong) {
 				if (order.Type == OrderType.BuyStop || order.Type == OrderType.BuyLimit) {
 					order.Status = OrderStatus.Inactive;
 				}
 			}
-			if (IsShort) {
+			if (position.IsShort) {
 				 if (order.Type == OrderType.SellStop || order.Type == OrderType.SellLimit) {
 					order.Status = OrderStatus.Inactive;
 				}
 			}
 
-			if (IsLong) {
+			if (position.IsLong) {
 				switch (order.Type) {
 					case OrderType.SellMarket:
 						if (useSyntheticMarkets) {
@@ -223,7 +221,7 @@ namespace TickZoom.Interceptors
 				}
 			}
 
-			if (IsShort) {
+			if (position.IsShort) {
 				switch (order.Type) {
 					case OrderType.BuyMarket:
 						if (useSyntheticMarkets) {
@@ -253,6 +251,7 @@ namespace TickZoom.Interceptors
 		
 		private void FlattenPosition(double price, Tick tick, LogicalOrder order)
 		{
+			log.Info("FlattenPosition for: " + order);
 			CreateLogicalFillHelper(0,price,tick.Time,order);
 			CancelExitOrders(order.TradeDirection);
 		}
@@ -455,11 +454,11 @@ namespace TickZoom.Interceptors
 
 #region EntryOrders
 
-		private bool OnProcessEnterOrder(LogicalOrder order, Tick tick)
+		private bool OnProcessEnterOrder(LogicalOrder order, PositionInterface position, Tick tick)
 		{
 			bool retVal = false;
-			if (trace) Log.Trace("OnProcessEnterOrder()");
-			if (IsFlat || (allowReversal && IsShort)) {
+			if (trace) log.Trace("OnProcessEnterOrder()");
+			if (position.IsFlat || (allowReversal && position.IsShort)) {
 				if (order.Type == OrderType.BuyMarket && useSyntheticMarkets) {
 					if( ProcessEnterBuyMarket(order, tick)) {
 						retVal = true;
@@ -477,7 +476,7 @@ namespace TickZoom.Interceptors
 				}
 			}
 
-			if (IsFlat || (allowReversal && IsLong)) {
+			if (position.IsFlat || (allowReversal && position.IsLong)) {
 				if (order.Type == OrderType.SellMarket && useSyntheticMarkets) {
 					if( ProcessEnterSellMarket(order, tick)) {
 						retVal = true;
@@ -542,7 +541,9 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void CreateLogicalFillHelper(double position, double price, TimeStamp time, LogicalOrder order) {
+			log.Info("Filled: " + order);
 			LogicalFillBinary fill = new LogicalFillBinary(position,price,time,order.Id);
+			log.Info("Fill price: " + fill);
 			createLogicalFill(fill);
 		}
 		
@@ -592,10 +593,10 @@ namespace TickZoom.Interceptors
 
 #region ChangeOrders
 
-		private bool OnProcessChangeOrder(LogicalOrder order, Tick tick)
+		private bool OnProcessChangeOrder(LogicalOrder order, PositionInterface position, Tick tick)
 		{
 			bool retVal = false;
-			if (trace) Log.Trace("OnProcessEnterOrder()");
+			if (trace) log.Trace("OnProcessEnterOrder()");
 			if (order.Type == OrderType.BuyMarket && useSyntheticMarkets) {
 				if( ProcessChangeBuyMarket(order, tick)) {
 					retVal = true;
@@ -716,18 +717,6 @@ namespace TickZoom.Interceptors
 		}
 
 		#endregion
-		
-		private bool IsFlat {
-			get { return position == 0; }
-		}
-
-		private bool IsShort {
-			get { return position < 0; }
-		}
-
-		private bool IsLong {
-			get { return position > 0; }
-		}
 		
 		public Func<LogicalOrder, double, double, int> DrawTrade {
 			get { return drawTrade; }

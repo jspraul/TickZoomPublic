@@ -97,7 +97,8 @@ namespace Loaders
 				}
 			}
 			if( testFailed) {
-				Environment.Exit(0);
+//				log.Error("Shutting down due to test failure.");
+//				Environment.Exit(0);
 			}
 		}
 		
@@ -390,7 +391,7 @@ namespace Loaders
 					TradeInfo goodInfo = goodTrades[i];
 					TransactionPairBinary goodTrade = goodInfo.Trade;
 					TransactionPairBinary testTrade = testInfo.Trade;
-					AssertEqual(goodTrade,testTrade,"Trade at " + i);
+					AssertEqual(goodTrade,testTrade,strategy.Name + " Trade at " + i);
 					AssertEqual(goodInfo.ProfitLoss,testInfo.ProfitLoss,"ProfitLoss at " + i);
 					AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,"ClosedEquity at " + i);
 				}

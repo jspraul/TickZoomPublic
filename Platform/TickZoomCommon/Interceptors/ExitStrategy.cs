@@ -35,6 +35,7 @@ namespace TickZoom.Interceptors
 {
 	public class ExitStrategy : StrategySupport
 	{
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(ExitStrategy));
 		private bool controlStrategy = false;
 		private double strategySignal = 0;
 		private LogicalOrder stopLossOrder;
@@ -244,10 +245,6 @@ namespace TickZoom.Interceptors
 				stopLossOrder.Price = entryPrice + stopLoss;
 			}
 			stopLossOrder.Status = OrderStatus.Active;
-//			if( pnl <= -stopLoss) {
-//				LogExit("StopLoss " + stopLoss + " Exit at " + tick);
-//				flattenSignal(stopLossOrder,tick);
-//			}
 		}
 		
 		private void processTrailStop(Tick tick) {

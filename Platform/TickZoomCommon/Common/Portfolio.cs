@@ -219,6 +219,7 @@ namespace TickZoom.Common
 					if( !watcher.IsActive) continue;
 					activeOrders.AddLast(watcher.ActiveOrders);
 				}
+				isActiveOrdersChanged = true;
 			}
 		}
 		

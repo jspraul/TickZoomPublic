@@ -45,6 +45,7 @@ namespace Loaders
 		public ExampleDualStrategyTest() {
 			Symbols = "Daily4Sim";
 			StoreKnownGood = false;
+			ShowCharts = false;
 		}
 		
 		[TestFixtureSetUp]
@@ -178,12 +179,14 @@ namespace Loaders
 		}
 		
 		public override void OnLoad(ProjectProperties properties) {
-			Portfolio portfolio = CreatePortfolio("Portfolio","Portfolio");
-			Strategy fourTicks = CreateStrategy("ExampleOrderStrategy","FourTicksData");
+			var portfolio = new Portfolio();
+			var fourTicks = new ExampleOrderStrategy() {
+				Name = "FourTicksData"
+			};
 			fourTicks.SymbolDefault = properties.Starter.SymbolInfo[0].Symbol;
-			Strategy reversal = CreateStrategy("ExampleReversalStrategy");
-			reversal.SymbolDefault = properties.Starter.SymbolInfo[0].Symbol;
-//			portfolio.Performance.Equity.StartingEquity = 100000;
+			var reversal = new ExampleReversalStrategy() {
+				SymbolDefault = properties.Starter.SymbolInfo[0].Symbol
+			};
 			AddDependency(portfolio,fourTicks);
 			AddDependency(portfolio,reversal);
 			portfolio.Performance.GraphTrades = false;
