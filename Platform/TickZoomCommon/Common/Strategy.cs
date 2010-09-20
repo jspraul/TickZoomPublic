@@ -62,8 +62,6 @@ namespace TickZoom.Common
 		EnterCommon enterNextBar;
 		Performance performance;
 		ExitStrategy exitStrategy;
-		OrderManager preOrderManager;
-		OrderManager postOrderManager;
 		FillManager preFillManager;
 		FillManager postFillManager;
 		
@@ -97,13 +95,6 @@ namespace TickZoom.Common
 			// Interceptors.
 			performance = new Performance(this);
 		    exitStrategy = new ExitStrategy(this);
-		    preOrderManager = Factory.Engine.OrderManager(this);
-			preOrderManager.PostProcess = true;
-			
-			postOrderManager = Factory.Engine.OrderManager(this);
-			postOrderManager.PostProcess = true;
-			postOrderManager.DoStrategyOrders = false;
-			postOrderManager.DoExitStrategyOrders = true;
 			
 		    preFillManager = new FillManager(this);
 			postFillManager = new FillManager(this);
@@ -126,12 +117,10 @@ namespace TickZoom.Common
 			base.OnConfigure();
 
 			BreakPoint.TrySetStrategy(this);
-			AddInterceptor(preOrderManager);
 			AddInterceptor(preFillManager);
 			AddInterceptor(performance.Equity);
 			AddInterceptor(performance);
 			AddInterceptor(exitStrategy);
-			AddInterceptor(postOrderManager);
 			AddInterceptor(postFillManager);
 		}
 		

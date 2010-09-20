@@ -106,7 +106,6 @@
     <Compile Include="Platform\ModelLoaderInterface.cs" />
     <Compile Include="Platform\ModelProperties.cs" />
     <Compile Include="Platform\OptimizeVariable.cs" />
-    <Compile Include="Platform\OrderManager.cs" />
     <Compile Include="Platform\Pool.cs" />
     <Compile Include="Platform\PortfolioInterface.cs" />
     <Compile Include="Platform\PositionInterface.cs" />
