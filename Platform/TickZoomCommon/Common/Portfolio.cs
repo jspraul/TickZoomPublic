@@ -138,6 +138,7 @@ namespace TickZoom.Common
 					activeWatchers.Add( watcher);
 				}
 			}
+			
 			// Listen for fill events.
 			foreach( var strategy in strategies) {
 				strategy.AddEventListener(EventType.LogicalFill,this);
@@ -165,34 +166,21 @@ namespace TickZoom.Common
 		{
 			base.OnEvent(context, eventType, eventDetail);
 			
-			if( eventType == EventType.Tick ||
-			    eventType == EventType.LogicalFill) {
-				ProcessMerge();
-				if( context.Position == null) {
-					context.Position = new PositionCommon(this);
-				}
-				context.Position.Copy(Position);
+			if( eventType == EventType.LogicalFill) {
+				TryMergeSingleSymbolPositions();
+				TryMergeSingleSymbolOrders();
+				TryMergeMultiSymbolEquity();
+			}
+			
+			if( eventType == EventType.Tick ) {
+				TryMergeSingleSymbolOrders();
+				TryMergeMultiSymbolEquity();
 			}
 		}
 
-		private void ProcessMerge() {
-			if (portfolioType == PortfolioType.SingleSymbol) {
-				MergeSingleSymbol();
-			} else if (portfolioType == PortfolioType.MultiSymbol) {
-				MergeMultiSymbol();
-			} else {
-				throw new ApplicationException("PortfolioType was never set.");
-			}
-		}
-		
-		public override bool OnProcessTick(Tick tick)
+		private void TryMergeSingleSymbolPositions()
 		{
-			return true;
-		}
-
-		private void MergeSingleSymbol()
-		{
-			bool mergeOrders = false;
+			if( portfolioType != PortfolioType.SingleSymbol) return;
 			double internalSignal = 0;
 			double totalPrice = 0;
 			int changeCount = 0;
@@ -206,27 +194,37 @@ namespace TickZoom.Common
 					changeCount++;
 					watcher.Refresh();
 				}
-				if (watcher.IsActiveOrdersChanged) {
-					mergeOrders = true;
-				}
 			}
 			if (changeCount > 0) {
 				double averagePrice = (totalPrice / changeCount).Round();
 				Position.Change(internalSignal, averagePrice, Ticks[0].Time);
 				Result.Position.Copy(Position);
 			}
-			if( mergeOrders) { 
+		}
+		
+		private void TryMergeSingleSymbolOrders()
+		{
+			if( portfolioType != PortfolioType.SingleSymbol) return;
+			int count = activeWatchers.Count;
+			for(int i=0; i<count; i++) {
+				var watcher = activeWatchers[i];
+				if( !watcher.IsActive) continue;
+				if (watcher.IsActiveOrdersChanged) {
+					isActiveOrdersChanged = true;
+				}
+			}
+			if( isActiveOrdersChanged ) { 
 				activeOrders.Clear();
 				for(int i=0; i<count; i++) {
 					var watcher = activeWatchers[i];
 					if( !watcher.IsActive) continue;
 					activeOrders.AddLast(watcher.ActiveOrders);
 				}
-				isActiveOrdersChanged = true;
 			}
 		}
 		
-		public void MergeMultiSymbol() {
+		public void TryMergeMultiSymbolEquity() {
+			if( portfolioType != PortfolioType.MultiSymbol) return;
 			double tempClosedEquity = 0;
 			double tempOpenEquity = 0;
 			int count = strategies.Count;
