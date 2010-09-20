@@ -168,12 +168,10 @@ namespace TickZoom.Common
 			
 			if( eventType == EventType.LogicalFill) {
 				TryMergeSingleSymbolPositions();
-				TryMergeSingleSymbolOrders();
 				TryMergeMultiSymbolEquity();
 			}
 			
 			if( eventType == EventType.Tick ) {
-				TryMergeSingleSymbolOrders();
 				TryMergeMultiSymbolEquity();
 			}
 		}
@@ -199,27 +197,6 @@ namespace TickZoom.Common
 				double averagePrice = (totalPrice / changeCount).Round();
 				Position.Change(internalSignal, averagePrice, Ticks[0].Time);
 				Result.Position.Copy(Position);
-			}
-		}
-		
-		private void TryMergeSingleSymbolOrders()
-		{
-			if( portfolioType != PortfolioType.SingleSymbol) return;
-			int count = activeWatchers.Count;
-			for(int i=0; i<count; i++) {
-				var watcher = activeWatchers[i];
-				if( !watcher.IsActive) continue;
-				if (watcher.IsActiveOrdersChanged) {
-					isActiveOrdersChanged = true;
-				}
-			}
-			if( isActiveOrdersChanged ) { 
-				activeOrders.Clear();
-				for(int i=0; i<count; i++) {
-					var watcher = activeWatchers[i];
-					if( !watcher.IsActive) continue;
-					activeOrders.AddLast(watcher.ActiveOrders);
-				}
 			}
 		}
 		
