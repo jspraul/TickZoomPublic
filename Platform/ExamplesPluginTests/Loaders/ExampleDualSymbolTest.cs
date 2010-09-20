@@ -125,15 +125,20 @@ namespace Loaders
 			
 		[Test]
 		public void CompareAllRoundTurns() {
-			TransactionPairs fourTicksRTs = fourTicksStrategy.Performance.ComboTrades;
-			TransactionPairs fullTicksRTs = fullTicksStrategy.Performance.ComboTrades;
-			for( int i=0; i<fourTicksRTs.Count && i<fullTicksRTs.Count; i++) {
-				TransactionPair fourRT = fourTicksRTs[i];
-				TransactionPair fullRT = fullTicksRTs[i];
-				double fourEntryPrice = Math.Round(fourRT.EntryPrice,2).Round();
-				double fullEntryPrice = Math.Round(fullRT.EntryPrice,2).Round();
-				Assert.AreEqual(fourEntryPrice,fullEntryPrice,"Entry Price for Trade #" + i);
-				Assert.AreEqual(fourRT.ExitPrice,fullRT.ExitPrice,"Exit Price for Trade #" + i);
+			try {
+				TransactionPairs fourTicksRTs = fourTicksStrategy.Performance.ComboTrades;
+				TransactionPairs fullTicksRTs = fullTicksStrategy.Performance.ComboTrades;
+				for( int i=0; i<fourTicksRTs.Count && i<fullTicksRTs.Count; i++) {
+					TransactionPair fourRT = fourTicksRTs[i];
+					TransactionPair fullRT = fullTicksRTs[i];
+					double fourEntryPrice = Math.Round(fourRT.EntryPrice,2).Round();
+					double fullEntryPrice = Math.Round(fullRT.EntryPrice,2).Round();
+					Assert.AreEqual(fourEntryPrice,fullEntryPrice,"Entry Price for Trade #" + i);
+					Assert.AreEqual(fourRT.ExitPrice,fullRT.ExitPrice,"Exit Price for Trade #" + i);
+				}
+			} catch {
+				testFailed = true;
+				throw;
 			}
 		}
 		

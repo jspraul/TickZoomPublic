@@ -34,7 +34,7 @@ namespace TickZoom.Api
 			get;
 			set;
 		}
-		
-		double GetOpenEquity();
+//		
+//		double GetOpenEquity();
 	}
 }

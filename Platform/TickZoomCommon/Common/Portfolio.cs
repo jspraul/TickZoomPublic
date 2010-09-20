@@ -132,6 +132,9 @@ namespace TickZoom.Common
 			// Create strategy watchers
 			foreach( var strategy in strategies) {
 				strategy.OnActiveChange += HandleActiveChange;
+				if( portfolioType == PortfolioType.SingleSymbol) {
+					strategy.AddEventListener(EventType.LogicalFill,this);
+				}
 				StrategyWatcher watcher = new StrategyWatcher(strategy);
 				watchers.Add( strategy, watcher);
 				if( strategy.IsActive) {
@@ -139,10 +142,6 @@ namespace TickZoom.Common
 				}
 			}
 			
-			// Listen for fill events.
-			foreach( var strategy in strategies) {
-				strategy.AddEventListener(EventType.LogicalFill,this);
-			}
 			foreach( var portfolio in portfolios) {
 				activeWatchers.Add( new StrategyWatcher(portfolio));
 			}
@@ -226,22 +225,22 @@ namespace TickZoom.Common
 			Performance.Equity.OnUpdateOpenEquity(tempOpenEquity);
 		}
 		
-		public double GetOpenEquity() {
-			if( portfolioType == PortfolioType.SingleSymbol) {
-				return performance.Equity.OpenEquity;
-			} else if( portfolioType == PortfolioType.MultiSymbol) {
-				double tempOpenEquity = 0;
-				foreach( var strategy in strategies) {
-					tempOpenEquity += strategy.Performance.Equity.OpenEquity;
-				}
-				foreach( var portfolio in portfolios) {
-					tempOpenEquity += portfolio.GetOpenEquity();
-				}
-				return tempOpenEquity;
-			} else {
-				throw new ApplicationException("PortfolioType was never set.");
-			}
-		}		
+//		public double GetOpenEquity() {
+//			if( portfolioType == PortfolioType.SingleSymbol) {
+//				return performance.Equity.OpenEquity;
+//			} else if( portfolioType == PortfolioType.MultiSymbol) {
+//				double tempOpenEquity = 0;
+//				foreach( var strategy in strategies) {
+//					tempOpenEquity += strategy.Performance.Equity.OpenEquity;
+//				}
+//				foreach( var portfolio in portfolios) {
+//					tempOpenEquity += portfolio.GetOpenEquity();
+//				}
+//				return tempOpenEquity;
+//			} else {
+//				throw new ApplicationException("PortfolioType was never set.");
+//			}
+//		}		
 		
 		/// <summary>
 		/// Shortcut to look at the data of and control any dependant strategies.

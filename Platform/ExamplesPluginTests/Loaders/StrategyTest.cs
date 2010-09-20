@@ -64,7 +64,7 @@ namespace Loaders
 		public bool ShowCharts = false;
 		public bool StoreKnownGood = false;
 		public CreateStarterCallback createStarterCallback;
-		private bool testFailed = false;		
+		protected bool testFailed = false;		
 		
 		public StrategyTest() {
  			testFileName = GetType().Name;
@@ -97,8 +97,8 @@ namespace Loaders
 				}
 			}
 			if( testFailed) {
-//				log.Error("Shutting down due to test failure.");
-//				Environment.Exit(0);
+				log.Error("Shutting down due to test failure.");
+				Environment.Exit(0);
 			}
 		}
 		
@@ -427,24 +427,29 @@ namespace Loaders
 		}
 		
 		public void PerformReconciliation() {
-			foreach( var kvp in goodReconciliationMap) {
-				var symbol = kvp.Key;
-				assertFlag = false;
-				List<TransactionInfo> goodTransactions = null;
-				goodReconciliationMap.TryGetValue(symbol,out goodTransactions);
-				List<TransactionInfo> testTransactions = null;
-				testReconciliationMap.TryGetValue(symbol,out testTransactions);
-				Assert.IsNotNull(goodTransactions, "front-end trades");
-				Assert.IsNotNull(testTransactions, "back-end trades");
-				for( int i=0; i<testTransactions.Count && i<goodTransactions.Count; i++) {
-					var testInfo = testTransactions[i];
-					var goodInfo = goodTransactions[i];
-					var goodFill = goodInfo.Fill;
-					var testFill = testInfo.Fill;
-					AssertReconcile(goodFill,testFill,symbol + " transaction Fill at " + i);
-					AssertEqual(goodInfo.Symbol,testInfo.Symbol,symbol + " transaction symbol at " + i);
+			try {
+				foreach( var kvp in goodReconciliationMap) {
+					var symbol = kvp.Key;
+					assertFlag = false;
+					List<TransactionInfo> goodTransactions = null;
+					goodReconciliationMap.TryGetValue(symbol,out goodTransactions);
+					List<TransactionInfo> testTransactions = null;
+					testReconciliationMap.TryGetValue(symbol,out testTransactions);
+					Assert.IsNotNull(goodTransactions, "front-end trades");
+					Assert.IsNotNull(testTransactions, "back-end trades");
+					for( int i=0; i<testTransactions.Count && i<goodTransactions.Count; i++) {
+						var testInfo = testTransactions[i];
+						var goodInfo = goodTransactions[i];
+						var goodFill = goodInfo.Fill;
+						var testFill = testInfo.Fill;
+						AssertReconcile(goodFill,testFill,symbol + " transaction Fill at " + i);
+						AssertEqual(goodInfo.Symbol,testInfo.Symbol,symbol + " transaction symbol at " + i);
+					}
+					Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
 				}
-				Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
+			} catch { 
+				testFailed = true;
+				throw;
 			}
 		}
 		
@@ -477,45 +482,55 @@ namespace Loaders
 		}
 		
 		public void VerifyStats(StrategyInterface strategy) {
-			assertFlag = false;
-			List<StatsInfo> goodStats = goodStatsMap[strategy.Name];
-			List<StatsInfo> testStats = testStatsMap[strategy.Name];
-			for( int i=0; i<testStats.Count && i<goodStats.Count; i++) {
-				StatsInfo testInfo = testStats[i];
-				StatsInfo goodInfo = goodStats[i];
-				AssertEqual(goodInfo.Time,testInfo.Time,strategy.Name + " - [" + i + "] Stats time at " + testInfo.Time);
-				AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,strategy.Name + " - [" + i + "] Closed Equity time at " + testInfo.Time);
-				AssertEqual(goodInfo.OpenEquity,testInfo.OpenEquity,strategy.Name + " - [" + i + "] Open Equity time at " + testInfo.Time);
-				AssertEqual(goodInfo.CurrentEquity,testInfo.CurrentEquity,strategy.Name + " - [" + i + "] Current Equity time at " + testInfo.Time);
+			try {
+				assertFlag = false;
+				List<StatsInfo> goodStats = goodStatsMap[strategy.Name];
+				List<StatsInfo> testStats = testStatsMap[strategy.Name];
+				for( int i=0; i<testStats.Count && i<goodStats.Count; i++) {
+					StatsInfo testInfo = testStats[i];
+					StatsInfo goodInfo = goodStats[i];
+					AssertEqual(goodInfo.Time,testInfo.Time,strategy.Name + " - [" + i + "] Stats time at " + testInfo.Time);
+					AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,strategy.Name + " - [" + i + "] Closed Equity time at " + testInfo.Time);
+					AssertEqual(goodInfo.OpenEquity,testInfo.OpenEquity,strategy.Name + " - [" + i + "] Open Equity time at " + testInfo.Time);
+					AssertEqual(goodInfo.CurrentEquity,testInfo.CurrentEquity,strategy.Name + " - [" + i + "] Current Equity time at " + testInfo.Time);
+				}
+				Assert.IsFalse(assertFlag,"Checking for stats errors.");
+			} catch { 
+				testFailed = true;
+				throw;
 			}
-			Assert.IsFalse(assertFlag,"Checking for stats errors.");
 		}
 		
 		public void VerifyBarData(StrategyInterface strategy) {
-			assertFlag = false;
-			List<BarInfo> goodBarData = goodBarDataMap[strategy.Name];
-			List<BarInfo> testBarData = testBarDataMap[strategy.Name];
-			Assert.IsNotNull(goodBarData, "good bar data");
-			Assert.IsNotNull(testBarData, "test test data");
-			int i=0;
-			for( ; i<testBarData.Count && i<goodBarData.Count; i++) {
-				BarInfo testInfo = testBarData[i];
-				BarInfo goodInfo = goodBarData[i];
-				AssertEqual(goodInfo.Time,testInfo.Time,"Time at bar " + i );
-				AssertEqual(goodInfo.Open,testInfo.Open,"Open at bar " + i + " " + testInfo.Time);
-				AssertEqual(goodInfo.High,testInfo.High,"High at bar " + i + " " + testInfo.Time);
-				AssertEqual(goodInfo.Low,testInfo.Low,"Low at bar " + i + " " + testInfo.Time);
-				AssertEqual(goodInfo.Close,testInfo.Close,"Close at bar " + i + " " + testInfo.Time);
+			try {
+				assertFlag = false;
+				List<BarInfo> goodBarData = goodBarDataMap[strategy.Name];
+				List<BarInfo> testBarData = testBarDataMap[strategy.Name];
+				Assert.IsNotNull(goodBarData, "good bar data");
+				Assert.IsNotNull(testBarData, "test test data");
+				int i=0;
+				for( ; i<testBarData.Count && i<goodBarData.Count; i++) {
+					BarInfo testInfo = testBarData[i];
+					BarInfo goodInfo = goodBarData[i];
+					AssertEqual(goodInfo.Time,testInfo.Time,"Time at bar " + i );
+					AssertEqual(goodInfo.Open,testInfo.Open,"Open at bar " + i + " " + testInfo.Time);
+					AssertEqual(goodInfo.High,testInfo.High,"High at bar " + i + " " + testInfo.Time);
+					AssertEqual(goodInfo.Low,testInfo.Low,"Low at bar " + i + " " + testInfo.Time);
+					AssertEqual(goodInfo.Close,testInfo.Close,"Close at bar " + i + " " + testInfo.Time);
+				}
+				for( ; i<testBarData.Count; i++) {
+					BarInfo testInfo = testBarData[i];
+					log.Error("Extra test bar: #"+i+" " + testInfo);
+				}
+				for( ; i<goodBarData.Count; i++) {
+					BarInfo goodInfo = goodBarData[i];
+					log.Error("Extra good bar: #"+i+" " + goodInfo);
+				}
+				Assert.IsFalse(assertFlag,"Checking for bar data errors.");
+			} catch { 
+				testFailed = true;
+				throw;
 			}
-			for( ; i<testBarData.Count; i++) {
-				BarInfo testInfo = testBarData[i];
-				log.Error("Extra test bar: #"+i+" " + testInfo);
-			}
-			for( ; i<goodBarData.Count; i++) {
-				BarInfo goodInfo = goodBarData[i];
-				log.Error("Extra good bar: #"+i+" " + goodInfo);
-			}
-			Assert.IsFalse(assertFlag,"Checking for bar data errors.");
 		}
 		
 		public void VerifyPair(Strategy strategy, int pairNum,
