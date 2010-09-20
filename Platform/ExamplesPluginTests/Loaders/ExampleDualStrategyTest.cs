@@ -44,7 +44,7 @@ namespace Loaders
 		
 		public ExampleDualStrategyTest() {
 			Symbols = "Daily4Sim";
-			StoreKnownGood = false;
+			StoreKnownGood = true;
 			ShowCharts = false;
 		}
 		
@@ -100,7 +100,7 @@ namespace Loaders
 			double portfolioTotal = portfolio.Performance.Equity.CurrentEquity;
 			portfolioTotal -= portfolio.Performance.Equity.StartingEquity;
 			Assert.AreEqual(Math.Round(expected,2), Math.Round(portfolioTotal,2));
-			Assert.AreEqual(Math.Round(-29.78,2), Math.Round(portfolioTotal,2));
+			Assert.AreEqual(Math.Round(-29.15,2), Math.Round(portfolioTotal,2));
 		}
 		
 		[Test]
@@ -114,7 +114,7 @@ namespace Loaders
 			double portfolioTotal = portfolio.Performance.Equity.ClosedEquity;
 			portfolioTotal -= portfolio.Performance.Equity.StartingEquity;
 			Assert.AreEqual(Math.Round(expected,2), Math.Round(portfolioTotal,2));
-			Assert.AreEqual(Math.Round(-29.61,2), Math.Round(portfolioTotal,2));
+			Assert.AreEqual(Math.Round(-28.98,2), Math.Round(portfolioTotal,2));
 		}
 		
 		[Test]

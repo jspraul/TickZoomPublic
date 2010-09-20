@@ -42,7 +42,7 @@ namespace Loaders
 		ExampleOrderStrategy strategy;
 		
 		public ExampleSimulatedTest() {
-			StoreKnownGood = false;
+			StoreKnownGood = true;
 		}
 			
 		[TestFixtureSetUp]
@@ -81,7 +81,7 @@ namespace Loaders
 		
 		[Test]
 		public void VerifyCurrentEquity() {
-			Assert.AreEqual( Math.Round(9992.52,2),Math.Round(strategy.Performance.Equity.CurrentEquity,2),"current equity");
+			Assert.AreEqual( Math.Round(9993.15,2),Math.Round(strategy.Performance.Equity.CurrentEquity,2),"current equity");
 		}
 		[Test]
 		public void VerifyOpenEquity() {
@@ -89,7 +89,7 @@ namespace Loaders
 		}
 		[Test]
 		public void VerifyClosedEquity() {
-			Assert.AreEqual( Math.Round(9992.54,2),Math.Round(strategy.Performance.Equity.ClosedEquity,2),"closed equity");
+			Assert.AreEqual( Math.Round(9993.17,2),Math.Round(strategy.Performance.Equity.ClosedEquity,2),"closed equity");
 		}
 		[Test]
 		public void VerifyStartingEquity() {

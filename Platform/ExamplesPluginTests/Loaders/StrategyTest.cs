@@ -483,10 +483,10 @@ namespace Loaders
 			for( int i=0; i<testStats.Count && i<goodStats.Count; i++) {
 				StatsInfo testInfo = testStats[i];
 				StatsInfo goodInfo = goodStats[i];
-				AssertEqual(goodInfo.Time,testInfo.Time,strategy.Name + " - Stats time at " + testInfo.Time);
-				AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,strategy.Name + " - Closed Equity time at " + testInfo.Time);
-				AssertEqual(goodInfo.OpenEquity,testInfo.OpenEquity,strategy.Name + " - Open Equity time at " + testInfo.Time);
-				AssertEqual(goodInfo.CurrentEquity,testInfo.CurrentEquity,strategy.Name + " - Current Equity time at " + testInfo.Time);
+				AssertEqual(goodInfo.Time,testInfo.Time,strategy.Name + " - [" + i + "] Stats time at " + testInfo.Time);
+				AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,strategy.Name + " - [" + i + "] Closed Equity time at " + testInfo.Time);
+				AssertEqual(goodInfo.OpenEquity,testInfo.OpenEquity,strategy.Name + " - [" + i + "] Open Equity time at " + testInfo.Time);
+				AssertEqual(goodInfo.CurrentEquity,testInfo.CurrentEquity,strategy.Name + " - [" + i + "] Current Equity time at " + testInfo.Time);
 			}
 			Assert.IsFalse(assertFlag,"Checking for stats errors.");
 		}

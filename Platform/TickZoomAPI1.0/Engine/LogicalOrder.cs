@@ -39,7 +39,7 @@ namespace TickZoom.Api
 	/// </summary>
 	public interface LogicalOrder :  Serializable, IComparable
 	{
-		event Action<LogicalOrder> OnStatusChange;
+		Action<LogicalOrder> OnModified { get; set; }
 		
 		StrategyInterface Strategy {
 			get;
