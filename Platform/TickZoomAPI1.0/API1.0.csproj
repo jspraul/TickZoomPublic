@@ -189,6 +189,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\AsyncProviderAware.cs" />
     <Compile Include="Provider\BreakPointInterface.cs" />
+    <Compile Include="Provider\FillHandler.cs" />
     <Compile Include="Provider\FillSimulator.cs" />
     <Compile Include="Provider\LogicalFill.cs" />
     <Compile Include="Provider\LogicalFillBinary.cs" />

@@ -55,11 +55,19 @@ namespace TickZoom.Examples
 		{
 			// Example log message.
 			//if( Log.Info( "close: " + Ticks[0] + " " + Minutes.Close[0] + " " + Minutes.Time[0]);
-			if( !Position.IsLong && Bars.Close[0] > Bars.High[1]) {
-				Orders.Enter.ActiveNow.BuyMarket(tradeSize);
+			if( Bars.Close[0] > Bars.High[1]) {
+				if( Position.IsFlat) {
+					Orders.Enter.ActiveNow.BuyMarket(tradeSize);
+				} else if( Position.IsShort) {
+					Orders.Reverse.ActiveNow.BuyMarket(tradeSize);
+				}
 			}
-			if( !Position.IsShort && Bars.Close[0] < Bars.Low[1]) {
-				Orders.Enter.ActiveNow.SellMarket(tradeSize);
+			if( Bars.Close[0] < Bars.Low[1]) {
+				if( Position.IsFlat) {
+					Orders.Enter.ActiveNow.SellMarket(tradeSize);
+				} else if( Position.IsLong) {
+					Orders.Reverse.ActiveNow.SellMarket(tradeSize);
+				}
 			}
 			return true;
 		}
