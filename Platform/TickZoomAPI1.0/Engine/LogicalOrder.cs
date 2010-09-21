@@ -32,6 +32,7 @@ namespace TickZoom.Api
 		Inactive,
 		NextBar,
 		Active,
+//		Simulate,
 	}
 	
 	/// <summary>
