@@ -176,6 +176,44 @@ namespace TickZoom.Common
 			}
 		}
 		
+		private void ProcessMatchPhysicalReverse( LogicalOrder logical, PhysicalOrder physical) {
+			var strategyPosition = logical.Strategy.Position.Current;
+			var logicalPosition =
+				logical.Type == OrderType.BuyLimit ||
+				logical.Type == OrderType.BuyMarket ||
+				logical.Type == OrderType.BuyStop ? 
+				logical.Positions : - logical.Positions;
+			var physicalPosition = 
+				physical.Side == OrderSide.Buy ?
+				physical.Size : - physical.Size;
+			var delta = logicalPosition - strategyPosition;
+			var difference = delta - physicalPosition;
+			if( delta == 0) {
+				TryCancelBrokerOrder(physical);
+			} else if( difference != 0) {
+				if( delta > 0) {
+					physical = new PhysicalOrderDefault(OrderState.Active,symbol, logical,OrderSide.Buy,Math.Abs(delta),null);
+					CreateBrokerOrder(physical);
+				} else {
+					OrderSide side;
+					if( strategyPosition > 0 && logicalPosition < 0) {
+						side = OrderSide.Sell;
+						delta = strategyPosition;
+					} else {
+						side = OrderSide.SellShort;
+					}
+					side = (long) strategyPosition >= (long) Math.Abs(delta) ? OrderSide.Sell : OrderSide.SellShort;
+					physical = new PhysicalOrderDefault(OrderState.Active,symbol, logical, side, Math.Abs(delta), null);
+					CreateBrokerOrder(physical);
+				}
+			} else if( logical.Price != physical.Price) {
+				physicalOrders.Remove(physical);
+				var side = GetOrderSide(logical.Type,strategyPosition);
+				physical = new PhysicalOrderDefault(OrderState.Active, symbol, logical, side, Math.Abs(delta),physical.BrokerOrder);
+				TryChangeBrokerOrder(physical);
+			}
+		}
+		
 		private void ProcessMatchPhysicalExit( LogicalOrder logical, PhysicalOrder physical) {
 			var strategyPosition = logical.Strategy.Position.Current;
 			if( strategyPosition == 0) {
@@ -194,31 +232,55 @@ namespace TickZoom.Common
 				if( debug) log.Trace("Cannot change a suspended order: " + physical);
 				return;
 			}
-			if( logical.TradeDirection == TradeDirection.Entry) {
-				ProcessMatchPhysicalEntry( logical, physical);
-			}
-			if( logical.TradeDirection == TradeDirection.Exit) {
-				ProcessMatchPhysicalExit( logical, physical);
+			switch( logical.TradeDirection) {
+				case TradeDirection.Entry:
+					ProcessMatchPhysicalEntry( logical, physical);
+					break;
+				case TradeDirection.Exit:
+				case TradeDirection.ExitStrategy:
+					ProcessMatchPhysicalExit( logical, physical);
+					break;
+				case TradeDirection.Reverse:
+					ProcessMatchPhysicalReverse( logical, physical);
+					break;
+				default:
+					throw new ApplicationException("Unknown TradeDirection: " + logical.TradeDirection);
 			}
 		}
 		
 		private void ProcessExtraLogical(LogicalOrder logical) {
-//			if( logical.Id == 45 && logical.Price == 30.95) {
-//				int x = 0;
-//			}
 			// When flat, allow entry orders.
-			if( logical.Strategy.Position.IsFlat) {
-				if( logical.TradeDirection == TradeDirection.Entry) {
-					if(debug) log.Debug("ProcessMissingPhysicalEntry("+logical+")");
-					var side = GetOrderSide(logical.Type,actualPosition);
-					PhysicalOrder physical = new PhysicalOrderDefault(OrderState.Active, symbol,logical,side,logical.Positions,null);
-					CreateBrokerOrder(physical);
-				}
-			} else {
-				if( logical.TradeDirection == TradeDirection.Exit ||
-					logical.TradeDirection == TradeDirection.ExitStrategy) {
-					ProcessMissingPhysicalExit( logical);
-				}
+			switch(logical.TradeDirection) {
+				case TradeDirection.Entry:
+					if( logical.Strategy.Position.IsFlat) {
+						if(debug) log.Debug("ProcessMissingPhysicalEntry("+logical+")");
+						var side = GetOrderSide(logical.Type,actualPosition);
+						PhysicalOrder physical = new PhysicalOrderDefault(OrderState.Active, symbol,logical,side,logical.Positions,null);
+						CreateBrokerOrder(physical);
+					}
+					break;
+				case TradeDirection.Exit:
+				case TradeDirection.ExitStrategy:
+					if( logical.Strategy.Position.HasPosition) {
+						var size = Math.Abs(logical.Strategy.Position.Current);
+						ProcessMissingPhysical( logical, size);
+					}
+					break;
+				case TradeDirection.Reverse:
+					if( logical.Strategy.Position.HasPosition) {
+						var logicalPosition =
+							logical.Type == OrderType.BuyLimit ||
+							logical.Type == OrderType.BuyMarket ||
+							logical.Type == OrderType.BuyStop ?
+							logical.Positions : - logical.Positions;
+						var size = Math.Abs(logicalPosition - logical.Strategy.Position.Current);
+						if( size != 0) {
+							ProcessMissingPhysical( logical, size);
+						}
+					}
+					break;
+				default:
+					throw new ApplicationException("Unknown trade direction: " + logical.TradeDirection);
 			}
 			if( logical.TradeDirection == TradeDirection.Change) {
 				if(debug) log.Debug("ProcessMissingPhysicalChange("+logical+")");
@@ -227,14 +289,15 @@ namespace TickZoom.Common
 				CreateBrokerOrder(physical);
 			}
 		}
-		private void ProcessMissingPhysicalExit(LogicalOrder logical) {
-			if(debug) log.Debug("ProcessMissingPhysicalExit("+logical+")");
+		
+		private void ProcessMissingPhysical(LogicalOrder logical, double size) {
 			if( logical.Strategy.Position.IsLong ) {
 				if( logical.Type == OrderType.SellLimit ||
 				  logical.Type == OrderType.SellStop ||
 				  logical.Type == OrderType.SellMarket) {
+					if(debug) log.Debug("ProcessMissingPhysical("+logical+")");
 					var side = GetOrderSide(logical.Type,actualPosition);
-					PhysicalOrder physical = new PhysicalOrderDefault(OrderState.Active, symbol,logical,side,logical.Strategy.Position.Current,null);
+					PhysicalOrder physical = new PhysicalOrderDefault(OrderState.Active, symbol,logical,side,size,null);
 					CreateBrokerOrder(physical);
 				}
 			}
@@ -242,8 +305,9 @@ namespace TickZoom.Common
 				if( logical.Type == OrderType.BuyLimit ||
 				  logical.Type == OrderType.BuyStop ||
 				  logical.Type == OrderType.BuyMarket) {
+					if(debug) log.Debug("ProcessMissingPhysical("+logical+")");
 					var side = GetOrderSide(logical.Type,actualPosition);
-					PhysicalOrder physical = new PhysicalOrderDefault(OrderState.Active, symbol,logical,side,Math.Abs(logical.Strategy.Position.Current),null);
+					PhysicalOrder physical = new PhysicalOrderDefault(OrderState.Active, symbol,logical,side,size,null);
 					CreateBrokerOrder(physical);
 				}
 			}

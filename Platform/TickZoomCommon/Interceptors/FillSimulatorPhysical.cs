@@ -248,7 +248,17 @@ namespace TickZoom.Interceptors
 		private bool ProcessSellStop(PhysicalOrder order, Tick tick)
 		{
 			bool retVal = true;
-			double price = tick.IsQuote ? tick.Ask : tick.Price;
+			var logical = lookupLogicalOrder(order.LogicalOrderId);
+			double price;
+			switch( logical.TradeDirection) {
+				case TradeDirection.Exit:
+				case TradeDirection.Reverse:
+					price = tick.IsQuote ? tick.Bid : tick.Price;
+					break;
+				default:
+					price = tick.IsQuote ? tick.Ask : tick.Price;
+					break;
+			}
 			if (price <= order.Price) {
 				CreateLogicalFillHelper(-order.Size, price, tick.Time, order);
 				retVal = true;
