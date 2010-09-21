@@ -79,7 +79,7 @@ namespace TickZoom.Interceptors
 					return;
 				}
 				TryDrawTrade(filledOrder, fill.Price, fill.Position);
-				if( debug) Log.Debug( "Changing position because of fill");
+				if( debug) Log.Debug( "Changing position because of fill: " + fill);
 				changePosition(strategy.Data.SymbolInfo,fill);
 	
 				bool clean = false;

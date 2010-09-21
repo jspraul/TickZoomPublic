@@ -39,14 +39,22 @@ namespace TickZoom.Interceptors
 		private static readonly bool trace = log.IsTraceEnabled;
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool notice = log.IsNoticeEnabled;
-		private Dictionary<long,PhysicalOrder> physicalOrders = new Dictionary<long,PhysicalOrder>();
+
+		private Dictionary<long,PhysicalOrder> orderMap = new Dictionary<long, PhysicalOrder>();
+		private ActiveList<PhysicalOrder> increaseOrders = new ActiveList<PhysicalOrder>();
+		private ActiveList<PhysicalOrder> decreaseOrders = new ActiveList<PhysicalOrder>();
+		private ActiveList<PhysicalOrder> marketOrders = new ActiveList<PhysicalOrder>();
+		private NodePool<PhysicalOrder> nodePool = new NodePool<PhysicalOrder>();
+
 		private List<PhysicalOrder> filledOrders = new List<PhysicalOrder>();
 		private Action<LogicalFillBinary> createLogicalFill;
+		private Func<int,LogicalOrder> lookupLogicalOrder;
 		private bool useSyntheticMarkets = true;
 		private bool useSyntheticStops = true;
 		private bool useSyntheticLimits = true;
 		private SymbolInfo symbol;
-		private double position = 0D;
+		private double actualPosition = 0D;
+		private bool isChanged = false;
 		
 		public FillSimulatorPhysical(SymbolInfo symbol)
 		{
@@ -62,29 +70,39 @@ namespace TickZoom.Interceptors
 		public void OnChangeBrokerOrder(PhysicalOrder order)
 		{
 			if( debug) log.Debug("OnChangeBrokerOrder( " + order + ")");
-			var orderId = (long) order.BrokerOrder;
-			if( !physicalOrders.Remove(orderId)) {
-				throw new ApplicationException("Order id " + orderId + " was not found to change order: " + order);
-			} else {
-				physicalOrders.Add( orderId, order);
+			CancelBrokerOrder( order);
+			CreateBrokerOrder( order);
+		}
+		
+		private void CancelBrokerOrder(PhysicalOrder newOrder) {
+			IsChanged = true;
+			var oldOrderId = (long) newOrder.BrokerOrder;
+			PhysicalOrder oldOrder;
+			if( !orderMap.TryGetValue(oldOrderId, out oldOrder)) {
+				throw new ApplicationException("Order id " + oldOrderId + " was not found to change order: " + oldOrder);
 			}
+			RemoveActive( oldOrder);
+			orderMap.Remove( oldOrderId);
+		}
+		
+		private void CreateBrokerOrder(PhysicalOrder order) {
+			isChanged = true;
+			var orderId = Interlocked.Increment(ref nextOrderId);
+			order.BrokerOrder = orderId;
+			orderMap.Add(orderId,order);
+			SortAdjust(order);
 		}
 		
 		public void OnCreateBrokerOrder(PhysicalOrder order)
 		{
 			if( debug) log.Debug("OnCreateBrokerOrder( " + order + ")");
-			var orderId = Interlocked.Increment(ref nextOrderId);
-			order.BrokerOrder = orderId;
-			physicalOrders.Add(orderId,order);
+			CreateBrokerOrder(order);
 		}
 		
 		public void OnCancelBrokerOrder(PhysicalOrder order)
 		{
 			if( debug) log.Debug("OnCancelBrokerOrder( " + order + ")");
-			var orderId = (long) order.BrokerOrder;
-			if( !physicalOrders.Remove(orderId)) {
-				throw new ApplicationException("Order id " + orderId + " was not found to change order: " + order);
-			}
+			CancelBrokerOrder(order);
 		}
 		
 		public bool ProcessOrders(Tick tick)
@@ -94,14 +112,84 @@ namespace TickZoom.Interceptors
 				throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
 			}
 			filledOrders.Clear();
-			foreach( var kvp in physicalOrders) {
-				var order = kvp.Value;
+			foreach( var order in increaseOrders) {
+				OnProcessOrder(order, tick);
+			}
+			foreach( var order in decreaseOrders) {
+				OnProcessOrder(order, tick);
+			}
+			foreach( var order in marketOrders) {
 				OnProcessOrder(order, tick);
 			}
 			foreach( var order in filledOrders) {
-				physicalOrders.Remove((long) order.BrokerOrder);
+				CancelBrokerOrder( order);
 			}
 			return retVal;
+		}
+		
+		private void SortAdjust(PhysicalOrder order) {
+			switch( order.Type) {
+				case OrderType.BuyLimit:					
+				case OrderType.SellStop:
+					SortAdjust( decreaseOrders, order, (x,y) => y.Price - x.Price);
+					break;
+				case OrderType.SellLimit:
+				case OrderType.BuyStop:
+					SortAdjust( increaseOrders, order, (x,y) => x.Price - y.Price);
+					break;
+				case OrderType.BuyMarket:
+				case OrderType.SellMarket:
+					Adjust( marketOrders, order);
+					break;
+				default:
+					throw new ApplicationException("Unexpected order type: " + order.Type);
+			}
+		}
+		
+		private void RemoveActive(PhysicalOrder order) {
+			Remove( increaseOrders, order);
+			Remove( decreaseOrders, order);
+			Remove( marketOrders, order);
+		}
+		private void Adjust(ActiveList<PhysicalOrder> list, PhysicalOrder order) {
+			if( !list.Contains(order)) {
+				var node = nodePool.Create(order);
+				list.AddLast(node);
+			}
+		}
+		
+		private void Remove(ActiveList<PhysicalOrder> list, PhysicalOrder order) {
+			var node = list.Find(order);
+			if( node != null) {
+				list.Remove(node);
+				nodePool.Free(node);
+			}
+		}
+		
+		private void SortAdjust(ActiveList<PhysicalOrder> list, PhysicalOrder order, Func<PhysicalOrder,PhysicalOrder,double> compare) {
+			if( !list.Contains(order)) {
+				var newNode = nodePool.Create(order);
+				bool found = false;
+				var next = list.First;
+				for( var node = next; node != null; node = next) {
+					next = node.Next;
+					var other = node.Value;
+					if( object.ReferenceEquals(order,other)) {
+						found = true;
+						break;
+					} else {
+						var result = compare(order,other);
+						if( result < 0) {
+							list.AddBefore(node,newNode);
+							found = true;
+							break;
+						}
+					}
+				}
+				if( !found) {
+					list.AddLast(newNode);
+				}
+			}
 		}
 		
 	#region ExitOrder
@@ -218,9 +306,19 @@ namespace TickZoom.Interceptors
 		
 		private void CreateLogicalFillHelper(double position, double price, TimeStamp time, PhysicalOrder order) {
 			if( debug) log.Debug("Filled: " + order);
-			this.position += position;
+			this.actualPosition += position;
 			filledOrders.Add(order);
-			LogicalFillBinary fill = new LogicalFillBinary(position,price,time, order.LogicalOrderId);
+			LogicalFillBinary fill;
+			if( order.LogicalOrderId != 0) {
+				var logical = lookupLogicalOrder(order.LogicalOrderId);
+				fill = new LogicalFillBinary(
+					logical.Strategy.Position.Current+position,
+					price, time, order.LogicalOrderId);
+			} else {
+				fill = new LogicalFillBinary(
+					actualPosition,
+					price, time, order.LogicalOrderId);
+			}
 			if( debug) log.Debug("Fill price: " + fill);
 			createLogicalFill(fill);
 		}
@@ -246,11 +344,21 @@ namespace TickZoom.Interceptors
 		}
 		
 		public Dictionary<long, PhysicalOrder> PhysicalOrders {
-			get { return physicalOrders; }
+			get { return orderMap; }
 		}
 		
-		public double Position {
-			get { return position; }
+		public double ActualPosition {
+			get { return actualPosition; }
+		}
+		
+		public Func<int, LogicalOrder> LookupLogicalOrder {
+			get { return lookupLogicalOrder; }
+			set { lookupLogicalOrder = value; }
+		}
+		
+		public bool IsChanged {
+			get { return isChanged; }
+			set { isChanged = value; }
 		}
 	}
 }
