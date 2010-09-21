@@ -53,7 +53,7 @@ namespace TickZoom.Common
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		bool isOptimizeMode = false;
-		private Dictionary<EventType,ActiveList<ModelInterface>> eventListeners = new Dictionary<EventType,ActiveList<ModelInterface>>();
+		private Dictionary<int,ActiveList<ModelInterface>> eventListeners = new Dictionary<int,ActiveList<ModelInterface>>();
 		
 		List<StrategyInterceptorInterface> strategyInterceptors = new List<StrategyInterceptorInterface>();
 		Dictionary<EventType,List<EventInterceptor>> eventInterceptors = new Dictionary<EventType,List<EventInterceptor>>();
@@ -85,9 +85,9 @@ namespace TickZoom.Common
 		
 		public void AddEventListener(EventType eventType, ModelInterface listener) {
 			ActiveList<ModelInterface> listeners;
-			if( !eventListeners.TryGetValue(eventType, out listeners)) {
+			if( !eventListeners.TryGetValue((int)eventType, out listeners)) {
 				listeners = new ActiveList<ModelInterface>();
-				eventListeners.Add(eventType,listeners);
+				eventListeners.Add((int)eventType,listeners);
 			}
 			if( !listeners.Contains(listener)) {
 				listeners.AddLast(listener);
@@ -96,9 +96,9 @@ namespace TickZoom.Common
 		
 		public Iterable<ModelInterface> GetEventListeners( EventType eventType) {
 			ActiveList<ModelInterface> listeners;
-			if( !eventListeners.TryGetValue(eventType, out listeners)) {
+			if( !eventListeners.TryGetValue((int) eventType, out listeners)) {
 				listeners = new ActiveList<ModelInterface>();
-				eventListeners.Add(eventType,listeners);
+				eventListeners.Add((int)eventType,listeners);
 			}
 			return listeners;
 		}
