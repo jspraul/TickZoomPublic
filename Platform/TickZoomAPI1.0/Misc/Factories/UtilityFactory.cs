@@ -25,20 +25,29 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace TickZoom.Api
 {
+	public interface PhysicalFillSimulator : PhysicalOrderHandler {
+		Dictionary<long,PhysicalOrder> PhysicalOrders { get; }
+		double Position { get; }
+		bool ProcessOrders(Tick tick);
+		Action<LogicalFillBinary> CreateLogicalFill { get; set; }
+	}
+	
 	[CLSCompliant(false)]
 	public interface UtilityFactory {
 		ProviderService CommandLineProcess();
 		ProviderService WindowsService();
-		LogicalOrderHandler LogicalOrderHandler(SymbolInfo symbol, PhysicalOrderHandler handler);
+		OrderAlgorithm OrderAlgorithm(SymbolInfo symbol, PhysicalOrderHandler handler);
 		PhysicalOrder PhysicalOrder( OrderState orderState, SymbolInfo symbol, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder, object tag);
 		SymbolHandler SymbolHandler(SymbolInfo symbol, Receiver receiver);
 		VerifyFeed VerifyFeed();
 		FillHandler FillHandler();
 		FillHandler FillHandler(StrategyInterface strategy);
+		PhysicalFillSimulator FillSimulator(SymbolInfo symbol);
 		FillSimulator FillSimulator(Func<double> getActualPosition);
 		FillSimulator FillSimulator(Func<double> getActualPosition, StrategyInterface strategy);
 		BreakPointInterface BreakPoint();

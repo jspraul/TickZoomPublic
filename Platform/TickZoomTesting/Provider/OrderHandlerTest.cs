@@ -1272,26 +1272,26 @@ namespace Orders
 			
 		}
 
-		public class TestBrokerProvider : PhysicalOrderHandler, LogicalOrderHandler {
-			LogicalOrderHandler logicalHandler;
+		public class TestBrokerProvider : PhysicalOrderHandler, OrderAlgorithm {
+			OrderAlgorithm orderAlgorithm;
 			public List<PhysicalOrder> CanceledOrders = new List<PhysicalOrder>();
 			public List<PhysicalOrder> ChangedOrders = new List<PhysicalOrder>();
 			public List<PhysicalOrder> CreatedOrders = new List<PhysicalOrder>();
 			public TestBrokerProvider(SymbolInfo symbol) {
-				logicalHandler = Factory.Utility.LogicalOrderHandler(symbol,this);
+				orderAlgorithm = Factory.Utility.OrderAlgorithm(symbol,this);
 			}
 			public void ClearPhysicalOrders()
 			{
-				logicalHandler.ClearPhysicalOrders();
+				orderAlgorithm.ClearPhysicalOrders();
 				CanceledOrders.Clear();
 				ChangedOrders.Clear();
 				CreatedOrders.Clear();
 			}
 			public void SetActualPosition( double position) {
-				logicalHandler.SetActualPosition(position);
+				orderAlgorithm.SetActualPosition(position);
 			}
 			public void SetDesiredPosition( double position) {
-				logicalHandler.SetDesiredPosition(position);
+				orderAlgorithm.SetDesiredPosition(position);
 			}
 			public void OnCancelBrokerOrder(PhysicalOrder order)
 			{
@@ -1306,30 +1306,30 @@ namespace Orders
 				CreatedOrders.Add(order);
 			}
 			public void SetLogicalOrders(Iterable<LogicalOrder> logicalOrders) {
-				logicalHandler.SetLogicalOrders(logicalOrders);
+				orderAlgorithm.SetLogicalOrders(logicalOrders);
 			}
 			public void PerformCompare()
 			{
-				logicalHandler.PerformCompare();
+				orderAlgorithm.PerformCompare();
 			}
 			
 			public void AddPhysicalOrder(PhysicalOrder order)
 			{
-				logicalHandler.AddPhysicalOrder(order);
+				orderAlgorithm.AddPhysicalOrder(order);
 			}
 			
 			public void AddPhysicalOrder(OrderState orderState, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder)
 			{
-				logicalHandler.AddPhysicalOrder(orderState, side,type,price,size,logicalOrderId,brokerOrder);
+				orderAlgorithm.AddPhysicalOrder(orderState, side,type,price,size,logicalOrderId,brokerOrder);
 			}
 		
 			public double ActualPosition {
-				get { return logicalHandler.ActualPosition; }
+				get { return orderAlgorithm.ActualPosition; }
 			}
 			
 			public void ProcessFill(LogicalFill fill)
 			{
-				logicalHandler.ProcessFill(fill);
+				orderAlgorithm.ProcessFill(fill);
 			}
 		}
 		

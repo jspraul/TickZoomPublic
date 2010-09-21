@@ -65,6 +65,7 @@ namespace TickZoom.Api
 		
 		object BrokerOrder {
 			get;
+			set;
 		}
 		
 		object Tag {

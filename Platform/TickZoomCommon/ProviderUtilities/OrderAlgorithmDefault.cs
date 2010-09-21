@@ -35,7 +35,7 @@ using TickZoom.Api;
 
 namespace TickZoom.Common
 {
-	public class OrderAlgorithmDefault : LogicalOrderHandler {
+	public class OrderAlgorithmDefault : OrderAlgorithm {
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(OrderAlgorithmDefault));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
@@ -431,12 +431,14 @@ namespace TickZoom.Common
 			                     originalLogicals.Count + " logical, " +
 			                     physicalOrders.Count + " physical.");
 			
-			foreach( var order in originalLogicals) {
-				log.Info("Logical Order: " + order);
-			}
-			
-			foreach( var order in physicalOrders) {
-				log.Info("Physical Order: " + order);
+			if( debug) {
+				foreach( var order in originalLogicals) {
+					log.Debug("Logical Order: " + order);
+				}
+				
+				foreach( var order in physicalOrders) {
+					log.Debug("Physical Order: " + order);
+				}
 			}
 			
 			if( CheckForPending()) {

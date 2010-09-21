@@ -253,12 +253,10 @@ namespace TickZoom.Interceptors
 		{
 			if( debug) log.Debug("FlattenPosition for: " + order);
 			CreateLogicalFillHelper(0,price,tick.Time,order);
-			CancelExitOrders(order.Strategy,order.TradeDirection);
 		}
 
 		private void ModifyPosition( double position, double price, TimeStamp time, LogicalOrder order) {
 			CreateLogicalFillHelper(position, price, time, order);
-			CancelEnterOrders(order.Strategy);
 		}
 		
 		private void ReversePosition(double price, Tick tick, LogicalOrder order)
@@ -280,35 +278,8 @@ namespace TickZoom.Interceptors
                      throw new ApplicationException("Unexpected order type: " + order.Type);
              }
 			CreateLogicalFillHelper(position, price, tick.Time, order);
-			CancelReverseOrders(order.Strategy);
 		}
 		
-		public void CancelReverseOrders(StrategyInterface strategy) {
-			var next = activeOrders.First;
-			for( var node = next; node != null; node = next) {
-				next = node.Next;
-				LogicalOrder order = node.Value;
-				if (object.ReferenceEquals(strategy,order.Strategy) &&
-				   (order.TradeDirection == TradeDirection.Exit ||
-				     order.TradeDirection == TradeDirection.Reverse)) {
-					order.Status = OrderStatus.Inactive;
-				}
-			}
-		}
-		
-		public void CancelExitOrders(StrategyInterface strategy, TradeDirection tradeDirection)
-		{
-			var next = activeOrders.First;
-			for( var node = next; node != null; node = next) {
-				next = node.Next;
-				LogicalOrder order = node.Value;
-				if (object.ReferenceEquals(strategy,order.Strategy) &&
-				    order.TradeDirection == tradeDirection) {
-					order.Status = OrderStatus.Inactive;
-				}
-			}
-		}
-
 		private void TryDrawTrade(LogicalOrder order, double price, double position) {
 			if (drawTrade != null && graphTrades == true) {
 				drawTrade(order, price, position);
@@ -504,7 +475,6 @@ namespace TickZoom.Interceptors
 			double price = tick.IsTrade ? tick.Price : tick.Ask;
 			if (price >= order.Price) {
 				CreateLogicalFillHelper(order.Positions, price, tick.Time, order);
-				CancelEnterOrders(order.Strategy);
 				retVal = true;
 			}
 			return retVal;
@@ -516,7 +486,6 @@ namespace TickZoom.Interceptors
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
 			if (price <= order.Price) {
 				CreateLogicalFillHelper(-order.Positions, price, tick.Time, order);
-				CancelEnterOrders(order.Strategy);
 				retVal = true;
 			}
 			return retVal;
@@ -526,21 +495,7 @@ namespace TickZoom.Interceptors
 		{
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
 			CreateLogicalFillHelper(order.Positions, price, tick.Time, order);
-			CancelEnterOrders(order.Strategy);
 			return true;
-		}
-
-		public void CancelEnterOrders(StrategyInterface strategy)
-		{
-			var next = activeOrders.First;
-			for( var node = next; node != null; node = next) {
-				next = node.Next;
-				LogicalOrder order = node.Value;
-				if (object.ReferenceEquals(strategy,order.Strategy) &&
-				    order.TradeDirection == TradeDirection.Entry) {
-					order.Status = OrderStatus.Inactive;
-				}
-			}
 		}
 		
 		private void CreateLogicalFillHelper(double position, double price, TimeStamp time, LogicalOrder order) {
@@ -562,7 +517,6 @@ namespace TickZoom.Interceptors
 			}
 			if (isFilled) {
 				CreateLogicalFillHelper(order.Positions, price, tick.Time, order);
-				CancelEnterOrders(order.Strategy);
 			}
 			return isFilled;
 		}
@@ -571,7 +525,6 @@ namespace TickZoom.Interceptors
 		{
 			double price = tick.IsQuote ? tick.Bid : tick.Price;
 			CreateLogicalFillHelper(-order.Positions, price, tick.Time, order);
-			CancelEnterOrders(order.Strategy);
 			return true;
 		}
 
@@ -587,7 +540,6 @@ namespace TickZoom.Interceptors
 			}
 			if (isFilled) {
 				CreateLogicalFillHelper(-order.Positions, price, tick.Time, order);
-				CancelEnterOrders(order.Strategy);
 			}
 			return isFilled;
 		}
@@ -639,7 +591,6 @@ namespace TickZoom.Interceptors
 			double price = tick.IsTrade ? tick.Price : tick.Ask;
 			if (price >= order.Price) {
 				CreateLogicalFillHelper(order.Positions, price, tick.Time, order);
-				CancelEnterOrders(order.Strategy);
 				retVal = true;
 			}
 			return retVal;
@@ -651,7 +602,6 @@ namespace TickZoom.Interceptors
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
 			if (price <= order.Price) {
 				CreateLogicalFillHelper(-order.Positions, price, tick.Time, order);
-				CancelEnterOrders(order.Strategy);
 				retVal = true;
 			}
 			return retVal;
@@ -661,7 +611,6 @@ namespace TickZoom.Interceptors
 		{
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
 			CreateLogicalFillHelper(getActualPosition() + order.Positions, price, tick.Time, order);
-			CancelEnterOrders(order.Strategy);
 			return true;
 		}
 
@@ -690,7 +639,6 @@ namespace TickZoom.Interceptors
 			}
 			if (isFilled) {
 				CreateLogicalFillHelper(order.Positions, price, tick.Time, order);
-				CancelEnterOrders(order.Strategy);
 			}
 			return isFilled;
 		}
@@ -699,7 +647,6 @@ namespace TickZoom.Interceptors
 		{
 			double price = tick.IsQuote ? tick.Bid : tick.Price;
 			CreateLogicalFillHelper(getActualPosition() - order.Positions, price, tick.Time, order);
-			CancelEnterOrders(order.Strategy);
 			return true;
 		}
 
@@ -715,7 +662,6 @@ namespace TickZoom.Interceptors
 			}
 			if (isFilled) {
 				CreateLogicalFillHelper(-order.Positions, price, tick.Time, order);
-				CancelEnterOrders(order.Strategy);
 			}
 			return isFilled;
 		}

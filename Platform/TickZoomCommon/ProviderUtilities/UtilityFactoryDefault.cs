@@ -43,7 +43,7 @@ namespace TickZoom.Common
 		public ProviderService WindowsService() {
 			return new WindowsService();
 		}
-		public LogicalOrderHandler LogicalOrderHandler(SymbolInfo symbol, PhysicalOrderHandler handler) {
+		public OrderAlgorithm OrderAlgorithm(SymbolInfo symbol, PhysicalOrderHandler handler) {
 			return new OrderAlgorithmDefault(symbol,handler);
 		}
 		public SymbolHandler SymbolHandler(SymbolInfo symbol, Receiver receiver) {
@@ -51,6 +51,9 @@ namespace TickZoom.Common
 		}
 		public VerifyFeed VerifyFeed() {
 			return new VerifyFeedDefault();
+		}
+		public PhysicalFillSimulator FillSimulator(SymbolInfo symbol) {
+			return new FillSimulatorPhysical(symbol);
 		}
 		public FillSimulator FillSimulator(Func<double> getActualPosition) {
 			return new FillSimulatorDefault(getActualPosition);

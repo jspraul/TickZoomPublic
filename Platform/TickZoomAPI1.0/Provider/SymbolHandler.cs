@@ -37,7 +37,7 @@ namespace TickZoom.Api
 		void SendTimeAndSales();
 		void SetPosition(double position);
 		void AddPosition(double position);
-		LogicalOrderHandler LogicalOrderHandler {
+		OrderAlgorithm LogicalOrderHandler {
 			get;
 			set;
 		}

@@ -42,7 +42,7 @@ namespace TickZoom.Common
 		public double ask = 0D;
 		public int lastSize;
 		public double last = 0D;
-        private LogicalOrderHandler logicalOrderHandler;
+        private OrderAlgorithm logicalOrderHandler;
         private bool isRunning = false;
         private Pool<TickBinaryBox> tickPool = Factory.TickUtil.TickPool();
 		public void Start()
@@ -126,7 +126,7 @@ namespace TickZoom.Common
 			}
 		}
         
-		public LogicalOrderHandler LogicalOrderHandler {
+		public OrderAlgorithm LogicalOrderHandler {
 			get { return logicalOrderHandler; }
 			set { logicalOrderHandler = value; }
 		}

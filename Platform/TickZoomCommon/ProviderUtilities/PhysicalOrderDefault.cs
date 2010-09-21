@@ -107,6 +107,7 @@ namespace TickZoom.Common
 		
 		public object BrokerOrder {
 			get { return brokerOrder; }
+			set { brokerOrder = value; }
 		}
 		
 		public SymbolInfo Symbol {

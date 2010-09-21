@@ -193,7 +193,7 @@
     <Compile Include="Provider\LogicalFill.cs" />
     <Compile Include="Provider\LogicalFillBinary.cs" />
     <Compile Include="Provider\LogicalFillBinaryBox.cs" />
-    <Compile Include="Provider\LogicalOrderHandler.cs" />
+    <Compile Include="Provider\OrderAlgorithm.cs" />
     <Compile Include="Provider\Packet.cs" />
     <Compile Include="Provider\PacketFactory.cs" />
     <Compile Include="Provider\PhysicalOrder.cs" />
