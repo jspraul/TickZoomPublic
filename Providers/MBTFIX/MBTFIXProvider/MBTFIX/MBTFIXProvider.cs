@@ -41,7 +41,7 @@ namespace TickZoom.MBTFIX
 		private static readonly bool trace = log.IsTraceEnabled;
 		private static long nextConnectTime = 0L;
 		private readonly object orderHandlerLocker = new object();
-        private Dictionary<long,LogicalOrderHandler> orderHandlers = new Dictionary<long,LogicalOrderHandler>();
+        private Dictionary<long,OrderAlgorithm> orderHandlers = new Dictionary<long,OrderAlgorithm>();
 		private Dictionary<string,PhysicalOrder> openOrders = new Dictionary<string,PhysicalOrder>();
 		long lastLoginTry = long.MinValue;
 		long loginRetryTime = 10000; //milliseconds = 10 seconds.
@@ -387,7 +387,7 @@ namespace TickZoom.MBTFIX
 					return;
 				}
 				log.Info("PositionUpdate: " + symbolInfo + "=" + position);
-				LogicalOrderHandler orderHandler = GetOrderHandler(symbolInfo.BinaryIdentifier);
+				var orderHandler = GetAlgorithm(symbolInfo.BinaryIdentifier);
 				orderHandler.SetActualPosition( position);
 			}
 		}
@@ -465,7 +465,7 @@ namespace TickZoom.MBTFIX
 					return;
 				}
 				TimeStamp executionTime = new TimeStamp(packetFIX.TransactionTime);
-				LogicalOrderHandler orderHandler = GetOrderHandler(symbolInfo.BinaryIdentifier);
+				var orderHandler = GetAlgorithm(symbolInfo.BinaryIdentifier);
 				LogicalFillBinary binary = new LogicalFillBinary(orderHandler.ActualPosition,packetFIX.AveragePrice,executionTime,logicalOrderId);
 				if( debug) log.Debug( "Sending logical fill: " + binary);
 	            receiver.OnEvent(symbolInfo,(int)EventType.LogicalFill,binary);
@@ -474,11 +474,11 @@ namespace TickZoom.MBTFIX
 			}
 		}
 
-		private void ProcessFill( SymbolInfo symbol, LogicalFill fill) {
+		private void ProcessFill( SymbolInfo symbol, LogicalFillBinary fill) {
 			if( debug) log.Debug("===============================================");
 			if( debug) log.Debug("Process Fill( " + symbol + ", " + fill + " ) ");
 			if( debug) log.Debug("===============================================");
-			LogicalOrderHandler handler = GetOrderHandler(symbol.BinaryIdentifier);
+			var handler = GetAlgorithm(symbol.BinaryIdentifier);
 			handler.ProcessFill( fill);
 			
 			lock( orderHandlerLocker) {
@@ -650,7 +650,7 @@ namespace TickZoom.MBTFIX
 		}
 		
 		private void HandleOpenOrder(PhysicalOrder order) {
-			LogicalOrderHandler handler = GetOrderHandler(order.Symbol.BinaryIdentifier);
+			var handler = GetAlgorithm(order.Symbol.BinaryIdentifier);
 			handler.AddPhysicalOrder( order);
 		}
 		
@@ -661,16 +661,16 @@ namespace TickZoom.MBTFIX
 			Dispose();
 		}
 		
-		private LogicalOrderHandler GetOrderHandler(long symbol) {
-			LogicalOrderHandler handler;
+		private OrderAlgorithm GetAlgorithm(long symbol) {
+			OrderAlgorithm algorithm;
 			lock( orderHandlerLocker) {
-				if( !orderHandlers.TryGetValue(symbol, out handler)) {
+				if( !orderHandlers.TryGetValue(symbol, out algorithm)) {
 					SymbolInfo symbolInfo = Factory.Symbol.LookupSymbol(symbol);
-					handler = Factory.Utility.LogicalOrderHandler( symbolInfo, this);
-					orderHandlers.Add(symbol,handler);
+					algorithm = Factory.Utility.OrderAlgorithm( symbolInfo, this);
+					orderHandlers.Add(symbol,algorithm);
 				}
 			}
-			return handler;
+			return algorithm;
 		}
 		
 		private bool RemoveOrderHandler(long symbol) {
@@ -693,7 +693,7 @@ namespace TickZoom.MBTFIX
 			int orderCount = orders == null ? 0 : orders.Count;
 			log.Info("Received PositionChange for " + symbol + " with position " + signal + " and " + orderCount + " orders.");
 			
-			LogicalOrderHandler handler = GetOrderHandler(symbol.BinaryIdentifier);
+			var handler = GetAlgorithm(symbol.BinaryIdentifier);
 			handler.SetDesiredPosition(signal);
 			handler.SetLogicalOrders(orders);
 			

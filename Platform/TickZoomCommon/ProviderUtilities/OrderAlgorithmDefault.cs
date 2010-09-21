@@ -136,7 +136,7 @@ namespace TickZoom.Common
 		
 		private void ProcessMatchPhysicalEntry( LogicalOrder logical, PhysicalOrder physical) {
 			log.Trace("ProcessMatchPhysicalEntry()");
-			var strategyPosition = logical.Strategy.Position.Current;
+			var strategyPosition = logical.Position;
 			var difference = logical.Positions - Math.Abs(strategyPosition);
 			log.Trace("position difference = " + difference);
 			if( difference == 0) {
@@ -178,7 +178,7 @@ namespace TickZoom.Common
 		}
 		
 		private void ProcessMatchPhysicalReverse( LogicalOrder logical, PhysicalOrder physical) {
-			var strategyPosition = logical.Strategy.Position.Current;
+			var strategyPosition = logical.Position;
 			var logicalPosition =
 				logical.Type == OrderType.BuyLimit ||
 				logical.Type == OrderType.BuyMarket ||
@@ -216,7 +216,7 @@ namespace TickZoom.Common
 		}
 		
 		private void ProcessMatchPhysicalExit( LogicalOrder logical, PhysicalOrder physical) {
-			var strategyPosition = logical.Strategy.Position.Current;
+			var strategyPosition = logical.Position;
 			if( strategyPosition == 0) {
 				TryCancelBrokerOrder(physical);
 			} else if( Math.Abs(strategyPosition) != physical.Size || logical.Price != physical.Price) {
@@ -228,7 +228,7 @@ namespace TickZoom.Common
 		}
 		
 		private void ProcessMatchPhysicalExitStrategy( LogicalOrder logical, PhysicalOrder physical) {
-			var strategyPosition = logical.Strategy.Result.Position.Current;
+			var strategyPosition = logical.Position;
 			if( strategyPosition == 0) {
 				TryCancelBrokerOrder(physical);
 			} else if( Math.Abs(strategyPosition) != physical.Size || logical.Price != physical.Price) {
@@ -267,7 +267,7 @@ namespace TickZoom.Common
 			// When flat, allow entry orders.
 			switch(logical.TradeDirection) {
 				case TradeDirection.Entry:
-					if( logical.Strategy.Position.IsFlat) {
+					if( logical.Position == 0) {
 						if(debug) log.Debug("ProcessMissingPhysicalEntry("+logical+")");
 						var side = GetOrderSide(logical.Type,actualPosition);
 						PhysicalOrder physical = new PhysicalOrderDefault(OrderState.Active, symbol,logical,side,logical.Positions,null);
@@ -275,25 +275,25 @@ namespace TickZoom.Common
 					}
 					break;
 				case TradeDirection.Exit:
-					if( logical.Strategy.Position.HasPosition) {
-						var size = Math.Abs(logical.Strategy.Position.Current);
+					if( logical.Position != 0) {
+						var size = Math.Abs(logical.Position);
 						ProcessMissingPhysical( logical, size);
 					}
 					break;
 				case TradeDirection.ExitStrategy:
-					if( logical.Strategy.Result.Position.HasPosition) {
-						var size = Math.Abs(logical.Strategy.Result.Position.Current);
+					if( logical.Position != 0) {
+						var size = Math.Abs(logical.Position);
 						ProcessMissingPhysical( logical, size);
 					}
 					break;
 				case TradeDirection.Reverse:
-					if( logical.Strategy.Position.HasPosition) {
+					if( logical.Position != 0) {
 						var logicalPosition =
 							logical.Type == OrderType.BuyLimit ||
 							logical.Type == OrderType.BuyMarket ||
 							logical.Type == OrderType.BuyStop ?
 							logical.Positions : - logical.Positions;
-						var size = Math.Abs(logicalPosition - logical.Strategy.Position.Current);
+						var size = Math.Abs(logicalPosition - logical.Position);
 						if( size != 0) {
 							ProcessMissingPhysical( logical, size);
 						}
@@ -311,7 +311,7 @@ namespace TickZoom.Common
 		}
 		
 		private void ProcessMissingPhysical(LogicalOrder logical, double size) {
-			if( logical.Strategy.Position.IsLong ) {
+			if( logical.Position > 0) {
 				if( logical.Type == OrderType.SellLimit ||
 				  logical.Type == OrderType.SellStop ||
 				  logical.Type == OrderType.SellMarket) {
@@ -321,7 +321,7 @@ namespace TickZoom.Common
 					CreateBrokerOrder(physical);
 				}
 			}
-			if( logical.Strategy.Position.IsShort ) {
+			if( logical.Position < 0) {
 				if( logical.Type == OrderType.BuyLimit ||
 				  logical.Type == OrderType.BuyStop ||
 				  logical.Type == OrderType.BuyMarket) {

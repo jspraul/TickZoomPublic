@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 
 using TickZoom.Api;
 using TickZoom.Statistics;
@@ -59,10 +60,13 @@ namespace TickZoom.Common
 		Dictionary<EventType,List<EventInterceptor>> eventInterceptors = new Dictionary<EventType,List<EventInterceptor>>();
 		List<EventType> events = new List<EventType>();
 		private bool quietMode = false;
+		private int id;
+		private static int nextId = 0;
 		
 		public Model()
 		{
 			name = GetType().Name;
+			id = Interlocked.Increment(ref nextId);
 			fullName = name;
 			drawing = new DrawingCommon(this);
 			formula = new Formula(this);
@@ -475,6 +479,10 @@ namespace TickZoom.Common
 					dependency.Model.IsActive = isActive;
 				}
 			}
+		}
+		
+		public int Id {
+			get { return id; }
 		}
 	}
 

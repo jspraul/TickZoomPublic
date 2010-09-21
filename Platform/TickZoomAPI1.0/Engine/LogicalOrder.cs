@@ -45,6 +45,14 @@ namespace TickZoom.Api
 		StrategyInterface Strategy {
 			get;
 		}
+		
+		int StrategyId {
+			get;
+		}
+		
+		double Position {
+			get;
+		}
 
 		OrderType Type {
 			get;
