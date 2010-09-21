@@ -153,7 +153,6 @@
     <Compile Include="Strategies\ExampleSMAStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="COPYING.txt" />
-    <Content Include="ProfilingSessions\Session20100805_210049.sdps" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Indicators" />

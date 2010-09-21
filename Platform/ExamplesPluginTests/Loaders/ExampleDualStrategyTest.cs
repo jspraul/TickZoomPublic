@@ -44,7 +44,7 @@ namespace Loaders
 		
 		public ExampleDualStrategyTest() {
 			Symbols = "Daily4Sim";
-			StoreKnownGood = true;
+			StoreKnownGood = false;
 			ShowCharts = false;
 		}
 		
