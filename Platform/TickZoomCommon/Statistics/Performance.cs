@@ -115,9 +115,6 @@ namespace TickZoom.Statistics
 				if( debug) log.Debug("OnProcessFill at position " + portfolio.Result.Position.Current + " : " + fill);
 				var portfolioPosition = portfolio.Result.Position;
 				fill = new LogicalFillBinary( portfolioPosition.Current, portfolioPosition.Price, fill.Time, fill.OrderId);
-				if( fill.Price == 0) {
-					int x =0;
-				}
 			}
 			if( fill.Position != position.Current) {
 				if( position.IsFlat) {

@@ -53,7 +53,7 @@ namespace Loaders
    		
    		public ExampleMixedTest() {
 			ShowCharts = false;
-			StoreKnownGood = true;
+			StoreKnownGood = false;
    		}
 			
 		[TestFixtureSetUp]

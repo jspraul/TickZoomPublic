@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -29,18 +29,12 @@ using System.Collections.Generic;
 
 namespace TickZoom.Api
 {
-
-	public interface OrderAlgorithm {
-		void SetActualPosition(double position);
-		void SetDesiredPosition(double position);
-		void ClearPhysicalOrders();
-		void AddPhysicalOrder( PhysicalOrder order);
-		void AddPhysicalOrder( OrderState orderState, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder);	
-		void SetLogicalOrders(Iterable<LogicalOrder> logicalOrders);
-		void PerformCompare();
-		void ProcessFill( LogicalFillBinary fill);
-		PhysicalOrderHandler PhysicalOrderHandler { get; }
-		Action<LogicalFillBinary> CreateLogicalFill { get; set; }
+	public interface PhysicalFillSimulator : PhysicalOrderHandler {
+		Dictionary<long,PhysicalOrder> PhysicalOrders { get; }
 		double ActualPosition { get; }
+		bool ProcessOrders(Tick tick);
+		Action<LogicalFillBinary> CreateLogicalFill { get; set; }
+		Func<int, LogicalOrder> LookupLogicalOrder { get; set; }
+		bool IsChanged { get; set; }
 	}
 }

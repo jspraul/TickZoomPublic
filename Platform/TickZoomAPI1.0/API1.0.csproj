@@ -197,6 +197,7 @@
     <Compile Include="Provider\OrderAlgorithm.cs" />
     <Compile Include="Provider\Packet.cs" />
     <Compile Include="Provider\PacketFactory.cs" />
+    <Compile Include="Provider\PhysicalFillSimulator.cs" />
     <Compile Include="Provider\PhysicalOrder.cs" />
     <Compile Include="Provider\PhysicalOrderHandler.cs" />
     <Compile Include="Provider\Provider.cs" />

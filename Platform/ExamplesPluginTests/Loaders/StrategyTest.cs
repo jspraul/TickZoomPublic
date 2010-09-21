@@ -97,8 +97,8 @@ namespace Loaders
 				}
 			}
 			if( testFailed) {
-				log.Error("Shutting down due to test failure.");
-				Environment.Exit(0);
+//				log.Error("Shutting down due to test failure.");
+//				Environment.Exit(0);
 			}
 		}
 		

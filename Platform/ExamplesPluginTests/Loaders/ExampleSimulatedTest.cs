@@ -42,7 +42,7 @@ namespace Loaders
 		ExampleOrderStrategy strategy;
 		
 		public ExampleSimulatedTest() {
-			StoreKnownGood = true;
+			StoreKnownGood = false;
 		}
 			
 		[TestFixtureSetUp]
