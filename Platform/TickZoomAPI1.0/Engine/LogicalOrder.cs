@@ -50,7 +50,7 @@ namespace TickZoom.Api
 			get;
 		}
 		
-		double Position {
+		double StrategyPosition {
 			get;
 		}
 
