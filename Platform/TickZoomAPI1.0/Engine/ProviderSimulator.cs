@@ -25,56 +25,13 @@
 #endregion
 
 using System;
-using System.Reflection;
 
 namespace TickZoom.Api
 {
-	/// <summary>
-	/// Description of Factory.
-	/// </summary>
-	[CLSCompliant(false)]
-	public interface EngineFactory : IDisposable
+	public interface ProviderSimulator
 	{
-		TickEngine TickEngine {
-			get;
-		}
-		
-		WebServer WebServer {
-			get;
-		}
-		
-		Chain Chain(ModelInterface model);
-		
-		DataSeries<T> Series<T>();
-		
-		Interval DefineInterval(BarUnit unit,int period);
-		
-		Interval DefineInterval(BarUnit unit,int period,BarUnit unit2,int period2);
-		
-		Integers Integers();
-		
-		Integers Integers(int capacity);
-		
-		Doubles Doubles();
-		
-		Doubles Doubles(int capacity);
-
-		Longs Longs();
-		
-		Longs Longs(int capacity);
-		
-		Doubles Doubles(object obj);
-		
-		Parallel Parallel();
-		
-		TestBars TestBars(Interval interval);
-		
-		LogicalOrder LogicalOrder(SymbolInfo symbol, StrategyInterface strategy);
-		
-		TimeSyncGenerator TimeSyncGenerator(SymbolInfo symbol);
-		
-		BinaryStore PageStore(string baseName);
-		
-        ProviderSimulator ProviderSimulator(SymbolInfo symbol, Action<LogicalFillBinary> processFill);
+		void PositionChange(Tick tick, double signal, ActiveList<LogicalOrder> inputOrders);
+		void ProcessOrders(Tick tick);
+		double ActualPosition {	get; }
 	}
 }
