@@ -497,7 +497,7 @@ namespace TickZoom.Common
 				}
 				if( clean) {
 					foreach( var order in logicalOrders) {
-						if( object.ReferenceEquals(order.Strategy,filledOrder.Strategy)) {
+						if( order.StrategyId == filledOrder.StrategyId) {
 							if( order.TradeDirection == TradeDirection.Entry && cancelAllEntries) {
 								originalLogicals.Remove(order);
 							}

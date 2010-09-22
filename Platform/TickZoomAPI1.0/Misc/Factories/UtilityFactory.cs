@@ -41,8 +41,6 @@ namespace TickZoom.Api
 		FillHandler FillHandler();
 		FillHandler FillHandler(StrategyInterface strategy);
 		PhysicalFillSimulator FillSimulator(SymbolInfo symbol);
-		FillSimulator FillSimulator(Func<double> getActualPosition);
-		FillSimulator FillSimulator(Func<double> getActualPosition, StrategyInterface strategy);
 		BreakPointInterface BreakPoint();
 		PositionInterface Position(ModelInterface model);
 	}

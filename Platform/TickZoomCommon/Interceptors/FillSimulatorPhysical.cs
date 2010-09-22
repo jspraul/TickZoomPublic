@@ -322,7 +322,7 @@ namespace TickZoom.Interceptors
 			if( order.LogicalOrderId != 0) {
 				var logical = lookupLogicalOrder(order.LogicalOrderId);
 				fill = new LogicalFillBinary(
-					logical.Strategy.Position.Current+position,
+					logical.Position+position,
 					price, time, order.LogicalOrderId);
 			} else {
 				fill = new LogicalFillBinary(

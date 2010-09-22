@@ -55,12 +55,6 @@ namespace TickZoom.Common
 		public PhysicalFillSimulator FillSimulator(SymbolInfo symbol) {
 			return new FillSimulatorPhysical(symbol);
 		}
-		public FillSimulator FillSimulator(Func<double> getActualPosition) {
-			return new FillSimulatorDefault(getActualPosition);
-		}
-		public FillSimulator FillSimulator(Func<double> getActualPosition, StrategyInterface strategy) {
-			return new FillSimulatorDefault(getActualPosition, strategy);
-		}
 		public FillHandler FillHandler() {
 			return new FillHandlerDefault();
 		}
