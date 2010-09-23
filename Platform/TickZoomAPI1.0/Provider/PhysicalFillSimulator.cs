@@ -31,8 +31,8 @@ namespace TickZoom.Api
 {
 	public interface PhysicalFillSimulator : PhysicalOrderHandler {
 		Dictionary<long,PhysicalOrder> PhysicalOrders { get; }
-		double ActualPosition { get; }
 		bool ProcessOrders(Tick tick);
+		double ActualPosition { get; set; }
 		Action<LogicalFillBinary> CreateLogicalFill { get; set; }
 		Func<int, LogicalOrder> LookupLogicalOrder { get; set; }
 		bool IsChanged { get; set; }

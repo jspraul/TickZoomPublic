@@ -39,8 +39,6 @@ using ZedGraph;
 
 namespace MockProvider
 {
-
-	
 	[TestFixture]
 	public class BrokerDualLimitOrder : DualStrategyLimitOrder {
 		
@@ -60,6 +58,10 @@ namespace MockProvider
 			StoreKnownGood = false;
 		}
 	
+		
+		public static void Main( string[] args) {
+			
+		}
 		
 		public override void RunStrategy()
 		{

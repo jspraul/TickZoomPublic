@@ -48,6 +48,7 @@ namespace TickZoom.Common
 		private double actualPosition;
 		private double desiredPosition;
 		private Action<LogicalFillBinary> createLogicalFill;
+		private bool handleSimulatedExits = false;
 		
 		public OrderAlgorithmDefault(SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
 			this.symbol = symbol;
@@ -457,6 +458,7 @@ namespace TickZoom.Common
 			bool cancelAllEntries = false;
 			bool cancelAllExits = false;
 			bool cancelAllExitStrategies = false;
+			bool cancelAllReverse = false;
 			int orderId = fill.OrderId;
 			if( orderId == 0) {
 				// This is an adjust-to-position market order.
@@ -478,37 +480,49 @@ namespace TickZoom.Common
 			}
 			if( filledOrder != null) {
 				bool clean = false;
-				if( filledOrder.TradeDirection == TradeDirection.Change ) {
-					cancelAllEntries = true;
-					clean = true;
-				}
-				if( filledOrder.TradeDirection == TradeDirection.Entry ) {
-					cancelAllEntries = true;
-					clean = true;
-				}
-				if( filledOrder.TradeDirection == TradeDirection.Exit ) {
-					cancelAllExits = true;
-					cancelAllExitStrategies = true;
-					clean = true;
-				}
-				if( filledOrder.TradeDirection == TradeDirection.ExitStrategy ) {
-					cancelAllExitStrategies = true;
-					clean = true;
+				switch( filledOrder.TradeDirection) {
+					case TradeDirection.Change:
+						cancelAllEntries = true;
+						clean = true;
+						break;
+					case TradeDirection.Entry:
+						cancelAllEntries = true;
+						clean = true;
+						break;
+					case TradeDirection.Exit:
+					case TradeDirection.ExitStrategy:
+						cancelAllExits = true;
+						cancelAllExitStrategies = true;
+						clean = true;
+						break;
+					case TradeDirection.Reverse:
+						cancelAllReverse = true;
+						clean = true;
+						break;
+					default:
+						throw new ApplicationException("Unknowc trade direction: " + filledOrder.TradeDirection);
 				}
 				if( clean) {
 					foreach( var order in logicalOrders) {
 						if( order.StrategyId == filledOrder.StrategyId) {
-							if( order.TradeDirection == TradeDirection.Entry && cancelAllEntries) {
-								originalLogicals.Remove(order);
-							}
-							if( order.TradeDirection == TradeDirection.Change && cancelAllEntries) {
-								originalLogicals.Remove(order);
-							}
-							if( order.TradeDirection == TradeDirection.Exit && cancelAllExits) {
-								originalLogicals.Remove(order);
-							}
-							if( order.TradeDirection == TradeDirection.ExitStrategy && cancelAllExitStrategies) {
-								originalLogicals.Remove(order);
+							switch( order.TradeDirection) {
+								case TradeDirection.Entry:
+									if( cancelAllEntries) originalLogicals.Remove(order);
+									break;
+								case TradeDirection.Change:
+									if( cancelAllEntries) originalLogicals.Remove(order);
+									break;
+								case TradeDirection.Exit:
+									if( cancelAllExits) originalLogicals.Remove(order);
+									break;
+								case TradeDirection.ExitStrategy:
+									if( cancelAllExitStrategies) originalLogicals.Remove(order);
+									break;
+								case TradeDirection.Reverse:
+									if( cancelAllReverse) originalLogicals.Remove(order);
+									break;
+								default:
+									throw new ApplicationException("Unknowc trade direction: " + filledOrder.TradeDirection);
 							}
 						}
 					}
@@ -525,7 +539,9 @@ namespace TickZoom.Common
 			                     desiredPosition + " desired and " +
 			                     originalLogicals.Count + " logical, " +
 			                     physicalOrders.Count + " physical.");
-			
+			if( actualPosition == -10000D && desiredPosition == 0D) {
+				log.Info( "Was called from: " + Environment.StackTrace);
+			}
 			if( debug) {
 				foreach( var order in originalLogicals) {
 					log.Debug("Logical Order: " + order);
@@ -602,6 +618,11 @@ namespace TickZoom.Common
 		public Action<LogicalFillBinary> CreateLogicalFill {
 			get { return createLogicalFill; }
 			set { createLogicalFill = value; }
+		}
+		
+		public bool HandleSimulatedExits {
+			get { return handleSimulatedExits; }
+			set { handleSimulatedExits = value; }
 		}
 	}
 }

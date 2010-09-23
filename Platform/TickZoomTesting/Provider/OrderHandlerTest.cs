@@ -1346,6 +1346,15 @@ namespace Orders
 					throw new NotImplementedException();
 				}
 			}
+			
+			bool OrderAlgorithm.HandleSimulatedExits {
+				get {
+					throw new NotImplementedException();
+				}
+				set {
+					throw new NotImplementedException();
+				}
+			}
 		}
 		
 	}

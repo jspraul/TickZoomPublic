@@ -39,6 +39,7 @@ namespace TickZoom.Api
 		void SetLogicalOrders(Iterable<LogicalOrder> logicalOrders);
 		void PerformCompare();
 		void ProcessFill( LogicalFillBinary fill);
+		bool HandleSimulatedExits { get; set; }
 		PhysicalOrderHandler PhysicalOrderHandler { get; }
 		Action<LogicalFillBinary> CreateLogicalFill { get; set; }
 		double ActualPosition { get; }

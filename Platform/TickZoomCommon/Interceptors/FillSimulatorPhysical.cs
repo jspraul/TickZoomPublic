@@ -315,8 +315,8 @@ namespace TickZoom.Interceptors
 	#endregion
 		
 		private void CreateLogicalFillHelper(double position, double price, TimeStamp time, PhysicalOrder order) {
-			if( debug) log.Debug("Filled: " + order);
 			this.actualPosition += position;
+			if( debug) log.Debug("Filled: " + order + " -- actual symbol position: " + actualPosition);
 			filledOrders.Add(order);
 			LogicalFillBinary fill;
 			if( order.LogicalOrderId != 0) {
@@ -359,6 +359,7 @@ namespace TickZoom.Interceptors
 		
 		public double ActualPosition {
 			get { return actualPosition; }
+			set { actualPosition = value; }
 		}
 		
 		public Func<int, LogicalOrder> LookupLogicalOrder {
