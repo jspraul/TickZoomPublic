@@ -67,6 +67,7 @@
     <Compile Include="Aspects\DiagramObject.cs" />
     <Compile Include="Classes\BootStrapLoader.cs" />
     <Compile Include="Engine\LogEvent.cs" />
+    <Compile Include="Engine\LogicalOrderCache.cs" />
     <Compile Include="Engine\ProviderSimulator.cs" />
     <Compile Include="Locks\SimpleLock.cs" />
     <Compile Include="Locks\SyncTicks.cs" />
