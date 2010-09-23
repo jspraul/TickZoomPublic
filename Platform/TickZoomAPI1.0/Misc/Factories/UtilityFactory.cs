@@ -43,5 +43,6 @@ namespace TickZoom.Api
 		PhysicalFillSimulator FillSimulator(SymbolInfo symbol);
 		BreakPointInterface BreakPoint();
 		PositionInterface Position(ModelInterface model);
+		PhysicalFill PhysicalFill(double size, double price, double position, TimeStamp time, PhysicalOrder order);
 	}
 }

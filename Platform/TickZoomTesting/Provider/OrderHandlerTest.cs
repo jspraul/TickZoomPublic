@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using TickZoom.Api;
+using TickZoom.Interceptors;
 
 namespace Orders
 {
@@ -231,8 +232,8 @@ namespace Orders
 			Assert.AreEqual(0,order.LogicalOrderId);
 			Assert.IsNull(order.BrokerOrder);
 			
+			var fill = new PhysicalFillDefault(1000,23.35,1000,TimeStamp.UtcNow,order);
 			handler.ClearPhysicalOrders();
-			var fill = new LogicalFillBinary(1000,23.35,TimeStamp.UtcNow,0);
 			handler.ProcessFill( fill);
 			handler.PerformCompare();
 			
@@ -753,7 +754,7 @@ namespace Orders
 			Assert.IsNull(order.BrokerOrder);
 			
 			handler.ClearPhysicalOrders();
-			var fill = new LogicalFillBinary(0,23.35,TimeStamp.UtcNow,0);
+			var fill = new PhysicalFillDefault(2,23.35,0,TimeStamp.UtcNow,order);
 			handler.ProcessFill( fill);
 			handler.PerformCompare();
 			
@@ -1282,13 +1283,13 @@ namespace Orders
 			}
 			public void ClearPhysicalOrders()
 			{
-				orderAlgorithm.ClearPhysicalOrders();
 				CanceledOrders.Clear();
 				ChangedOrders.Clear();
 				CreatedOrders.Clear();
 			}
 			public void SetActualPosition( double position) {
-				orderAlgorithm.SetActualPosition(position);
+				int WARNINGMUSTFIX = 0;
+//				orderAlgorithm.SetActualPosition(position);
 			}
 			public void SetDesiredPosition( double position) {
 				orderAlgorithm.SetDesiredPosition(position);
@@ -1315,19 +1316,21 @@ namespace Orders
 			
 			public void AddPhysicalOrder(PhysicalOrder order)
 			{
-				orderAlgorithm.AddPhysicalOrder(order);
+				int WARNINGMUSTFIX = 0;
+//				orderAlgorithm.AddPhysicalOrder(order);
 			}
 			
 			public void AddPhysicalOrder(OrderState orderState, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder)
 			{
-				orderAlgorithm.AddPhysicalOrder(orderState, side,type,price,size,logicalOrderId,brokerOrder);
+				int WARNINGMUSTFIX = 0;
+//				orderAlgorithm.AddPhysicalOrder(orderState, side,type,price,size,logicalOrderId,brokerOrder);
 			}
 		
 			public double ActualPosition {
 				get { return orderAlgorithm.ActualPosition; }
 			}
 			
-			public void ProcessFill(LogicalFillBinary fill)
+			public void ProcessFill(PhysicalFill fill)
 			{
 				orderAlgorithm.ProcessFill(fill);
 			}
@@ -1352,6 +1355,12 @@ namespace Orders
 					throw new NotImplementedException();
 				}
 				set {
+					throw new NotImplementedException();
+				}
+			}
+			
+			public Iterable<PhysicalOrder> ActiveOrders {
+				get {
 					throw new NotImplementedException();
 				}
 			}

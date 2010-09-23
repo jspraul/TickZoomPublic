@@ -33,6 +33,7 @@ using TickZoom.Common;
 
 namespace TickZoom.Interceptors
 {
+
 	public class FillSimulatorPhysical : PhysicalFillSimulator
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical));
@@ -46,8 +47,7 @@ namespace TickZoom.Interceptors
 		private ActiveList<PhysicalOrder> marketOrders = new ActiveList<PhysicalOrder>();
 		private NodePool<PhysicalOrder> nodePool = new NodePool<PhysicalOrder>();
 
-		private List<PhysicalOrder> filledOrders = new List<PhysicalOrder>();
-		private Action<LogicalFillBinary> createLogicalFill;
+		private Action<PhysicalFill> onPhysicalFill;
 		private Func<int,LogicalOrder> lookupLogicalOrder;
 		private bool useSyntheticMarkets = true;
 		private bool useSyntheticStops = true;
@@ -59,6 +59,16 @@ namespace TickZoom.Interceptors
 		public FillSimulatorPhysical(SymbolInfo symbol)
 		{
 			this.symbol = symbol;
+		}
+		
+		public Iterable<PhysicalOrder> ActiveOrders {
+			get {
+				ActiveList<PhysicalOrder> activeOrders = new ActiveList<PhysicalOrder>();
+				activeOrders.AddLast(increaseOrders);
+				activeOrders.AddLast(decreaseOrders);
+				activeOrders.AddLast(marketOrders);
+				return activeOrders;
+			}
 		}
 	
 		public FillSimulatorPhysical(Func<double> getActualPosition, StrategyInterface strategyInterface)
@@ -111,18 +121,20 @@ namespace TickZoom.Interceptors
 			if( symbol == null) {
 				throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
 			}
-			filledOrders.Clear();
-			foreach( var order in increaseOrders) {
+			var next = marketOrders.First;
+			for( var node = next; node != null; node = node.Next) {
+				var order = node.Value;
 				OnProcessOrder(order, tick);
 			}
-			foreach( var order in decreaseOrders) {
+			next = increaseOrders.First;
+			for( var node = next; node != null; node = node.Next) {
+				var order = node.Value;
 				OnProcessOrder(order, tick);
 			}
-			foreach( var order in marketOrders) {
+			next = decreaseOrders.First;
+			for( var node = next; node != null; node = node.Next) {
+				var order = node.Value;
 				OnProcessOrder(order, tick);
-			}
-			foreach( var order in filledOrders) {
-				CancelBrokerOrder( order);
 			}
 			return retVal;
 		}
@@ -151,6 +163,7 @@ namespace TickZoom.Interceptors
 			Remove( decreaseOrders, order);
 			Remove( marketOrders, order);
 		}
+		
 		private void Adjust(ActiveList<PhysicalOrder> list, PhysicalOrder order) {
 			if( !list.Contains(order)) {
 				var node = nodePool.Create(order);
@@ -313,26 +326,19 @@ namespace TickZoom.Interceptors
 		}
 		
 	#endregion
-		
-		private void CreateLogicalFillHelper(double position, double price, TimeStamp time, PhysicalOrder order) {
-			this.actualPosition += position;
+
+		private void CreateLogicalFillHelper(double size, double price, TimeStamp time, PhysicalOrder order) {
+			this.actualPosition += size;
 			if( debug) log.Debug("Filled: " + order + " -- actual symbol position: " + actualPosition);
-			filledOrders.Add(order);
-			LogicalFillBinary fill;
-			if( order.LogicalOrderId != 0) {
-				var logical = lookupLogicalOrder(order.LogicalOrderId);
-				fill = new LogicalFillBinary(
-					logical.StrategyPosition+position,
-					price, time, order.LogicalOrderId);
+			CancelBrokerOrder(order);
+			var fill = new PhysicalFillDefault(size,price,actualPosition,time,order);
+			if( onPhysicalFill == null) {
+				throw new ApplicationException("Please set the OnPhysicalFill property.");
 			} else {
-				fill = new LogicalFillBinary(
-					actualPosition,
-					price, time, order.LogicalOrderId);
+				onPhysicalFill(fill);
 			}
-			if( debug) log.Debug("Fill price: " + fill);
-			createLogicalFill(fill);
 		}
-		
+	
 		public bool UseSyntheticLimits {
 			get { return useSyntheticLimits; }
 			set { useSyntheticLimits = value; }
@@ -348,9 +354,9 @@ namespace TickZoom.Interceptors
 			set { useSyntheticMarkets = value; }
 		}
 		
-		public Action<LogicalFillBinary> CreateLogicalFill {
-			get { return createLogicalFill; }
-			set { createLogicalFill = value; }
+		public Action<PhysicalFill> OnPhysicalFill {
+			get { return onPhysicalFill; }
+			set { onPhysicalFill = value; }
 		}
 		
 		public Dictionary<long, PhysicalOrder> PhysicalOrders {

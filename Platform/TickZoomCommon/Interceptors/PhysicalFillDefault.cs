@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -25,19 +25,44 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using TickZoom.Api;
 
-namespace TickZoom.Api
+namespace TickZoom.Interceptors
 {
+	public class PhysicalFillDefault : PhysicalFill
+	{
+		private double size;
+		private double price;
+		private double position;
+		private TimeStamp time;
+		private PhysicalOrder order;
+		
+		public PhysicalFillDefault( double size, double price, double position, TimeStamp time, PhysicalOrder order) {
+			this.size = size;
+			this.price = price;
+			this.position = position;
+			this.time = time;
+			this.order = order;
+		}
 
-	public interface OrderAlgorithm {
-		void SetDesiredPosition(double position);
-		void SetLogicalOrders(Iterable<LogicalOrder> logicalOrders);
-		void PerformCompare();
-		void ProcessFill( PhysicalFill fill);
-		bool HandleSimulatedExits { get; set; }
-		PhysicalOrderHandler PhysicalOrderHandler { get; }
-		Action<LogicalFillBinary> CreateLogicalFill { get; set; }
-		double ActualPosition { get; }
+		public TimeStamp Time {
+			get { return time; }
+		}
+
+		public double Price {
+			get { return price; }
+		}
+
+		public double Size {
+			get { return size; }
+		}
+
+		public PhysicalOrder Order {
+			get { return order; }
+		}
+		
+		public double Position {
+			get { return position; }
+		}
 	}
 }
