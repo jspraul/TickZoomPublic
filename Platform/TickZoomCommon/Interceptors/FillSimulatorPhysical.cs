@@ -48,7 +48,6 @@ namespace TickZoom.Interceptors
 		private NodePool<PhysicalOrder> nodePool = new NodePool<PhysicalOrder>();
 
 		private Action<PhysicalFill> onPhysicalFill;
-		private Func<int,LogicalOrder> lookupLogicalOrder;
 		private bool useSyntheticMarkets = true;
 		private bool useSyntheticStops = true;
 		private bool useSyntheticLimits = true;
@@ -261,17 +260,8 @@ namespace TickZoom.Interceptors
 		private bool ProcessSellStop(PhysicalOrder order, Tick tick)
 		{
 			bool retVal = true;
-			var logical = lookupLogicalOrder(order.LogicalOrderId);
 			double price;
-			switch( logical.TradeDirection) {
-				case TradeDirection.Exit:
-				case TradeDirection.Reverse:
-					price = tick.IsQuote ? tick.Bid : tick.Price;
-					break;
-				default:
-					price = tick.IsQuote ? tick.Ask : tick.Price;
-					break;
-			}
+			price = tick.IsQuote ? tick.Bid : tick.Price;
 			if (price <= order.Price) {
 				CreateLogicalFillHelper(-order.Size, price, tick.Time, order);
 				retVal = true;
@@ -366,11 +356,6 @@ namespace TickZoom.Interceptors
 		public double ActualPosition {
 			get { return actualPosition; }
 			set { actualPosition = value; }
-		}
-		
-		public Func<int, LogicalOrder> LookupLogicalOrder {
-			get { return lookupLogicalOrder; }
-			set { lookupLogicalOrder = value; }
 		}
 		
 		public bool IsChanged {

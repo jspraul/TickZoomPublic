@@ -33,7 +33,6 @@ namespace TickZoom.Api
 		bool ProcessOrders(Tick tick);
 		new double ActualPosition { get; set; }
 		Action<PhysicalFill> OnPhysicalFill { get; set; }
-		Func<int, LogicalOrder> LookupLogicalOrder { get; set; }
 		bool IsChanged { get; set; }
 	}
 }
