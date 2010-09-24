@@ -275,8 +275,7 @@ namespace TickZoom.Common
 							logical.Type == OrderType.BuyStop ?
 							logical.Positions : - logical.Positions;
 						var size = Math.Abs(logicalPosition - logical.StrategyPosition);
-						if( size != 0 && logicalPosition != 0 &&
-						    Math.Sign(logicalPosition) != Math.Sign(logical.StrategyPosition)) {
+						if( size != 0) {
 							ProcessMissingPhysical( logical, size);
 						}
 					}
@@ -568,13 +567,13 @@ namespace TickZoom.Common
 		private void UpdateOrderCache(LogicalFill fill, LogicalOrder order) {
 			var strategyPosition = orderCache.GetStrategyPosition(order.StrategyId);
 		
-			var delta = fill.Position - strategyPosition.ResultPosition;
-			if( debug) log.Debug("Adjusting strategy's desiredPosition to " + desiredPosition + ", fill was " + fill.Position +", strategy position was " + strategyPosition.ResultPosition +", delta was " + delta);
+			var delta = fill.Position - strategyPosition.Position;
+			if( debug) log.Debug("Adjusting strategy's desiredPosition to " + desiredPosition + ", fill was " + fill.Position +", strategy position was " + strategyPosition.Position +", delta was " + delta);
 			if (order.TradeDirection == TradeDirection.ExitStrategy) {
-				strategyPosition.ResultPosition = fill.Position;
+				strategyPosition.Position = fill.Position;
 			} else {
 				strategyPosition.Position = fill.Position;
-				strategyPosition.ResultPosition = fill.Position;
+				strategyPosition.Position = fill.Position;
 			}
 			orderCache.RemoveInactive(order);
 		}

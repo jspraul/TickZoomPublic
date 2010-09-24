@@ -28,7 +28,6 @@ namespace TickZoom.Api
 	public class StrategyPosition {
 		public int Id;
 		public double Position;
-		public double ResultPosition;
 	}
 	public interface LogicalOrderCache
 	{
