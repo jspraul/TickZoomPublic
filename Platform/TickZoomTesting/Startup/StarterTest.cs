@@ -202,8 +202,7 @@ namespace TickZoom.StarterTest
 			
 			public override void OnLoad(ProjectProperties projectProperties)
 			{
-				ModelInterface model = CreateStrategy("ExampleReversalStrategy");
-				Strategy strategy = model as Strategy;
+				var strategy = (Strategy) CreateStrategy("ExampleReversalStrategy");
 				strategy.Performance.Equity.EnableYearlyStats = true;
 				strategy.Performance.Equity.EnableMonthlyStats = true;
 				strategy.Performance.Equity.EnableWeeklyStats = true;

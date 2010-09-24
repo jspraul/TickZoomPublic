@@ -33,6 +33,7 @@ using TickZoom.Interceptors;
 
 namespace Orders
 {
+#if UPDATED
 	[TestFixture]
 	public class OrderHandlerTest {
 		SymbolInfo symbol = Factory.Symbol.LookupSymbol("CSCO");
@@ -1372,4 +1373,5 @@ namespace Orders
 		}
 		
 	}
+#endif
 }
