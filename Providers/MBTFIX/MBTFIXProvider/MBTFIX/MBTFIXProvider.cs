@@ -312,8 +312,12 @@ namespace TickZoom.MBTFIX
 		}
 		
 		private void BusinessReject(PacketFIX4_4 packetFIX) {
-			string text = packetFIX.Text.ToLower();
-			if( text.Contains("order") && text.Contains("server")) {
+			var lower = packetFIX.Text.ToLower();
+			var text = packetFIX.Text;
+			var errorOkay = false;
+			errorOkay = lower.Contains("order") && lower.Contains("server") ? true : errorOkay;
+			errorOkay = text.Contains("DEMOORDS1") ? true : errorOkay;
+			if( errorOkay) {
 				log.Warn( packetFIX.Text + " -- Sending EndBroker event.");
 				SendEndBroker();
 			} else {
@@ -520,6 +524,7 @@ namespace TickZoom.MBTFIX
 				rejectReason = packetFIX.Text.Contains("Outside trading hours") ? true : rejectReason;
 				rejectReason = packetFIX.Text.Contains("not accepted this session") ? true : rejectReason;
 				rejectReason = packetFIX.Text.Contains("Pending live orders") ? true : rejectReason;
+				rejectReason = packetFIX.Text.Contains("Trading temporarily unavailable") ? true : rejectReason;
 				if( rejectReason) {
 					log.Warn( message + " -- Sending EndBroker event. Retrying.");
 					SendEndBroker();
@@ -717,7 +722,8 @@ namespace TickZoom.MBTFIX
 			if( !IsRecovered) {
 				throw new ApplicationException("PositionChange event received prior to completing FIX recovery. Current connection status is: " + ConnectionStatus);
 			}
-			log.Info( "PositionChange " + symbol + ", desired " + desiredPosition + ", order count " + inputOrders.Count);
+			var count = inputOrders == null ? 0 : inputOrders.Count;
+			log.Info( "PositionChange " + symbol + ", desired " + desiredPosition + ", order count " + count);
 			
 			var algorithm = GetAlgorithm(symbol.BinaryIdentifier);
 			algorithm.SetDesiredPosition(desiredPosition);

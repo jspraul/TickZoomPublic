@@ -71,7 +71,9 @@ namespace TickZoom.Test
 			}
 		}		
 #endif
-		
+			
+#if !OTHERS
+
 		[Test]
 		public void TestMarketOrder() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
@@ -117,8 +119,6 @@ namespace TickZoom.Test
 			}
 		}
 		
-#if OTHERS
-
 		[Test]
 		public void TestSpecificLogicalOrder() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
@@ -138,41 +138,6 @@ namespace TickZoom.Test
 		}
 
 		[Test]
-		public void TestSignalChangeWithExtraPosition() {
-			
-			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
-			using( Provider provider = ProviderFactory()) {
-				if( !(provider is TestableProvider)) return;
-				var testableProvider = provider as TestableProvider;
-				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				int secondsDelay = 5;
-				if(debug) log.Debug("===TestSignalChanges===");
-				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				VerifyConnected(verify);
-	  			double expectedPosition = 0;
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
-	  			long count = verify.Wait(symbol,secondsDelay);
-
-	  			expectedPosition = 2;
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
-	  			double position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition,position,"position");
-	  			
-	  			var brokerOrder = new object();
-	  			var note = "Spurious order created for testing fail-safe operation.";
-	  			var order = Factory.Utility.PhysicalOrder( OrderState.Active, symbol, OrderSide.Buy, OrderType.BuyMarket, 0, 2, 0, brokerOrder, note);
-	  			testableProvider.OnCreateBrokerOrder(order);
-	  			
-	  			// VerifyPosition gives time for order to get filled and also for fail-safe
-	  			// to close it out again before actually verifying the position again.
-
-	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition,position,"position");
-	
-			}
-		}
-		
-		[Test]
 		public void TestSeperateProcess() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = CreateProvider(false)) {
@@ -191,53 +156,6 @@ namespace TickZoom.Test
 			}
 		}
 		
-		[Test]
-		public void TestSignalChanges() {
-			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
-			using( Provider provider = ProviderFactory()) {
-				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				int secondsDelay = 3;
-				if(debug) log.Debug("===TestSignalChanges===");
-				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				VerifyConnected(verify);
-	  			double expectedPosition = 0;
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
-	  			var position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition,position,"position");
-	  			long count = verify.Wait(symbol,secondsDelay);
-
-	  			expectedPosition = 2;
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
-	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition,position,"position");
-
-	  			expectedPosition = 0;
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
-	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition,position,"position");
-	
-	  			expectedPosition = 2;
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
-	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition,position,"position");
-	
-	  			expectedPosition = 2;
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
-	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition,position,"position");
-	  			
-	  			double requestedPosition = -2;
-	  			expectedPosition = -2;
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,requestedPosition,null));
-	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition,position,"position");
-	  			
-	  			expectedPosition = -2;
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,null));
-	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition,position,"position");
-			}
-		}
 		[Test]		
 		public void DemoConnectionTest() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
