@@ -446,8 +446,12 @@ namespace TickZoom.Common
 
 		public void ProcessFill( PhysicalFill physical) {
 			physicalOrders.Remove(physical.Order);
-			desiredPosition += physical.Size;
-			if( debug) log.Debug("Adjusting symbol position to desired " + desiredPosition + ", physical fill was " + physical.Size);
+			if( physical.Order.LogicalOrderId != 0) {
+				desiredPosition += physical.Size;
+				if( debug) log.Debug("Adjusting symbol position to desired " + desiredPosition + ", physical fill was " + physical.Size);
+			} else {
+				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
+			}
 			LogicalFillBinary fill;
 			if( physical.Order.LogicalOrderId != 0) {
 				var logical = FindLogicalOrder(physical.Order.LogicalOrderId);

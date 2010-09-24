@@ -34,7 +34,7 @@ using TickZoom.Common;
 namespace TickZoom.Interceptors
 {
 
-	public class FillSimulatorPhysical : PhysicalFillSimulator
+	public class FillSimulatorPhysical : FillSimulator
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical));
 		private static readonly bool trace = log.IsTraceEnabled;

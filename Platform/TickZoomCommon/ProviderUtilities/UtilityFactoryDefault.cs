@@ -52,7 +52,7 @@ namespace TickZoom.Common
 		public VerifyFeed VerifyFeed() {
 			return new VerifyFeedDefault();
 		}
-		public PhysicalFillSimulator FillSimulator(SymbolInfo symbol) {
+		public FillSimulator FillSimulator(SymbolInfo symbol) {
 			return new FillSimulatorPhysical(symbol);
 		}
 		public FillHandler FillHandler() {

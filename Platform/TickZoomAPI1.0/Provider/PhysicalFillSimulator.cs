@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace TickZoom.Api
 {
-	public interface PhysicalFillSimulator : PhysicalOrderHandler {
+	public interface FillSimulator : PhysicalOrderHandler {
 		bool ProcessOrders(Tick tick);
 		new double ActualPosition { get; set; }
 		Action<PhysicalFill> OnPhysicalFill { get; set; }

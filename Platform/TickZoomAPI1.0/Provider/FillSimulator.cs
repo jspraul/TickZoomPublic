@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -26,21 +26,13 @@
 
 using System;
 using System.Collections.Generic;
-using TickZoom.Api;
 
 namespace TickZoom.Api
-{	
-	public interface FillSimulator
-	{
-		bool ProcessOrders(Tick tick, Iterable<LogicalOrder> orders, double position);
-		Action<LogicalFillBinary> CreateLogicalFill{ get; set; }
-		bool UseSyntheticMarkets { get; set; }
-		bool UseSyntheticLimits { get; set; }
-		bool UseSyntheticStops { get; set; }
-		
-		bool DoStrategyOrders { get; set; }
-		bool DoExitStrategyOrders { get; set; }
-		
-		SymbolInfo Symbol { get; set; }
+{
+	public interface FillSimulator : PhysicalOrderHandler {
+		bool ProcessOrders(Tick tick);
+		new double ActualPosition { get; set; }
+		Action<PhysicalFill> OnPhysicalFill { get; set; }
+		bool IsChanged { get; set; }
 	}
 }
