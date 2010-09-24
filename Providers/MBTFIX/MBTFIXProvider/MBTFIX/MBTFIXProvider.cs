@@ -527,6 +527,7 @@ namespace TickZoom.MBTFIX
 				rejectReason = packetFIX.Text.Contains("Trading temporarily unavailable") ? true : rejectReason;
 				if( rejectReason) {
 					log.Warn( message + " -- Sending EndBroker event. Retrying.");
+					RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 					SendEndBroker();
 				} else {
 					log.Error( message);
