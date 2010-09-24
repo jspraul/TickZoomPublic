@@ -459,24 +459,28 @@ namespace TickZoom.Common
 			}
 			throw new ApplicationException("LogicalOrder was not found for order id: " + orderId);
 		}
-
+		
 		public void ProcessFill( PhysicalFill physical) {
 			physicalOrders.Remove(physical.Order);
 			if( physical.Order.LogicalOrderId != 0) {
-				desiredPosition += physical.Size;
-				if( debug) log.Debug("Adjusting symbol position to desired " + desiredPosition + ", physical fill was " + physical.Size);
 			} else {
-				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
 			}
 			LogicalFillBinary fill;
 			try { 
 				var logical = FindLogicalOrder(physical.Order.LogicalOrderId);
+				UpdateOrderCache(physical.Size,logical);
+				desiredPosition += physical.Size;
+				if( debug) log.Debug("Adjusting symbol position to desired " + desiredPosition + ", physical fill was " + physical.Size);
+				var position = logical.StrategyPosition;
+				log.Info("Creating logical fill with position " + position + " from strategy position " + logical.StrategyPosition);
 				fill = new LogicalFillBinary(
-					logical.StrategyPosition+physical.Size,
-					physical.Price, physical.Time, physical.Order.LogicalOrderId);
+					position, physical.Price, physical.Time, physical.Order.LogicalOrderId);
 			} catch( ApplicationException) {
-				fill = new LogicalFillBinary(
-					actualPosition, physical.Price, physical.Time, physical.Order.LogicalOrderId);
+				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
+				log.Info("Skipping logical fill for an adjustment market order.");
+				if( debug) log.Debug("Performing extra compare.");
+				PerformCompare();
+				return;
 			}
 			if( debug) log.Debug("Fill price: " + fill);
 			ProcessFill( fill);
@@ -504,7 +508,6 @@ namespace TickZoom.Common
 				if( debug) log.Debug( "Matched fill with orderId: " + orderId);
 				originalLogicals.Remove(filledOrder);
 				
-				UpdateOrderCache(fill,filledOrder);
 			
 				bool clean = false;
 				switch( filledOrder.TradeDirection) {
@@ -564,17 +567,12 @@ namespace TickZoom.Common
 			}
 		}
 		
-		private void UpdateOrderCache(LogicalFill fill, LogicalOrder order) {
+		private void UpdateOrderCache(double fillSize, LogicalOrder order) {
 			var strategyPosition = orderCache.GetStrategyPosition(order.StrategyId);
 		
-			var delta = fill.Position - strategyPosition.Position;
-			if( debug) log.Debug("Adjusting strategy's desiredPosition to " + desiredPosition + ", fill was " + fill.Position +", strategy position was " + strategyPosition.Position +", delta was " + delta);
-			if (order.TradeDirection == TradeDirection.ExitStrategy) {
-				strategyPosition.Position = fill.Position;
-			} else {
-				strategyPosition.Position = fill.Position;
-				strategyPosition.Position = fill.Position;
-			}
+			var position = strategyPosition.Position + fillSize;
+			if( debug) log.Debug("Adjusting strategy position to " + position + ", fill size was " + fillSize +", strategy position was " + strategyPosition.Position);
+			strategyPosition.Position = position;
 			orderCache.RemoveInactive(order);
 		}
 		

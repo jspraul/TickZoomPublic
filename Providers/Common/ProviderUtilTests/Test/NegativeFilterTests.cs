@@ -40,33 +40,6 @@ namespace TickZoom.Test
 		
 		[Test]
 		[ExpectedException( typeof(Exception), ExpectedMessage="was greater than MaxPositionSize of ", MatchType=MessageMatch.Contains)]
-		public void TestFIXPositionFilterSell() {
-	  			double expectedPosition = 0;
-	  			double sizeIncrease = 2;
-	  			int secondsDelay = 3;
-			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
-			using( Provider provider = ProviderFactory()) {
-				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				VerifyConnected(verify);				
-				ClearOrders();
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			double position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition, position, "Starting position.");
-	  			long count = verify.Verify(2,assertTick,symbol,25);
-	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			while( true) {
-					ClearOrders();
-					CreateLogicalChange(OrderType.SellMarket,0.0,(int)sizeIncrease);
-		  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,orders));
-		  			expectedPosition -= sizeIncrease;
-		  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-		  			Assert.AreEqual(expectedPosition, position, "Increasing position.");
-	  			}
-			}
-		}		
-		[Test]
-		[ExpectedException( typeof(Exception), ExpectedMessage="was greater than MaxPositionSize of ", MatchType=MessageMatch.Contains)]
 		public void TestFIXPositionFilterBuy() {
 	  			double expectedPosition = 0;
 	  			double sizeIncrease = 2;
@@ -78,17 +51,49 @@ namespace TickZoom.Test
 				VerifyConnected(verify);				
 				ClearOrders();
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			var position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition, position, "Starting position.");
+	  			var actualPosition = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
+	  			Assert.AreEqual(expectedPosition, actualPosition, "Starting position.");
 	  			long count = verify.Verify(2,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
+	  			int strategyId = 1;
 	  			while( true) {
 					ClearOrders();
-					CreateLogicalChange(OrderType.BuyMarket,0.0,(int)sizeIncrease);
+					CreateEntry(OrderType.BuyMarket,0.0,(int)sizeIncrease,strategyId++);
 		  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,orders));
 		  			expectedPosition += sizeIncrease;
-		  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-		  			Assert.AreEqual(expectedPosition, position, "Increasing position.");
+		  			actualPosition += verify.VerifyPosition(sizeIncrease,symbol,secondsDelay);
+		  			Assert.AreEqual(expectedPosition, actualPosition, "Increasing position.");
+	  			}
+			}
+		}		
+		
+#if !OTHERS
+		
+		[Test]
+		[ExpectedException( typeof(Exception), ExpectedMessage="was greater than MaxPositionSize of ", MatchType=MessageMatch.Contains)]
+		public void TestFIXPositionFilterSell() {
+	  			double expectedPosition = 0;
+	  			double sizeIncrease = 2;
+	  			int secondsDelay = 3;
+			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
+			using( Provider provider = ProviderFactory()) {
+				provider.SendEvent(verify,null,(int)EventType.Connect,null);
+				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
+				VerifyConnected(verify);				
+				ClearOrders();
+	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			var actualPosition = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
+	  			Assert.AreEqual(expectedPosition, actualPosition, "Starting position.");
+	  			long count = verify.Verify(2,assertTick,symbol,25);
+	  			Assert.GreaterOrEqual(count,2,"tick count");
+	  			int strategyId = 1;
+	  			while( true) {
+					ClearOrders();
+					CreateEntry(OrderType.SellMarket,0.0,(int)sizeIncrease, strategyId++);
+		  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,orders));
+		  			expectedPosition-=sizeIncrease;
+		  			actualPosition += verify.VerifyPosition(sizeIncrease,symbol,secondsDelay);
+		  			Assert.AreEqual(expectedPosition, actualPosition, "Increasing position.");
 	  			}
 			}
 		}		
@@ -142,6 +147,6 @@ namespace TickZoom.Test
 	  			Thread.Sleep(2000);
 			}
 		}		
-	
+#endif
 	}
 }

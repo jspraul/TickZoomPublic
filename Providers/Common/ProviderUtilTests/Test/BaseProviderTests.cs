@@ -176,10 +176,12 @@ namespace TickZoom.Test
 			}
 		}
 		
-		public LogicalOrder CreateLogicalChange(OrderType type, double price, int size) {
-			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,null);
-	  			logical.Status = OrderStatus.Active;
-			logical.TradeDirection = TradeDirection.Change;
+		public LogicalOrder CreateEntry(OrderType type, double price, int size, int strategyId) {
+			var logical = Factory.Engine.LogicalOrder(symbol,null);
+			logical.StrategyId = strategyId;
+			logical.StrategyPosition = 0D;
+	  		logical.Status = OrderStatus.Active;
+			logical.TradeDirection = TradeDirection.Entry;
 			logical.Type = type;
 			logical.Price = price;
 			logical.Positions = size;
