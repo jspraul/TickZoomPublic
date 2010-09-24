@@ -457,12 +457,12 @@ namespace TickZoom.Common
 				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
 			}
 			LogicalFillBinary fill;
-			if( physical.Order.LogicalOrderId != 0) {
+			try { 
 				var logical = FindLogicalOrder(physical.Order.LogicalOrderId);
 				fill = new LogicalFillBinary(
 					logical.StrategyPosition+physical.Size,
 					physical.Price, physical.Time, physical.Order.LogicalOrderId);
-			} else {
+			} catch( ApplicationException) {
 				fill = new LogicalFillBinary(
 					actualPosition, physical.Price, physical.Time, physical.Order.LogicalOrderId);
 			}
@@ -487,57 +487,63 @@ namespace TickZoom.Common
 			if( originalLogicals != null) {
 				logicalOrders.AddLast(originalLogicals);
 			}
-			var filledOrder = FindLogicalOrder( orderId);
-			if( debug) log.Debug( "Matched fill with orderId: " + orderId);
-			originalLogicals.Remove(filledOrder);
+			try { 
+				var filledOrder = FindLogicalOrder( orderId);
+				if( debug) log.Debug( "Matched fill with orderId: " + orderId);
+				originalLogicals.Remove(filledOrder);
+				
+				UpdateOrderCache(fill,filledOrder);
 			
-			bool clean = false;
-			switch( filledOrder.TradeDirection) {
-				case TradeDirection.Change:
-					cancelAllEntries = true;
-					clean = true;
-					break;
-				case TradeDirection.Entry:
-					cancelAllEntries = true;
-					clean = true;
-					break;
-				case TradeDirection.Exit:
-				case TradeDirection.ExitStrategy:
-					cancelAllExits = true;
-					cancelAllExitStrategies = true;
-					clean = true;
-					break;
-				case TradeDirection.Reverse:
-					cancelAllReverse = true;
-					clean = true;
-					break;
-				default:
-					throw new ApplicationException("Unknown trade direction: " + filledOrder.TradeDirection);
-			}
-			if( clean) {
-				foreach( var order in logicalOrders) {
-					if( order.StrategyId == filledOrder.StrategyId) {
-						switch( order.TradeDirection) {
-							case TradeDirection.Entry:
-								if( cancelAllEntries) originalLogicals.Remove(order);
-								break;
-							case TradeDirection.Change:
-								if( cancelAllEntries) originalLogicals.Remove(order);
-								break;
-							case TradeDirection.Exit:
-								if( cancelAllExits) originalLogicals.Remove(order);
-								break;
-							case TradeDirection.ExitStrategy:
-								if( cancelAllExitStrategies) originalLogicals.Remove(order);
-								break;
-							case TradeDirection.Reverse:
-								if( cancelAllReverse) originalLogicals.Remove(order);
-								break;
-							default:
-								throw new ApplicationException("Unknowc trade direction: " + filledOrder.TradeDirection);
+				bool clean = false;
+				switch( filledOrder.TradeDirection) {
+					case TradeDirection.Change:
+						cancelAllEntries = true;
+						clean = true;
+						break;
+					case TradeDirection.Entry:
+						cancelAllEntries = true;
+						clean = true;
+						break;
+					case TradeDirection.Exit:
+					case TradeDirection.ExitStrategy:
+						cancelAllExits = true;
+						cancelAllExitStrategies = true;
+						clean = true;
+						break;
+					case TradeDirection.Reverse:
+						cancelAllReverse = true;
+						clean = true;
+						break;
+					default:
+						throw new ApplicationException("Unknown trade direction: " + filledOrder.TradeDirection);
+				}
+				if( clean) {
+					foreach( var order in logicalOrders) {
+						if( order.StrategyId == filledOrder.StrategyId) {
+							switch( order.TradeDirection) {
+								case TradeDirection.Entry:
+									if( cancelAllEntries) originalLogicals.Remove(order);
+									break;
+								case TradeDirection.Change:
+									if( cancelAllEntries) originalLogicals.Remove(order);
+									break;
+								case TradeDirection.Exit:
+									if( cancelAllExits) originalLogicals.Remove(order);
+									break;
+								case TradeDirection.ExitStrategy:
+									if( cancelAllExitStrategies) originalLogicals.Remove(order);
+									break;
+								case TradeDirection.Reverse:
+									if( cancelAllReverse) originalLogicals.Remove(order);
+									break;
+								default:
+									throw new ApplicationException("Unknowc trade direction: " + filledOrder.TradeDirection);
+							}
 						}
 					}
 				}
+			} catch( ApplicationException) {
+				
 			}
 			if( debug) log.Debug("Performing extra compare.");
 			PerformCompare();
