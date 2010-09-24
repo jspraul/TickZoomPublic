@@ -48,7 +48,7 @@ namespace TickZoom.Common
 		private ActiveList<PhysicalOrder> physicalOrders;
 		private List<LogicalOrder> extraLogicals = new List<LogicalOrder>();
 		private double desiredPosition;
-		private Action<LogicalFillBinary> createLogicalFill;
+		private Action<SymbolInfo,LogicalFillBinary> onProcessFill;
 		private bool handleSimulatedExits = false;
 		private double actualPosition = 0D;
 		
@@ -421,7 +421,7 @@ namespace TickZoom.Common
 			}
 			orderCache.SetActiveOrders(inputLogicals);
 			originalLogicals.Clear();
-			originalLogicals.AddLast(inputLogicals);
+			originalLogicals.AddLast(orderCache.ActiveOrders);
 		}
 		
 		public void SetDesiredPosition(	double position) {
@@ -464,7 +464,7 @@ namespace TickZoom.Common
 					physical.Price, physical.Time, physical.Order.LogicalOrderId);
 			} else {
 				fill = new LogicalFillBinary(
-					physical.Position, physical.Price, physical.Time, physical.Order.LogicalOrderId);
+					actualPosition, physical.Price, physical.Time, physical.Order.LogicalOrderId);
 			}
 			if( debug) log.Debug("Fill price: " + fill);
 			ProcessFill( fill);
@@ -541,8 +541,8 @@ namespace TickZoom.Common
 			}
 			if( debug) log.Debug("Performing extra compare.");
 			PerformCompare();
-			if( createLogicalFill != null) {
-				createLogicalFill( fill);
+			if( onProcessFill != null) {
+				onProcessFill( symbol, fill);
 			}
 		}
 		
@@ -648,9 +648,9 @@ namespace TickZoom.Common
 			get { return physicalOrderHandler; }
 		}
 		
-		public Action<LogicalFillBinary> CreateLogicalFill {
-			get { return createLogicalFill; }
-			set { createLogicalFill = value; }
+		public Action<SymbolInfo,LogicalFillBinary> OnProcessFill {
+			get { return onProcessFill; }
+			set { onProcessFill = value; }
 		}
 		
 		public bool HandleSimulatedExits {

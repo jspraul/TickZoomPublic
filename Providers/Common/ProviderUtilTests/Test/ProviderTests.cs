@@ -117,7 +117,25 @@ namespace TickZoom.Test
 			}
 		}
 		
-#if !OTHERS
+#if OTHERS
+
+		[Test]
+		public void TestSpecificLogicalOrder() {
+			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
+			using( Provider provider = ProviderFactory()) {
+				provider.SendEvent(verify,null,(int)EventType.Connect,null);
+				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
+				VerifyConnected(verify);				
+	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			long count = verify.Verify(2,assertTick,symbol,10);
+	  			Assert.GreaterOrEqual(count,2,"tick count");
+				CreateLogicalEntry(OrderType.BuyLimit,503.72,2);
+	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			count = verify.Verify(2,assertTick,symbol,10);
+	  			Assert.GreaterOrEqual(count,2,"tick count");
+	  			Thread.Sleep(2000);
+			}
+		}
 
 		[Test]
 		public void TestSignalChangeWithExtraPosition() {
@@ -270,11 +288,10 @@ namespace TickZoom.Test
 				CreateLogicalExit(OrderType.BuyLimit,bid-150*symbol.MinimumTick);
 				LogicalOrder exitBuyStop = CreateLogicalExit(OrderType.BuyStop,ask+540*symbol.MinimumTick);
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			count = verify.Verify(2,assertTick,symbol,25);
+	  			count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			count = verify.Wait(symbol,5);
 
-	  			
 				ClearOrders();
 				enterBuyLimit.Price = bid-260*symbol.MinimumTick;
 				enterSellLimit.Price = ask+280*symbol.MinimumTick;
@@ -282,13 +299,13 @@ namespace TickZoom.Test
 				orders.AddLast(enterSellLimit);
 				orders.AddLast(exitSellLimit);
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			count = verify.Verify(2,assertTick,symbol,25);
+	  			count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			count = verify.Wait(symbol,5);
 	  			
 				ClearOrders();
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			count = verify.Verify(2,assertTick,symbol,25);
+	  			count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			count = verify.Wait(symbol,5);
 			}
@@ -318,7 +335,7 @@ namespace TickZoom.Test
 				CreateLogicalExit(OrderType.SellStop,bid-180*symbol.MinimumTick);
 				LogicalOrder exitBuyStop = CreateLogicalExit(OrderType.BuyStop,ask+540*symbol.MinimumTick);
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,5,orders));
-	  			count = verify.Verify(2,assertTick,symbol,25);
+	  			count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			count = verify.Wait(symbol,15);
 	  			
@@ -352,7 +369,7 @@ namespace TickZoom.Test
 				CreateLogicalExit(OrderType.SellStop,bid-180*symbol.MinimumTick);
 				LogicalOrder exitBuyStop = CreateLogicalExit(OrderType.BuyStop,ask+540*symbol.MinimumTick);
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			count = verify.Verify(2,assertTick,symbol,25);
+	  			count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			count = verify.Wait(symbol,5);
 
@@ -364,36 +381,19 @@ namespace TickZoom.Test
 				orders.AddLast(enterSellStop);
 				orders.AddLast(exitBuyStop);
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			count = verify.Verify(2,assertTick,symbol,25);
+	  			count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			count = verify.Wait(symbol,5);
 	  			
 	  			
 				ClearOrders();
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			count = verify.Verify(2,assertTick,symbol,25);
+	  			count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			count = verify.Wait(symbol,5);
 			}
 		}
 		
-		[Test]
-		public void TestSpecificLogicalOrder() {
-			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
-			using( Provider provider = ProviderFactory()) {
-				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				VerifyConnected(verify);				
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			long count = verify.Verify(2,assertTick,symbol,25);
-	  			Assert.GreaterOrEqual(count,2,"tick count");
-				CreateLogicalEntry(OrderType.BuyLimit,503.72,2);
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			count = verify.Verify(2,assertTick,symbol,25);
-	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			Thread.Sleep(2000);
-			}
-		}		
 		[Test]	
 		public void DemoStopSymbolTest() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
@@ -405,7 +405,7 @@ namespace TickZoom.Test
 				if(debug) log.Debug("===VerifyState===");
 				VerifyConnected(verify);
 				if(debug) log.Debug("===VerifyFeed===");
-		  		long count = verify.Verify(2,assertTick,symbol,25);
+		  		long count = verify.Verify(2,assertTick,symbol,5);
 		  		Assert.GreaterOrEqual(count,2,"tick count");
 				if(debug) log.Debug("===StopSymbol===");
 		  		provider.SendEvent(verify,symbol,(int)EventType.StopSymbol,null);
@@ -437,7 +437,7 @@ namespace TickZoom.Test
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				if(debug) log.Debug("===VerifyState===");
 				VerifyConnected(verify);
-		  		long count = verify.Verify(2,assertTick,symbol,120);
+		  		long count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
 		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
@@ -448,7 +448,7 @@ namespace TickZoom.Test
 	  			provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				if(debug) log.Debug("===VerifyState===");
 				VerifyConnected(verify);
-	  			long count = verify.Verify(2,assertTick,symbol,25);
+	  			long count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
 		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		

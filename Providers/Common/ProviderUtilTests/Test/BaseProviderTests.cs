@@ -113,15 +113,17 @@ namespace TickZoom.Test
 		}
 		
 		public void CreateEntry( Provider provider, VerifyFeed verify, OrderType orderType, double desiredPositions, double actualPosition) {
-			CreateOrder(provider, verify, TradeDirection.Entry,orderType,desiredPositions,actualPosition);
+			CreateOrder(provider, verify, TradeDirection.Entry,orderType,desiredPositions,actualPosition,actualPosition);
 		}
 		public void CreateExit( Provider provider, VerifyFeed verify, OrderType orderType, double desiredPositions, double actualPosition) {
-			CreateOrder(provider, verify, TradeDirection.Exit,orderType,desiredPositions,actualPosition);
+			CreateOrder(provider, verify, TradeDirection.Exit,orderType,desiredPositions,actualPosition,actualPosition);
 		}
 		
-		public void CreateOrder( Provider provider, VerifyFeed verify, TradeDirection tradeDirection, OrderType orderType, double desiredPositions, double actualPosition) {
+		public void CreateOrder( Provider provider, VerifyFeed verify, TradeDirection tradeDirection, OrderType orderType, double desiredPositions, double actualPosition, double strategyPosition) {
 	  			ActiveList<LogicalOrder> list = new ActiveList<LogicalOrder>();
 	  			LogicalOrder order = Factory.Engine.LogicalOrder(symbol,null);
+	  			order.StrategyId = 1;
+	  			order.StrategyPosition = strategyPosition;
 	  			order.TradeDirection = tradeDirection;
 	  			order.Type = orderType;
 	  			order.Positions = desiredPositions;

@@ -198,8 +198,6 @@ namespace TickZoom.Interceptors
 			}
 		}
 		
-	#region ExitOrder
-	
 		private bool OnProcessOrder(PhysicalOrder order, Tick tick)
 		{
 			bool retVal = false;
@@ -309,8 +307,6 @@ namespace TickZoom.Interceptors
 			return isFilled;
 		}
 		
-	#endregion
-
 		private void CreateLogicalFillHelper(double size, double price, TimeStamp time, PhysicalOrder order) {
 			this.actualPosition += size;
 			if( onPositionChange != null) {
@@ -318,7 +314,7 @@ namespace TickZoom.Interceptors
 			}
 			if( debug) log.Debug("Filled: " + order + " -- actual symbol position: " + actualPosition);
 			CancelBrokerOrder(order);
-			var fill = new PhysicalFillDefault(size,price,actualPosition,time,order);
+			var fill = new PhysicalFillDefault(size,price,time,order);
 			if( onPhysicalFill == null) {
 				throw new ApplicationException("Please set the OnPhysicalFill property.");
 			} else {

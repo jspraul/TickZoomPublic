@@ -81,49 +81,65 @@ namespace TickZoom.MBTFIX
 		
 		private void AssertOrderMaximum( FIXContext context, PacketFIX4_4 packet) {
 			if( isRecovered) {
-				double quantity = packet.OrderQuantity;
-				SymbolInfo symbolInfo;
-				try {
-					symbolInfo = Factory.Symbol.LookupSymbol(packet.Symbol);
-				} catch( ApplicationException ex) {
-					log.Error("Error looking up " + packet.Symbol + ": " + ex.Message);
-					return;
-				}
-				double maxOrderSize = symbolInfo.MaxOrderSize;
-				if( quantity > maxOrderSize) {
-					CloseWithError(context, packet, "Order size " + quantity + " for " + symbolInfo + " was greater than MaxOrderSize of " + maxOrderSize + " in packet sequence #" + packet.Sequence);
+				var quantity = GetOrderQuantity(context, packet);
+				var symbolInfo = GetSymbolInfo(context, packet);
+				if( symbolInfo != null) {
+					var position = GetPosition(symbolInfo);
+					if( Math.Sign(quantity) != Math.Sign(position)) {
+						quantity += (int) position;
+					}
+					var maxOrderSize = symbolInfo.MaxOrderSize;
+					if( Math.Abs(quantity) > maxOrderSize) {
+						CloseWithError(context, packet, "Order size " + quantity + " for " + symbolInfo + " was greater than MaxOrderSize of " + maxOrderSize + " in packet sequence #" + packet.Sequence);
+					}
 				}
 			}
 		}
 		
+		private SymbolInfo GetSymbolInfo(FIXContext context, PacketFIX4_4 packet) {
+			SymbolInfo symbolInfo = null;
+			try {
+				symbolInfo = Factory.Symbol.LookupSymbol(packet.Symbol);
+			} catch( ApplicationException ex) {
+				log.Error("Error looking up " + packet.Symbol + ": " + ex.Message);
+			}
+			return symbolInfo;
+		}
+
+		private int GetOrderQuantity( FIXContext context, PacketFIX4_4 packet) {
+			var quantity = packet.OrderQuantity;			
+			switch(packet.Side) {
+				case "1":
+					break;
+				case "2":
+				case "5":
+					quantity *= -1;
+					break;
+				default:
+					CloseWithError(context, packet, "Unknown order side " + packet.Side + " in fix message. Unable to perform pre-trade verification.");
+					break;
+			}
+			return quantity;
+		}
+		
+		private double GetPosition(SymbolInfo symbol) {
+			var position = 0D;
+			symbolPositionMap.TryGetValue(symbol.BinaryIdentifier,out position);
+			return position;
+		}
+		
 		private void AssertPositionMaximum( FIXContext context, PacketFIX4_4 packet) {
 			if( isRecovered) {
-				int quantity = packet.OrderQuantity;
-				SymbolInfo symbolInfo;
-				try {
-					symbolInfo = Factory.Symbol.LookupSymbol(packet.Symbol);
-				} catch( ApplicationException ex) {
-					log.Error("Error looking up " + packet.Symbol + ": " + ex.Message);
-					return;
-				}
-				switch(packet.Side) {
-					case "1":
-						break;
-					case "2":
-					case "5":
-						quantity *= -1;
-						break;
-					default:
-						CloseWithError(context, packet, "Unknown order side " + packet.Side + " in fix message. Unable to perform pre-trade verification.");
-						break;
-				}
-				double position = 0;
-				symbolPositionMap.TryGetValue(symbolInfo.BinaryIdentifier,out position);
-				position += quantity;
-				var maxPositionSize = symbolInfo.MaxPositionSize;
-				var positionSize = Math.Abs(position);
-				if( positionSize > maxPositionSize) {
-					CloseWithError(context, packet, "Position size " + positionSize + " for " + symbolInfo + " was greater than MaxPositionSize of " + maxPositionSize + " in packet sequence #" + packet.Sequence);
+				var quantity = GetOrderQuantity(context, packet);
+				var symbolInfo = GetSymbolInfo(context, packet);
+				if( symbolInfo != null) {
+					var position = GetPosition(symbolInfo);
+					position += quantity;
+					var maxPositionSize = symbolInfo.MaxPositionSize;
+					var positionSize = Math.Abs(position);
+					if( positionSize > maxPositionSize) {
+						CloseWithError(context, packet, "Position size " + positionSize + " for " + symbolInfo + " was greater than MaxPositionSize of " + maxPositionSize + " in packet sequence #" + packet.Sequence);
+					}
 				}
 			}
 		}
@@ -134,18 +150,18 @@ namespace TickZoom.MBTFIX
 				if(debug) log.Debug("PositionUpdate Complete.");
 				TryEndRecovery();
 			} else {
-				if( isRecovered) {
-					double position = packet.LongQuantity + packet.ShortQuantity;
-					SymbolInfo symbolInfo;
-					try {
-						symbolInfo = Factory.Symbol.LookupSymbol(packet.Symbol);
-					} catch( ApplicationException ex) {
-						log.Error("Error looking up " + packet.Symbol + ": " + ex.Message);
-						return;
-					}
-					if(debug) log.Debug("PositionUpdate: " + symbolInfo + "=" + position);
-					symbolPositionMap[symbolInfo.BinaryIdentifier] = position;
+//				if( isRecovered) {
+				double position = packet.LongQuantity + packet.ShortQuantity;
+				SymbolInfo symbolInfo;
+				try {
+					symbolInfo = Factory.Symbol.LookupSymbol(packet.Symbol);
+				} catch( ApplicationException ex) {
+					log.Error("Error looking up " + packet.Symbol + ": " + ex.Message);
+					return;
 				}
+				if(debug) log.Debug("PositionUpdate: " + symbolInfo + "=" + position);
+				symbolPositionMap[symbolInfo.BinaryIdentifier] = position;
+//				}
 			}
 		}
 		

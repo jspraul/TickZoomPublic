@@ -33,7 +33,6 @@ namespace TickZoom.Api
 		TimeStamp Time { get; }
 		double Price { get; }
 		double Size { get; }
-		double Position { get; }
 		PhysicalOrder Order { get; }
 	}
 }

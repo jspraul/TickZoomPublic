@@ -84,7 +84,7 @@ namespace TickZoom.FIX
   			logRecovery = !string.IsNullOrEmpty(logRecoveryString) && logRecoveryString.ToLower().Equals("true");
         }
 		
-		private void RegenerateSocket() {
+		protected void RegenerateSocket() {
 			Socket old = socket;
 			if( socket != null) {
 				socket.Dispose();
@@ -238,7 +238,7 @@ namespace TickZoom.FIX
 							if( debug) log.Debug("ConnectionStatus changed to: " + connectionStatus);
 							selector.AddReader(socket);
 							IncreaseRetryTimeout();
-							Yield result = OnLogin();
+							var result = OnLogin();
 							return result;
 						case Status.PendingRecovery:
 						case Status.Recovered:

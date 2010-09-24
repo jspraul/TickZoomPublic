@@ -48,10 +48,12 @@ namespace TickZoom.Api
 		
 		int StrategyId {
 			get;
+			set;
 		}
 		
 		double StrategyPosition {
 			get;
+			set;
 		}
 
 		OrderType Type {

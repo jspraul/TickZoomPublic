@@ -47,8 +47,7 @@ namespace TickZoom.MBTFIX
 		long loginRetryTime = 10000; //milliseconds = 10 seconds.
 		private bool isPositionUpdateComplete = false;
 		private bool isOrderUpdateComplete = false;
-		private string fixDestination = "MBT";
-		
+		private string fixDestination = "MBT";		
 		
 		public MBTFIXProvider()
 		{
@@ -105,7 +104,7 @@ namespace TickZoom.MBTFIX
 			
 			lastLoginTry = Factory.Parallel.TickCount;
 			
-			Packet packet = Socket.CreatePacket();
+			var packet = Socket.CreatePacket();
 			
 			var mbtMsg = new FIXMessage4_4(UserName,fixDestination);
 			mbtMsg.SetEncryption(0);
@@ -140,7 +139,8 @@ namespace TickZoom.MBTFIX
 			}
 			
 			if( !VerifyLogin(packet)) {
-				return Yield.NoWork.Repeat;
+				RegenerateSocket();
+				return Yield.DidWork.Repeat;
 			}
 			
 			StartRecovery();
@@ -273,8 +273,8 @@ namespace TickZoom.MBTFIX
 				message.AppendLine("  encryption = " + packetFIX.Encryption);
 				message.AppendLine("  heartbeat interval = " + packetFIX.HeartBeatInterval);
 				message.AppendLine(packetFIX.ToString());
-				log.Error(message);
-				throw new ApplicationException(message.ToString());
+				log.Warn(message + " -- retrying.");
+				return false;
 			}
 			return 1 == packetFIX.Sequence;
 		}
@@ -302,7 +302,7 @@ namespace TickZoom.MBTFIX
 						BusinessReject( packetFIX);
 						break;
 					default:
-						log.Error("Unknown packet: '" + packetFIX.MessageType + "'\n" + packetFIX);
+						log.Warn("Ignoring packet: '" + packetFIX.MessageType + "'\n" + packetFIX);
 						break;
 				}
 				return Yield.DidWork.Repeat;
@@ -413,10 +413,10 @@ namespace TickZoom.MBTFIX
 						}
 						break;
 					case "2":  // Filled 
-						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						if( IsRecovered) {
 							SendFill( packetFIX);
 						}
+						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						break;
 					case "4": // Canceled
 						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
@@ -451,41 +451,52 @@ namespace TickZoom.MBTFIX
 			}
 		}
 		
-		public void SendFill( PacketFIX4_4 packetFIX) {
-			string clientOrderId = packetFIX.ClientOrderId;
-			if( debug ) log.Debug("SendFill( " + clientOrderId + ")");
-			SymbolInfo symbolInfo = Factory.Symbol.LookupSymbol(packetFIX.Symbol);
-			if( GetSymbolStatus(symbolInfo)) {
-				string[] parts = clientOrderId.Split(DOT_SEPARATOR);
-				int logicalOrderId = 0;
-				try {
-					logicalOrderId = int.Parse(parts[0]);
-				} catch( FormatException) {
-					log.Warn("Fill received from order " + clientOrderId + " created externally. So it lacks any logical order id. That means a fill cannot be sent to the strategy. This will get resolved at next synchronization.");
-					return;
-				}
-				TimeStamp executionTime = new TimeStamp(packetFIX.TransactionTime);
-				var orderHandler = GetAlgorithm(symbolInfo.BinaryIdentifier);
-				LogicalFillBinary binary = new LogicalFillBinary(orderHandler.ActualPosition,packetFIX.AveragePrice,executionTime,logicalOrderId);
-				if( debug) log.Debug( "Sending logical fill: " + binary);
-	            receiver.OnEvent(symbolInfo,(int)EventType.LogicalFill,binary);
-            	openOrders.Remove(packetFIX.ClientOrderId);
-	            ProcessFill( symbolInfo, binary);
+		private bool GetLogicalOrderId( string clientOrderId, out int logicalOrderId) {
+			logicalOrderId = 0;
+			string[] parts = clientOrderId.Split(DOT_SEPARATOR);
+			try {
+				logicalOrderId = int.Parse(parts[0]);
+			} catch( FormatException) {
+				log.Warn("Fill received from order " + clientOrderId + " created externally. So it lacks any logical order id. That means a fill cannot be sent to the strategy. This will get resolved at next synchronization.");
+				return false;
 			}
+			return true;
 		}
-
-		private void ProcessFill( SymbolInfo symbol, LogicalFillBinary fill) {
-			if( debug) log.Debug("===============================================");
-			if( debug) log.Debug("Process Fill( " + symbol + ", " + fill + " ) ");
-			if( debug) log.Debug("===============================================");
-			var handler = GetAlgorithm(symbol.BinaryIdentifier);
-//			handler.ProcessFill( fill);
-			
-			lock( orderHandlerLocker) {
-    			handler.PerformCompare();
+		
+		private int SideToSign( string side) {
+			switch( side) {
+				case "1": // Buy
+					return 1;
+				case "2": // Sell
+				case "5": // SellShort
+					return -1;
+				default:
+					throw new ApplicationException("Unknown order side: " + side);
 			}
 		}
 		
+		public void SendFill( PacketFIX4_4 packetFIX) {
+			if( debug ) log.Debug("SendFill( " + packetFIX.ClientOrderId + ")");
+			var symbolInfo = Factory.Symbol.LookupSymbol(packetFIX.Symbol);
+			if( GetSymbolStatus(symbolInfo)) {
+				var algorithm = GetAlgorithm(symbolInfo.BinaryIdentifier);
+				int logicalOrderId = 0;
+				var order = GetPhysicalOrder( packetFIX.ClientOrderId);
+				var fillPosition = (double) packetFIX.LastQuantity * SideToSign(packetFIX.Side);
+				var executionTime = new TimeStamp(packetFIX.TransactionTime);
+				var fill = Factory.Utility.PhysicalFill(fillPosition,packetFIX.AveragePrice,executionTime,order);
+				if( debug) log.Debug( "Sending logical fill: " + fill);
+            	openOrders.Remove(packetFIX.ClientOrderId);
+	            algorithm.ProcessFill( fill);
+			}
+		}
+		
+		public void ProcessFill( SymbolInfo symbol, LogicalFillBinary fill) {
+			while( !receiver.OnEvent(symbol,(int)EventType.LogicalFill,fill)) {
+				Factory.Parallel.Yield();
+			}
+		}
+
 		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol) {
 			var result = new ActiveList<PhysicalOrder>();
 	        foreach( var kvp in openOrders) {
@@ -504,9 +515,18 @@ namespace TickZoom.MBTFIX
 				}
 				RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 			} else {
-				string message = "Order Rejected: " + packetFIX.Text + "\n" + packetFIX;
-				log.Error( message);
-				throw new ApplicationException( message);
+				var message = "Order Rejected: " + packetFIX.Text + "\n" + packetFIX;
+				var rejectReason = false;
+				rejectReason = packetFIX.Text.Contains("Outside trading hours") ? true : rejectReason;
+				rejectReason = packetFIX.Text.Contains("not accepted this session") ? true : rejectReason;
+				rejectReason = packetFIX.Text.Contains("Pending live orders") ? true : rejectReason;
+				if( rejectReason) {
+					log.Warn( message + " -- Sending EndBroker event. Retrying.");
+					SendEndBroker();
+				} else {
+					log.Error( message);
+					throw new ApplicationException( message);					
+				}
 			}
 		}
 		
@@ -659,6 +679,15 @@ namespace TickZoom.MBTFIX
 			Dispose();
 		}
 		
+		private PhysicalOrder GetPhysicalOrder( string clientOrderId) {
+			PhysicalOrder origOrder;
+			if( openOrders.TryGetValue(clientOrderId, out origOrder)) {
+			   	return origOrder;
+			} else {
+				throw new ApplicationException("Can't find client order id " + clientOrderId + " in list.");
+			}
+		}
+		
 		private OrderAlgorithm GetAlgorithm(long symbol) {
 			OrderAlgorithm algorithm;
 			lock( orderHandlerLocker) {
@@ -666,6 +695,7 @@ namespace TickZoom.MBTFIX
 					var symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 					algorithm = Factory.Utility.OrderAlgorithm( symbolInfo, this);
 					orderAlgorithms.Add(symbol,algorithm);
+					algorithm.OnProcessFill = ProcessFill;
 				}
 			}
 			return algorithm;
@@ -682,21 +712,19 @@ namespace TickZoom.MBTFIX
 			}
 		}
 		
-		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, Iterable<LogicalOrder> orders)
+		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double desiredPosition, Iterable<LogicalOrder> inputOrders)
 		{
 			if( !IsRecovered) {
 				throw new ApplicationException("PositionChange event received prior to completing FIX recovery. Current connection status is: " + ConnectionStatus);
 			}
+			log.Info( "PositionChange " + symbol + ", desired " + desiredPosition + ", order count " + inputOrders.Count);
 			
-			int orderCount = orders == null ? 0 : orders.Count;
-			log.Info("Received PositionChange for " + symbol + " with position " + signal + " and " + orderCount + " orders.");
-			
-			var handler = GetAlgorithm(symbol.BinaryIdentifier);
-			handler.SetDesiredPosition(signal);
-			handler.SetLogicalOrders(orders);
+			var algorithm = GetAlgorithm(symbol.BinaryIdentifier);
+			algorithm.SetDesiredPosition(desiredPosition);
+			algorithm.SetLogicalOrders(inputOrders);
 			
 			lock( orderHandlerLocker) {
-    			handler.PerformCompare();
+    			algorithm.PerformCompare();
 			}
 		}
 		

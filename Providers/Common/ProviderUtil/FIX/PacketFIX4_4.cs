@@ -55,6 +55,7 @@ namespace TickZoom.FIX
 		double price = 0D;
 		string symbol = null;
 		int cumulativeQuantity = 0;
+		int lastQuantity = 0;
 		string executionId = null;
 		int productType = 0;
 		string side = null;
@@ -91,6 +92,9 @@ namespace TickZoom.FIX
 					break;
 				case 37:
 					result = GetString(out orderId);
+					break;
+				case 32: 
+					result = GetInt(out lastQuantity);
 					break;
 				case 38:
 					result = GetInt(out orderQuantity);
@@ -231,6 +235,14 @@ namespace TickZoom.FIX
 		public double AveragePrice {
 			get { return averagePrice; }
 		}
+		
+		/// <summary>
+		/// 32 Quantity filled on this execution report.
+		/// </summary>
+		public int LastQuantity {
+			get { return lastQuantity; }
+		}
+		
 		/// <summary>
 		/// 37 Unique OrderId given to the execution
 		/// </summary>

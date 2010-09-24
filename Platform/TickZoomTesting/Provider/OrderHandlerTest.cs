@@ -232,7 +232,7 @@ namespace Orders
 			Assert.AreEqual(0,order.LogicalOrderId);
 			Assert.IsNull(order.BrokerOrder);
 			
-			var fill = new PhysicalFillDefault(1000,23.35,1000,TimeStamp.UtcNow,order);
+			var fill = new PhysicalFillDefault(1000,23.35,TimeStamp.UtcNow,order);
 			handler.ClearPhysicalOrders();
 			handler.ProcessFill( fill);
 			handler.PerformCompare();
@@ -754,7 +754,7 @@ namespace Orders
 			Assert.IsNull(order.BrokerOrder);
 			
 			handler.ClearPhysicalOrders();
-			var fill = new PhysicalFillDefault(2,23.35,0,TimeStamp.UtcNow,order);
+			var fill = new PhysicalFillDefault(2,23.35,TimeStamp.UtcNow,order);
 			handler.ProcessFill( fill);
 			handler.PerformCompare();
 			
@@ -1328,7 +1328,6 @@ namespace Orders
 		
 			public double ActualPosition {
 				get { return orderAlgorithm.ActualPosition; }
-				set { orderAlgorithm.ActualPosition = value; }
 			}
 			
 			public void ProcessFill(PhysicalFill fill)
@@ -1342,7 +1341,7 @@ namespace Orders
 				}
 			}
 			
-			Action<LogicalFillBinary> OrderAlgorithm.CreateLogicalFill {
+			Action<SymbolInfo,LogicalFillBinary> OrderAlgorithm.OnProcessFill {
 				get {
 					throw new NotImplementedException();
 				}
