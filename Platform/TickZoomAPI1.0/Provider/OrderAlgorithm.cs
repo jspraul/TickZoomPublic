@@ -38,6 +38,7 @@ namespace TickZoom.Api
 		bool HandleSimulatedExits { get; set; }
 		PhysicalOrderHandler PhysicalOrderHandler { get; }
 		Action<LogicalFillBinary> CreateLogicalFill { get; set; }
+		void SetActualPosition(double position);
 		double ActualPosition { get; }
 	}
 }

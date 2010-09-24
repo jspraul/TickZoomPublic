@@ -41,7 +41,7 @@ namespace TickZoom.MBTFIX
 		private static readonly bool trace = log.IsTraceEnabled;
 		private static long nextConnectTime = 0L;
 		private readonly object orderHandlerLocker = new object();
-        private Dictionary<long,OrderAlgorithm> orderHandlers = new Dictionary<long,OrderAlgorithm>();
+        private Dictionary<long,OrderAlgorithm> orderAlgorithms = new Dictionary<long,OrderAlgorithm>();
 		private Dictionary<string,PhysicalOrder> openOrders = new Dictionary<string,PhysicalOrder>();
 		long lastLoginTry = long.MinValue;
 		long loginRetryTime = 10000; //milliseconds = 10 seconds.
@@ -664,10 +664,10 @@ namespace TickZoom.MBTFIX
 		private OrderAlgorithm GetAlgorithm(long symbol) {
 			OrderAlgorithm algorithm;
 			lock( orderHandlerLocker) {
-				if( !orderHandlers.TryGetValue(symbol, out algorithm)) {
-					SymbolInfo symbolInfo = Factory.Symbol.LookupSymbol(symbol);
+				if( !orderAlgorithms.TryGetValue(symbol, out algorithm)) {
+					var symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 					algorithm = Factory.Utility.OrderAlgorithm( symbolInfo, this);
-					orderHandlers.Add(symbol,algorithm);
+					orderAlgorithms.Add(symbol,algorithm);
 				}
 			}
 			return algorithm;
@@ -675,8 +675,8 @@ namespace TickZoom.MBTFIX
 		
 		private bool RemoveOrderHandler(long symbol) {
 			lock( orderHandlerLocker) {
-				if( orderHandlers.ContainsKey(symbol)) {
-					orderHandlers.Remove(symbol);
+				if( orderAlgorithms.ContainsKey(symbol)) {
+					orderAlgorithms.Remove(symbol);
 					return true;
 				} else {
 					return false;

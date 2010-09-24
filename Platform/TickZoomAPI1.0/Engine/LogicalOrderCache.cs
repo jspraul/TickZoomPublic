@@ -36,5 +36,6 @@ namespace TickZoom.Api
 		LogicalOrder FindLogicalOrder(int id);
 		void SetActiveOrders(Iterable<LogicalOrder> inputOrders);
 		Iterable<LogicalOrder> ActiveOrders { get; }
+		void RemoveInactive(LogicalOrder order);
 	}
 }

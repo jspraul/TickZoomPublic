@@ -48,6 +48,7 @@ namespace TickZoom.Interceptors
 		private NodePool<PhysicalOrder> nodePool = new NodePool<PhysicalOrder>();
 
 		private Action<PhysicalFill> onPhysicalFill;
+		private Action<double> onPositionChange;
 		private bool useSyntheticMarkets = true;
 		private bool useSyntheticStops = true;
 		private bool useSyntheticLimits = true;
@@ -60,21 +61,14 @@ namespace TickZoom.Interceptors
 			this.symbol = symbol;
 		}
 		
-		public Iterable<PhysicalOrder> ActiveOrders {
-			get {
-				ActiveList<PhysicalOrder> activeOrders = new ActiveList<PhysicalOrder>();
-				activeOrders.AddLast(increaseOrders);
-				activeOrders.AddLast(decreaseOrders);
-				activeOrders.AddLast(marketOrders);
-				return activeOrders;
-			}
+		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol) {
+			ActiveList<PhysicalOrder> activeOrders = new ActiveList<PhysicalOrder>();
+			activeOrders.AddLast(increaseOrders);
+			activeOrders.AddLast(decreaseOrders);
+			activeOrders.AddLast(marketOrders);
+			return activeOrders;
 		}
 	
-		public FillSimulatorPhysical(Func<double> getActualPosition, StrategyInterface strategyInterface)
-		{
-			Strategy strategy = (Strategy) strategyInterface;
-		}
-		
 		private long nextOrderId = 1000;
 		public void OnChangeBrokerOrder(PhysicalOrder order)
 		{
@@ -319,6 +313,9 @@ namespace TickZoom.Interceptors
 
 		private void CreateLogicalFillHelper(double size, double price, TimeStamp time, PhysicalOrder order) {
 			this.actualPosition += size;
+			if( onPositionChange != null) {
+				onPositionChange( actualPosition);
+			}
 			if( debug) log.Debug("Filled: " + order + " -- actual symbol position: " + actualPosition);
 			CancelBrokerOrder(order);
 			var fill = new PhysicalFillDefault(size,price,actualPosition,time,order);
@@ -353,14 +350,23 @@ namespace TickZoom.Interceptors
 			get { return orderMap; }
 		}
 		
-		public double ActualPosition {
-			get { return actualPosition; }
-			set { actualPosition = value; }
+		public double GetActualPosition(SymbolInfo symbol) {
+			return actualPosition;
 		}
 		
 		public bool IsChanged {
 			get { return isChanged; }
 			set { isChanged = value; }
+		}
+		
+		public double ActualPosition {
+			get { return actualPosition; }
+			set { actualPosition = value; }
+		}
+		
+		public Action<double> OnPositionChange {
+			get { return onPositionChange; }
+			set { onPositionChange = value; }
 		}
 	}
 }

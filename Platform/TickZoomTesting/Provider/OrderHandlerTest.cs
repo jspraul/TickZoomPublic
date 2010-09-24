@@ -1328,6 +1328,7 @@ namespace Orders
 		
 			public double ActualPosition {
 				get { return orderAlgorithm.ActualPosition; }
+				set { orderAlgorithm.ActualPosition = value; }
 			}
 			
 			public void ProcessFill(PhysicalFill fill)
@@ -1363,6 +1364,11 @@ namespace Orders
 				get {
 					throw new NotImplementedException();
 				}
+			}
+			
+			public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol)
+			{
+				throw new NotImplementedException();
 			}
 		}
 		
