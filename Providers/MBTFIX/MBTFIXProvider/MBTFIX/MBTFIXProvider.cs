@@ -479,20 +479,23 @@ namespace TickZoom.MBTFIX
 			if( debug) log.Debug("Process Fill( " + symbol + ", " + fill + " ) ");
 			if( debug) log.Debug("===============================================");
 			var handler = GetAlgorithm(symbol.BinaryIdentifier);
-			handler.ProcessFill( fill);
+//			handler.ProcessFill( fill);
 			
 			lock( orderHandlerLocker) {
-				handler.ClearPhysicalOrders();
-	        	foreach( var kvp in openOrders) {
-					PhysicalOrder order = kvp.Value;
-					if( order.Symbol == symbol) {
-	        			HandleOpenOrder(kvp.Value);
-					}
-	        	}
     			handler.PerformCompare();
 			}
 		}
 		
+		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol) {
+			var result = new ActiveList<PhysicalOrder>();
+	        foreach( var kvp in openOrders) {
+				var order = kvp.Value;
+				if( order.Symbol == symbol) {
+					result.AddLast(order);
+				}
+	        }
+			return result;
+		}
 		
 		public void RejectOrder( PacketFIX4_4 packetFIX) {
 			if( !IsRecovered) {
@@ -649,11 +652,6 @@ namespace TickZoom.MBTFIX
 			int leavesQuantity = packetFIX.LeavesQuantity;
 		}
 		
-		private void HandleOpenOrder(PhysicalOrder order) {
-			var handler = GetAlgorithm(order.Symbol.BinaryIdentifier);
-			handler.AddPhysicalOrder( order);
-		}
-		
 		private void OnException( Exception ex) {
 			// Attempt to propagate the exception.
 			log.Error("Exception occurred", ex);
@@ -698,13 +696,6 @@ namespace TickZoom.MBTFIX
 			handler.SetLogicalOrders(orders);
 			
 			lock( orderHandlerLocker) {
-				handler.ClearPhysicalOrders();
-	        	foreach( var kvp in openOrders) {
-					PhysicalOrder order = kvp.Value;
-					if( order.Symbol == symbol) {
-	        			HandleOpenOrder(kvp.Value);
-					}
-	        	}
     			handler.PerformCompare();
 			}
 		}

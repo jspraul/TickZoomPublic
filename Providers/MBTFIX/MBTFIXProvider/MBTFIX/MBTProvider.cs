@@ -100,5 +100,10 @@ namespace TickZoom.MBTFIX
 		{
 			fixProvider.OnCancelBrokerOrder(order);
 		}
+		
+		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol)
+		{
+			return fixProvider.GetActiveOrders(symbol);
+		}
 	}
 }
