@@ -37,6 +37,8 @@ namespace TickZoom.Interceptors
 
 	public class EnterCommon : StrategySupport
 	{
+		private static readonly Log log = Factory.Log.GetLogger(typeof(EnterCommon));
+		private static readonly bool debug = log.IsDebugEnabled;
 		public class InternalOrders {
 			public LogicalOrder buyMarket;
 			public LogicalOrder sellMarket;
@@ -126,7 +128,7 @@ namespace TickZoom.Interceptors
         	/// <param name="allowReversal"></param>
         	orders.sellMarket.Price = 0;
         	orders.sellMarket.Positions = lots;
-        	if( isNextBar) {
+        	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.sellMarket.Status = OrderStatus.NextBar;
         	} else {
         		orders.sellMarket.Status = OrderStatus.Active;
@@ -156,7 +158,7 @@ namespace TickZoom.Interceptors
         	}
         	orders.buyMarket.Price = 0;
         	orders.buyMarket.Positions = lots;
-        	if( isNextBar) {
+        	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.buyMarket.Status = OrderStatus.NextBar;
         	} else {
         		orders.buyMarket.Status = OrderStatus.Active;
@@ -188,7 +190,7 @@ namespace TickZoom.Interceptors
         	}
         	orders.buyLimit.Price = price;
         	orders.buyLimit.Positions = lots;
-        	if( isNextBar) {
+        	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.buyLimit.Status = OrderStatus.NextBar;
         	} else {
         		orders.buyLimit.Status = OrderStatus.Active;
@@ -212,7 +214,7 @@ namespace TickZoom.Interceptors
         	}
         	orders.sellLimit.Price = price;
         	orders.sellLimit.Positions = lots;
-        	if( isNextBar) {
+        	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.sellLimit.Status = OrderStatus.NextBar;
         	} else {
         		orders.sellLimit.Status = OrderStatus.Active;
@@ -236,7 +238,7 @@ namespace TickZoom.Interceptors
         	}
         	orders.buyStop.Price = price;
         	orders.buyStop.Positions = lots;
-        	if( isNextBar) {
+        	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.buyStop.Status = OrderStatus.NextBar;
         	} else {
         		orders.buyStop.Status = OrderStatus.Active;
@@ -260,7 +262,7 @@ namespace TickZoom.Interceptors
         	}
         	orders.sellStop.Price = price;
         	orders.sellStop.Positions = lots;
-        	if( isNextBar) {
+        	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.sellStop.Status = OrderStatus.NextBar;
         	} else {
         		orders.sellStop.Status = OrderStatus.Active;

@@ -472,12 +472,12 @@ namespace TickZoom.Common
 				desiredPosition += physical.Size;
 				if( debug) log.Debug("Adjusting symbol position to desired " + desiredPosition + ", physical fill was " + physical.Size);
 				var position = logical.StrategyPosition;
-				log.Info("Creating logical fill with position " + position + " from strategy position " + logical.StrategyPosition);
+				if( debug) log.Debug("Creating logical fill with position " + position + " from strategy position " + logical.StrategyPosition);
 				fill = new LogicalFillBinary(
 					position, physical.Price, physical.Time, physical.Order.LogicalOrderId);
 			} catch( ApplicationException) {
 				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
-				log.Info("Skipping logical fill for an adjustment market order.");
+				if( debug) log.Debug("Skipping logical fill for an adjustment market order.");
 				if( debug) log.Debug("Performing extra compare.");
 				PerformCompare();
 				return;

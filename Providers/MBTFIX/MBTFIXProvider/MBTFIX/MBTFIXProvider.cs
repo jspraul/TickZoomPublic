@@ -525,10 +525,12 @@ namespace TickZoom.MBTFIX
 				rejectReason = packetFIX.Text.Contains("not accepted this session") ? true : rejectReason;
 				rejectReason = packetFIX.Text.Contains("Pending live orders") ? true : rejectReason;
 				rejectReason = packetFIX.Text.Contains("Trading temporarily unavailable") ? true : rejectReason;
+				rejectReason = packetFIX.Text.Contains("ORDER in pending state") ? true : rejectReason;
+				rejectReason = packetFIX.Text.Contains("Cancel request already pending") ? true : rejectReason;
+//				rejectReason = packetFIX.Text.Contains("Not a valid destination") ? true : rejectReason;
 				if( rejectReason) {
 					log.Warn( message + " -- Sending EndBroker event. Retrying.");
 					RemoveOrder( packetFIX, packetFIX.ClientOrderId);
-					SendEndBroker();
 				} else {
 					log.Error( message);
 					throw new ApplicationException( message);					

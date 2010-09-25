@@ -239,7 +239,7 @@ namespace TickZoom.TickUtil
 			fixed( byte *fptr = &buffer[writer.Position]) {
 				byte *ptr = fptr;
 				*(ptr) = dataVersion; ptr++;
-				*(long*)(ptr) = binary.UtcTime; ptr+=sizeof(double);
+				*(long*)(ptr) = binary.UtcTime; ptr+=sizeof(long);
 				*(ptr) = binary.ContentMask; ptr++;
 				if( IsQuote) {
 					*(long*)(ptr) = binary.Bid; ptr += sizeof(long);
