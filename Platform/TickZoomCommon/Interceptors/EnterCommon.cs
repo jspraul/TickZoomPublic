@@ -37,7 +37,7 @@ namespace TickZoom.Interceptors
 
 	public class EnterCommon : StrategySupport
 	{
-		private static readonly Log log = Factory.Log.GetLogger(typeof(EnterCommon));
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(EnterCommon));
 		private static readonly bool debug = log.IsDebugEnabled;
 		public class InternalOrders {
 			public LogicalOrder buyMarket;
