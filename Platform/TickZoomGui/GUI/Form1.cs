@@ -32,6 +32,7 @@ using System.IO;
 using System.Media;
 using System.Threading;
 using System.Windows.Forms;
+using System.Linq;
 
 using TickZoom.Api;
 
@@ -170,6 +171,13 @@ namespace TickZoom
        		delegate(object state)
        	    {
                 logOutput.Text += msg + "\r\n";
+			    int maxLines = 30; 
+			    var lines = logOutput.Lines;
+			    int skipLines = lines.Length - maxLines;
+			    if( skipLines > 0) {
+	    			var newLines = lines.Skip(skipLines);
+	    			logOutput.Lines = newLines.ToArray();
+			    }
                 logOutput.SelectionStart = logOutput.Text.Length;
                 logOutput.ScrollToCaret();
        		}), null);
@@ -457,7 +465,7 @@ namespace TickZoom
         	FlushChartsInvoke();
     		starter.ProjectProperties.Starter.StartTime = (TimeStamp) startTime;
     		starter.BackgroundWorker = bw;
-    		if( !disableChartsCheckBox.Checked || isRealTime) {
+    		if( !disableChartsCheckBox.Checked) {
 	    		starter.CreateChartCallback = new CreateChartCallback(CreateChartInvoke);
     			starter.ShowChartCallback = new ShowChartCallback(ShowChartInvoke);
     		} else {

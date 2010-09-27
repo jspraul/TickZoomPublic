@@ -68,11 +68,15 @@ namespace TickZoom.Properties
 		public void SetSymbols(string value) {
 			SymbolLibrary library = new SymbolLibrary();
 			symbolArray = value.Split(new char[] { ',' });
+			var symbolList = new List<string>();
 			for( int i=0; i<symbolArray.Length; i++) {
-				SymbolProperties symbol = library.GetSymbolProperties(symbolArray[i].Trim());
+				var tempSymbol = symbolArray[i].Trim();
+				SymbolProperties symbol = library.GetSymbolProperties(tempSymbol);
 				symbol.ChartGroup = i+1;
 				symbolInfo.Add(symbol);
+				symbolList.Add(tempSymbol);
 			}
+			symbolArray = symbolList.ToArray();
 		}
 		
 		/// <summary>
