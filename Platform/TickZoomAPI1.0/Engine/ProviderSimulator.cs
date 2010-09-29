@@ -30,7 +30,7 @@ namespace TickZoom.Api
 {
 	public interface ProviderSimulator
 	{
-		void PositionChange(Tick tick, double signal, ActiveList<LogicalOrder> inputOrders);
+		bool PositionChange(Tick tick, double signal, ActiveList<LogicalOrder> inputOrders);
 		void ProcessOrders(Tick tick);
 		double ActualPosition {	get; }
 	}

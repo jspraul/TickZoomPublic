@@ -117,17 +117,23 @@ namespace TickZoom.Interceptors
 			var next = marketOrders.First;
 			for( var node = next; node != null; node = node.Next) {
 				var order = node.Value;
-				OnProcessOrder(order, tick);
+				if( OnProcessOrder(order, tick)) {
+					retVal = true;
+				}
 			}
 			next = increaseOrders.First;
 			for( var node = next; node != null; node = node.Next) {
 				var order = node.Value;
-				OnProcessOrder(order, tick);
+				if( OnProcessOrder(order, tick)) {
+					retVal = true;
+				}
 			}
 			next = decreaseOrders.First;
 			for( var node = next; node != null; node = node.Next) {
 				var order = node.Value;
-				OnProcessOrder(order, tick);
+				if( OnProcessOrder(order, tick)) {
+					retVal = true;
+				}
 			}
 			return retVal;
 		}
@@ -240,7 +246,7 @@ namespace TickZoom.Interceptors
 		
 		private bool ProcessBuyStop(PhysicalOrder order, Tick tick)
 		{
-			bool retVal = true;
+			bool retVal = false;
 			double price = tick.IsTrade ? tick.Price : tick.Ask;
 			if (price >= order.Price) {
 				CreateLogicalFillHelper(order.Size, price, tick.Time, order);
@@ -251,7 +257,7 @@ namespace TickZoom.Interceptors
 
 		private bool ProcessSellStop(PhysicalOrder order, Tick tick)
 		{
-			bool retVal = true;
+			bool retVal = false;
 			double price;
 			price = tick.IsQuote ? tick.Bid : tick.Price;
 			if (price <= order.Price) {
