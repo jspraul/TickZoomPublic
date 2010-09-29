@@ -55,6 +55,7 @@
     <Compile Include="FIXAPI.cs" />
     <Compile Include="FIXPreTradeFilter.cs" />
     <Compile Include="FuturesLevel1AndTrades.cs" />
+    <Compile Include="MockFIXServer.cs" />
     <Compile Include="QuotesAPI.cs" />
     <Compile Include="TimeAndSales.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -36,8 +36,18 @@ namespace TickZoom.MBTFIX
 {
 	public class MBTProvider : TestableProvider
 	{
-		MBTFIXProvider fixProvider = new MBTFIXProvider();
-		MBTQuotesProvider quotesProvider = new MBTQuotesProvider();
+		private const string fixName = "MBTFIXProvider";
+		private const string quotesName = "MBTQuotesProvider";
+		private MBTFIXProvider fixProvider;
+		private MBTQuotesProvider quotesProvider;
+		
+		public MBTProvider() : this( fixName, quotesName) {
+		}
+		
+		public MBTProvider(string fixName, string quotesName) {
+			fixProvider = new MBTFIXProvider(fixName);
+			quotesProvider = new MBTQuotesProvider(quotesName);
+		}
 		
 		public void SendEvent( Receiver receiver, SymbolInfo symbol, int eventType, object eventDetail) {
 			switch( (EventType) eventType) {
@@ -80,8 +90,12 @@ namespace TickZoom.MBTFIX
        		if( !isDisposed) {
 	            isDisposed = true;   
 	            if (disposing) {
-	            	fixProvider.Dispose();
-	            	quotesProvider.Dispose();
+	            	if( fixProvider != null) {
+	            		fixProvider.Dispose();
+	            	}
+	            	if( quotesProvider != null) {
+		            	quotesProvider.Dispose();
+	            	}
 	            }
     		}
 	    }

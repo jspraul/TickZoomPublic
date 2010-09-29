@@ -49,9 +49,9 @@ namespace TickZoom.MBTFIX
 		private bool isOrderUpdateComplete = false;
 		private string fixDestination = "MBT";		
 		
-		public MBTFIXProvider()
+		public MBTFIXProvider(string name)
 		{
-  			ProviderName = "MBTFIXProvider";
+  			ProviderName = name;
   			HeartbeatDelay = 35;
   			FIXFilter = new MBTFIXFilter();
 		}

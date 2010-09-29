@@ -52,11 +52,16 @@ namespace TickZoom.Test
 		}
 			
 		[TestFixtureSetUp]
-		public void Init()
+		public virtual void Init()
 		{
 			string appData = Factory.Settings["AppDataFolder"];
 			File.Delete( Factory.SysLog.LogFolder + @"\" + providerAssembly+"Tests.log");
 			File.Delete( Factory.SysLog.LogFolder + @"\" + providerAssembly+".log");
+			
+		}
+		
+		[TestFixtureTearDown]
+		public virtual void FixtureTearDown() {
 			
 		}
 		

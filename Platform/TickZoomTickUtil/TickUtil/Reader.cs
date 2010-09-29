@@ -87,7 +87,7 @@ namespace TickZoom.TickUtil
 		[Obsolete("Pass symbol string instead of SymbolInfo", true)]
 		public void Initialize(string _folder, SymbolInfo symbolInfo)
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException("Please use the Initialize() method with a string for the symbol which gets used as part of the file name.");
 		}
 
 		public void Initialize(string folderOrfile, string symbolFile)

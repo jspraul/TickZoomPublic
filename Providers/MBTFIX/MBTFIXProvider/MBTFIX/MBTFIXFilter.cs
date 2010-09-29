@@ -31,6 +31,7 @@ using TickZoom.FIX;
 
 namespace TickZoom.MBTFIX
 {
+
 	public class MBTFIXFilter : FIXFilter {
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(MBTFIXFilter));
 		private static readonly bool info = log.IsDebugEnabled;
@@ -187,7 +188,6 @@ namespace TickZoom.MBTFIX
 			TimeStamp timeStamp = TimeStamp.UtcNow;
 			fixMsg.SetAccount(packetIn.Account);
 			fixMsg.SetText( message);
-//			fixMsg.SetSender( 
 			fixMsg.AddHeader("j");
 			string errorMessage = fixMsg.ToString();
 			packet.DataOut.Write(errorMessage.ToCharArray());

@@ -38,12 +38,11 @@ namespace TickZoom.MBTQuotes
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(MBTQuotesProvider));
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
-        private Dictionary<long,SymbolHandler> symbolHandlers = new Dictionary<long,SymbolHandler>();
+        private Dictionary<long,SymbolHandler> symbolHandlers = new Dictionary<long,SymbolHandler>();	
 		
-		
-		public MBTQuotesProvider()
+		public MBTQuotesProvider(string name)
 		{
-			ProviderName = "MBTQuotesProvider";
+			ProviderName = name;
 			RetryStart = 1;
 			RetryIncrease = 1;
 			RetryMaximum = 30;
@@ -69,6 +68,7 @@ namespace TickZoom.MBTQuotes
 			Packet packet = Socket.CreatePacket();
 			string hashPassword = Hash(Password);
 			string login = "L|100="+UserName+";133="+hashPassword+"\n";
+			if( trace) log.Trace( "Sending: " + login);
 			packet.DataOut.Write(login.ToCharArray());
 			while( !Socket.TrySendPacket(packet)) {
 				if( IsInterrupted) return Yield.NoWork.Repeat;
@@ -78,8 +78,7 @@ namespace TickZoom.MBTQuotes
 				if( IsInterrupted) return Yield.NoWork.Repeat;
 				Factory.Parallel.Yield();
 			}
-			string response = new string(packet.DataIn.ReadChars(packet.Remaining));
-
+			if( trace) log.Trace( "Response: " + new string(packet.DataIn.ReadChars(packet.Remaining)));
 			StartRecovery();
 			return Yield.DidWork.Repeat;
         }
@@ -94,8 +93,7 @@ namespace TickZoom.MBTQuotes
 		{
 			Packet packet;
 			if(Socket.TryGetPacket(out packet)) {
-				///  TEMPORARY
-				string response = new string(packet.DataIn.ReadChars(packet.Remaining));
+				if( trace) log.Trace("Response: " + new string(packet.DataIn.ReadChars(packet.Remaining)));
 				packet.BeforeRead();
 				/// TEMPORARY
 				while( packet.Remaining > 0) {

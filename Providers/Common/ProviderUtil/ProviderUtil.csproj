@@ -56,6 +56,8 @@
     <Compile Include="FIX\FIXMessage4_4.cs" />
     <Compile Include="FIX\FIXPretradeFilter.cs" />
     <Compile Include="FIX\FIXProviderSupport.cs" />
+    <Compile Include="FIX\FIXServerMock.cs" />
+    <Compile Include="FIX\FIXServerSymbolHandler.cs" />
     <Compile Include="FIX\FIXTBuffer.cs" />
     <Compile Include="FIX\FIXTMessage.cs" />
     <Compile Include="FIX\FIXTMessage1_1.cs" />

@@ -292,6 +292,12 @@ namespace TickZoom.Symbols
     <property name=""SessionEnd"" value=""16:30:00"" />
     <property name=""TimeAndSales"" value=""ActualTrades"" />
     <property name=""QuoteType"" value=""Level1"" />
+    <symbol name=""SPY"">
+      <property name=""MaxPositionSize"" value=""5"" />
+      <property name=""MaxOrderSize"" value=""5"" />
+      <property name=""TimeAndSales"" value=""None"" />
+      <property name=""QuoteType"" value=""Level1"" />
+    </symbol>
     <category name=""Testing"">
       <symbol name=""CSCO"">
         <property name=""TimeAndSales"" value=""ActualTrades"" />
