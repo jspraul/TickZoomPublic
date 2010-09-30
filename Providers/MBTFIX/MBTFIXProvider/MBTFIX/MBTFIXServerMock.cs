@@ -68,7 +68,12 @@ namespace TickZoom.MBTFIX
 				case "A": // Login
 					result = FIXLogin( packetFIX);
 					break;
-				case "AN":
+				case "AF": // Request Orders
+					result = FIXOrderList( packetFIX);
+					break;
+				case "AN": // Request Positions
+					result = FIXPositionList( packetFIX);
+					break;
 				case "G":
 				case "D":
 					break;
@@ -90,6 +95,32 @@ namespace TickZoom.MBTFIX
 					break;
 			}			
 			return result;
+		}
+		
+		private Yield FIXOrderList(PacketFIX4_4 packet) {
+			fixWritePacket = fixSocket.CreatePacket();			
+			var mbtMsg = new FIXMessage4_4(packet.Target,packet.Sender);
+			mbtMsg.SetText("END");
+			mbtMsg.AddHeader("8");
+			string message = mbtMsg.ToString();
+			fixWritePacket.DataOut.Write(message.ToCharArray());
+			
+			if(debug) log.Debug("Sending end of order list: " + message);
+
+			return Yield.DidWork.Invoke(WriteToFIX);
+		}
+		
+		private Yield FIXPositionList(PacketFIX4_4 packet) {
+			fixWritePacket = fixSocket.CreatePacket();			
+			var mbtMsg = new FIXMessage4_4(packet.Target,packet.Sender);
+			mbtMsg.SetText("DONE");
+			mbtMsg.AddHeader("AO");
+			string message = mbtMsg.ToString();
+			fixWritePacket.DataOut.Write(message.ToCharArray());
+			
+			if(debug) log.Debug("Sending end of position list: " + message);
+
+			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 		
 		private Yield FIXLogin(PacketFIX4_4 packet) {
@@ -126,6 +157,7 @@ namespace TickZoom.MBTFIX
 		private unsafe Yield SymbolRequest(PacketMBTQuotes packet) {
 			var data = packet.Data;
 			data.Position += 2;
+			SymbolInfo symbolInfo = null;
 			fixed( byte *bptr = data.GetBuffer()) {
 				byte *ptr = bptr + data.Position;
 				while( ptr - bptr < data.Length) {
@@ -133,11 +165,36 @@ namespace TickZoom.MBTFIX
 					switch( key) {
 						case 1003: // Symbol
 							var symbol = packet.GetString( ref ptr);
-							var symbolInfo = Factory.Symbol.LookupSymbol(symbol);
+							symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 							log.Info("Received symbol request for " + symbolInfo);
 							AddSymbol(symbol, OnTick);
 							break;
 						case 2000: // Type of data.
+							var feedType = packet.GetString( ref ptr);
+							switch( feedType) {
+								case "20000": // Level 1
+									if( symbolInfo.QuoteType != QuoteType.Level1) {
+										throw new ApplicationException("Requested data feed of Level1 but Symbol.QuoteType is " + symbolInfo.QuoteType);
+									}
+									break;
+								case "20001": // Level 2
+									if( symbolInfo.QuoteType != QuoteType.Level2) {
+										throw new ApplicationException("Requested data feed of Level2 but Symbol.QuoteType is " + symbolInfo.QuoteType);
+									}
+									break;
+								case "20002": // Level 1 & Level 2
+									if( symbolInfo.QuoteType != QuoteType.Level2) {
+										throw new ApplicationException("Requested data feed of Level1 and Level2 but Symbol.QuoteType is " + symbolInfo.QuoteType);
+									}
+									break;
+								case "20003": // Trades
+									if( symbolInfo.TimeAndSales != TimeAndSales.ActualTrades) {
+										throw new ApplicationException("Requested data feed of Trades but Symbol.TimeAndSale is " + symbolInfo.TimeAndSales);
+									}
+									break;
+								case "20004": // Option Chains
+									break;
+							}
 							break;
 					}
 				}
@@ -149,56 +206,60 @@ namespace TickZoom.MBTFIX
 			if( trace) log.Trace("Sending tick: " + tick);
 			quoteWritePacket = quoteSocket.CreatePacket();
 			StringBuilder sb = new StringBuilder();
-			sb.Append("1|"); //Currency
+			if( tick.IsTrade) {
+				sb.Append("3|"); // Trade
+			} else {
+				sb.Append("1|"); // Level 1
+			}
 			sb.Append("2026=USD;"); //Currency
 			sb.Append("1003="); //Symbol
 			sb.Append(symbol.Symbol);
-			sb.Append(";");
+			sb.Append(';');
 			sb.Append("2037=0;"); //Open Interest
 			sb.Append("2085=.144;"); //Unknown
 			sb.Append("2048=00/00/2009;"); //Unknown
 			sb.Append("2049=00/00/2009;"); //Unknown
 			sb.Append("2002="); //Last Trade.
 			sb.Append(tick.Price);
-			sb.Append(";");
+			sb.Append(';');
 			sb.Append("2050=0;"); //Unknown
 			sb.Append("2003="); // Last Bid
 			sb.Append(tick.Bid);
-			sb.Append(";");
+			sb.Append(';');
 			sb.Append("2051=0;"); //Unknown
 			sb.Append("2004="); //Last Ask 
 			sb.Append(tick.Ask);
-			sb.Append(";");
+			sb.Append(';');
 			sb.Append("2052=00/00/2010;"); //Unknown
 			sb.Append("2005="); 
 			sb.Append(tick.AskLevel(0));
-			sb.Append(";");
+			sb.Append(';');
 			sb.Append("2053=00/00/2010;"); //Unknown
 			sb.Append("2006=");
 			sb.Append(tick.BidLevel(0));
-			sb.Append(";");
+			sb.Append(';');
 			sb.Append("2007=");
 			sb.Append(tick.Size);
-			sb.Append(";");
+			sb.Append(';');
 			sb.Append("2008=0.0;"); // Yesterday Close
 			sb.Append("2056=0.0;"); // Unknown
 			sb.Append("2009=0.0;"); // High today
 			sb.Append("2057=0;"); // Unknown
-			sb.Append("2010=0.0;"); // Low today
+			sb.Append("2010=0.0"); // Low today
 			sb.Append("2058=1;"); // Unknown
 			sb.Append("2011=0.0;"); // Open Today
 			sb.Append("2012=6828928;"); // Volume Today
 			sb.Append("2013=20021;"); // Up/Down Tick
 			sb.Append("2014="); // Time
 			sb.Append(tick.Time.TimeOfDay);
-			sb.Append(";");
+			sb.Append(';');
 			sb.Append("2015=");
-			sb.Append(tick.Time.Month);
-			sb.Append("/");
-			sb.Append(tick.Time.Day);
-			sb.Append("/");
+			sb.Append(tick.Time.Month.ToString("00"));
+			sb.Append('/');
+			sb.Append(tick.Time.Day.ToString("00"));
+			sb.Append('/');
 			sb.Append(tick.Time.Year);
-			sb.AppendLine();
+			sb.Append('\n');
 			var message = sb.ToString();
 			if( trace) log.Trace("Tick response: " + message);
 			quoteWritePacket.DataOut.Write(message.ToCharArray());

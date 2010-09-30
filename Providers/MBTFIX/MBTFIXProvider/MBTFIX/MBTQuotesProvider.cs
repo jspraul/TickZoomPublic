@@ -95,18 +95,17 @@ namespace TickZoom.MBTQuotes
 			if(Socket.TryGetPacket(out packet)) {
 				if( trace) log.Trace("Response: " + new string(packet.DataIn.ReadChars(packet.Remaining)));
 				packet.BeforeRead();
-				/// TEMPORARY
 				while( packet.Remaining > 0) {
 					char firstChar = (char) packet.Data.GetBuffer()[packet.Data.Position];
 					switch( firstChar) {
 						case '1':
 							Level1Update( (PacketMBTQuotes) packet);
 							break;
-						case '3':
-							TimeAndSalesUpdate( (PacketMBTQuotes) packet);
-							break;
 						case '2':
 							log.Error( "Message type '2' unknown packet is: " + packet);
+							break;
+						case '3':
+							TimeAndSalesUpdate( (PacketMBTQuotes) packet);
 							break;
 						default:
 							throw new ApplicationException("MBTQuotes message type '" + firstChar + "' was unknown.");

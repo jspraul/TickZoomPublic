@@ -72,8 +72,6 @@ namespace TickZoom.Test
 		}		
 #endif
 			
-#if !OTHERS
-
 		[Test]
 		public void TestMarketOrder() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
@@ -119,6 +117,8 @@ namespace TickZoom.Test
 			}
 		}
 		
+#if OTHERS
+
 		[Test]
 		public void TestSpecificLogicalOrder() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())

@@ -56,8 +56,7 @@ namespace TickZoom.FIX
 		private YieldMethod WriteToQuotesMethod;
 		private Task quoteTask;
 		private bool isQuoteSimulationStarted = false;
-		private PacketFactory quotePacketFactory;
-		
+		private PacketFactory quotePacketFactory;		
 		
 		public FIXServerMock(ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory) {
 			WriteToFixMethod = WriteToFIX;

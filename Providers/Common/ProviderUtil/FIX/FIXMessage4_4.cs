@@ -176,7 +176,7 @@ namespace TickZoom.FIX
 		}
 		
 		/// <summary>
-		///	59 Error or other message text.
+		///	58 Error or other message text.
 		/// </summary>
 		public void SetText(string value ) {
 			Append(58,value);

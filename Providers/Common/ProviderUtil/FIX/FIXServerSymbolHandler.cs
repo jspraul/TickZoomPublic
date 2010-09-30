@@ -33,21 +33,44 @@ namespace TickZoom.FIX
 		private static Log log = Factory.SysLog.GetLogger(typeof(FIXServerSymbolHandler));
 		private static bool trace = log.IsTraceEnabled;
 		private static bool debug = log.IsDebugEnabled;
+		private FillSimulator fillSimulator;
 		private TickReader reader;
 		private Func<SymbolInfo,Tick,Yield> onTick;
 		private Task queueTask;
+		private TickSync tickSync;
 		private SymbolInfo symbol;
 		
-		public FIXServerSymbolHandler( string symbol, Func<SymbolInfo,Tick,Yield> onTick) {
+		public FIXServerSymbolHandler( string symbolString, Func<SymbolInfo,Tick,Yield> onTick) {
 			this.onTick = onTick;
-			this.symbol = Factory.Symbol.LookupSymbol(symbol);
+			this.symbol = Factory.Symbol.LookupSymbol(symbolString);
 			reader = Factory.TickUtil.TickReader();
-			reader.Initialize("MockProviderData", symbol);
-			queueTask = Factory.Parallel.Loop("FIXServerSymbol-"+symbol, OnException, CheckQueue);
+			reader.Initialize("MockProviderData", symbolString);
+			fillSimulator = Factory.Utility.FillSimulator( symbol);
+			tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+			UnLockTickSync();
+			queueTask = Factory.Parallel.Loop("FIXServerSymbol-"+symbolString, OnException, ProcessQueue);
 		}
 		
-		public Yield CheckQueue() {
-			var result = Yield.DidWork.Repeat;
+	    private void UnLockTickSync() {
+	    	if( trace) log.Trace("Unlocking TickSync.");
+	    	tickSync.CompletedTick = false;
+	    	tickSync.ClearPositionChange();
+			tickSync.Unlock();
+	    }
+	    
+	    private void TryCompleteTick() {
+	    	if( tickSync.CompletedTick && tickSync.CompletedOrders) {
+		    	if( trace) log.Trace("TryCompleteTick()");
+		    	UnLockTickSync();
+	    	}
+	    }
+	    
+		public Yield ProcessQueue() {
+			var result = Yield.NoWork.Repeat;
+			if( SyncTicks.Enabled && !tickSync.TryLock()) {
+				TryCompleteTick();
+				return result;
+			}
 			var binary = new TickBinary();
 			TickIO tickIO = Factory.TickUtil.TickIO();
 			try { 
@@ -56,9 +79,7 @@ namespace TickZoom.FIX
 				   	result = onTick( symbol, tickIO);
 				}
 			} catch( QueueException ex) {
-				if( ex.EntryType == EventType.EndHistorical) {
-					result = Yield.Terminate;
-				} else {
+				if( ex.EntryType != EventType.EndHistorical) {
 					throw;
 				}
 			}

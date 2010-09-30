@@ -93,25 +93,25 @@ namespace TickZoom.MBTQuotes
 		
 		private int FindSplitAt() {
 			byte[] bytes = data.GetBuffer();
-			int start = (int) data.Length - 1;
-			for( int i=start; i>= 0; i--) {
+			int length = (int) data.Length - 1;
+//			log.Info("Looking for split from " + 0 + " to " + length );
+			for( int i=0; i<length; i++) {
+//				log.Info(" bytes[" + i + "] = " + bytes[i]);
 				if( bytes[i] == '\n') {
-					if( i==start) {
-						return 0;
-					} else {
-						return i;
-					}
+					return i+1;
 				}
 			}
 			return 0;
 		}
 		
 		public bool TrySplit(MemoryStream other) {
+//			log.Info("TrySplit() length = " + data.Length);
 			int splitAt = FindSplitAt();
 			if( splitAt > 0) {
 				other.Write(data.GetBuffer(), splitAt, (int)data.Length - splitAt);
-				data.Position = splitAt;
-				data.SetLength( splitAt);
+//				log.Info("Found split at " + splitAt + ". Split length = " + other.Length);
+				data.Position = splitAt-1;
+				data.SetLength( splitAt-1);
 				return true;
 			} else {
 				return false;
@@ -165,39 +165,16 @@ namespace TickZoom.MBTQuotes
 	        }
 		}
 		
-//		protected unsafe double GetDouble() {
-//			byte *bptr = ptr;
-//	        int val = 0;
-//	        while (*(ptr) != DecimalPoint && *(ptr) != EndOfField) {
-//	        	val = val * 10 + *ptr - ZeroChar;
-//	        	++ptr;
-//	        }
-//	        if( *(ptr) == EndOfField) {
-//		        ++ptr;
-//		        Position += (int) (ptr - bptr);
-//				if( trace) log.Trace("double = " + val);
-//		        return val;
-//	        } else {
-//		        ++ptr;
-//		        int divisor = 10;
-//		        int fract = *ptr - ZeroChar;
-//		        while (*(++ptr) != EndOfField) {
-//		        	fract = fract * 10 + *ptr - ZeroChar;
-//		        	divisor *= 10;
-//		        }
-//		        ++ptr;
-//		        Position += (int) (ptr - bptr);
-//				if( trace) log.Trace("double = " + val);
-//				return val;
-//	        }
-//		}
-		
 		public unsafe string GetString( ref byte* ptr) {
 			byte *sptr = ptr;
-	        while (*(++ptr) != 59 && *ptr != 10);
+			while (*(++ptr) != 59 && *ptr != 10) {
+				int x = 0;
+			}
 	        int length = (int) (ptr - sptr);
 	        ++ptr;
-			return new string(dataIn.ReadChars(length));
+			var result = new string(dataIn.ReadChars(length));
+			data.Position++;
+			return result;
 		}
         
 		public unsafe void SkipValue( ref byte* ptr) {
