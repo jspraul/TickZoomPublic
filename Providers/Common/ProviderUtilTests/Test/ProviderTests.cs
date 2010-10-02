@@ -72,6 +72,104 @@ namespace TickZoom.Test
 		}		
 #endif
 			
+#if SEPERATE
+		[Test]
+		public void TestSeperateProcess() {
+			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
+			using( Provider provider = CreateProvider(false)) {
+				provider.SendEvent(verify,null,(int)EventType.Connect,null);
+				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
+				if(debug) log.Debug("===VerifyState===");
+				VerifyConnected(verify);
+				if(debug) log.Debug("===VerifyFeed===");
+	  			long count = verify.Verify(2,assertTick,symbol,25);
+	  			Assert.GreaterOrEqual(count,2,"tick count");
+	  			Process[] processes = Process.GetProcessesByName(providerAssembly);
+	  			Assert.AreEqual(1,processes.Length,"Number of provider service processes.");
+	  			
+		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
+		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
+			}
+		}
+#endif
+		
+#if !OTHERS
+
+		[Test]
+		public void DemoReConnectionTest() {
+			int secondsDelay = 8;
+			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
+			using( Provider provider = CreateProvider(true)) {
+				provider.SendEvent(verify,null,(int)EventType.Connect,null);
+				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
+				if(debug) log.Debug("===VerifyState===");
+				VerifyConnected(verify);
+		  		long count = verify.Verify(2,assertTick,symbol,secondsDelay);
+	  			Assert.GreaterOrEqual(count,2,"tick count");
+		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
+		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
+			}
+			log.Info("Starting to reconnect---------\n");
+			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
+			using( Provider provider = CreateProvider(true)) {
+				provider.SendEvent(verify,null,(int)EventType.Connect,null);
+	  			provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
+				if(debug) log.Debug("===VerifyState===");
+				VerifyConnected(verify);
+	  			long count = verify.Verify(2,assertTick,symbol,secondsDelay);
+	  			Assert.GreaterOrEqual(count,2,"tick count");
+		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
+		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
+			}
+		}
+
+		[Test]
+		public void TestLogicalLimitOrders() {
+			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
+			using( Provider provider = ProviderFactory()) {
+				provider.SendEvent(verify,null,(int)EventType.Connect,null);
+				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
+				VerifyConnected(verify);
+				
+				ClearOrders();
+	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			long count = verify.Wait(symbol,5);
+	  			Assert.GreaterOrEqual(count,1,"at least one tick");
+	  			TickIO lastTick = verify.LastTick;
+	  			double bid = lastTick.IsTrade ? lastTick.Price : lastTick.Bid;
+	  			double ask = lastTick.IsTrade ? lastTick.Price : lastTick.Ask;
+	  			
+				ClearOrders();
+				LogicalOrder enterBuyLimit = CreateLogicalEntry(OrderType.BuyLimit,bid-280*symbol.MinimumTick,2);
+				LogicalOrder enterSellLimit = CreateLogicalEntry(OrderType.SellLimit,ask+340*symbol.MinimumTick,2);
+				LogicalOrder exitSellLimit = CreateLogicalExit(OrderType.SellLimit,ask+380*symbol.MinimumTick);
+				CreateLogicalExit(OrderType.SellLimit,ask+400*symbol.MinimumTick);
+				CreateLogicalExit(OrderType.BuyLimit,bid-150*symbol.MinimumTick);
+				LogicalOrder exitBuyStop = CreateLogicalExit(OrderType.BuyStop,ask+540*symbol.MinimumTick);
+	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			count = verify.Verify(2,assertTick,symbol,5);
+	  			Assert.GreaterOrEqual(count,2,"tick count");
+	  			count = verify.Wait(symbol,5);
+
+				ClearOrders();
+				enterBuyLimit.Price = bid-260*symbol.MinimumTick;
+				enterSellLimit.Price = ask+280*symbol.MinimumTick;
+				orders.AddLast(enterBuyLimit);
+				orders.AddLast(enterSellLimit);
+				orders.AddLast(exitSellLimit);
+	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			count = verify.Verify(2,assertTick,symbol,5);
+	  			Assert.GreaterOrEqual(count,2,"tick count");
+	  			count = verify.Wait(symbol,5);
+	  			
+				ClearOrders();
+	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			count = verify.Verify(2,assertTick,symbol,5);
+	  			Assert.GreaterOrEqual(count,2,"tick count");
+	  			count = verify.Wait(symbol,5);
+			}
+		}
+		
 		[Test]
 		public void TestMarketOrder() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
@@ -117,8 +215,6 @@ namespace TickZoom.Test
 			}
 		}
 		
-#if OTHERS
-
 		[Test]
 		public void TestSpecificLogicalOrder() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
@@ -137,25 +233,6 @@ namespace TickZoom.Test
 			}
 		}
 
-		[Test]
-		public void TestSeperateProcess() {
-			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
-			using( Provider provider = CreateProvider(false)) {
-				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				if(debug) log.Debug("===VerifyState===");
-				VerifyConnected(verify);
-				if(debug) log.Debug("===VerifyFeed===");
-	  			long count = verify.Verify(2,assertTick,symbol,25);
-	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			Process[] processes = Process.GetProcessesByName(providerAssembly);
-	  			Assert.AreEqual(1,processes.Length,"Number of provider service processes.");
-	  			
-		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
-		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
-			}
-		}
-		
 		[Test]		
 		public void DemoConnectionTest() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
@@ -179,53 +256,6 @@ namespace TickZoom.Test
 		  		Thread.Sleep(2000);
 		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
 		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
-			}
-		}
-		
-		[Test]
-		public void TestLogicalLimitOrders() {
-			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
-			using( Provider provider = ProviderFactory()) {
-				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				VerifyConnected(verify);
-				
-				ClearOrders();
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			long count = verify.Wait(symbol,5);
-	  			Assert.GreaterOrEqual(count,1,"at least one tick");
-	  			TickIO lastTick = verify.LastTick;
-	  			double bid = lastTick.IsTrade ? lastTick.Price : lastTick.Bid;
-	  			double ask = lastTick.IsTrade ? lastTick.Price : lastTick.Ask;
-	  			
-				ClearOrders();
-				LogicalOrder enterBuyLimit = CreateLogicalEntry(OrderType.BuyLimit,bid-280*symbol.MinimumTick,2);
-				LogicalOrder enterSellLimit = CreateLogicalEntry(OrderType.SellLimit,ask+340*symbol.MinimumTick,2);
-				LogicalOrder exitSellLimit = CreateLogicalExit(OrderType.SellLimit,ask+380*symbol.MinimumTick);
-				CreateLogicalExit(OrderType.SellLimit,ask+400*symbol.MinimumTick);
-				CreateLogicalExit(OrderType.BuyLimit,bid-150*symbol.MinimumTick);
-				LogicalOrder exitBuyStop = CreateLogicalExit(OrderType.BuyStop,ask+540*symbol.MinimumTick);
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			count = verify.Verify(2,assertTick,symbol,5);
-	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			count = verify.Wait(symbol,5);
-
-				ClearOrders();
-				enterBuyLimit.Price = bid-260*symbol.MinimumTick;
-				enterSellLimit.Price = ask+280*symbol.MinimumTick;
-				orders.AddLast(enterBuyLimit);
-				orders.AddLast(enterSellLimit);
-				orders.AddLast(exitSellLimit);
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			count = verify.Verify(2,assertTick,symbol,5);
-	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			count = verify.Wait(symbol,5);
-	  			
-				ClearOrders();
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			count = verify.Verify(2,assertTick,symbol,5);
-	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			count = verify.Wait(symbol,5);
 			}
 		}
 		
@@ -347,32 +377,6 @@ namespace TickZoom.Test
 			}
 		}
 	
-		[Test]
-		public void DemoReConnectionTest() {
-			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
-			using( Provider provider = CreateProvider(true)) {
-				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				if(debug) log.Debug("===VerifyState===");
-				VerifyConnected(verify);
-		  		long count = verify.Verify(2,assertTick,symbol,5);
-	  			Assert.GreaterOrEqual(count,2,"tick count");
-		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
-		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
-			}
-			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
-			using( Provider provider = CreateProvider(true)) {
-				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-	  			provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				if(debug) log.Debug("===VerifyState===");
-				VerifyConnected(verify);
-	  			long count = verify.Verify(2,assertTick,symbol,5);
-	  			Assert.GreaterOrEqual(count,2,"tick count");
-		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
-		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
-			}
-		}
-
 #endif
 		
 		public static Log Log {

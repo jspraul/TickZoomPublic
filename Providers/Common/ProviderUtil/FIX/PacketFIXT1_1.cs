@@ -147,7 +147,7 @@ namespace TickZoom.FIX
 		
 		private void LogMessage() {
 			if( debug &&
-//			   !IsQuietRecovery &&
+			   !IsQuietRecovery &&
 			   messageType != "1" && messageType != "0") {
 				log.Debug("Reading message: \n" + this);
 			}

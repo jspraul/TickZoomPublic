@@ -89,6 +89,9 @@ namespace TickZoom.FIX
 			if( socket != null) {
 				socket.Dispose();
 			}
+			if( fixFilterController != null) {
+				fixFilterController.Dispose();
+			}
 			socket = Factory.Provider.Socket("MBTFIXSocket");
 			socket.PacketFactory = new PacketFactoryFIX4_4();
 			if( debug) log.Debug("Created new " + socket);
@@ -123,8 +126,9 @@ namespace TickZoom.FIX
         		try { 
         			fixFilterController = new FIXPretradeFilter(addrStr,port);
         			fixFilterController.Filter = fixFilter;
-					selector.AddWriter(socket);
 					socket.Connect("127.0.0.1",fixFilterController.LocalPort);
+//					socket.Connect("127.0.0.1",port);
+					selector.AddWriter(socket);
 					if( debug) log.Debug("Requested Connect for " + socket);
 					return;
         		} catch( SocketErrorException ex) {

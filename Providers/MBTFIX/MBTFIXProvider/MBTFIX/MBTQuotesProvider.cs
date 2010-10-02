@@ -78,6 +78,11 @@ namespace TickZoom.MBTQuotes
 				if( IsInterrupted) return Yield.NoWork.Repeat;
 				Factory.Parallel.Yield();
 			}
+			packet.BeforeRead();
+			char firstChar = (char) packet.Data.GetBuffer()[packet.Data.Position];
+			if( firstChar != 'G') {
+				throw new ApplicationException("Invalid quotes login response: \n" + new string(packet.DataIn.ReadChars(packet.Remaining)));
+			}
 			if( trace) log.Trace( "Response: " + new string(packet.DataIn.ReadChars(packet.Remaining)));
 			StartRecovery();
 			return Yield.DidWork.Repeat;
@@ -94,6 +99,7 @@ namespace TickZoom.MBTQuotes
 			Packet packet;
 			if(Socket.TryGetPacket(out packet)) {
 				if( trace) log.Trace("Response: " + new string(packet.DataIn.ReadChars(packet.Remaining)));
+//				log.Info("Response: " + new string(packet.DataIn.ReadChars(packet.Remaining)));
 				packet.BeforeRead();
 				while( packet.Remaining > 0) {
 					char firstChar = (char) packet.Data.GetBuffer()[packet.Data.Position];
@@ -108,7 +114,7 @@ namespace TickZoom.MBTQuotes
 							TimeAndSalesUpdate( (PacketMBTQuotes) packet);
 							break;
 						default:
-							throw new ApplicationException("MBTQuotes message type '" + firstChar + "' was unknown.");
+							throw new ApplicationException("MBTQuotes message type '" + firstChar + "' was unknown: \n" + new string(packet.DataIn.ReadChars(packet.Remaining)));
 					}
 				}
 				return Yield.DidWork.Repeat;

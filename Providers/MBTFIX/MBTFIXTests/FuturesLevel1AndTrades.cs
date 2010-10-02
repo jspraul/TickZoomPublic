@@ -41,7 +41,7 @@ namespace Test
 		{
 			log.Notice("Waiting 20 seconds for FIX server to reset.");
 			Thread.Sleep(20000);
-			SetSymbol("/ESU0");
+			SetSymbol("/ESZ0");
 			SetTickTest(TickTest.Level1);
 		}
 

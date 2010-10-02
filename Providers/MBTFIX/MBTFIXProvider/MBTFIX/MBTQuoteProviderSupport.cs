@@ -304,40 +304,40 @@ namespace TickZoom.MBTQuotes
 			Dispose();
 		}
 		
-	        public void Start(Receiver receiver)
-	        {
-	        	this.receiver = (Receiver) receiver;
-	        }
-	        
-	        public void Stop(Receiver receiver) {
-	        	
-	        }
+        public void Start(Receiver receiver)
+        {
+        	this.receiver = (Receiver) receiver;
+        }
+        
+        public void Stop(Receiver receiver) {
+        	
+        }
 	
-	        public void StartSymbol(Receiver receiver, SymbolInfo symbol, StartSymbolDetail detail)
-	        {
-	        	log.Info("StartSymbol( " + symbol + ")");
-	        	if( this.receiver != receiver) {
-	        		throw new ApplicationException("Invalid receiver. Only one receiver allowed for " + this.GetType().Name);
-	        	}
-	        	// This adds a new order handler.
-	        	TryAddSymbol(symbol);
-	        	OnStartSymbol(symbol);
-	        }
-	        
-	        public abstract void OnStartSymbol( SymbolInfo symbol);
-	        
-	        public void StopSymbol(Receiver receiver, SymbolInfo symbol)
-	        {
-	        	log.Info("StopSymbol( " + symbol + ")");
-	        	if( this.receiver != receiver) {
-	        		throw new ApplicationException("Invalid receiver. Only one receiver allowed for " + this.GetType().Name);
-	        	}
-	        	if( TryRemoveSymbol(symbol)) {
-	        		OnStopSymbol(symbol);
-	        	}
-	        }
-	        
-	        public abstract void OnStopSymbol(SymbolInfo symbol);
+        public void StartSymbol(Receiver receiver, SymbolInfo symbol, StartSymbolDetail detail)
+        {
+        	log.Info("StartSymbol( " + symbol + ")");
+        	if( this.receiver != receiver) {
+        		throw new ApplicationException("Invalid receiver. Only one receiver allowed for " + this.GetType().Name);
+        	}
+        	// This adds a new order handler.
+        	TryAddSymbol(symbol);
+        	OnStartSymbol(symbol);
+        }
+        
+        public abstract void OnStartSymbol( SymbolInfo symbol);
+        
+        public void StopSymbol(Receiver receiver, SymbolInfo symbol)
+        {
+        	log.Info("StopSymbol( " + symbol + ")");
+        	if( this.receiver != receiver) {
+        		throw new ApplicationException("Invalid receiver. Only one receiver allowed for " + this.GetType().Name);
+        	}
+        	if( TryRemoveSymbol(symbol)) {
+        		OnStopSymbol(symbol);
+        	}
+        }
+        
+        public abstract void OnStopSymbol(SymbolInfo symbol);
 	        
 	        Dictionary<string, string> data;
 	        string configFile;

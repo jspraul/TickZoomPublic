@@ -60,11 +60,6 @@ namespace TickZoom.Test
 			
 		}
 		
-		[TestFixtureTearDown]
-		public virtual void FixtureTearDown() {
-			
-		}
-		
 		public void SetProviderAssembly( string providerAssembly) {
 			this.providerAssembly = providerAssembly;	
 		}
@@ -77,6 +72,11 @@ namespace TickZoom.Test
 				provider = Factory.Provider.ProviderProcess("127.0.0.1",6492,providerAssembly+".exe");
 			}
 			return provider;
+		}
+		
+		[SetUp]
+		public virtual void Setup() {
+			
 		}
 		
 		[TearDown]

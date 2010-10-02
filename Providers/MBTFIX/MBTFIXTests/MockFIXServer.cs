@@ -44,19 +44,21 @@ namespace Test
 		{
 			SetSymbol("SPY");
 			SetTickTest(TickTest.Level1);
+			SetProviderAssembly("MBTFIXProvider");
 		}
 		
-		public override void Init()
+		public override void Setup()
 		{
-			base.Init();
+			base.Setup();
 			fixServer = new MBTFIXServerMock(6489,6488,new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes());
 			var port = fixServer.FIXPort;
 		}
 		
-		public override void FixtureTearDown()
+		
+		public override void TearDown()
 		{
-			base.FixtureTearDown();
 			fixServer.Dispose();
+			base.TearDown();
 		}
 		
 		public override Provider ProviderFactory()

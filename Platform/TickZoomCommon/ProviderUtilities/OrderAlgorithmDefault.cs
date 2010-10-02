@@ -658,6 +658,7 @@ namespace TickZoom.Common
 		}
 
 		public void SetActualPosition( double position) {
+			log.Info("SetActualPosition(" + position +") for " + symbol);
 			actualPosition = position;
 		}
 		public PhysicalOrderHandler PhysicalOrderHandler {

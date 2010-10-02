@@ -489,7 +489,7 @@ namespace TickZoom.MBTFIX
 				var fillPosition = (double) packetFIX.LastQuantity * SideToSign(packetFIX.Side);
 				var executionTime = new TimeStamp(packetFIX.TransactionTime);
 				var fill = Factory.Utility.PhysicalFill(fillPosition,packetFIX.AveragePrice,executionTime,order);
-				if( debug) log.Debug( "Sending logical fill: " + fill);
+				if( debug) log.Debug( "Sending physical fill: " + fill);
             	openOrders.Remove(packetFIX.ClientOrderId);
 	            algorithm.ProcessFill( fill);
 			}

@@ -39,13 +39,15 @@ namespace TickZoom.FIX
 		private Task queueTask;
 		private TickSync tickSync;
 		private SymbolInfo symbol;
+		private TickIO lastTick = Factory.TickUtil.TickIO();
 		
-		public FIXServerSymbolHandler( string symbolString, Func<SymbolInfo,Tick,Yield> onTick) {
+		public FIXServerSymbolHandler( string symbolString, Func<SymbolInfo,Tick,Yield> onTick, Action<PhysicalFill> onPhysicalFill) {
 			this.onTick = onTick;
 			this.symbol = Factory.Symbol.LookupSymbol(symbolString);
 			reader = Factory.TickUtil.TickReader();
 			reader.Initialize("MockProviderData", symbolString);
 			fillSimulator = Factory.Utility.FillSimulator( symbol);
+			fillSimulator.OnPhysicalFill = onPhysicalFill;
 			tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			UnLockTickSync();
 			queueTask = Factory.Parallel.Loop("FIXServerSymbol-"+symbolString, OnException, ProcessQueue);
@@ -64,19 +66,33 @@ namespace TickZoom.FIX
 		    	UnLockTickSync();
 	    	}
 	    }
+		
+		public int ActualPosition {
+			get {
+				return (int) fillSimulator.ActualPosition;
+			}
+		}
+		
+		public void AddOrder(PhysicalOrder order) {
+			fillSimulator.OnCreateBrokerOrder( order);
+		}
+		
+		public void ProcessOrders() {
+			fillSimulator.ProcessOrders( lastTick);
+		}
 	    
-		public Yield ProcessQueue() {
+		private Yield ProcessQueue() {
 			var result = Yield.NoWork.Repeat;
 			if( SyncTicks.Enabled && !tickSync.TryLock()) {
 				TryCompleteTick();
 				return result;
 			}
 			var binary = new TickBinary();
-			TickIO tickIO = Factory.TickUtil.TickIO();
 			try { 
+				
 				if( reader.ReadQueue.TryDequeue( ref binary)) {
-				   	tickIO.Inject( binary);
-				   	result = onTick( symbol, tickIO);
+				   	lastTick.Inject( binary);
+				   	result = onTick( symbol, lastTick);
 				}
 			} catch( QueueException ex) {
 				if( ex.EntryType != EventType.EndHistorical) {

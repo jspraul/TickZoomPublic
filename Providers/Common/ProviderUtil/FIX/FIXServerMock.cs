@@ -58,6 +58,8 @@ namespace TickZoom.FIX
 		private bool isQuoteSimulationStarted = false;
 		private PacketFactory quotePacketFactory;		
 		
+		private Dictionary<long,FIXServerSymbolHandler> symbolHandlers = new Dictionary<long,FIXServerSymbolHandler>();
+
 		public FIXServerMock(ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory) {
 			WriteToFixMethod = WriteToFIX;
 			WriteToQuotesMethod = WriteToQuotes;
@@ -87,7 +89,7 @@ namespace TickZoom.FIX
 			log.Info("Listening to " + localAddress + " on port " + quotesPort);
 		}
 		
-		private void OnConnectFIX( Socket socket) {
+		protected virtual void OnConnectFIX( Socket socket) {
 			fixSocket = socket;
 			fixSocket.PacketFactory = fixPacketFactory;
 			fixSelector.AddReader(socket);
@@ -97,7 +99,7 @@ namespace TickZoom.FIX
 			fixTask = Factory.Parallel.Loop( "FIXServerReader", OnException, FIXReadLoop);
 		}
 		
-		private void OnConnectQuotes( Socket socket) {
+		protected virtual void OnConnectQuotes( Socket socket) {
 			quoteSocket = socket;
 			quoteSocket.PacketFactory = quotePacketFactory;
 			quoteSelector.AddReader(socket);
@@ -121,7 +123,14 @@ namespace TickZoom.FIX
 			}
 		}
 		
-		private void CloseSockets() {
+		protected virtual void CloseSockets() {
+        	if( symbolHandlers != null) {
+            	foreach( var kvp in symbolHandlers) {
+            		var handler = kvp.Value;
+            		handler.Dispose();
+            	}
+            	symbolHandlers.Clear();
+        	}
 			if( fixTask != null) fixTask.Stop();
 			if( fixSocket != null) fixSocket.Dispose();
 			if( quoteTask != null) quoteTask.Stop();
@@ -147,11 +156,27 @@ namespace TickZoom.FIX
 			return result;
 		}
 		
-		private Dictionary<long,FIXServerSymbolHandler> symbolHandlers = new Dictionary<long,FIXServerSymbolHandler>();
-		public void AddSymbol( string symbol, Func<SymbolInfo,Tick,Yield> onTick) {
-			var symbolHandler = new FIXServerSymbolHandler(symbol,onTick);
+		public void AddSymbol( string symbol, Func<SymbolInfo,Tick,Yield> onTick, Action<PhysicalFill> onPhysicalFill) {
 			var symbolInfo = Factory.Symbol.LookupSymbol(symbol);
-			symbolHandlers.Add(symbolInfo.BinaryIdentifier,symbolHandler);
+			if( !symbolHandlers.ContainsKey( symbolInfo.BinaryIdentifier)) {
+				var symbolHandler = new FIXServerSymbolHandler(symbol,onTick,onPhysicalFill);
+				symbolHandlers.Add(symbolInfo.BinaryIdentifier,symbolHandler);
+			}
+		}
+		
+		public int GetPosition( SymbolInfo symbol) {
+			var symbolHandler = symbolHandlers[symbol.BinaryIdentifier];
+			return symbolHandler.ActualPosition;
+		}
+		
+		public void AddOrder( PhysicalOrder order) {
+			var symbolHandler = symbolHandlers[order.Symbol.BinaryIdentifier];
+			symbolHandler.AddOrder( order);
+		}
+		
+		public void ProcessOrders(SymbolInfo symbol) {
+			var symbolHandler = symbolHandlers[symbol.BinaryIdentifier];
+			symbolHandler.ProcessOrders();
 		}
 		
 		private Yield QuotesReadLoop() {
@@ -166,12 +191,12 @@ namespace TickZoom.FIX
 		}
 		
 		public virtual Yield ParseFIXMessage(Packet packet) {
-			log.Info("Received FIX message: " + packet);
+			if( debug) log.Debug("Received FIX message: " + packet);
 			return Yield.DidWork.Repeat;
 		}
 	
 		public virtual Yield ParseQuotesMessage(Packet packet) {
-			log.Info("Received Quotes message: " + packet);
+			if( debug) log.Debug("Received Quotes message: " + packet);
 			return Yield.DidWork.Repeat;
 		}
 	
@@ -193,7 +218,7 @@ namespace TickZoom.FIX
 			}
 		}
 		
-		private void OnException( Exception ex) {
+		public void OnException( Exception ex) {
 			log.Error("Exception occurred", ex);
 		}
 		
@@ -206,10 +231,17 @@ namespace TickZoom.FIX
 	
 	    protected virtual void Dispose(bool disposing)
 	    {
-	       		if( !isDisposed) {
+	       	if( !isDisposed) {
 	            isDisposed = true;   
 	            if (disposing) {
 	            	if( debug) log.Debug("Dispose()");
+	            	if( symbolHandlers != null) {
+		            	foreach( var kvp in symbolHandlers) {
+		            		var handler = kvp.Value;
+		            		handler.Dispose();
+		            	}
+		            	symbolHandlers.Clear();
+	            	}
 	            	if( fixTask != null) {
 	            		fixTask.Stop();
 	            	}
@@ -218,6 +250,15 @@ namespace TickZoom.FIX
 	            	}
 	            	if( fixSocket != null) {
 		            	fixSocket.Dispose();
+	            	}
+	            	if( quoteTask != null) {
+	            		quoteTask.Stop();
+	            	}
+	            	if( quoteSelector != null) {
+	            		quoteSelector.Dispose();
+	            	}
+	            	if( quoteSocket != null) {
+		            	quoteSocket.Dispose();
 	            	}
 	            }
     		}

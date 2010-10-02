@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Text;
 using TickZoom.Api;
 
 namespace TickZoom.Interceptors
@@ -41,6 +42,20 @@ namespace TickZoom.Interceptors
 			this.price = price;
 			this.time = time;
 			this.order = order;
+		}
+		
+		public override string ToString()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append( "Filled ");
+			sb.Append( size );
+			sb.Append( " at ");
+			sb.Append( price);
+			sb.Append( " on ");
+			sb.Append( time);
+			sb.Append( " for order: " );
+			sb.Append( order.ToString());
+			return sb.ToString();
 		}
 
 		public TimeStamp Time {

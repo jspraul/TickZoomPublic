@@ -120,6 +120,13 @@ namespace TickZoom.FIX
 		}
 		
 		/// <summary>
+		///	14 Cumulative Quantity
+		/// </summary>
+		public void SetCumulativeQuantity(int value ) {
+			Append(14,value);
+		}
+		
+		/// <summary>
 		/// 41 Original client order id to be canceled or cancel/replaced.
 		/// </summary>
 		public void SetOriginalClientOrderId(string value) {
@@ -131,11 +138,40 @@ namespace TickZoom.FIX
 		public void SetHandlingInstructions(int value) {
 			Append(21,value);
 		}
+
+		/// <summary>
+		///	31 Last Price
+		/// </summary>
+		public void SetLastPrice(double value ) {
+			Append(31,value);
+		}
+		
+		/// <summary>
+		///	32 Last Quantity
+		/// </summary>
+		public void SetLastQuantity(int value ) {
+			Append(32,value);
+		}
+
+		/// <summary>
+		/// 37 The order id from the FIX server.
+		/// </summary>
+		public void SetOrderId(string value) {
+			Append(37, value);
+		}
+		
 		/// <summary>
 		/// 38 Y The total number of shares to be traded	
 		/// </summary>
 		public void SetOrderQuantity(int value) {
 			Append(38, value);
+		}
+		
+		/// <summary>
+		/// 39 The status of this execution order.
+		/// </summary>
+		public void SetOrderStatus(string value) {
+			Append(39, value);
 		}
 		
 		/// <summary>
@@ -196,17 +232,10 @@ namespace TickZoom.FIX
 		}
 		
 		/// <summary>
-		///	60 Time of order initiation (expressed in UTC)		
+		///	77 The effect on the current position.
 		/// </summary>
-		public void SetTransactTime(string value ) {
-			Append(60,value);
-		}
-		
-		/// <summary>
-		///	60 Time of order initiation (expressed in UTC)		
-		/// </summary>
-		public void SetTransactTime(TimeStamp value ) {
-			Append(60,value);
+		public void SetPositionEffect(string value) {
+			Append(77,value);
 		}
 		
 		/// <summary>
@@ -217,12 +246,49 @@ namespace TickZoom.FIX
 		}
 		
 		/// <summary>
+		///	150 Execution type.
+		/// </summary>
+		public void SetExecutionType(string value ) {
+			Append(150,value);
+		}
+		
+		/// <summary>
+		///	151 Leaves Quantity
+		/// </summary>
+		public void SetLeavesQuantity(int value ) {
+			Append(151,value);
+		}
+		
+		/// <summary>
+		///	60 Transaction time.
+		/// </summary>
+		public void SetTransactTime(TimeStamp value ) {
+			Append(60,value);
+		}
+		
+		/// <summary>
 		///	553 end user who entered the trade should have their username specified here	
 		/// This method uses the "sender" field name as the username here.
 		/// </summary>
 		public void SetUserName() {
 			Append(553,Sender);
 		}
+		
+		///<summary>
+		/// 704 Short quantity
+		/// </summary>
+		public void SetShortQty(int value ) {
+			Append(704, value);
+		}
+		
+		
+		///<summary>
+		/// 705 Long quantity
+		/// </summary>
+		public void SetLongQty(int value ) {
+			Append(705, value);
+		}
+		
 		/// <summary>
 		///	114	Boolean	Indicates whether the broker is to locate the stock in conjunction with a short sell order.
 		/// </summary>

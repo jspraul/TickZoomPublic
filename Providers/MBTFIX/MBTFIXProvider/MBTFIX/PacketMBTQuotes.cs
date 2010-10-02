@@ -93,7 +93,7 @@ namespace TickZoom.MBTQuotes
 		
 		private int FindSplitAt() {
 			byte[] bytes = data.GetBuffer();
-			int length = (int) data.Length - 1;
+			int length = (int) data.Length;
 //			log.Info("Looking for split from " + 0 + " to " + length );
 			for( int i=0; i<length; i++) {
 //				log.Info(" bytes[" + i + "] = " + bytes[i]);
@@ -107,11 +107,12 @@ namespace TickZoom.MBTQuotes
 		public bool TrySplit(MemoryStream other) {
 //			log.Info("TrySplit() length = " + data.Length);
 			int splitAt = FindSplitAt();
-			if( splitAt > 0) {
-				other.Write(data.GetBuffer(), splitAt, (int)data.Length - splitAt);
-//				log.Info("Found split at " + splitAt + ". Split length = " + other.Length);
-				data.Position = splitAt-1;
-				data.SetLength( splitAt-1);
+			if( splitAt == data.Length) {
+				data.Position = data.Length;
+				return false;
+			} else if( splitAt > 0) {
+				other.Write(data.GetBuffer(), splitAt, (int) (data.Length - splitAt));
+				data.SetLength( splitAt);
 				return true;
 			} else {
 				return false;
@@ -223,7 +224,7 @@ namespace TickZoom.MBTQuotes
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("PacketMBTQuotes: Position " + data.Position + ", length " + data.Length);
-			int offset = 0;
+			int offset = (int)data.Position;
 			while( offset < data.Length) {
 				int rowSize = (int) Math.Min(16,data.Length-offset);
 				byte[] bytes = new byte[rowSize];

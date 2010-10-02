@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 using TickZoom.Api;
 using TickZoom.FIX;
@@ -40,14 +41,32 @@ namespace TickZoom.MBTFIX
 	}
 	
 	public class MBTFIXServerMock : FIXServerMock {
-		private static Log log = Factory.SysLog.GetLogger(typeof(FIXServerMock));
+		private static Log log = Factory.SysLog.GetLogger(typeof(MBTFIXServerMock));
 		private static bool trace = log.IsTraceEnabled;
 		private static bool debug = log.IsDebugEnabled;
 		private ServerState fixState = ServerState.Startup;
 		private ServerState quoteState = ServerState.Startup;
+		private Queue<Packet> packetQueue = new Queue<Packet>();
+		private Task packetTask;
 		
 		public MBTFIXServerMock(ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory) 
 			: base( fixPort, quotesPort, fixPacketFactory, quotePacketFactory) {			
+		}
+		
+		protected override void OnConnectFIX(Socket socket)
+		{
+			fixState = ServerState.Startup;
+			quoteState = ServerState.Startup;
+			base.OnConnectFIX(socket);
+			packetTask = Factory.Parallel.Loop( "FIXServerMock", OnException, ProcessFIXPackets);			
+		}
+		
+		protected override void CloseSockets()
+		{
+			base.CloseSockets();
+			if( packetTask != null) {
+				packetTask.Stop();
+			}
 		}
 			
 		public override void StartFIXSimulation()
@@ -76,6 +95,7 @@ namespace TickZoom.MBTFIX
 					break;
 				case "G":
 				case "D":
+					result = FIXNewOrder( packetFIX);
 					break;
 			}			
 			return result;
@@ -123,13 +143,73 @@ namespace TickZoom.MBTFIX
 			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 		
+		private Yield FIXNewOrder(PacketFIX4_4 packet) {
+			var order = CreateOrder( packet);
+			AddOrder( order);
+			SendExecutionReport( order, "A", 0.0, 0, 0, (int) order.Size);
+			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
+			SendExecutionReport( order, "0", 0.0, 0, 0, (int) order.Size);
+			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
+			ProcessOrders( order.Symbol);
+			return Yield.DidWork.Repeat;
+		}
+		
+		private PhysicalOrder CreateOrder(PacketFIX4_4 packet) {
+			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
+			var side = OrderSide.Buy;
+			switch( packet.Side) {
+				case "1":
+					side = OrderSide.Buy;
+					break;
+				case "2":
+					side = OrderSide.Sell;
+					break;
+				case "5":
+					side = OrderSide.SellShort;
+					break;
+			}
+			var type = OrderType.BuyLimit;
+			switch( packet.OrderType) {
+				case "1":
+					if( side == OrderSide.Buy) {
+						type = OrderType.BuyMarket;
+					} else {
+						type = OrderType.SellMarket;
+					}
+					break;
+				case "2":
+					if( side == OrderSide.Buy) {
+						type = OrderType.BuyLimit;
+					} else {
+						type = OrderType.SellLimit;
+					}
+					break;
+				case "3":
+					if( side == OrderSide.Buy) {
+						type = OrderType.BuyStop;
+					} else {
+						type = OrderType.SellStop;
+					}
+					break;
+			}
+			var clientId = packet.ClientOrderId.Split(new char[] {'.'});
+			var logicalId = int.Parse(clientId[0]);
+			var physicalOrder = Factory.Utility.PhysicalOrder(
+				OrderState.Active, symbol, side, type,
+				packet.Price, packet.OrderQuantity, logicalId, null, packet.ClientOrderId);
+			if( debug) log.Debug("Received physical Order: " + physicalOrder);
+			return physicalOrder;
+		}
+		private string target;
+		private string sender;
 		private Yield FIXLogin(PacketFIX4_4 packet) {
 			if( fixState != ServerState.Startup) {
 				return CloseWithFixError(packet, "Invalid login request. Already logged in.");
 			}
 			fixState = ServerState.LoggedIn;
 			fixWritePacket = fixSocket.CreatePacket();
-			
+			target = packet.Target;
+			sender = packet.Sender;
 			var mbtMsg = new FIXMessage4_4(packet.Target,packet.Sender);
 			mbtMsg.SetEncryption(0);
 			mbtMsg.SetHeartBeatInterval(30);
@@ -154,6 +234,96 @@ namespace TickZoom.MBTFIX
 			return Yield.DidWork.Invoke(WriteToQuotes);
 		}
 		
+		private void OnPhysicalFill( PhysicalFill fill) {
+			if( debug) log.Debug("Converting physical fill to FIX: " + fill);
+			SendPositionUpdate(fill.Order.Symbol, GetPosition(fill.Order.Symbol));
+			SendExecutionReport( fill.Order, "2", fill.Price, (int) fill.Size, (int) fill.Size, (int) (fill.Order.Size - fill.Size));
+		}
+		
+		private void SendPositionUpdate(SymbolInfo symbol, int position) {
+			var writePacket = fixSocket.CreatePacket();
+			var mbtMsg = new FIXMessage4_4(target,sender);
+			mbtMsg.SetAccount( "33006566");
+			mbtMsg.SetSymbol( symbol.Symbol);
+			if( position <= 0) {
+				mbtMsg.SetShortQty( position);
+			} else {
+				mbtMsg.SetLongQty( position);
+			}
+			mbtMsg.AddHeader("AP");
+			string message = mbtMsg.ToString();
+			writePacket.DataOut.Write(message.ToCharArray());
+			if(debug) log.Debug("Sending position update: " + message);
+			packetQueue.Enqueue(writePacket);
+		}	
+		
+		private void SendExecutionReport(PhysicalOrder order, string status, double price, int cumQty, int lastQty, int leavesQty) {
+			int orderType = 0;
+			switch( order.Type) {
+				case OrderType.BuyMarket:
+				case OrderType.SellMarket:
+					orderType = 1;
+					break;
+				case OrderType.BuyLimit:
+				case OrderType.SellLimit:
+					orderType = 2;
+					break;
+				case OrderType.BuyStop:
+				case OrderType.SellStop:
+					orderType = 3;
+					break;
+			}
+			int orderSide = 0;
+			switch( order.Side) {
+				case OrderSide.Buy:
+					orderSide = 1;
+					break;
+				case OrderSide.Sell:
+					orderSide = 2;
+					break;
+				case OrderSide.SellShort:
+					orderSide = 5;
+					break;
+			}
+			var writePacket = fixSocket.CreatePacket();
+			var mbtMsg = new FIXMessage4_4(target,sender);
+			mbtMsg.SetAccount( "33006566");
+			mbtMsg.SetDestination("MBTX");
+			mbtMsg.SetOrderQuantity( (int) order.Size);
+			mbtMsg.SetLastQuantity( Math.Abs(lastQty));
+			if( lastQty > 0) {
+				mbtMsg.SetLastPrice( price);
+			}
+			mbtMsg.SetCumulativeQuantity( cumQty);
+			mbtMsg.SetOrderStatus(status);
+			mbtMsg.SetOrderId( order.BrokerOrder.ToString());
+			mbtMsg.SetPositionEffect( "O");
+			mbtMsg.SetOrderType( orderType);
+			mbtMsg.SetSide( orderSide);
+			mbtMsg.SetClientOrderId( order.Tag.ToString());
+			if( lastQty > 0) {
+				mbtMsg.SetPrice( price);
+			}
+			mbtMsg.SetSymbol( order.Symbol.Symbol);
+			mbtMsg.SetTimeInForce( 0);
+			mbtMsg.SetExecutionType( status);
+			mbtMsg.SetTransactTime( TimeStamp.UtcNow);
+			mbtMsg.SetLeavesQuantity( leavesQty);
+			mbtMsg.AddHeader("8");
+			string message = mbtMsg.ToString();
+			writePacket.DataOut.Write(message.ToCharArray());
+			if(debug) log.Debug("Sending fill response: " + message);
+			packetQueue.Enqueue(writePacket);
+		}
+		
+		private Yield ProcessFIXPackets() {
+			if( packetQueue.Count == 0) {
+				return Yield.NoWork.Repeat;
+			}
+			fixWritePacket = packetQueue.Dequeue();
+			return Yield.DidWork.Invoke(WriteToFIX);
+		}
+		
 		private unsafe Yield SymbolRequest(PacketMBTQuotes packet) {
 			var data = packet.Data;
 			data.Position += 2;
@@ -167,7 +337,7 @@ namespace TickZoom.MBTFIX
 							var symbol = packet.GetString( ref ptr);
 							symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 							log.Info("Received symbol request for " + symbolInfo);
-							AddSymbol(symbol, OnTick);
+							AddSymbol(symbol, OnTick, OnPhysicalFill);
 							break;
 						case 2000: // Type of data.
 							var feedType = packet.GetString( ref ptr);
@@ -280,6 +450,18 @@ namespace TickZoom.MBTFIX
 			string errorMessage = fixMsg.ToString();
 			fixWritePacket.DataOut.Write(errorMessage.ToCharArray());
 			return Yield.DidWork.Invoke(WriteToFIX);
+		}
+		
+		protected override void Dispose(bool disposing)
+		{
+			if( !isDisposed) {
+				if( disposing) {
+					base.Dispose(disposing);
+					if( packetTask != null) {
+						packetTask.Stop();
+					}
+				}
+			}
 		}
 	}
 }
