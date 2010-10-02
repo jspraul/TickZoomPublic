@@ -295,8 +295,8 @@ namespace TickZoom.Symbols
     <symbol name=""SPY"">
       <property name=""MaxPositionSize"" value=""5"" />
       <property name=""MaxOrderSize"" value=""5"" />
-      <property name=""TimeAndSales"" value=""None"" />
-      <property name=""QuoteType"" value=""Level1"" />
+      <property name=""TimeAndSales"" value=""ActualTrades"" />
+      <property name=""QuoteType"" value=""None"" />
     </symbol>
     <category name=""Testing"">
       <symbol name=""CSCO"">
@@ -438,6 +438,7 @@ namespace TickZoom.Symbols
         <property name=""Slippage"" value=""CustomSlippage"" />
         <property name=""Destination"" value=""CustomDestination"" />
       </symbol>
+      <symbol name=""/ESZ0"" />
       <symbol name=""/ESU0"" />
       <symbol name=""/NQU0"" />
       <symbol name=""TestException"" />

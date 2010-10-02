@@ -38,7 +38,7 @@ namespace TickZoom.Test
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TimeAndSales));
 		private static readonly bool debug = log.IsDebugEnabled;		
-			
+		private bool isTestSeperate = true;	
 		
 #if CERTIFICATION
 		[Test]
@@ -72,9 +72,10 @@ namespace TickZoom.Test
 		}		
 #endif
 			
-#if SEPERATE
+#if !SEPERATE
 		[Test]
 		public void TestSeperateProcess() {
+			if( !IsTestSeperate) return;
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = CreateProvider(false)) {
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
@@ -377,10 +378,14 @@ namespace TickZoom.Test
 			}
 		}
 	
-#endif
-		
+#endif		
 		public static Log Log {
 			get { return log; }
+		}
+		
+		public bool IsTestSeperate {
+			get { return isTestSeperate; }
+			set { isTestSeperate = value; }
 		}
 	}
 }

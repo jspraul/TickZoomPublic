@@ -43,6 +43,7 @@ namespace Test
 			Thread.Sleep(20000);
 			SetSymbol("SPY");
 			SetTickTest(TickTest.TimeAndSales);
+			SetProviderAssembly("MBTFIXProvider");
 		}
 		
 		public override Provider ProviderFactory()

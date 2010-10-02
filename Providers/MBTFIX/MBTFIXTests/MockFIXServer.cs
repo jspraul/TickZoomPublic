@@ -45,6 +45,7 @@ namespace Test
 			SetSymbol("SPY");
 			SetTickTest(TickTest.Level1);
 			SetProviderAssembly("MBTFIXProvider");
+			IsTestSeperate = false;
 		}
 		
 		public override void Setup()

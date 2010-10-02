@@ -45,6 +45,7 @@ namespace Test
 //			Thread.Sleep(20000);
 			SetSymbol("IBM");
 			SetTickTest(TickTest.Level1);
+			SetProviderAssembly("MBTFIXProvider");			
 		}
 		
 		public override Provider ProviderFactory()
