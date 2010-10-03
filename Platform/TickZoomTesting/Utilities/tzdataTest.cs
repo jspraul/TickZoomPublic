@@ -88,6 +88,7 @@ namespace TickZoom.Utilities
 			Query query = new Query();
 			query.Run(args);
 			string expectedOutput = @"Symbol: /ESH0
+Version: 8
 Ticks: 15683
 Trade Only: 15683
 From: 2010-02-16 16:49:28.769

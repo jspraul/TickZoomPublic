@@ -113,8 +113,9 @@ namespace TickZoom.TZData
 			}
 			lastTick.Copy( tickIO);
 			stringBuilder.AppendLine("Symbol: " + reader.Symbol);
+			stringBuilder.AppendLine("Version: " + reader.DataVersion);
 			stringBuilder.AppendLine("Ticks: " + count);
-			if( quotes> 0) {
+			if( quotes > 0) {
 				stringBuilder.AppendLine("Quote Only: " + quotes);
 			}
 			if( trades > 0) {
