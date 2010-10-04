@@ -443,11 +443,6 @@ namespace TickZoom.TickUtil
 			for( var p = fptr+1; p<end; p++) {
 				testchecksum ^= *p;	
 			}
-			if( (byte) (testchecksum ^ lastChecksum) != checksum) {
-				System.Diagnostics.Debugger.Break();
-				throw new ApplicationException("Checksum mismatch " + checksum + " vs. " + (byte) (testchecksum ^ lastChecksum) + ". This means integrity checking of tick compression failed.");
-			}
-			lastChecksum = testchecksum;
 			if( minimumTick == 0L) {
 				var symbol = Factory.Symbol.LookupSymbol(binary.Symbol);
 				minimumTick = symbol.MinimumTick.ToLong();
@@ -462,6 +457,7 @@ namespace TickZoom.TickUtil
 						var symbol = binary.Symbol;
 						binary = default(TickBinary);
 						binary.Symbol = symbol;
+						lastChecksum = 0;
 						break;
 					case BinaryField.ContentMask:
 						binary.ContentMask += (byte) ReadField( &ptr);
@@ -492,6 +488,12 @@ namespace TickZoom.TickUtil
 						throw new ApplicationException("Unknown tick field type: " + field);
 				}
 			}
+			
+			if( (byte) (testchecksum ^ lastChecksum) != checksum) {
+				System.Diagnostics.Debugger.Break();
+				throw new ApplicationException("Checksum mismatch " + checksum + " vs. " + (byte) (testchecksum ^ lastChecksum) + ". This means integrity checking of tick compression failed.");
+			}
+			lastChecksum = testchecksum;
 
 			int len = (int) (ptr - fptr);
 			return len;
