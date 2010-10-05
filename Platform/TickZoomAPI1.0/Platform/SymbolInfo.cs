@@ -260,5 +260,13 @@ namespace TickZoom.Api
  		double MaxOrderSize {
  			get;
  		}
+ 		
+ 		/// <summary>
+ 		/// Used by validation and loading of data to ensure parsing of prices yields
+ 		/// appropriate values.
+ 		/// </summary>
+ 		double MaxValidPrice {
+ 			get;
+ 		}
 	}
 }

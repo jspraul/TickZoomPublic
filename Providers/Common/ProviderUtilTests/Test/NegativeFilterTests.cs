@@ -72,9 +72,9 @@ namespace TickZoom.Test
 		[Test]
 		[ExpectedException( typeof(Exception), ExpectedMessage="was greater than MaxPositionSize of ", MatchType=MessageMatch.Contains)]
 		public void TestFIXPositionFilterSell() {
-	  			double expectedPosition = 0;
-	  			double sizeIncrease = 2;
-	  			int secondsDelay = 3;
+	  		double expectedPosition = 0;
+	  		double sizeIncrease = 2;
+	  		int secondsDelay = 3;
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
@@ -102,7 +102,7 @@ namespace TickZoom.Test
 		[ExpectedException( typeof(Exception), ExpectedMessage="was greater than MaxOrderSize of ", MatchType=MessageMatch.Contains)]
 		public void TestFIXPretradeOrderFilterBuy() {
 			double expectedPosition = 0;
-	  			int secondsDelay = 3;
+	  		int secondsDelay = 3;
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
@@ -127,7 +127,7 @@ namespace TickZoom.Test
 		[ExpectedException( typeof(Exception), ExpectedMessage="was greater than MaxOrderSize of ", MatchType=MessageMatch.Contains)]
 		public void TestFIXPretradeOrderFilterSell() {
 			double expectedPosition = 0;
-	  			int secondsDelay = 3;
+	  		int secondsDelay = 3;
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);

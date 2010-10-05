@@ -64,7 +64,9 @@ namespace TickZoom.Symbols
 		private string destination = "default";
 		private double maxPositionSize = double.MaxValue;
 		private double maxOrderSize = double.MaxValue;
-	    public SymbolProperties Copy()
+		private double maxValidPrice = double.MaxValue;
+
+		public SymbolProperties Copy()
 	    {
 	    	SymbolProperties result;
 	    	
@@ -225,7 +227,11 @@ namespace TickZoom.Symbols
 		public int Level2LotSizeMinimum {
 			get { return level2LotSizeMinimum; }
 			set { level2LotSizeMinimum = value; }
-		}
+		}		
 		
+		public double MaxValidPrice {
+			get { return maxValidPrice; }
+			set { maxValidPrice = value; }
+		}
 	}
 }

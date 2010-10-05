@@ -70,5 +70,15 @@ namespace TickZoom.Api
  			get;
  			set;
  		}
+ 		
+ 		/// <summary>
+ 		/// Used by validation and loading of data to ensure parsing of prices yields
+ 		/// appropriate values.
+ 		/// </summary>
+ 		new double MaxValidPrice {
+ 			get;
+ 			set;
+ 		}
+ 		
 	}
 }
