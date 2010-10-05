@@ -110,12 +110,15 @@ namespace TickZoom.Symbols
 		}
 		
 		private char[] splitChar = new char[] { '.' };
-		public SymbolProperties GetSymbolProperties(string symbol) {
+		public bool GetSymbolProperties(string symbol, out SymbolProperties properties) {
 			string[] symbolParts = symbol.Split( splitChar);
 			symbol = symbolParts[0];
-			SymbolProperties symbolProperties;
-			if( symbolMap.TryGetValue(symbol.Trim(),out symbolProperties)) {
-				return symbolProperties;
+			return symbolMap.TryGetValue(symbol.Trim(),out properties);
+		}
+		public SymbolProperties GetSymbolProperties(string symbol) {
+			SymbolProperties properties;
+			if( GetSymbolProperties( symbol, out properties)) {
+				return properties;
 			} else {
 				throw new ApplicationException( "Sorry, symbol " + symbol + " was not found in any symbol dictionary.");
 			}
@@ -125,12 +128,33 @@ namespace TickZoom.Symbols
 			return GetSymbolProperties(symbol);
 		}
 	
+		public bool LookupSymbol(string symbol, out SymbolInfo symbolInfo) {
+			SymbolProperties properties;
+			if( GetSymbolProperties(symbol, out properties)) {
+				symbolInfo = properties;
+				return true;
+			} else {
+				symbolInfo = null;
+				return false;
+			}
+		}
+	
 		public SymbolInfo LookupSymbol(long universalIdentifier) {
 			SymbolProperties symbolProperties;
 			if( universalMap.TryGetValue(universalIdentifier,out symbolProperties)) {
 				return symbolProperties;
 			} else {
 				throw new ApplicationException( "Sorry, universal id " + universalIdentifier + " was not found in any symbol dictionary.");
+			}
+		}
+		public bool LookupSymbol(long universalIdentifier, out SymbolInfo symbolInfo) {
+			SymbolProperties symbolProperties;
+			if( universalMap.TryGetValue(universalIdentifier,out symbolProperties)) {
+				symbolInfo = symbolProperties;
+				return true;
+			} else {
+				symbolInfo = null;
+				return false;
 			}
 		}
 	}
