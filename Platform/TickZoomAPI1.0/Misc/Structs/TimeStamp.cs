@@ -271,6 +271,10 @@ namespace TickZoom.Api
 				year = ToInt32(strings[2]);
 			}
 			_timeStamp = CalendarDateTotimeStamp( year, month, day, hour, minute, second, millis );
+			if( Month != month || Year != year || Day != day || Hour != hour || Minute != minute || Second != second || Millisecond != millis) {
+				throw new ApplicationException("Invalid date.");
+			}
+			
 		}
 	    
 	    private static int ToInt32(string value) {
