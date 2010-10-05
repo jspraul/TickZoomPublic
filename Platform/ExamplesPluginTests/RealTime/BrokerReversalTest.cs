@@ -55,8 +55,12 @@ namespace MockProvider
 		
 		public Starter CreateStarter()
 		{
+			ushort servicePort = 6490;
+			SetupWarehouseConfig(servicePort);
 			Starter starter = new RealTimeStarter();
 			starter.ProjectProperties.Engine.SimulateRealTime = true;
+			starter.Config = "WarehouseTest.config";
+			starter.Port = servicePort;
 			return starter;
 		}
 		
@@ -64,7 +68,7 @@ namespace MockProvider
 			while( true) {
 				try {
 					string appData = Factory.Settings["AppDataFolder"];
-		 			File.Delete( appData + @"\TestServerCache\Daily4Sim.tck");
+		 			File.Delete( appData + @"\Test\\ServerCache\Daily4Sim.tck");
 					break;
 				} catch( Exception) {
 				}

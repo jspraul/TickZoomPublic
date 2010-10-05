@@ -99,7 +99,7 @@ namespace TickZoom.TradingFramework
 			starter.ProjectProperties.Starter.SetSymbols("USD_JPY");
 			starter.ProjectProperties.Starter.SymbolInfo[0].SessionStart = new Elapsed(6,20,0);
 			starter.ProjectProperties.Starter.SymbolInfo[0].SessionEnd = new Elapsed(15,0,0);
-			starter.DataFolder = "TestData";
+			starter.DataFolder = "Test\\DataCache";
 			starter.Run(weeklogic);
 		}
 		

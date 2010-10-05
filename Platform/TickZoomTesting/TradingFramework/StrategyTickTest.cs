@@ -71,7 +71,7 @@ namespace TickZoom.TradingFramework
 			starter.ProjectProperties.Starter.SetSymbols(symbol);
 			Elapsed start = new Elapsed(6,0,0);
 			Elapsed end = new Elapsed(15,0,0);
-			starter.DataFolder = "TestData";
+			starter.DataFolder = "Test\\DataCache";
 			starter.Run(logic);
 		}
 		

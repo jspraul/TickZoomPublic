@@ -52,7 +52,7 @@ namespace Loaders
 			starter.ProjectProperties.Starter.StartTime = new TimeStamp(1800,1,1);
 //    		starter.ProjectProperties.Starter.EndTime = new TimeStamp(1990,5,28);
     		starter.ProjectProperties.Starter.EndTime = new TimeStamp(1983,5,1);
-    		starter.DataFolder = "TestData";
+    		starter.DataFolder = "Test\\DataCache";
     		starter.ProjectProperties.Starter.SetSymbols("FullTick,Daily4Sim");
 			starter.ProjectProperties.Starter.IntervalDefault = Intervals.Day1;
 			

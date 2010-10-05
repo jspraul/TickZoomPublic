@@ -475,6 +475,7 @@ namespace TickZoom
 	    	starter.ProjectProperties.Starter.SetSymbols(txtSymbol.Text);
 			starter.ProjectProperties.Starter.IntervalDefault = intervalDefault;
 			starter.Address = projectConfig.GetValue("ServiceAddress");
+			starter.Config = projectConfig.GetValue("ServiceConfig");
 			starter.Port = (ushort) projectConfig.GetValue("ServicePort",typeof(ushort));
 			starter.AddProvider( projectConfig.GetValue("ProviderAssembly"));
 			if( defaultOnly.Checked) {

@@ -61,7 +61,7 @@ namespace Loaders
 				starter.ProjectProperties.Starter.StartTime = new TimeStamp(1800,1,1);
 	    		starter.ProjectProperties.Starter.EndTime = new TimeStamp(2010,06,10);
 	    		
-	    		starter.DataFolder = "TestData";
+	    		starter.DataFolder = "Test\\DataCache";
 	    		starter.BackgroundWorker = bw;
 	    		starter.ProjectProperties.Starter.SetSymbols(strategyTest.Symbols);
 				starter.ProjectProperties.Starter.IntervalDefault = Intervals.Minute1;

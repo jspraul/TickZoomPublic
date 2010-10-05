@@ -64,7 +64,7 @@ namespace Loaders
 			// Set run properties as in the GUI.
 			starter.ProjectProperties.Starter.StartTime = new TimeStamp(1800,1,1);
 	    	starter.ProjectProperties.Starter.EndTime = new TimeStamp(1990,1,1);
-	    	starter.DataFolder = "TestData";
+	    	starter.DataFolder = "Test\\DataCache";
 	    	starter.ProjectProperties.Starter.SetSymbols("FullTick,Daily4Sim");
 			starter.ProjectProperties.Starter.IntervalDefault = Intervals.Day1;
 			

@@ -64,6 +64,7 @@ namespace TickZoom.Starters
 		private int port = 6490;
 		private List<string> providerPlugins = new List<string>();
 		protected int maxParallelPasses = 1000;
+		private string config;
 		
 		public StarterCommon() : this(true) {
     		storageFolder = Factory.Settings["AppDataFolder"];
@@ -478,5 +479,10 @@ namespace TickZoom.Starters
 		public List<string> ProviderPlugins {
 			get { return providerPlugins; }
 		}		
+		
+		public string Config {
+			get { return config; }
+			set { config = value; }
+		}
 	}
 }

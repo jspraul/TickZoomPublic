@@ -71,7 +71,7 @@ namespace TickZoom.StarterTest
 			Starter starter = new HistoricalStarter();
 			starter.ProjectProperties.Starter.StartTime = (TimeStamp) new DateTime(2005,1,1);
     		starter.ProjectProperties.Starter.EndTime = (TimeStamp) new DateTime(2006,2,1);
-    		starter.DataFolder = "TestData";
+    		starter.DataFolder = "Test\\DataCache";
     		starter.ProjectProperties.Starter.SetSymbols("USD_JPY");
 			Interval intervalDefault = Intervals.Hour1;
 			starter.ProjectProperties.Starter.IntervalDefault = intervalDefault;
@@ -108,7 +108,7 @@ namespace TickZoom.StarterTest
     		starter.ProjectProperties.Starter.StartTime = (TimeStamp) new DateTime(2005,1,1);
     		starter.ProjectProperties.Starter.EndTime = (TimeStamp) new DateTime(2006,2,1);
 			starter.ProjectProperties.Starter.IntervalDefault = Intervals.Hour1;
-    		starter.DataFolder = "TestData";
+    		starter.DataFolder = "Test\\DataCache";
     		starter.ProjectProperties.Starter.SetSymbols("USD_JPY");
     		starter.ProjectProperties.Starter.SymbolProperties[0].ProfitLoss = profitLossLogic;
     		starter.Run(new OptimizeLoader());
@@ -123,7 +123,7 @@ namespace TickZoom.StarterTest
     		starter.ProjectProperties.Starter.StartTime = (TimeStamp) new DateTime(2005,1,1);
     		starter.ProjectProperties.Starter.EndTime = (TimeStamp) new DateTime(2006,2,1);
 			starter.ProjectProperties.Starter.IntervalDefault = Intervals.Hour1;
-    		starter.DataFolder = "TestData";
+    		starter.DataFolder = "Test\\DataCache";
     		starter.ProjectProperties.Starter.SetSymbols("USD_JPY");
     		try { 
 	    		starter.Run(new OptimizeLoaderBad());
@@ -142,7 +142,7 @@ namespace TickZoom.StarterTest
     		starter.ProjectProperties.Starter.StartTime = (TimeStamp) new DateTime(2005,1,1);
     		starter.ProjectProperties.Starter.EndTime = (TimeStamp) new DateTime(2006,2,1);
 			starter.ProjectProperties.Starter.IntervalDefault = Intervals.Hour1;
-    		starter.DataFolder = "TestData";
+    		starter.DataFolder = "Test\\DataCache";
     		starter.ProjectProperties.Starter.SetSymbols("USD_JPY");
     		try { 
 	    		starter.Run(new OptimizeLoaderBad());
@@ -165,7 +165,7 @@ namespace TickZoom.StarterTest
 			starter.ProjectProperties.Starter.IntervalDefault = Intervals.Hour1;
 			starter.AddDataFeed(provider);
 			// No charting for these tests.
-    		starter.DataFolder = "TestData";
+    		starter.DataFolder = "Test\\DataCache";
     		starter.ProjectProperties.Starter.SetSymbols(USD_JPY";
 	   		starter.Run(new OptimizeLoader());	
 #endif	   		
@@ -182,7 +182,7 @@ namespace TickZoom.StarterTest
     		starter.ProjectProperties.Starter.StartTime = (TimeStamp) new DateTime(2005,1,1);
     		starter.ProjectProperties.Starter.EndTime = (TimeStamp) new DateTime(2006,2,1);
 			starter.ProjectProperties.Starter.IntervalDefault = Intervals.Hour1;
-     		starter.DataFolder = "TestData";
+     		starter.DataFolder = "Test\\DataCache";
      		starter.ProjectProperties.Starter.SetSymbols("USD_JPY");
     		starter.Run(new GeneticLoader());
     		Assert.IsTrue(FileCompare(storageFolder+@"\Statistics\optimizeResults.csv",@"..\..\Platform\TickZoomTesting\Startup\geneticResults.csv"));

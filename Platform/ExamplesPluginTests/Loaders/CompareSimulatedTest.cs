@@ -53,7 +53,7 @@ namespace Loaders
 				// Set run properties as in the GUI.
 				fourTickStarter.ProjectProperties.Starter.StartTime = new TimeStamp(1800,1,1);
 	    		fourTickStarter.ProjectProperties.Starter.EndTime = new TimeStamp(1990,1,1);
-	    		fourTickStarter.DataFolder = "TestData";
+	    		fourTickStarter.DataFolder = "Test\\DataCache";
 	    		fourTickStarter.ProjectProperties.Starter.SetSymbols("Daily4Sim");
 				fourTickStarter.ProjectProperties.Starter.IntervalDefault = Intervals.Day1;
 				
@@ -73,7 +73,7 @@ namespace Loaders
 				// Set run properties as in the GUI.
 				fullTickStarter.ProjectProperties.Starter.StartTime = new TimeStamp(1800,1,1);
 	    		fullTickStarter.ProjectProperties.Starter.EndTime = new TimeStamp(1990,1,1);
-	    		fullTickStarter.DataFolder = "TestData";
+	    		fullTickStarter.DataFolder = "Test\\DataCache";
 	    		fullTickStarter.ProjectProperties.Starter.SetSymbols("FullTick");
 				fullTickStarter.ProjectProperties.Starter.IntervalDefault = Intervals.Day1;
 				

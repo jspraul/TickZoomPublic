@@ -48,7 +48,7 @@ namespace Loaders
 		static readonly Log log = Factory.SysLog.GetLogger(typeof(StrategyTest));
 		static readonly bool debug = log.IsDebugEnabled;
 		private string testFileName;
-		string dataFolder = "TestData";
+		string dataFolder = "Test\\DataCache";
 		string symbols;
 		List<ChartThread> chartThreads = new List<ChartThread>();
 		Dictionary<string,List<StatsInfo>> goodStatsMap = new Dictionary<string,List<StatsInfo>>();
@@ -99,6 +99,25 @@ namespace Loaders
 			if( testFailed) {
 //				log.Error("Shutting down due to test failure.");
 //				Environment.Exit(0);
+			}
+		}
+		
+		public void SetupWarehouseConfig(ushort servicePort)
+		{
+			try { 
+				string storageFolder = Factory.Settings["AppDataFolder"];
+				var providersPath = Path.Combine(storageFolder,"Providers");
+				string configPath = Path.Combine(providersPath,"ProviderCommon");
+				string configFile = Path.Combine(configPath,"WarehouseTest.config");
+				ConfigFile warehouseConfig = new ConfigFile(configFile);
+				warehouseConfig.SetValue("ServerCacheFolder","Test\\ServerCache");
+				warehouseConfig.SetValue("ServiceAddress","0.0.0.0");
+				warehouseConfig.SetValue("ServicePort",servicePort.ToString());
+				warehouseConfig.SetValue("ProviderAssembly","TickZoomCombinedMock");
+	 			// Clear the history files
+			} catch( Exception ex) {
+				log.Error("Setup error.",ex);
+				throw ex;
 			}
 		}
 		

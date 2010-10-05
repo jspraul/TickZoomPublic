@@ -55,6 +55,9 @@ namespace TickZoom.Starters
 					foreach( var provider in ProviderPlugins) {
 						service.AddProvider(provider);
 					}
+					if( Config != null) {
+						service.SetConfig(Config);
+					}
 					service.SetAddress("127.0.0.1",Port);
 					break;
 				default:

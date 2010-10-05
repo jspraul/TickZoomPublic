@@ -53,7 +53,7 @@ namespace TickZoom.TickData
 			string pair = "USD_JPY_Volume";
 			TickReader tickReader = new TickReader();
     		tickReader.LogProgress = true;
-    		tickReader.Initialize("TestData",pair);
+    		tickReader.Initialize("Test\\DataCache",pair);
     		int totalBytes = 0;
     		SignatureCompressor compressor = new SignatureCompressor();
     		ByteMemory compressed = new ByteMemory("compressed");
@@ -99,7 +99,7 @@ namespace TickZoom.TickData
 			string pair = "USD_JPY_Volume";
 			TickReader tickReader = new TickReader();
     		tickReader.LogProgress = true;
-    		tickReader.Initialize("TestData",pair);
+    		tickReader.Initialize("Test\\DataCache",pair);
     		int totalBytes = 0;
     		SignatureCompressor compressor = new SignatureCompressor();
     		SignatureCompressor decompressor = new SignatureCompressor();

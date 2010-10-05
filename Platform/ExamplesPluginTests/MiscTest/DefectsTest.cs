@@ -63,7 +63,7 @@ namespace MiscTest
 		public void Ticket123()
 		{
 			Starter starter = new HistoricalStarter();
-    		starter.DataFolder = "TestData";
+    		starter.DataFolder = "Test\\DataCache";
     		starter.ProjectProperties.Starter.SetSymbols("spyTestBars");
 			Interval intervalDefault = Intervals.Minute1;
 			starter.ProjectProperties.Starter.IntervalDefault = intervalDefault;

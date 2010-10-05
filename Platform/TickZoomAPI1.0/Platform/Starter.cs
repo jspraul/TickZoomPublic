@@ -107,6 +107,11 @@ namespace TickZoom.Api
 			set;
 		}
 		
+		string Config {
+			get;
+			set;
+		}
+		
 		/// <summary>
 		/// Port for communicating to the TickZoom Warehouse. See
 		/// Address property for further details. Default is 6490.

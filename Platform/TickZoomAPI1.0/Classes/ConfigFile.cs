@@ -41,7 +41,7 @@ namespace TickZoom.Api
 		
 		public ConfigFile() {
   			string appDataPath = Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData);
-  			appDataPath = Path.Combine(appDataPath,"TickZoom");
+  			appDataPath = Path.Combine(appDataPath,"TickZoom1.1");
 			UseFile( Path.Combine(appDataPath, "TickZoom.config"));
 		}
 			

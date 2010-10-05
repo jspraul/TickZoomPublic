@@ -57,7 +57,7 @@ namespace Loaders
 				// Set run properties as in the GUI.
 				starter.ProjectProperties.Starter.StartTime = new TimeStamp(1800,1,1);
 	    		starter.ProjectProperties.Starter.EndTime = new TimeStamp(2009,06,10);
-	    		starter.DataFolder = "TestData";
+	    		starter.DataFolder = "Test\\DataCache";
 	    		starter.ProjectProperties.Starter.SetSymbols(Symbols);
 				starter.ProjectProperties.Starter.IntervalDefault = Intervals.Minute1;
 	    		starter.CreateChartCallback = new CreateChartCallback(HistoricalCreateChart);

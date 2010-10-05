@@ -46,8 +46,8 @@ namespace TickZoom.Utilities
 	       		throw new ApplicationException( "Must set AppDataFolder property in app.config");
 	       	}
 			string[] args = {
-				storageFolder + @"\TestData\Daily4Ticks.tck",
-				storageFolder + @"\TestData\Daily4Sim.tck",
+				storageFolder + @"\Test\\DataCache\Daily4Ticks.tck",
+				storageFolder + @"\Test\\DataCache\Daily4Sim.tck",
 			};
 	       	Filter filter = new Filter();
 	       	filter.AssemblyName = "tzdata";
@@ -61,18 +61,18 @@ namespace TickZoom.Utilities
 	       	if( storageFolder == null) {
 	       		throw new ApplicationException( "Must set AppDataFolder property in app.config");
 	       	}
-	       	string origFile = storageFolder + @"\TestData\Migrate.tck";
+	       	string origFile = storageFolder + @"\Test\\DataCache\Migrate.tck";
 	       	string tempFile = origFile + ".temp";
 	       	string backupFile = origFile + ".back";
 	       	File.Delete( backupFile);
 	       	File.Delete( origFile);
-	       	string fileName = storageFolder + @"\TestData\USD_JPY.tck";
+	       	string fileName = storageFolder + @"\Test\\DataCache\USD_JPY.tck";
 	       	if( !File.Exists(fileName)) {
 	       		fileName = fileName.Replace(".tck","_Tick.tck");
 	       	}
 	       	File.Copy(fileName, origFile);
 	       	
-	       	string[] args = { "USD/JPY", storageFolder + @"\TestData\Migrate.tck" };
+	       	string[] args = { "USD/JPY", storageFolder + @"\Test\\DataCache\Migrate.tck" };
 	       	
 	       	Migrate migrate = new Migrate();
 	       	migrate.Run(args);
@@ -84,7 +84,8 @@ namespace TickZoom.Utilities
 		[Test]
 		public void TestQuery()
 		{
-			string[] args = { @"C:\TickZoom\TestData\ESH0.tck" };
+			var appData = Factory.Settings["AppDataFolder"];
+			string[] args = { appData + @"\Test\\DataCache\ESH0.tck" };
 			Query query = new Query();
 			query.Run(args);
 			string expectedOutput = @"Symbol: /ESH0

@@ -78,7 +78,7 @@ namespace TickZoom.Api
 		
 		private string ScanForFolder() {
 			foreach( DriveInfo drive in DriveInfo.GetDrives()) {
-				string path = drive.Name + "TickZoom";
+				string path = drive.Name + defaultDataFolder;
 				if( Directory.Exists(path)) {
 					return path;
 				}
@@ -100,12 +100,16 @@ namespace TickZoom.Api
 				}
 			}
 			if( maxDrive != null) {
-				return maxDrive + "TickZoom";
+				return maxDrive + defaultDataFolder;
 			} else {
 				return null;
 			}
 		}
 		
-		private const string defaultName = "TickZoom";
+		private const string defaultDataFolder = "TickZoomHome";
+		
+		public string DefaultDataFolder {
+			get { return defaultDataFolder; }
+		}
 	}
 }

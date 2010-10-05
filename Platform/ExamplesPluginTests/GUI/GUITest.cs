@@ -43,6 +43,7 @@ namespace MiscTest
 	{
 		private static Log log = Factory.SysLog.GetLogger(typeof(GUITest));
 		private static bool debug = log.IsDebugEnabled;
+		private ushort servicePort = 6490;
 		private Form1 form;
 		[SetUp]
 		public void Setup() {
@@ -59,6 +60,9 @@ namespace MiscTest
 			string projectFile = Path.Combine(workspaceFolder,"test.tzproj");
 			ConfigFile projectConfig = new ConfigFile(projectFile,Form1.DefaultConfig);
 			projectConfig.SetValue("ProviderAssembly","TickZoomCombinedMock");
+			projectConfig.SetValue("ServicePort",servicePort.ToString());
+			projectConfig.SetValue("ServiceConfig","WarehouseTest.config");
+			SetupWarehouseConfig();
 			Form1 form = new Form1("test");
 			form.Show();
 			WaitForEngine(form);
@@ -132,9 +136,9 @@ namespace MiscTest
 			while( true) {
 				try {
 					string appData = Factory.Settings["AppDataFolder"];
-		 			File.Delete( appData + @"\TestServerCache\ESZ9.tck");
-		 			File.Delete( appData + @"\TestServerCache\IBM.tck");
-		 			File.Delete( appData + @"\TestServerCache\GBPUSD.tck");
+		 			File.Delete( appData + @"\Test\\ServerCache\ESZ9.tck");
+		 			File.Delete( appData + @"\Test\\ServerCache\IBM.tck");
+		 			File.Delete( appData + @"\Test\\ServerCache\GBPUSD.tck");
 		 			Directory.CreateDirectory(appData + @"\Workspace\");
 		 			File.Delete( appData + @"\Workspace\test.config");
 					return;
@@ -146,6 +150,25 @@ namespace MiscTest
 						Thread.Sleep(1);
 					}
 				}
+			}
+		}
+		
+		public void SetupWarehouseConfig()
+		{
+			try { 
+				string storageFolder = Factory.Settings["AppDataFolder"];
+				var providersPath = Path.Combine(storageFolder,"Providers");
+				string configPath = Path.Combine(providersPath,"ProviderCommon");
+				string configFile = Path.Combine(configPath,"WarehouseTest.config");
+				ConfigFile warehouseConfig = new ConfigFile(configFile);
+				warehouseConfig.SetValue("ServerCacheFolder","Test\\ServerCache");
+				warehouseConfig.SetValue("ServiceAddress","0.0.0.0");
+				warehouseConfig.SetValue("ServicePort",servicePort.ToString());
+				warehouseConfig.SetValue("ProviderAssembly","TickZoomCombinedMock");
+	 			// Clear the history files
+			} catch( Exception ex) {
+				log.Error("Setup error.",ex);
+				throw ex;
 			}
 		}
 		
@@ -167,8 +190,8 @@ namespace MiscTest
 				Assert.IsFalse(form.ProcessWorker.IsBusy,"ProcessWorker.Busy");
 				Assert.Greater(form.LogOutput.Lines.Length,2,"number of log lines");
 				string appData = Factory.Settings["AppDataFolder"];
-				string compareFile1 = appData + @"\MockProviderData\ESZ9.tck";
-				string compareFile2 = appData + @"\TestServerCache\ESZ9.tck";
+				string compareFile1 = appData + @"\Test\MockProviderData\ESZ9.tck";
+				string compareFile2 = appData + @"\Test\ServerCache\ESZ9.tck";
 				using ( TickReader reader1 = Factory.TickUtil.TickReader()) {
 					reader1.Initialize(compareFile1,form.TxtSymbol.Text);
 					TickBinary tick1 = new TickBinary();
@@ -177,7 +200,6 @@ namespace MiscTest
 						while(true) {
 							while(!reader1.ReadQueue.TryDequeue(ref tick1)) { Thread.Sleep(1); }
 							TimeStamp ts1 = new TimeStamp(tick1.UtcTime);
-//							log.Info("Tick# " + count + ". " + ts1);
 							count++;
 						}
 					} catch( QueueException ex) {

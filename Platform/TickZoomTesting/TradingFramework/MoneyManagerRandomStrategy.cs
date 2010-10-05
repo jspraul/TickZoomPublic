@@ -36,7 +36,7 @@
 //	public class MoneyManagerRandomStrategy
 //	{
 //		MoneyManagerSupportInner moneyManager;
-//		DataStore data = DataStore.DeserializeNow("TestData","USD_JPY");
+//		DataStore data = DataStore.DeserializeNow("Test\\DataCache","USD_JPY");
 //		[Test]
 //		public void Constructor()
 //		{
