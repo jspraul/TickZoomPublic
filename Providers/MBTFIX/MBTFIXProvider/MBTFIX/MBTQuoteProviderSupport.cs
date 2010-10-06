@@ -346,15 +346,10 @@ namespace TickZoom.MBTQuotes
 	        ConfigFile configFile;
 			if( !File.Exists(configFilePath) ) {
 	        	configFile = new ConfigFile(configFilePath);
-	        	configFile.SetValue("LiveOrDemo","demo");
-	        	configFile.SetValue("DemoAddress","216.52.236.111");
-	            configFile.SetValue("DemoPort","5020");
-	        	configFile.SetValue("LiveAddress","CHANGEME");
-	            configFile.SetValue("LivePort","CHANGEME");
-	        	configFile.SetValue("DemoUserName","CHANGEME");
-	            configFile.SetValue("DemoPassword","CHANGEME");
-	        	configFile.SetValue("LiveUserName","CHANGEME");
-	            configFile.SetValue("LivePassword","CHANGEME");
+	        	configFile.SetValue("ServerAddress","216.52.236.111");
+	            configFile.SetValue("ServerPort","5020");
+	        	configFile.SetValue("UserName","CHANGEME");
+	            configFile.SetValue("Password","CHANGEME");
 	        } else {
 	        	configFile = new ConfigFile(configFilePath);
 	        }
@@ -363,27 +358,13 @@ namespace TickZoom.MBTQuotes
 		}
 	        
         private void ParseProperties(ConfigFile configFile) {
-	        string liveOrDemo = configFile.GetValue("LiveOrDemo");
-			liveOrDemo = liveOrDemo.ToLower();
-			switch( liveOrDemo) {
-				case "live":
-				case "demo":
-					break;
-				default:
-					throw new ApplicationException("Please set 'LiveOrDemo' to live, or demo in '"+configFilePath+"'.");
-			}
-			
-			var prefix = UpperFirst(liveOrDemo);
-			
-			var property = prefix + "Address";
-			AddrStr = configFile.GetValue(property);
-			property = prefix + "Port";
-			var portStr = configFile.GetValue(property);
+			AddrStr = configFile.GetValue("ServerAddress");
+			var portStr = configFile.GetValue("ServerPort");
 			if( !ushort.TryParse(portStr, out port)) {
-				throw new ApplicationException("Please set '" + property + "' to a valid port number in '"+configFilePath+"'.");
+				throw new ApplicationException("Please set 'ServerPort' to a valid port number in '"+configFilePath+"'.");
 			}
-			userName = configFile.GetValue(prefix + "UserName");
-			password = configFile.GetValue(prefix + "Password");
+			userName = configFile.GetValue("UserName");
+			password = configFile.GetValue("Password");
 			
 			if( File.Exists(failedFile) ) {
 				throw new ApplicationException("Please correct the username or password error described in " + failedFile + ". Then delete the file before retrying, please.");

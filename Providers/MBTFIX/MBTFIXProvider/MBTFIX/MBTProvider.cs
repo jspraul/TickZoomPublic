@@ -36,12 +36,8 @@ namespace TickZoom.MBTFIX
 {
 	public class MBTProvider : TestableProvider
 	{
-		private const string configName = "Default.config";
 		private MBTFIXProvider fixProvider;
 		private MBTQuotesProvider quotesProvider;
-		
-		public MBTProvider() : this( configName) {
-		}
 		
 		public MBTProvider(string configName) {
 			fixProvider = new MBTFIXProvider(configName);

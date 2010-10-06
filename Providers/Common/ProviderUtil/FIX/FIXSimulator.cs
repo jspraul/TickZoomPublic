@@ -30,11 +30,12 @@ using TickZoom.Api;
 
 namespace TickZoom.FIX
 {
-	public class FIXServerMock : IDisposable {
+	public class FIXSimulator : IDisposable {
 		private string localAddress = "0.0.0.0";
-		private static Log log = Factory.SysLog.GetLogger(typeof(FIXServerMock));
+		private static Log log = Factory.SysLog.GetLogger(typeof(FIXSimulator));
 		private static bool trace = log.IsTraceEnabled;
 		private static bool debug = log.IsDebugEnabled;
+		private SimpleLock symbolHandlersLocker = new SimpleLock();
 		
 		// FIX fields.
 		private ushort fixPort = 0;
@@ -60,7 +61,7 @@ namespace TickZoom.FIX
 		
 		private Dictionary<long,FIXServerSymbolHandler> symbolHandlers = new Dictionary<long,FIXServerSymbolHandler>();
 
-		public FIXServerMock(ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory) {
+		public FIXSimulator(ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory) {
 			WriteToFixMethod = WriteToFIX;
 			WriteToQuotesMethod = WriteToQuotes;
 			this.fixPacketFactory = fixPacketFactory;
@@ -125,11 +126,17 @@ namespace TickZoom.FIX
 		
 		protected virtual void CloseSockets() {
         	if( symbolHandlers != null) {
-            	foreach( var kvp in symbolHandlers) {
-            		var handler = kvp.Value;
-            		handler.Dispose();
-            	}
-            	symbolHandlers.Clear();
+				if( symbolHandlersLocker.TryLock()) {
+					try {
+		            	foreach( var kvp in symbolHandlers) {
+		            		var handler = kvp.Value;
+		            		handler.Dispose();
+		            	}
+		            	symbolHandlers.Clear();
+					} finally {
+						symbolHandlersLocker.Unlock();
+					}
+				}
         	}
 			if( fixTask != null) fixTask.Stop();
 			if( fixSocket != null) fixSocket.Dispose();
@@ -236,11 +243,17 @@ namespace TickZoom.FIX
 	            if (disposing) {
 	            	if( debug) log.Debug("Dispose()");
 	            	if( symbolHandlers != null) {
-		            	foreach( var kvp in symbolHandlers) {
-		            		var handler = kvp.Value;
-		            		handler.Dispose();
-		            	}
-		            	symbolHandlers.Clear();
+						if( symbolHandlersLocker.TryLock()) {
+	            			try {
+				            	foreach( var kvp in symbolHandlers) {
+				            		var handler = kvp.Value;
+				            		handler.Dispose();
+				            	}
+				            	symbolHandlers.Clear();
+	            			} finally {
+	            				symbolHandlersLocker.Unlock();
+	            			}
+	            		}
 	            	}
 	            	if( fixTask != null) {
 	            		fixTask.Stop();

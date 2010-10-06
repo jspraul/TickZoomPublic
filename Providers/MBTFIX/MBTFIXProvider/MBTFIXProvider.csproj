@@ -54,7 +54,8 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MBTFIX\MBTFIXFilter.cs" />
     <Compile Include="MBTFIX\MBTFIXProvider.cs" />
-    <Compile Include="MBTFIX\MBTFIXServerMock.cs" />
+    <Compile Include="MBTFIX\ServerState.cs" />
+    <Compile Include="MBTFIX\MBTFIXSimulator.cs" />
     <Compile Include="MBTFIX\MBTProvider.cs" />
     <Compile Include="MBTFIX\MBTQuotesProvider.cs" />
     <Compile Include="MBTFIX\PacketFactoryMBTQuotes.cs" />

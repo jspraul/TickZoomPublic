@@ -43,6 +43,7 @@ namespace TickZoom.Test
 		protected SymbolInfo symbol;
 		protected Action<TickIO, TickIO, long> assertTick;
 		private string providerAssembly = "TickZoomCombinedMock";
+		private string assemblyName;
 		
 		public BaseProviderTests() {
 			string providerAssembly = Factory.Settings["ProviderAssembly"];
@@ -55,13 +56,15 @@ namespace TickZoom.Test
 		public virtual void Init()
 		{
 			string appData = Factory.Settings["AppDataFolder"];
-			File.Delete( Factory.SysLog.LogFolder + @"\" + providerAssembly+"Tests.log");
-			File.Delete( Factory.SysLog.LogFolder + @"\" + providerAssembly+".log");
+			File.Delete( Factory.SysLog.LogFolder + @"\" + assemblyName+"Tests.log");
+			File.Delete( Factory.SysLog.LogFolder + @"\" + assemblyName+".log");
 			
 		}
 		
 		public void SetProviderAssembly( string providerAssembly) {
 			this.providerAssembly = providerAssembly;	
+			var strings = providerAssembly.Split( new char[] { '/', '\\' } );
+			assemblyName = strings[0];
 		}
 		
 		public virtual Provider CreateProvider(bool inProcessFlag) {
@@ -69,7 +72,7 @@ namespace TickZoom.Test
 			if( inProcessFlag) {
 				provider = ProviderFactory();
 			} else {
-				provider = Factory.Provider.ProviderProcess("127.0.0.1",6492,providerAssembly+".exe");
+				provider = Factory.Provider.ProviderProcess("127.0.0.1",6492,providerAssembly);
 			}
 			return provider;
 		}
@@ -217,6 +220,10 @@ namespace TickZoom.Test
 		
 		public string ProviderAssembly {
 			get { return providerAssembly; }
+		}
+		
+		public string AssemblyName {
+			get { return assemblyName; }
 		}
 	}
 }

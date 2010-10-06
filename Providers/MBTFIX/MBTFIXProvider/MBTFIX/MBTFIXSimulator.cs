@@ -35,13 +35,8 @@ using TickZoom.MBTQuotes;
 
 namespace TickZoom.MBTFIX
 {
-	public enum ServerState {
-		Startup,
-		LoggedIn
-	}
-	
-	public class MBTFIXServerMock : FIXServerMock {
-		private static Log log = Factory.SysLog.GetLogger(typeof(MBTFIXServerMock));
+	public class MBTFIXSimulator : FIXSimulator {
+		private static Log log = Factory.SysLog.GetLogger(typeof(MBTFIXSimulator));
 		private static bool trace = log.IsTraceEnabled;
 		private static bool debug = log.IsDebugEnabled;
 		private ServerState fixState = ServerState.Startup;
@@ -49,7 +44,7 @@ namespace TickZoom.MBTFIX
 		private Queue<Packet> packetQueue = new Queue<Packet>();
 		private Task packetTask;
 		
-		public MBTFIXServerMock(ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory) 
+		public MBTFIXSimulator(ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory) 
 			: base( fixPort, quotesPort, fixPacketFactory, quotePacketFactory) {			
 		}
 		
@@ -73,7 +68,7 @@ namespace TickZoom.MBTFIX
 		{
 			base.StartFIXSimulation();
 		}
-
+	
 		public override void StartQuoteSimulation()
 		{
 			base.StartQuoteSimulation();
@@ -126,7 +121,7 @@ namespace TickZoom.MBTFIX
 			fixWritePacket.DataOut.Write(message.ToCharArray());
 			
 			if(debug) log.Debug("Sending end of order list: " + message);
-
+	
 			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 		
@@ -139,7 +134,7 @@ namespace TickZoom.MBTFIX
 			fixWritePacket.DataOut.Write(message.ToCharArray());
 			
 			if(debug) log.Debug("Sending end of position list: " + message);
-
+	
 			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 		
@@ -218,7 +213,7 @@ namespace TickZoom.MBTFIX
 			fixWritePacket.DataOut.Write(login.ToCharArray());
 			
 			if(debug) log.Debug("Sending login response: " + login);
-
+	
 			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 		

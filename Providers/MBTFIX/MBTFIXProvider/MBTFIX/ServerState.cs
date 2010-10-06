@@ -25,30 +25,18 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
-using NUnit.Framework;
-using TickZoom.Api;
-using TickZoom.MBTFIX;
-using TickZoom.Test;
 
-namespace Test
+using TickZoom.Api;
+using TickZoom.FIX;
+using TickZoom.MBTQuotes;
+
+namespace TickZoom.MBTFIX
 {
-	[TestFixture]
-	public class FIXPreTradeFilter : NegativeFilterTests
-	{
-		public static readonly Log log = Factory.SysLog.GetLogger(typeof(FIXPreTradeFilter));
-		public FIXPreTradeFilter()
-		{
-			log.Notice("Waiting 20 seconds for FIX server to reset.");
-			Thread.Sleep(20000);
-			SetSymbol("IBM");
-			SetTickTest(TickTest.Level1);
-		}
-		
-		public override Provider ProviderFactory()
-		{
-			return new MBTProvider("EquityDemo.config");
-		}
-		
+	public enum ServerState {
+		Startup,
+		LoggedIn
 	}
 }

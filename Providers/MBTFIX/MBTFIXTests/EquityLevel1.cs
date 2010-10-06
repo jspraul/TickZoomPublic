@@ -45,12 +45,12 @@ namespace Test
 //			Thread.Sleep(20000);
 			SetSymbol("IBM");
 			SetTickTest(TickTest.Level1);
-			SetProviderAssembly("MBTFIXProvider");			
+			SetProviderAssembly("MBTFIXProvider/EquityDemo");			
 		}
 		
 		public override Provider ProviderFactory()
 		{
-			return new MBTProvider();
+			return new MBTProvider("EquityDemo.config");
 		}
 		
 	}

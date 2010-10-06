@@ -33,6 +33,7 @@ using TickZoom.Test;
 
 namespace Test
 {
+
 	[TestFixture]
 	public class TimeAndSalesTest : ProviderTests
 	{
@@ -43,12 +44,12 @@ namespace Test
 			Thread.Sleep(20000);
 			SetSymbol("SPY");
 			SetTickTest(TickTest.TimeAndSales);
-			SetProviderAssembly("MBTFIXProvider");
+			SetProviderAssembly("MBTFIXProvider/EquityDemo");
 		}
 		
 		public override Provider ProviderFactory()
 		{
-			return new MBTProvider();
+			return new MBTProvider("EquityDemo.config");
 		}
 	}
 }

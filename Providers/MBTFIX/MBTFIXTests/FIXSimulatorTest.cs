@@ -28,27 +28,55 @@ using System;
 using System.Threading;
 using NUnit.Framework;
 using TickZoom.Api;
+using TickZoom.FIX;
 using TickZoom.MBTFIX;
+using TickZoom.MBTQuotes;
 using TickZoom.Test;
 
 namespace Test
 {
 	[TestFixture]
-	public class FIXPreTradeFilter : NegativeFilterTests
+	public class FIXSimulatorTest : ProviderTests
 	{
-		public static readonly Log log = Factory.SysLog.GetLogger(typeof(FIXPreTradeFilter));
-		public FIXPreTradeFilter()
+		public static readonly Log log = Factory.SysLog.GetLogger(typeof(EquityLevel1));
+		private FIXSimulator fixServer;
+		public FIXSimulatorTest()
 		{
-			log.Notice("Waiting 20 seconds for FIX server to reset.");
-			Thread.Sleep(20000);
-			SetSymbol("IBM");
+			SetSymbol("SPY");
 			SetTickTest(TickTest.Level1);
+			SetProviderAssembly("MBTFIXProvider/Simulate");
+			IsTestSeperate = true;
 		}
+		
+		public override void Setup()
+		{
+			base.Setup();
+			fixServer = new MBTFIXSimulator(6489,6488,new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes());
+			var port = fixServer.FIXPort;
+		}
+		
+		
+		public override void TearDown()
+		{
+			fixServer.Dispose();
+			base.TearDown();
+		}
+		
+//		public override Provider CreateProvider(bool inProcessFlag) {
+//			Provider provider;
+//			if( inProcessFlag) {
+//				provider = ProviderFactory();
+//			} else {
+//				// Set to use the Simulate configuration files.
+//				var providerAssembly = ProviderAssembly + "/Simulate";
+//				provider = Factory.Provider.ProviderProcess("127.0.0.1",6492,providerAssembly);
+//			}
+//			return provider;
+//		}
 		
 		public override Provider ProviderFactory()
 		{
-			return new MBTProvider("EquityDemo.config");
-		}
-		
+			return new MBTProvider("Simulate.config");
+		}		
 	}
 }

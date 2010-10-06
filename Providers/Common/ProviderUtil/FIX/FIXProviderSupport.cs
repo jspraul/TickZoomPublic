@@ -356,30 +356,11 @@ namespace TickZoom.FIX
 	        log.Notice("Config file path: " + configFilePath);
 			if( !File.Exists(configFilePath) ) {
 	        	configFile = new ConfigFile(configFilePath);
-	        	configFile.SetValue("EquityOrForexOrCombo","equity");
-	        	configFile.SetValue("LiveOrDemo","demo");
-	        	configFile.SetValue("DemoAddress","127.0.0.1");
-	        	configFile.SetValue("DemoPort","5679");
-	        	configFile.SetValue("LiveAddress","127.0.0.1");
-	        	configFile.SetValue("LivePort","5680");
-	        	configFile.SetValue("ForexDemoUserName","CHANGEME");
-	        	configFile.SetValue("ForexDemoPassword","CHANGEME");
-	        	configFile.SetValue("ForexDemoAccountNumber","CHANGEME");
-	        	configFile.SetValue("ForexLiveUserName","CHANGEME");
-	        	configFile.SetValue("ForexLivePassword","CHANGEME");
-	        	configFile.SetValue("ForexLiveAccountNumber","CHANGEME");
-	        	configFile.SetValue("ComboDemoUserName","CHANGEME");
-	        	configFile.SetValue("ComboDemoPassword","CHANGEME");
-	        	configFile.SetValue("ComboDemoAccountNumber","CHANGEME");
-	        	configFile.SetValue("ComboLiveUserName","CHANGEME");
-	        	configFile.SetValue("ComboLivePassword","CHANGEME");
-	        	configFile.SetValue("ComboLiveAccountNumber","CHANGEME");
-	        	configFile.SetValue("EquityDemoUserName","CHANGEME");
-	        	configFile.SetValue("EquityDemoPassword","CHANGEME");
-	        	configFile.SetValue("EquityDemoAccountNumber","CHANGEME");
-	        	configFile.SetValue("EquityLiveUserName","CHANGEME");
-	        	configFile.SetValue("EquityLivePassword","CHANGEME");
-	        	configFile.SetValue("EquityLiveAccountNumber","CHANGEME");
+	        	configFile.SetValue("ServerAddress","127.0.0.1");
+	        	configFile.SetValue("ServerPort","5679");
+	        	configFile.SetValue("UserName","CHANGEME");
+	        	configFile.SetValue("Password","CHANGEME");
+	        	configFile.SetValue("AccountNumber","CHANGEME");
 	        } else {
 	        	configFile = new ConfigFile(configFilePath);
 	        }
@@ -388,40 +369,16 @@ namespace TickZoom.FIX
 		}
         
         private void ParseProperties(ConfigFile configFile) {
-        	var equityForexCombo = configFile.GetValue("EquityOrForexOrCombo");
-        	equityForexCombo = equityForexCombo.ToLower();
-			switch( equityForexCombo) {
-				case "equity":
-				case "forex":
-				case "combo":
-					break;
-				default:
-					throw new ApplicationException("Please set 'EquityOrForexOrCombo' to either equity,forex, or combo in '"+configFile+"'.");
-			}
-			var liveOrDemo = configFile.GetValue("LiveOrDemo");
-			liveOrDemo = liveOrDemo.ToLower();
-			switch( liveOrDemo) {
-				case "live":
-				case "demo":
-					break;
-				default:
-					throw new ApplicationException("Please set 'LiveOrDemo' to live, or demo in '"+configFile+"'.");
-			}
+			AddrStr = configFile.GetValue("ServerAddress");
 			
-			var prefix = UpperFirst(liveOrDemo);		
-			var property = prefix + "Address";
-			AddrStr = configFile.GetValue(property);
-			
-			property = prefix + "Port";
-			var portStr = configFile.GetValue(property);
+			var portStr = configFile.GetValue("ServerPort");
 			if( !ushort.TryParse(portStr, out port)) {
-				throw new ApplicationException("Please set '" + property + "' to live, or demo in '"+configFile+"'.");
+				throw new ApplicationException("Please set 'ServerPort' to a valid port number in '"+configFile+"'.");
 			}
 			
-			prefix = UpperFirst(equityForexCombo) + UpperFirst(liveOrDemo);
-			userName = configFile.GetValue(prefix + "UserName");
-			password = configFile.GetValue(prefix + "Password");
-			accountNumber = configFile.GetValue(prefix + "AccountNumber");
+			userName = configFile.GetValue("UserName");
+			password = configFile.GetValue("Password");
+			accountNumber = configFile.GetValue("AccountNumber");
 			
 			if( File.Exists(failedFile) ) {
 				throw new ApplicationException("Please correct the username or password error described in " + failedFile + ". Then delete the file before retrying, please.");

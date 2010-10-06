@@ -54,8 +54,9 @@
     <Compile Include="EquityLevel1.cs" />
     <Compile Include="FIXAPI.cs" />
     <Compile Include="FIXPreTradeFilter.cs" />
+    <Compile Include="ForexLevel1Test.cs" />
     <Compile Include="FuturesLevel1AndTrades.cs" />
-    <Compile Include="FIXSimulator.cs" />
+    <Compile Include="FIXSimulatorTest.cs" />
     <Compile Include="QuotesAPI.cs" />
     <Compile Include="TimeAndSales.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

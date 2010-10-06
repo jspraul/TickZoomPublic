@@ -84,7 +84,7 @@ namespace TickZoom.Test
 				if(debug) log.Debug("===VerifyFeed===");
 	  			long count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			Process[] processes = Process.GetProcessesByName(ProviderAssembly);
+	  			Process[] processes = Process.GetProcessesByName(AssemblyName);
 	  			Assert.AreEqual(1,processes.Length,"Number of provider service processes.");
 	  			
 		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
