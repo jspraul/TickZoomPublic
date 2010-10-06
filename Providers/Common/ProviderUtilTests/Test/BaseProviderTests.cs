@@ -42,7 +42,7 @@ namespace TickZoom.Test
 		protected ActiveList<LogicalOrder> orders = new ActiveList<LogicalOrder>();
 		protected SymbolInfo symbol;
 		protected Action<TickIO, TickIO, long> assertTick;
-		protected string providerAssembly = "TickZoomCombinedMock";
+		private string providerAssembly = "TickZoomCombinedMock";
 		
 		public BaseProviderTests() {
 			string providerAssembly = Factory.Settings["ProviderAssembly"];
@@ -64,7 +64,7 @@ namespace TickZoom.Test
 			this.providerAssembly = providerAssembly;	
 		}
 		
-		public Provider CreateProvider(bool inProcessFlag) {
+		public virtual Provider CreateProvider(bool inProcessFlag) {
 			Provider provider;
 			if( inProcessFlag) {
 				provider = ProviderFactory();
@@ -213,6 +213,10 @@ namespace TickZoom.Test
 			logical.Price = price;
 			orders.AddLast(logical);
 			return logical;
+		}
+		
+		public string ProviderAssembly {
+			get { return providerAssembly; }
 		}
 	}
 }

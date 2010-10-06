@@ -84,6 +84,7 @@
     <Compile Include="Interceptors\FillSimulatorPhysical.cs" />
     <Compile Include="Interceptors\PhysicalFillDefault.cs" />
     <Compile Include="Interceptors\StrategyInterceptor.cs" />
+    <Compile Include="ProviderUtilities\Arguments.cs" />
     <Compile Include="ProviderUtilities\ServiceInstaller.cs" />
     <Compile Include="Reports\EquityStatsReport.cs" />
     <Compile Include="Reports\IndexForReport.cs" />

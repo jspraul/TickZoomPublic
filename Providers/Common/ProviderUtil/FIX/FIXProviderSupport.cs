@@ -68,6 +68,8 @@ namespace TickZoom.FIX
 		private long heartbeatTimeout;
 		private int heartbeatDelay = 30;
 		private bool logRecovery = false;
+        private string configFilePath;
+        private string configFileName;
 		
 		public FIXProviderSupport()
 		{
@@ -112,8 +114,8 @@ namespace TickZoom.FIX
 				if( appDataFolder == null) {
 					throw new ApplicationException("Sorry, AppDataFolder must be set in the app.config file.");
 				}
-				string configFile = appDataFolder+@"/Providers/"+providerName+".config";
-				failedFile = appDataFolder+@"/Providers/"+providerName+"LoginFailed.txt";
+				string configFile = appDataFolder+@"/Providers/"+providerName+"/"+configFileName;
+				failedFile = appDataFolder+@"/Providers/"+providerName+"/LoginFailed.txt";
 				
 				LoadProperties(configFile);
 				
@@ -348,66 +350,46 @@ namespace TickZoom.FIX
         
         public abstract void OnStopSymbol(SymbolInfo symbol);
 	        
-        Dictionary<string, string> data;
-        string configFile;
-        private void LoadProperties(string configFile) {
-        	this.configFile = configFile;
-			data = new Dictionary<string, string>();
-			if( !File.Exists(configFile) ) {
-				Directory.CreateDirectory(Path.GetDirectoryName(configFile));
-		        using (StreamWriter sw = new StreamWriter(configFile)) 
-		        {
-		            // Add some text to the file.
-		            sw.WriteLine("####################################");
-		            sw.WriteLine("# The first 2 properties determine which user name and password get used.");
-		            sw.WriteLine("####################################");
-		            sw.WriteLine("EquityOrForexOrCombo=equity");
-		            sw.WriteLine("LiveOrDemo=demo");
-		            sw.WriteLine();
-		            sw.WriteLine("DemoAddress=127.0.0.1");
-		            sw.WriteLine("DemoPort=5679");
-		            sw.WriteLine();
-		            sw.WriteLine("LiveAddress=127.0.0.1");
-		            sw.WriteLine("LivePort=5680");
-		            sw.WriteLine();
-		            sw.WriteLine("ForexDemoUserName=CHANGEME");
-		            sw.WriteLine("ForexDemoPassword=CHANGEME");
-		            sw.WriteLine("ForexDemoAccountNumber=CHANGEME");
-		            sw.WriteLine();
-		            sw.WriteLine("ForexLiveUserName=CHANGEME");
-		            sw.WriteLine("ForexLivePassword=CHANGEME");
-		            sw.WriteLine("ForexLiveAccountNumber=CHANGEME");
-		            sw.WriteLine();
-		            sw.WriteLine("ComboDemoUserName=CHANGEME");
-		            sw.WriteLine("ComboDemoPassword=CHANGEME");
-		            sw.WriteLine("ComboDemoAccountNumber=CHANGEME");
-		            sw.WriteLine();
-		            sw.WriteLine("ComboLiveUserName=CHANGEME");
-		            sw.WriteLine("ComboLivePassword=CHANGEME");
-		            sw.WriteLine("ComboLiveAccountNumber=CHANGEME");
-		            sw.WriteLine();
-		            sw.WriteLine("EquityDemoUserName=CHANGEME");
-		            sw.WriteLine("EquityDemoPassword=CHANGEME");
-		            sw.WriteLine("EquityDemoAccountNumber=CHANGEME");
-		            sw.WriteLine();
-		            sw.WriteLine("EquityLiveUserName=CHANGEME");
-		            sw.WriteLine("EquityLivePassword=CHANGEME");
-		            sw.WriteLine("EquityLiveAccountNumber=CHANGEME");
-		        }
-			} 
+        private void LoadProperties(string configFilePath) {
+        	this.configFilePath = configFilePath;
+	        ConfigFile configFile;
+	        log.Notice("Config file path: " + configFilePath);
+			if( !File.Exists(configFilePath) ) {
+	        	configFile = new ConfigFile(configFilePath);
+	        	configFile.SetValue("EquityOrForexOrCombo","equity");
+	        	configFile.SetValue("LiveOrDemo","demo");
+	        	configFile.SetValue("DemoAddress","127.0.0.1");
+	        	configFile.SetValue("DemoPort","5679");
+	        	configFile.SetValue("LiveAddress","127.0.0.1");
+	        	configFile.SetValue("LivePort","5680");
+	        	configFile.SetValue("ForexDemoUserName","CHANGEME");
+	        	configFile.SetValue("ForexDemoPassword","CHANGEME");
+	        	configFile.SetValue("ForexDemoAccountNumber","CHANGEME");
+	        	configFile.SetValue("ForexLiveUserName","CHANGEME");
+	        	configFile.SetValue("ForexLivePassword","CHANGEME");
+	        	configFile.SetValue("ForexLiveAccountNumber","CHANGEME");
+	        	configFile.SetValue("ComboDemoUserName","CHANGEME");
+	        	configFile.SetValue("ComboDemoPassword","CHANGEME");
+	        	configFile.SetValue("ComboDemoAccountNumber","CHANGEME");
+	        	configFile.SetValue("ComboLiveUserName","CHANGEME");
+	        	configFile.SetValue("ComboLivePassword","CHANGEME");
+	        	configFile.SetValue("ComboLiveAccountNumber","CHANGEME");
+	        	configFile.SetValue("EquityDemoUserName","CHANGEME");
+	        	configFile.SetValue("EquityDemoPassword","CHANGEME");
+	        	configFile.SetValue("EquityDemoAccountNumber","CHANGEME");
+	        	configFile.SetValue("EquityLiveUserName","CHANGEME");
+	        	configFile.SetValue("EquityLivePassword","CHANGEME");
+	        	configFile.SetValue("EquityLiveAccountNumber","CHANGEME");
+	        } else {
+	        	configFile = new ConfigFile(configFilePath);
+	        }
 			
-			foreach (var row in File.ReadAllLines(configFile)) {
-				if( string.IsNullOrEmpty(row) || row.TrimStart()[0] == '#') continue;
-				string[] nameValue = row.Split('=');
-				data[nameValue[0].Trim().ToLower()] = nameValue[1].Trim();
-			}
-			
-			ParseProperties();
+			ParseProperties(configFile);
 		}
         
-        private void ParseProperties() {
-        	string equityForexCombo = GetProperty("EquityOrForexOrCombo");
-			equityForexCombo = equityForexCombo.ToLower();
+        private void ParseProperties(ConfigFile configFile) {
+        	var equityForexCombo = configFile.GetValue("EquityOrForexOrCombo");
+        	equityForexCombo = equityForexCombo.ToLower();
 			switch( equityForexCombo) {
 				case "equity":
 				case "forex":
@@ -416,7 +398,7 @@ namespace TickZoom.FIX
 				default:
 					throw new ApplicationException("Please set 'EquityOrForexOrCombo' to either equity,forex, or combo in '"+configFile+"'.");
 			}
-			string liveOrDemo = GetProperty("LiveOrDemo");
+			var liveOrDemo = configFile.GetValue("LiveOrDemo");
 			liveOrDemo = liveOrDemo.ToLower();
 			switch( liveOrDemo) {
 				case "live":
@@ -426,27 +408,24 @@ namespace TickZoom.FIX
 					throw new ApplicationException("Please set 'LiveOrDemo' to live, or demo in '"+configFile+"'.");
 			}
 			
-			string prefix = equityForexCombo + liveOrDemo;
+			var prefix = UpperFirst(liveOrDemo);		
+			var property = prefix + "Address";
+			AddrStr = configFile.GetValue(property);
 			
-			AddrStr = GetProperty(liveOrDemo + "Address");
-			string portStr = GetProperty(liveOrDemo + "port");
-			port = ushort.Parse(portStr);
-			userName = GetProperty(prefix + "UserName");
-			password = GetProperty(prefix + "Password");
-			accountNumber = GetProperty(prefix + "AccountNumber");
+			property = prefix + "Port";
+			var portStr = configFile.GetValue(property);
+			if( !ushort.TryParse(portStr, out port)) {
+				throw new ApplicationException("Please set '" + property + "' to live, or demo in '"+configFile+"'.");
+			}
+			
+			prefix = UpperFirst(equityForexCombo) + UpperFirst(liveOrDemo);
+			userName = configFile.GetValue(prefix + "UserName");
+			password = configFile.GetValue(prefix + "Password");
+			accountNumber = configFile.GetValue(prefix + "AccountNumber");
 			
 			if( File.Exists(failedFile) ) {
 				throw new ApplicationException("Please correct the username or password error described in " + failedFile + ". Then delete the file before retrying, please.");
 			}
-        }
-	        
-        private string GetProperty( string name) {
-        	string value;
-        	if( !data.TryGetValue(name.ToLower(),out value) ||
-        	   string.IsNullOrEmpty(value) || value.Contains("CHANGEME")) {
-				throw new ApplicationException(name + " property must be set in " + configFile);
-			}
-        	return value;
         }
 	        
 		private string UpperFirst(string input)
@@ -614,5 +593,10 @@ namespace TickZoom.FIX
 			get { return fixFilter; }
 			set { fixFilter = value; }
 		}
+        
+		public string ConfigFileName {
+			get { return configFileName; }
+			set { configFileName = value; }
+		}		
 	}
 }

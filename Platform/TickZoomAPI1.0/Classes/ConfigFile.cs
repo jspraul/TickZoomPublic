@@ -66,6 +66,14 @@ namespace TickZoom.Api
 				return File.Exists(_cfgFile);
 			}
 		}
+		
+		public string GetValue( string property, string defaultValue) {
+			var result = GetValue(property);
+			if( result == null) {
+				result = defaultValue;
+			}
+			return result;
+		}
 
 		public string GetValue (string property)
 		{

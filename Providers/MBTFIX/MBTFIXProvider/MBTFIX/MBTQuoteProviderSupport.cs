@@ -64,6 +64,8 @@ namespace TickZoom.MBTQuotes
 		private long heartbeatTimeout;
 		private int heartbeatDelay = 30;
 		private bool logRecovery = false;
+	    private string configFilePath;
+	    private string configFileName;
 		
 		public MBTQuoteProviderSupport()
 		{
@@ -101,12 +103,12 @@ namespace TickZoom.MBTQuotes
 		protected void Initialize() {
 	        try { 
 				if( debug) log.Debug("> Initialize.");
-				string appDataFolder = Factory.Settings["AppDataFolder"];
+				var appDataFolder = Factory.Settings["AppDataFolder"];
 				if( appDataFolder == null) {
 					throw new ApplicationException("Sorry, AppDataFolder must be set in the app.config file.");
 				}
-				string configFile = appDataFolder+@"/Providers/"+providerName+".config";
-				failedFile = appDataFolder+@"/Providers/"+providerName+"LoginFailed.txt";
+				var configFile = appDataFolder+@"/Providers/"+providerName+"/"+configFileName;
+				failedFile = appDataFolder+@"/Providers/"+providerName+"/LoginFailed.txt";
 				
 				LoadProperties(configFile);
 				
@@ -339,76 +341,53 @@ namespace TickZoom.MBTQuotes
         
         public abstract void OnStopSymbol(SymbolInfo symbol);
 	        
-	        Dictionary<string, string> data;
-	        string configFile;
-	        private void LoadProperties(string configFile) {
-	        	this.configFile = configFile;
-			data = new Dictionary<string, string>();
-			if( !File.Exists(configFile) ) {
-				Directory.CreateDirectory(Path.GetDirectoryName(configFile));
-		        using (StreamWriter sw = new StreamWriter(configFile)) 
-		        {
-		            // Add some text to the file.
-		            sw.WriteLine("####################################");
-		            sw.WriteLine("# The first 2 properties determine which user name and password get used.");
-		            sw.WriteLine("####################################");
-		            sw.WriteLine("LiveOrDemo=demo");
-		            sw.WriteLine();
-		            sw.WriteLine("DemoAddress=216.52.236.111");
-		            sw.WriteLine("DemoPort=5020");
-		            sw.WriteLine();
-		            sw.WriteLine("LiveAddress=CHANGEME");
-		            sw.WriteLine("LivePort=CHANGEME");
-		            sw.WriteLine();
-		            sw.WriteLine("DemoUserName=CHANGEME");
-		            sw.WriteLine("DemoPassword=CHANGEME");
-		            sw.WriteLine();
-		            sw.WriteLine("LiveUserName=CHANGEME");
-		            sw.WriteLine("LivePassword=CHANGEME");
-		        }
-			} 
+	    private void LoadProperties(string configFilePath) {
+	        this.configFilePath = configFilePath;
+	        ConfigFile configFile;
+			if( !File.Exists(configFilePath) ) {
+	        	configFile = new ConfigFile(configFilePath);
+	        	configFile.SetValue("LiveOrDemo","demo");
+	        	configFile.SetValue("DemoAddress","216.52.236.111");
+	            configFile.SetValue("DemoPort","5020");
+	        	configFile.SetValue("LiveAddress","CHANGEME");
+	            configFile.SetValue("LivePort","CHANGEME");
+	        	configFile.SetValue("DemoUserName","CHANGEME");
+	            configFile.SetValue("DemoPassword","CHANGEME");
+	        	configFile.SetValue("LiveUserName","CHANGEME");
+	            configFile.SetValue("LivePassword","CHANGEME");
+	        } else {
+	        	configFile = new ConfigFile(configFilePath);
+	        }
 			
-			foreach (var row in File.ReadAllLines(configFile)) {
-				if( string.IsNullOrEmpty(row) || row.TrimStart()[0] == '#') continue;
-				string[] nameValue = row.Split('=');
-				data.Add(nameValue[0].Trim().ToLower(),nameValue[1].Trim());
-			}
-			
-			ParseProperties();
+			ParseProperties(configFile);
 		}
 	        
-        private void ParseProperties() {
-	        string liveOrDemo = GetProperty("LiveOrDemo");
+        private void ParseProperties(ConfigFile configFile) {
+	        string liveOrDemo = configFile.GetValue("LiveOrDemo");
 			liveOrDemo = liveOrDemo.ToLower();
 			switch( liveOrDemo) {
 				case "live":
 				case "demo":
 					break;
 				default:
-					throw new ApplicationException("Please set 'LiveOrDemo' to live, or demo in '"+configFile+"'.");
+					throw new ApplicationException("Please set 'LiveOrDemo' to live, or demo in '"+configFilePath+"'.");
 			}
 			
-			string prefix = liveOrDemo;
+			var prefix = UpperFirst(liveOrDemo);
 			
-			AddrStr = GetProperty(liveOrDemo + "address");
-			string portStr = GetProperty(liveOrDemo + "port");
-			port = ushort.Parse(portStr);
-			userName = GetProperty(prefix + "UserName");
-			password = GetProperty(prefix + "Password");
+			var property = prefix + "Address";
+			AddrStr = configFile.GetValue(property);
+			property = prefix + "Port";
+			var portStr = configFile.GetValue(property);
+			if( !ushort.TryParse(portStr, out port)) {
+				throw new ApplicationException("Please set '" + property + "' to a valid port number in '"+configFilePath+"'.");
+			}
+			userName = configFile.GetValue(prefix + "UserName");
+			password = configFile.GetValue(prefix + "Password");
 			
 			if( File.Exists(failedFile) ) {
 				throw new ApplicationException("Please correct the username or password error described in " + failedFile + ". Then delete the file before retrying, please.");
 			}
-        }
-	        
-        private string GetProperty( string name) {
-        	string value;
-        	if( !data.TryGetValue(name.ToLower(),out value) ||
-        	   string.IsNullOrEmpty(value) ||
-        	   value.Contains("CHANGEME")) {
-				throw new ApplicationException(name + " property must be set in " + configFile);
-			}
-        	return value;
         }
 	        
 		private string UpperFirst(string input)
@@ -562,6 +541,11 @@ namespace TickZoom.MBTQuotes
 		
 		public MBTQuoteProviderSupport.Status ConnectionStatus {
 			get { return connectionStatus; }
+		}
+	    
+		public string ConfigFileName {
+			get { return configFileName; }
+			set { configFileName = value; }
 		}
 	}
 }

@@ -45,7 +45,7 @@ namespace TickZoom.FIX
 			this.onTick = onTick;
 			this.symbol = Factory.Symbol.LookupSymbol(symbolString);
 			reader = Factory.TickUtil.TickReader();
-			reader.Initialize("MockProviderData", symbolString);
+			reader.Initialize("Test\\MockProviderData", symbolString);
 			fillSimulator = Factory.Utility.FillSimulator( symbol);
 			fillSimulator.OnPhysicalFill = onPhysicalFill;
 			tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);

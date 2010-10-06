@@ -72,7 +72,6 @@ namespace TickZoom.Test
 		}		
 #endif
 			
-#if !SEPERATE
 		[Test]
 		public void TestSeperateProcess() {
 			if( !IsTestSeperate) return;
@@ -85,14 +84,13 @@ namespace TickZoom.Test
 				if(debug) log.Debug("===VerifyFeed===");
 	  			long count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			Process[] processes = Process.GetProcessesByName(providerAssembly);
+	  			Process[] processes = Process.GetProcessesByName(ProviderAssembly);
 	  			Assert.AreEqual(1,processes.Length,"Number of provider service processes.");
 	  			
 		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
 		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
 			}
 		}
-#endif
 		
 #if !OTHERS
 
@@ -236,8 +234,8 @@ namespace TickZoom.Test
 
 		[Test]		
 		public void DemoConnectionTest() {
-			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
-			using( Provider provider = CreateProvider(true)) {
+			using( var verify = Factory.Utility.VerifyFeed())
+			using( var provider = CreateProvider(true)) {
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				if(debug) log.Debug("===DemoConnectionTest===");
 				if(debug) log.Debug("===StartSymbol===");

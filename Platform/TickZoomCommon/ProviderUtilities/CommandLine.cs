@@ -49,34 +49,62 @@ namespace TickZoom.Common
 		/// </summary>
 		public void Run(string[] args)
 		{
-        	if( args.Length < 1 || args.Length > 2) {
-	        	Console.WriteLine("Unknown command line arguments. Try --help.");
-        	}
-			if( args.Length > 1) {
-				connection.SetConfig(args[1]);
+			var arguments = new Arguments( args);
+			string value;
+			if( arguments.TryGetValue( "help", out value) ||
+			    arguments.TryGetValue( "h", out value) ||
+			    arguments.TryGetValue( "?", out value)) {
+	        	Help();
+	        	return;
 			}
-			switch( args[0]) {
-				case "--run":
+			if( arguments.TryGetValue( "config", out value)) {
+				connection.SetConfig( value);
+			}
+			var startOptions = 0;
+			var startOption = "";
+			string portString;
+			if( arguments.TryGetValue( "port", out portString)) {
+				startOptions++;
+				startOption = "port";
+			}
+			if( arguments.TryGetValue( "run", out value)) {
+				startOptions++;
+				startOption = "run";
+			}
+			if( arguments.TryGetValue( "start", out value)) {
+				startOptions++;
+				startOption = "start";
+			}
+			if( arguments.TryGetValue( "stop", out value)) {
+				startOptions++;
+				startOption = "stop";
+			}
+			if( startOptions != 1) {
+	        	Console.WriteLine("Too many options selected. Try --help.");
+	        	return;
+			}
+			switch( startOption) {
+				case "run":
 	        		connection.OnRun();
 	        		break;
-				case "--start":
+				case "start":
 		        	serviceInstaller = new ServiceInstaller(assemblyName);
 		        	string codeBase = Assembly.GetEntryAssembly().Location;
 		        	string fullPath = Path.GetFullPath( codeBase );
 		        	serviceInstaller.InstallAndStart(assemblyName,fullPath);
 		        	break;
-				case "--stop":
+				case "stop":
 		        	serviceInstaller = new ServiceInstaller(assemblyName);
 		        	serviceInstaller.StopAndUninstall();
 		        	break;
-				case "-h":
-				case "-?":
-				case "--help":
-		        	Help();
-		        	break;
-		        default:
+		        case "port":
+					ushort port = 0;
+					if( !ushort.TryParse(portString, out port)) {
+			        	Console.WriteLine("Please use a valid port number instead of '" + portString + "' for the --port argument. Try --help.");
+			        	return;
+					}
 		        	try {
-		        		connection.SetAddress("127.0.0.1",ushort.Parse(args[0]));
+		        		connection.SetAddress("127.0.0.1",port);
 		        		connection.OnRun();
 		        	} catch( FormatException) {
 			        	Console.WriteLine("Unknown command line argument. Try --help.");

@@ -46,5 +46,8 @@ namespace TickZoom.Api
 		void OnRun();
 		void OnStart();
 		void OnStop();
+		string Config {
+			get;
+		}
 	}
 }

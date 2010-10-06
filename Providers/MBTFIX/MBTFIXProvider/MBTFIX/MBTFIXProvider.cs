@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using TickZoom.Api;
@@ -47,11 +48,13 @@ namespace TickZoom.MBTFIX
 		long loginRetryTime = 10000; //milliseconds = 10 seconds.
 		private bool isPositionUpdateComplete = false;
 		private bool isOrderUpdateComplete = false;
-		private string fixDestination = "MBT";		
+		private string fixDestination = "MBT";
 		
 		public MBTFIXProvider(string name)
 		{
-  			ProviderName = name;
+			log.Notice("Using config file name: " + name);
+			ProviderName = "MBTFIXProvider";
+  			ConfigFileName = name;
   			HeartbeatDelay = 35;
   			FIXFilter = new MBTFIXFilter();
 		}

@@ -42,7 +42,8 @@ namespace TickZoom.MBTQuotes
 		
 		public MBTQuotesProvider(string name)
 		{
-			ProviderName = name;
+			ProviderName = "MBTQuotesProvider";
+			ConfigFileName = name;
 			RetryStart = 1;
 			RetryIncrease = 1;
 			RetryMaximum = 30;

@@ -36,16 +36,16 @@ using TickZoom.Test;
 namespace Test
 {
 	[TestFixture]
-	public class MockFIXServer : ProviderTests
+	public class FIXSimulator : ProviderTests
 	{
 		public static readonly Log log = Factory.SysLog.GetLogger(typeof(EquityLevel1));
 		private FIXServerMock fixServer;
-		public MockFIXServer()
+		public FIXSimulator()
 		{
 			SetSymbol("SPY");
 			SetTickTest(TickTest.Level1);
 			SetProviderAssembly("MBTFIXProvider");
-			IsTestSeperate = false;
+			IsTestSeperate = true;
 		}
 		
 		public override void Setup()
@@ -62,9 +62,21 @@ namespace Test
 			base.TearDown();
 		}
 		
+		public override Provider CreateProvider(bool inProcessFlag) {
+			Provider provider;
+			if( inProcessFlag) {
+				provider = ProviderFactory();
+			} else {
+				// Set to use the Simulate configuration files.
+				var providerAssembly = ProviderAssembly + "/Simulate";
+				provider = Factory.Provider.ProviderProcess("127.0.0.1",6492,providerAssembly);
+			}
+			return provider;
+		}
+		
 		public override Provider ProviderFactory()
 		{
-			return new MBTProvider("MBTFIXMock","MBTQuotesMock");
+			return new MBTProvider("Simulate.config");
 		}		
 	}
 }
