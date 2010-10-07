@@ -40,7 +40,7 @@ namespace TickZoom.Api
 		void Release();
 		Provider AsyncProvider( Provider provider);
 		AsyncReceiver AsyncReceiver( Receiver receiver);
-		Provider InProcessProvider();
+		Provider InProcessProvider(string providerAssembly);
 		Provider RemoteProvider(string address, ushort port);
 		Provider ProviderProcess(string address, ushort port, string executableFileName);
 		ServiceConnection ProviderService();

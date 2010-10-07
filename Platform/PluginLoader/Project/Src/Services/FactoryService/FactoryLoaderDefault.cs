@@ -85,6 +85,7 @@ namespace TickZoom.Update
 
 		public object Load(Type type, string assemblyName, params object[] args)
 		{
+			assemblyName = Path.GetFileNameWithoutExtension(assemblyName);
 			LogMsg("Attempting Load of " + type + " from " + assemblyName);
 			errorCount = 0;
 			string currentDirectoryPath = GetExecutablePath();
@@ -209,7 +210,7 @@ namespace TickZoom.Update
 							return Activator.CreateInstance(t, args);
 						} catch (MissingMethodException) {
 							errorCount++;
-							throw new ApplicationException("'" + t.Name + "' failed to load due to missing default constructor");
+							throw new ApplicationException("'" + t.Name + "' failed to load due to missing constructor");
 						} catch (Exception ex) {
 							LogMsg(ex.ToString());
 						}
