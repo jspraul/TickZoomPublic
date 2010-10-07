@@ -743,6 +743,10 @@ namespace TickZoom.MBTFIX
 			lock( orderHandlerLocker) {
     			algorithm.PerformCompare();
 			}
+			var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+			if( !tickSync.SentFills) {
+				tickSync.CompletedPositionChange();
+			}				
 		}
 		
 	    protected override void Dispose(bool disposing)

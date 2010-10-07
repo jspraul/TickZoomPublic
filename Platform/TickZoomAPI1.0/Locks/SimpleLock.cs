@@ -69,5 +69,6 @@ namespace TickZoom.Api
 		public string LastLock {
 			get { return lastLock; }
 		}
+	    
 	}
 }

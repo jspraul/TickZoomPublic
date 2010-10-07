@@ -55,10 +55,12 @@ namespace TickZoom.Interceptors
 		private SymbolInfo symbol;
 		private double actualPosition = 0D;
 		private bool isChanged = false;
+		private TickSync tickSync;
 		
 		public FillSimulatorPhysical(SymbolInfo symbol)
 		{
 			this.symbol = symbol;
+			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 		}
 		
 		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol) {
@@ -108,9 +110,9 @@ namespace TickZoom.Interceptors
 			CancelBrokerOrder(order);
 		}
 		
-		public bool ProcessOrders(Tick tick)
+		public void ProcessOrders(Tick tick)
 		{
-			bool retVal = false;
+			var result = false;
 			if( symbol == null) {
 				throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
 			}
@@ -118,24 +120,24 @@ namespace TickZoom.Interceptors
 			for( var node = next; node != null; node = node.Next) {
 				var order = node.Value;
 				if( OnProcessOrder(order, tick)) {
-					retVal = true;
+					result = true;
 				}
 			}
 			next = increaseOrders.First;
 			for( var node = next; node != null; node = node.Next) {
 				var order = node.Value;
 				if( OnProcessOrder(order, tick)) {
-					retVal = true;
+					result = true;
 				}
 			}
 			next = decreaseOrders.First;
 			for( var node = next; node != null; node = node.Next) {
 				var order = node.Value;
 				if( OnProcessOrder(order, tick)) {
-					retVal = true;
+					result = true;
 				}
 			}
-			return retVal;
+			tickSync.SentFills = result;
 		}
 		
 		private void SortAdjust(PhysicalOrder order) {

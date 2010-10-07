@@ -35,11 +35,13 @@ namespace TickZoom.Api
 		private static readonly bool trace = log.IsTraceEnabled;		
 		private volatile bool completedTick = false;
 		private int completedOrders = 0;
+		private volatile bool sentFills = false;
 		public bool CompletedTick {
 			get { return completedTick; }
 			set { completedTick = value; }
 		}		
 		public void ClearPositionChange() {
+			sentFills = false;
 			var value = Interlocked.Exchange(ref completedOrders, 0);
 			if( trace) log.Trace("ClearPositionChange("+value+")");
 		}
@@ -58,5 +60,9 @@ namespace TickZoom.Api
 			get { return completedOrders == 0; }
 		}
 		
+		public bool SentFills {
+			get { return sentFills; }
+			set { sentFills = value; }
+		}
 	}
 }
