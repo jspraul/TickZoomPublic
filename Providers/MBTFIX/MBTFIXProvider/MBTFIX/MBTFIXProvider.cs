@@ -56,7 +56,10 @@ namespace TickZoom.MBTFIX
 		{
 			log.Notice("Using config file name: " + name);
 			ProviderName = "MBTFIXProvider";
-  			ConfigFileName = name;
+			if( name.Contains(".config")) {
+				throw new ApplicationException("Please remove .config from config section name.");
+			}
+  			ConfigSection = name;
   			HeartbeatDelay = 35;
   			FIXFilter = new MBTFIXFilter();
 		}
@@ -323,7 +326,7 @@ namespace TickZoom.MBTFIX
 			errorOkay = lower.Contains("order") && lower.Contains("server") ? true : errorOkay;
 			errorOkay = text.Contains("DEMOORDS1") ? true : errorOkay;
 			if( errorOkay) {
-				log.Warn( packetFIX.Text + " -- Sending EndBroker event.");
+				log.Warn( packetFIX.Text + " -- Sending EndBroker event. \n" + packetFIX);
 				SendEndBroker();
 			} else {
 				string message = "FIX Server reported an error: " + packetFIX.Text + "\n" + packetFIX;

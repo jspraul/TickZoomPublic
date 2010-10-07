@@ -65,7 +65,7 @@ namespace TickZoom.MBTQuotes
 		private int heartbeatDelay = 30;
 		private bool logRecovery = false;
 	    private string configFilePath;
-	    private string configFileName;
+	    private string configName;
 		
 		public MBTQuoteProviderSupport()
 		{
@@ -107,7 +107,7 @@ namespace TickZoom.MBTQuotes
 				if( appDataFolder == null) {
 					throw new ApplicationException("Sorry, AppDataFolder must be set in the app.config file.");
 				}
-				var configFile = appDataFolder+@"/Providers/"+providerName+"/"+configFileName;
+				var configFile = appDataFolder+@"/Providers/"+providerName+"/Default.config";
 				failedFile = appDataFolder+@"/Providers/"+providerName+"/LoginFailed.txt";
 				
 				LoadProperties(configFile);
@@ -346,10 +346,26 @@ namespace TickZoom.MBTQuotes
 	        ConfigFile configFile;
 			if( !File.Exists(configFilePath) ) {
 	        	configFile = new ConfigFile(configFilePath);
-	        	configFile.SetValue("ServerAddress","216.52.236.111");
-	            configFile.SetValue("ServerPort","5020");
-	        	configFile.SetValue("UserName","CHANGEME");
-	            configFile.SetValue("Password","CHANGEME");
+	        	configFile.SetValue("EquityDemo/ServerAddress","216.52.236.111");
+	            configFile.SetValue("EquityDemo/ServerPort","5020");
+	        	configFile.SetValue("EquityDemo/UserName","CHANGEME");
+	            configFile.SetValue("EquityDemo/Password","CHANGEME");
+	        	configFile.SetValue("ForexDemo/ServerAddress","216.52.236.111");
+	            configFile.SetValue("ForexDemo/ServerPort","5020");
+	        	configFile.SetValue("ForexDemo/UserName","CHANGEME");
+	            configFile.SetValue("ForexDemo/Password","CHANGEME");
+	        	configFile.SetValue("EquityLive/ServerAddress","216.52.236.111");
+	            configFile.SetValue("EquityLive/ServerPort","5020");
+	        	configFile.SetValue("EquityLive/UserName","CHANGEME");
+	            configFile.SetValue("EquityLive/Password","CHANGEME");
+	        	configFile.SetValue("ForexLive/ServerAddress","216.52.236.111");
+	            configFile.SetValue("ForexLive/ServerPort","5020");
+	        	configFile.SetValue("ForexLive/UserName","CHANGEME");
+	            configFile.SetValue("ForexLive/Password","CHANGEME");
+	        	configFile.SetValue("Simulate/ServerAddress","127.0.0.1");
+	            configFile.SetValue("Simulate/ServerPort","6488");
+	        	configFile.SetValue("Simulate/UserName","simulate1");
+	            configFile.SetValue("Simulate/Password","only4sim");
 	        } else {
 	        	configFile = new ConfigFile(configFilePath);
 	        }
@@ -524,9 +540,9 @@ namespace TickZoom.MBTQuotes
 			get { return connectionStatus; }
 		}
 	    
-		public string ConfigFileName {
-			get { return configFileName; }
-			set { configFileName = value; }
+		public string ConfigName {
+			get { return configName; }
+			set { configName = value; }
 		}
 	}
 }

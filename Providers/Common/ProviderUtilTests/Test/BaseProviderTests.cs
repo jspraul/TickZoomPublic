@@ -44,6 +44,7 @@ namespace TickZoom.Test
 		protected Action<TickIO, TickIO, long> assertTick;
 		private string providerAssembly;
 		private string assemblyName;
+		private int lotSize = 1;
 		
 		public BaseProviderTests() {
 			string providerAssembly = Factory.Settings["ProviderAssembly"];
@@ -194,7 +195,7 @@ namespace TickZoom.Test
 			logical.TradeDirection = TradeDirection.Entry;
 			logical.Type = type;
 			logical.Price = price;
-			logical.Positions = size;
+			logical.Positions = size * lotSize;
 			orders.AddLast(logical);
 			return logical;
 		}
@@ -205,7 +206,7 @@ namespace TickZoom.Test
 			logical.TradeDirection = TradeDirection.Entry;
 			logical.Type = type;
 			logical.Price = price;
-			logical.Positions = size;
+			logical.Positions = size * lotSize;
 			orders.AddLast(logical);
 			return logical;
 		}
@@ -226,6 +227,11 @@ namespace TickZoom.Test
 		
 		public string AssemblyName {
 			get { return assemblyName; }
+		}
+		
+		public int LotSize {
+			get { return lotSize; }
+			set { lotSize = value; }
 		}
 	}
 }

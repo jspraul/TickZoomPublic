@@ -69,7 +69,7 @@ namespace TickZoom.FIX
 		private int heartbeatDelay = 30;
 		private bool logRecovery = false;
         private string configFilePath;
-        private string configFileName;
+        private string configSection;
 		
 		public FIXProviderSupport()
 		{
@@ -114,7 +114,7 @@ namespace TickZoom.FIX
 				if( appDataFolder == null) {
 					throw new ApplicationException("Sorry, AppDataFolder must be set in the app.config file.");
 				}
-				string configFile = appDataFolder+@"/Providers/"+providerName+"/"+configFileName;
+				string configFile = appDataFolder+@"/Providers/"+providerName+"/Default.config";
 				failedFile = appDataFolder+@"/Providers/"+providerName+"/LoginFailed.txt";
 				
 				LoadProperties(configFile);
@@ -356,11 +356,31 @@ namespace TickZoom.FIX
 	        log.Notice("Config file path: " + configFilePath);
 			if( !File.Exists(configFilePath) ) {
 	        	configFile = new ConfigFile(configFilePath);
-	        	configFile.SetValue("ServerAddress","127.0.0.1");
-	        	configFile.SetValue("ServerPort","5679");
-	        	configFile.SetValue("UserName","CHANGEME");
-	        	configFile.SetValue("Password","CHANGEME");
-	        	configFile.SetValue("AccountNumber","CHANGEME");
+	        	configFile.SetValue("EquityDemo/ServerAddress","127.0.0.1");
+	        	configFile.SetValue("EquityDemo/ServerPort","5679");
+	        	configFile.SetValue("EquityDemo/UserName","CHANGEME");
+	        	configFile.SetValue("EquityDemo/Password","CHANGEME");
+	        	configFile.SetValue("EquityDemo/AccountNumber","CHANGEME");
+	        	configFile.SetValue("ForexDemo/ServerAddress","127.0.0.1");
+	        	configFile.SetValue("ForexDemo/ServerPort","5679");
+	        	configFile.SetValue("ForexDemo/UserName","CHANGEME");
+	        	configFile.SetValue("ForexDemo/Password","CHANGEME");
+	        	configFile.SetValue("ForexDemo/AccountNumber","CHANGEME");
+	        	configFile.SetValue("EquityLive/ServerAddress","127.0.0.1");
+	        	configFile.SetValue("EquityLive/ServerPort","5680");
+	        	configFile.SetValue("EquityLive/UserName","CHANGEME");
+	        	configFile.SetValue("EquityLive/Password","CHANGEME");
+	        	configFile.SetValue("EquityLive/AccountNumber","CHANGEME");
+	        	configFile.SetValue("ForexLive/ServerAddress","127.0.0.1");
+	        	configFile.SetValue("ForexLive/ServerPort","5680");
+	        	configFile.SetValue("ForexLive/UserName","CHANGEME");
+	        	configFile.SetValue("ForexLive/Password","CHANGEME");
+	        	configFile.SetValue("ForexLive/AccountNumber","CHANGEME");
+	        	configFile.SetValue("Simulate/ServerAddress","127.0.0.1");
+	        	configFile.SetValue("Simulate/ServerPort","6489");
+	        	configFile.SetValue("Simulate/UserName","Simulate1");
+	        	configFile.SetValue("Simulate/Password","only4sim");
+	        	configFile.SetValue("Simulate/AccountNumber","11111111");
 	        } else {
 	        	configFile = new ConfigFile(configFilePath);
 	        }
@@ -369,16 +389,16 @@ namespace TickZoom.FIX
 		}
         
         private void ParseProperties(ConfigFile configFile) {
-			AddrStr = configFile.GetValue("ServerAddress");
+			AddrStr = configFile.GetValue(configSection + "/ServerAddress");
 			
-			var portStr = configFile.GetValue("ServerPort");
+			var portStr = configFile.GetValue(configSection + "/ServerPort");
 			if( !ushort.TryParse(portStr, out port)) {
 				throw new ApplicationException("Please set 'ServerPort' to a valid port number in '"+configFile+"'.");
 			}
 			
-			userName = configFile.GetValue("UserName");
-			password = configFile.GetValue("Password");
-			accountNumber = configFile.GetValue("AccountNumber");
+			userName = configFile.GetValue(configSection + "/UserName");
+			password = configFile.GetValue(configSection + "/Password");
+			accountNumber = configFile.GetValue(configSection + "/AccountNumber");
 			
 			if( File.Exists(failedFile) ) {
 				throw new ApplicationException("Please correct the username or password error described in " + failedFile + ". Then delete the file before retrying, please.");
@@ -551,9 +571,9 @@ namespace TickZoom.FIX
 			set { fixFilter = value; }
 		}
         
-		public string ConfigFileName {
-			get { return configFileName; }
-			set { configFileName = value; }
+		public string ConfigSection {
+			get { return configSection; }
+			set { configSection = value; }
 		}		
 	}
 }

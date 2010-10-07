@@ -75,27 +75,59 @@ namespace TickZoom.Api
 			return result;
 		}
 
-		public string GetValue (string property)
+		public string GetValueOLD(string property)
 		{
 			XmlDocument doc = new XmlDocument();
 			loadDoc(doc);
 			string key = "//appSettings//add[@key='" + property + "']";
-			string sNode = "//appSettings";
 			// retrieve the selected node
 			try
 			{
-				node =  doc.SelectSingleNode(sNode);
-				if( node == null )
+				node =  doc.SelectSingleNode(key);
+				if ( !(node is XmlElement))
 				{
 					return null;
 				}
-				// Xpath selects element that contains the key
-				XmlElement targetElem= (XmlElement)node.SelectSingleNode(key) ;
-				if (targetElem==null)
+				var element = (XmlElement) node;
+				return element.GetAttribute("value");
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		private string[] SplitPathProperty( ref string property) {
+			var strings = property.Split( new char[] { '/', '\\' });
+			if( strings.Length > 1) {
+				property = strings[strings.Length-1];
+				Array.Resize<string>(ref strings, strings.Length -1);
+				return strings;
+			} else {
+				return new string[0];
+			}
+		}
+		public string GetValue(string property)
+		{
+			var strings = SplitPathProperty( ref property);
+			var path = "";
+			if( strings.Length > 0) {
+				path = string.Join("//",strings);
+				path = "//" + path;
+			}
+			XmlDocument doc = new XmlDocument();
+			loadDoc(doc);
+			string key = "//appSettings" + path + "//add[@key='" + property + "']";
+			// retrieve the selected node
+			try
+			{
+				node =  doc.SelectSingleNode(key);
+				if ( !(node is XmlElement))
 				{
 					return null;
 				}
-				return targetElem.GetAttribute("value");
+				var element = (XmlElement) node;
+				return element.GetAttribute("value");
 			}
 			catch
 			{
@@ -132,7 +164,7 @@ namespace TickZoom.Api
 				return Convert.ToString(retVal);
 		}
 
-		public bool SetValue (string property, string val)
+		public bool SetValue2(string property, string val)
 		{
 			XmlDocument doc = new XmlDocument();
 			loadDoc(doc);
@@ -175,6 +207,53 @@ namespace TickZoom.Api
 			}
 		}
 
+		public bool SetValue(string property, string value)
+		{
+			var strings = SplitPathProperty(ref property);		
+			XmlDocument doc = new XmlDocument();
+			loadDoc(doc);
+			try
+			{
+				// retrieve the target node
+				string key = "add[@key='" + property + "']";
+				string sNode = "//appSettings";
+				node =  doc.SelectSingleNode(sNode);
+				if( node == null ) {
+					throw new ApplicationException("Can't find appSettings configuration section in " + _cfgFile);
+				}
+				foreach( var pathElement in strings) {
+					var next = node.SelectSingleNode( pathElement);
+					if( next == null) {
+						var entry = doc.CreateElement( pathElement);
+						node.AppendChild( entry);
+						next = entry;
+					}
+					node = next;
+				}
+				// Set element that contains the key
+				XmlElement targetElem= (XmlElement) node.SelectSingleNode(key);
+				if (targetElem!=null)
+				{
+					// set new value
+					targetElem.SetAttribute("value", value);
+				}
+					// create new element with key/value pair and add it
+				else
+				{
+					XmlElement entry = doc.CreateElement("add");
+					entry.SetAttribute("key", property );
+					entry.SetAttribute("value", value);
+					node.AppendChild(entry);
+				}
+				saveDoc(doc, this._cfgFile);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+		
 		private void saveDoc (XmlDocument doc, string docPath)
 		{
 			// save document

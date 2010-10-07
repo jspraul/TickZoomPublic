@@ -75,7 +75,7 @@ namespace Test
 		
 		public override Provider ProviderFactory()
 		{
-			return new MBTProvider("Simulate.config");
+			return new MBTProvider("Simulate");
 		}		
 	}
 }

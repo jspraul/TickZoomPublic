@@ -44,7 +44,10 @@ namespace TickZoom.MBTQuotes
 		public MBTQuotesProvider(string name)
 		{
 			ProviderName = "MBTQuotesProvider";
-			ConfigFileName = name;
+			if( name.Contains(".config")) {
+				throw new ApplicationException("Please remove .config from config section name.");
+			}
+			ConfigName = name;
 			RetryStart = 1;
 			RetryIncrease = 1;
 			RetryMaximum = 30;

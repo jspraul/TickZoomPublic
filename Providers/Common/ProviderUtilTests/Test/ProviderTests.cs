@@ -182,7 +182,7 @@ namespace TickZoom.Test
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
 	  			long count = verify.Wait(symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,1,"at least one tick");
-	  			double desiredPosition = 2;
+	  			double desiredPosition = 2 * LotSize;
 	  			log.Notice("Sending 1");
 	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,0);
 	  			double actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
@@ -194,13 +194,13 @@ namespace TickZoom.Test
 	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 	
-	  			desiredPosition = 2;
+	  			desiredPosition = 2 * LotSize;
 	  			log.Warn("Sending 3");
 	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,actualPosition);
 	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 	
-	  			desiredPosition = 2;
+	  			desiredPosition = 2 * LotSize;
 	  			log.Warn("Sending 4");
 	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,actualPosition);
 	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);

@@ -33,24 +33,23 @@ using TickZoom.Test;
 
 namespace Test
 {
-#if FOREX
 	[TestFixture]
 	public class ForexLevel1Test : ProviderTests
 	{
 		public static readonly Log log = Factory.SysLog.GetLogger(typeof(EquityLevel1));
 		public ForexLevel1Test()
 		{
-			log.Notice("Waiting 20 seconds for FIX server to reset.");
-			Thread.Sleep(20000);
+//			log.Notice("Waiting 20 seconds for FIX server to reset.");
+//			Thread.Sleep(20000);
 			SetSymbol("USD/JPY");
-			SetTickTest(TickTest.TimeAndSales);
+			LotSize = 1000;
+			SetTickTest(TickTest.Level1);
 			SetProviderAssembly("MBTFIXProvider/ForexDemo");
 		}
 		
 		public override Provider ProviderFactory()
 		{
-			return new MBTProvider("ForexDemo.config");
+			return new MBTProvider("ForexDemo");
 		}
 	}
-#endif
 }

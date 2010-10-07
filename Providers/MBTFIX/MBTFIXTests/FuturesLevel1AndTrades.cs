@@ -39,8 +39,8 @@ namespace Test
 		public static readonly Log log = Factory.SysLog.GetLogger(typeof(EquityLevel1));
 		public FuturesLevel1AndTrades()
 		{
-			log.Notice("Waiting 20 seconds for FIX server to reset.");
-			Thread.Sleep(20000);
+//			log.Notice("Waiting 20 seconds for FIX server to reset.");
+//			Thread.Sleep(20000);
 			SetSymbol("/ESZ0");
 			SetTickTest(TickTest.Level1);
 			SetProviderAssembly("MBTFIXProvider/EquityDemo");
@@ -48,7 +48,7 @@ namespace Test
 
 		public override Provider ProviderFactory()
 		{
-			return new MBTProvider("EquityDemo.config");
+			return new MBTProvider("EquityDemo");
 		}
 	}
 }

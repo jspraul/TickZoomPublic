@@ -50,7 +50,7 @@ namespace Test
 		
 		public override Provider ProviderFactory()
 		{
-			return new MBTProvider("EquityDemo.config");
+			return new MBTProvider("EquityDemo");
 		}
 		
 	}

@@ -46,6 +46,16 @@ namespace Test
 		public class TestItem {
 			public int Number;
 		}
+		
+		[Test]
+		public void ConfigFileTest() {
+			string configFileName = @"./Test.config";
+			var configFile = new ConfigFile(configFileName);
+			var expected = "32";
+			configFile.SetValue("Another/Simulate/MarkWalter",expected);
+			var value = configFile.GetValue("Another/Simulate/MarkWalter");
+			Assert.AreEqual(expected,value);
+		}
 
 		[Test]
 		public void LinkedListTest() {
