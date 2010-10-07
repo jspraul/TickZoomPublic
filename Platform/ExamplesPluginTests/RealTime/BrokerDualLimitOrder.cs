@@ -31,14 +31,12 @@ using System.IO;
 
 using Loaders;
 using NUnit.Framework;
-using TickZoom;
 using TickZoom.Api;
-using TickZoom.Common;
 using TickZoom.Starters;
-using ZedGraph;
 
 namespace MockProvider
 {
+
 	[TestFixture]
 	public class BrokerDualLimitOrder : DualStrategyLimitOrder {
 		
@@ -49,11 +47,6 @@ namespace MockProvider
 			CreateStarterCallback = CreateStarter;
 			Symbols = "USD/JPY,EUR/USD";
 			MatchTestResultsOf(typeof(DualStrategyLimitOrder));
-			
-//			BreakPoint.SetEngineConstraint();
-//			BreakPoint.SetTickBreakPoint("2009-06-09 10:49:21.502");
-//			BreakPoint.SetBarBreakPoint(15);
-//			BreakPoint.SetSymbolConstraint("EUR/USD");
 			ShowCharts = false;
 			StoreKnownGood = false;
 		}
@@ -77,7 +70,7 @@ namespace MockProvider
 		public Starter CreateStarter()
 		{
 			ushort servicePort = 6490;
-			SetupWarehouseConfig(servicePort);
+			SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
 			Starter starter = new RealTimeStarter();
 			starter.ProjectProperties.Engine.SimulateRealTime = true;
 			starter.Config = "WarehouseTest.config";

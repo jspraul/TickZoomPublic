@@ -78,6 +78,7 @@
     <Compile Include="Classes\Factory.cs" />
     <Compile Include="Classes\ConfigFile.cs" />
     <Compile Include="Classes\Settings.cs" />
+    <Compile Include="Misc\Attributes\SkipDynamicLoadAttribute.cs" />
     <Compile Include="Misc\Collections\ActiveList.cs" />
     <Compile Include="Misc\Enums\ArrowDirection.cs" />
     <Compile Include="Misc\Enums\BarUnit.cs" />
@@ -193,6 +194,7 @@
     <Compile Include="Provider\AsyncProviderAware.cs" />
     <Compile Include="Provider\BreakPointInterface.cs" />
     <Compile Include="Provider\FillHandler.cs" />
+    <Compile Include="Provider\FIXSimulator.cs" />
     <Compile Include="Provider\LogicalFill.cs" />
     <Compile Include="Provider\LogicalFillBinary.cs" />
     <Compile Include="Provider\LogicalFillBinaryBox.cs" />

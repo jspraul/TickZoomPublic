@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -31,35 +31,42 @@ using System.IO;
 
 using Loaders;
 using NUnit.Framework;
-using TickZoom;
 using TickZoom.Api;
-using TickZoom.Common;
 using TickZoom.Starters;
-using ZedGraph;
 
 namespace MockProvider
 {
-
-	
 	[TestFixture]
-	public class BrokerLimitOrderTest : LimitOrderTest {
-		
-		public BrokerLimitOrderTest() {
-			SyncTicks.Enabled = true;
+	public class MBTFIXSimulatorTest : DualStrategyLimitOrder {
+		FIXSimulator fixServer;
+		public MBTFIXSimulatorTest() {
+//			SyncTicks.Enabled = true;
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
-			MatchTestResultsOf(typeof(LimitOrderTest));
+			DeleteFiles();
+			CreateStarterCallback = CreateStarter;
+			Symbols = "USD/JPY,EUR/USD";
+			MatchTestResultsOf(typeof(DualStrategyLimitOrder));
 			ShowCharts = false;
 			StoreKnownGood = false;
-			CreateStarterCallback = CreateStarter;
-			DeleteFiles();
-			Symbols = "USD/JPY";
-			
+			fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
+		}
+	
+		
+		public override void RunStrategy()
+		{
+			base.RunStrategy();
+			LoadReconciliation();
 		}
 		
+		[Test]
+		public void PerformReconciliationTest() {
+			PerformReconciliation();
+		}
+	
 		public Starter CreateStarter()
 		{
 			ushort servicePort = 6490;
-			SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
+			SetupWarehouseConfig("MBTFIXProvider/Simulate",servicePort);
 			Starter starter = new RealTimeStarter();
 			starter.ProjectProperties.Engine.SimulateRealTime = true;
 			starter.Config = "WarehouseTest.config";
@@ -71,6 +78,7 @@ namespace MockProvider
 			while( true) {
 				try {
 					string appData = Factory.Settings["AppDataFolder"];
+		 			File.Delete( appData + @"\Test\\ServerCache\EURUSD.tck");
 		 			File.Delete( appData + @"\Test\\ServerCache\USDJPY.tck");
 					break;
 				} catch( Exception) {

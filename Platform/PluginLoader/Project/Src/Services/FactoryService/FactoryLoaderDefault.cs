@@ -204,6 +204,10 @@ namespace TickZoom.Update
 			foreach (Type t in assembly.GetTypes()) {
 				if (t.IsClass && !t.IsAbstract && !t.IsInterface) {
 					if (t.GetInterface(type.FullName) != null) {
+						var attributes = t.GetCustomAttributes(typeof(SkipDynamicLoadAttribute),false);
+						if( attributes.Length > 0) {
+							continue;
+						}
 						LogMsg("Found the interface: " + type.Name);
 						try {
 							LogMsg("Creating an instance.");

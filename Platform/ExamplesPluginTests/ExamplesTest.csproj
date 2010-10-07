@@ -97,6 +97,7 @@
     <Compile Include="RealTime\BrokerSyntheticMarketOrder.cs" />
     <Compile Include="RealTime\ExperimentWithEnums.cs" />
     <Compile Include="RealTime\BrokerLimitOrderTest.cs" />
+    <Compile Include="RealTime\MBTFIXSimulatorTest.cs" />
     <Compile Include="RealTime\TestException.cs" />
     <None Include="app.config" />
     <None Include="Lib\nunit.framework.dll" />

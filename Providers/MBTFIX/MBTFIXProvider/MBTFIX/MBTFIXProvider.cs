@@ -34,6 +34,8 @@ using TickZoom.FIX;
 
 namespace TickZoom.MBTFIX
 {
+
+	[SkipDynamicLoad]
 	public class MBTFIXProvider : FIXProviderSupport, PhysicalOrderHandler
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(MBTFIXProvider));

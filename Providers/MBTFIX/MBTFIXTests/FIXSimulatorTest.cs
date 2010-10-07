@@ -51,8 +51,7 @@ namespace Test
 		public override void Setup()
 		{
 			base.Setup();
-			fixServer = new MBTFIXSimulator(6489,6488,new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes());
-			var port = fixServer.FIXPort;
+			fixServer = new MBTFIXSimulator();
 		}
 		
 		

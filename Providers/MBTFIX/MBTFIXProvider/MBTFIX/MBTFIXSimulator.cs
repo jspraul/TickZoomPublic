@@ -35,7 +35,7 @@ using TickZoom.MBTQuotes;
 
 namespace TickZoom.MBTFIX
 {
-	public class MBTFIXSimulator : FIXSimulator {
+	public class MBTFIXSimulator : FIXSimulatorSupport {
 		private static Log log = Factory.SysLog.GetLogger(typeof(MBTFIXSimulator));
 		private static bool trace = log.IsTraceEnabled;
 		private static bool debug = log.IsDebugEnabled;
@@ -44,8 +44,7 @@ namespace TickZoom.MBTFIX
 		private Queue<Packet> packetQueue = new Queue<Packet>();
 		private Task packetTask;
 		
-		public MBTFIXSimulator(ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory) 
-			: base( fixPort, quotesPort, fixPacketFactory, quotePacketFactory) {			
+		public MBTFIXSimulator() : base( 6489, 6488, new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes()) {
 		}
 		
 		protected override void OnConnectFIX(Socket socket)
@@ -384,9 +383,14 @@ namespace TickZoom.MBTFIX
 			sb.Append("2085=.144;"); //Unknown
 			sb.Append("2048=00/00/2009;"); //Unknown
 			sb.Append("2049=00/00/2009;"); //Unknown
-			sb.Append("2002="); //Last Trade.
-			sb.Append(tick.Price);
-			sb.Append(';');
+			if( tick.IsTrade) {
+				sb.Append("2002="); //Last Trade.
+				sb.Append(tick.Price);
+				sb.Append(';');
+				sb.Append("2007=");
+				sb.Append(tick.Size);
+				sb.Append(';');
+			}
 			sb.Append("2050=0;"); //Unknown
 			sb.Append("2003="); // Last Bid
 			sb.Append(tick.Bid);
@@ -402,9 +406,6 @@ namespace TickZoom.MBTFIX
 			sb.Append("2053=00/00/2010;"); //Unknown
 			sb.Append("2006=");
 			sb.Append(tick.BidLevel(0));
-			sb.Append(';');
-			sb.Append("2007=");
-			sb.Append(tick.Size);
 			sb.Append(';');
 			sb.Append("2008=0.0;"); // Yesterday Close
 			sb.Append("2056=0.0;"); // Unknown

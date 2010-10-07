@@ -33,6 +33,7 @@ using TickZoom.Api;
 
 namespace TickZoom.MBTQuotes
 {
+	[SkipDynamicLoad]
 	public class MBTQuotesProvider : MBTQuoteProviderSupport
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(MBTQuotesProvider));

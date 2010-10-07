@@ -102,7 +102,7 @@ namespace Loaders
 			}
 		}
 		
-		public void SetupWarehouseConfig(ushort servicePort)
+		public void SetupWarehouseConfig(string providerAssembly, ushort servicePort)
 		{
 			try { 
 				string storageFolder = Factory.Settings["AppDataFolder"];
@@ -113,7 +113,7 @@ namespace Loaders
 				warehouseConfig.SetValue("ServerCacheFolder","Test\\ServerCache");
 				warehouseConfig.SetValue("ServiceAddress","0.0.0.0");
 				warehouseConfig.SetValue("ServicePort",servicePort.ToString());
-				warehouseConfig.SetValue("ProviderAssembly","TickZoomCombinedMock");
+				warehouseConfig.SetValue("ProviderAssembly",providerAssembly);
 	 			// Clear the history files
 			} catch( Exception ex) {
 				log.Error("Setup error.",ex);
