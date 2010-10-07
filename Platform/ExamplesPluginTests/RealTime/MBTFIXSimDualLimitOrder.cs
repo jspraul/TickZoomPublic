@@ -38,9 +38,8 @@ namespace MockProvider
 {
 #if !SIMULATOR
 	[TestFixture]
-	public class MBTFIXSimulatorTest : DualStrategyLimitOrder {
-		FIXSimulator fixServer;
-		public MBTFIXSimulatorTest() {
+	public class MBTFIXSimDualLimitOrder : DualStrategyLimitOrder {
+		public MBTFIXSimDualLimitOrder() {
 			SyncTicks.Enabled = true;
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			DeleteFiles();
@@ -49,13 +48,17 @@ namespace MockProvider
 			MatchTestResultsOf(typeof(DualStrategyLimitOrder));
 			ShowCharts = false;
 			StoreKnownGood = false;
-			fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
 		}
 	
 		public override void RunStrategy()
 		{
-			base.RunStrategy();
-			LoadReconciliation();
+			var fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
+			try {
+				base.RunStrategy();
+				LoadReconciliation();
+			} finally {
+				fixServer.Dispose();
+			}
 		}
 		
 		[Test]

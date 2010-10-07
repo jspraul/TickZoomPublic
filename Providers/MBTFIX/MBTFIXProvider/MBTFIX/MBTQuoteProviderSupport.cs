@@ -374,13 +374,13 @@ namespace TickZoom.MBTQuotes
 		}
 	        
         private void ParseProperties(ConfigFile configFile) {
-			AddrStr = configFile.GetValue("ServerAddress");
-			var portStr = configFile.GetValue("ServerPort");
+			AddrStr = configFile.GetValue(configName + "/ServerAddress");
+			var portStr = configFile.GetValue(configName + "/ServerPort");
 			if( !ushort.TryParse(portStr, out port)) {
 				throw new ApplicationException("Please set 'ServerPort' to a valid port number in '"+configFilePath+"'.");
 			}
-			userName = configFile.GetValue("UserName");
-			password = configFile.GetValue("Password");
+			userName = configFile.GetValue(configName + "/UserName");
+			password = configFile.GetValue(configName + "/Password");
 			
 			if( File.Exists(failedFile) ) {
 				throw new ApplicationException("Please correct the username or password error described in " + failedFile + ". Then delete the file before retrying, please.");
