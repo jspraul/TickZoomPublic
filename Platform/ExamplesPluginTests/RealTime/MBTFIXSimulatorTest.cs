@@ -36,12 +36,12 @@ using TickZoom.Starters;
 
 namespace MockProvider
 {
-#if SIMULATOR
+#if !SIMULATOR
 	[TestFixture]
 	public class MBTFIXSimulatorTest : DualStrategyLimitOrder {
 		FIXSimulator fixServer;
 		public MBTFIXSimulatorTest() {
-//			SyncTicks.Enabled = true;
+			SyncTicks.Enabled = true;
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			DeleteFiles();
 			CreateStarterCallback = CreateStarter;
@@ -52,7 +52,6 @@ namespace MockProvider
 			fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
 		}
 	
-		
 		public override void RunStrategy()
 		{
 			base.RunStrategy();

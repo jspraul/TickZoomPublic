@@ -237,8 +237,7 @@ namespace TickZoom.FIX
 		public Yield WriteToFIX()
 		{
 			if (fixSocket.TrySendPacket(fixWritePacket)) {
-				if (trace)
-					log.Trace("Local Write: " + fixWritePacket);
+				if (trace) log.Trace("Local Write: " + fixWritePacket);
 				return Yield.DidWork.Return;
 			} else {
 				return Yield.NoWork.Repeat;
@@ -248,8 +247,7 @@ namespace TickZoom.FIX
 		public Yield WriteToQuotes()
 		{
 			if (quoteSocket.TrySendPacket(quoteWritePacket)) {
-				if (trace)
-					log.Trace("Local Write: " + quoteWritePacket);
+				if (trace) log.Trace("Local Write: " + quoteWritePacket);
 				return Yield.DidWork.Return;
 			} else {
 				return Yield.NoWork.Repeat;

@@ -73,7 +73,6 @@
     <Compile Include="TickUtil\SymbolQueue.cs" />
     <Compile Include="TickUtil\ThreadTask.cs" />
     <Compile Include="TickUtil\TaskQueue.cs" />
-    <Compile Include="TickUtil\TaskRunner.cs" />
     <Compile Include="TickUtil\TickBuffer.cs" />
     <Compile Include="TickUtil\TickImpl.cs" />
     <Compile Include="TickUtil\TickQueueImpl.cs" />

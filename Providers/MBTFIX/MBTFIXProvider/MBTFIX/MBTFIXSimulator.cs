@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using System.Threading;
 
@@ -41,10 +41,13 @@ namespace TickZoom.MBTFIX
 		private static bool debug = log.IsDebugEnabled;
 		private ServerState fixState = ServerState.Startup;
 		private ServerState quoteState = ServerState.Startup;
-		private Queue<Packet> packetQueue = new Queue<Packet>();
-		private Task packetTask;
+		private Queue fixPacketQueue = Queue.Synchronized(new Queue());
+		private Queue quotePacketQueue = Queue.Synchronized(new Queue());
+		private Task fixPacketTask;
+		private Task quotePacketTask;
 		
 		public MBTFIXSimulator() : base( 6489, 6488, new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes()) {
+			
 		}
 		
 		protected override void OnConnectFIX(Socket socket)
@@ -52,14 +55,18 @@ namespace TickZoom.MBTFIX
 			fixState = ServerState.Startup;
 			quoteState = ServerState.Startup;
 			base.OnConnectFIX(socket);
-			packetTask = Factory.Parallel.Loop( "FIXServerMock", OnException, ProcessFIXPackets);			
+			fixPacketTask = Factory.Parallel.Loop( "FIXServerMock", OnException, ProcessFIXPackets);			
+			quotePacketTask = Factory.Parallel.Loop( "MBTQuotesMock", OnException, ProcessQuotePackets);			
 		}
 		
 		protected override void CloseSockets()
 		{
 			base.CloseSockets();
-			if( packetTask != null) {
-				packetTask.Stop();
+			if( fixPacketTask != null) {
+				fixPacketTask.Stop();
+			}
+			if( quotePacketTask != null) {
+				quotePacketTask.Stop();
 			}
 		}
 			
@@ -221,11 +228,12 @@ namespace TickZoom.MBTFIX
 				return CloseWithQuotesError(packet, "Invalid login request. Already logged in.");
 			}
 			quoteState = ServerState.LoggedIn;
-			quoteWritePacket = quoteSocket.CreatePacket();
+			var writePacket = quoteSocket.CreatePacket();
 			string message = "G|100=DEMOXJSP;8055=demo01\n";
 			if( debug) log.Debug("Login response: " + message);
-			quoteWritePacket.DataOut.Write(message.ToCharArray());
-			return Yield.DidWork.Invoke(WriteToQuotes);
+			writePacket.DataOut.Write(message.ToCharArray());
+			quotePacketQueue.Enqueue(writePacket);
+			return Yield.DidWork.Return;
 		}
 		
 		private void OnPhysicalFill( PhysicalFill fill) {
@@ -248,7 +256,7 @@ namespace TickZoom.MBTFIX
 			string message = mbtMsg.ToString();
 			writePacket.DataOut.Write(message.ToCharArray());
 			if(debug) log.Debug("Sending position update: " + message);
-			packetQueue.Enqueue(writePacket);
+			fixPacketQueue.Enqueue(writePacket);
 		}	
 		
 		private void SendExecutionReport(PhysicalOrder order, string status, double price, int cumQty, int lastQty, int leavesQty) {
@@ -307,15 +315,23 @@ namespace TickZoom.MBTFIX
 			string message = mbtMsg.ToString();
 			writePacket.DataOut.Write(message.ToCharArray());
 			if(debug) log.Debug("Sending fill response: " + message);
-			packetQueue.Enqueue(writePacket);
+			fixPacketQueue.Enqueue(writePacket);
 		}
 		
 		private Yield ProcessFIXPackets() {
-			if( packetQueue.Count == 0) {
+			if( fixPacketQueue.Count == 0) {
 				return Yield.NoWork.Repeat;
 			}
-			fixWritePacket = packetQueue.Dequeue();
+			fixWritePacket = (Packet) fixPacketQueue.Dequeue();
 			return Yield.DidWork.Invoke(WriteToFIX);
+		}
+
+		private Yield ProcessQuotePackets() {
+			if( quotePacketQueue.Count == 0) {
+				return Yield.NoWork.Repeat;
+			}
+			quoteWritePacket = (Packet) quotePacketQueue.Dequeue();
+			return Yield.DidWork.Invoke(WriteToQuotes);
 		}
 		
 		private unsafe Yield SymbolRequest(PacketMBTQuotes packet) {
@@ -367,8 +383,11 @@ namespace TickZoom.MBTFIX
 		}
 		
 		private Yield OnTick( SymbolInfo symbol, Tick tick) {
+			if( quotePacketQueue.Count > 10) {
+				return Yield.NoWork.Repeat;
+			}
 			if( trace) log.Trace("Sending tick: " + tick);
-			quoteWritePacket = quoteSocket.CreatePacket();
+			var packet = quoteSocket.CreatePacket();
 			StringBuilder sb = new StringBuilder();
 			if( tick.IsTrade) {
 				sb.Append("3|"); // Trade
@@ -427,9 +446,13 @@ namespace TickZoom.MBTFIX
 			sb.Append(tick.Time.Year);
 			sb.Append('\n');
 			var message = sb.ToString();
-			if( trace) log.Trace("Tick response: " + message);
-			quoteWritePacket.DataOut.Write(message.ToCharArray());
-			return Yield.DidWork.Invoke(WriteToQuotes);
+			if( trace) log.Trace("Tick message: " + message);
+			packet.DataOut.Write(message.ToCharArray());
+			if( packet == null) {
+				throw new NullReferenceException();
+			}
+			quotePacketQueue.Enqueue(packet);
+			return Yield.DidWork.Return;
 		}
 		
 		private Yield CloseWithQuotesError(PacketMBTQuotes packet, string message) {
@@ -453,8 +476,11 @@ namespace TickZoom.MBTFIX
 			if( !isDisposed) {
 				if( disposing) {
 					base.Dispose(disposing);
-					if( packetTask != null) {
-						packetTask.Stop();
+					if( fixPacketTask != null) {
+						fixPacketTask.Stop();
+					}
+					if( quotePacketTask != null) {
+						quotePacketTask.Stop();
 					}
 				}
 			}

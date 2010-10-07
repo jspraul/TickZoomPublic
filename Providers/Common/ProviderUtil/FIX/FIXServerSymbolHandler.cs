@@ -92,7 +92,7 @@ namespace TickZoom.FIX
 				
 				if( reader.ReadQueue.TryDequeue( ref binary)) {
 				   	lastTick.Inject( binary);
-				   	result = onTick( symbol, lastTick);
+				   	result = Yield.DidWork.Invoke(ProcessTick);
 				}
 			} catch( QueueException ex) {
 				if( ex.EntryType != EventType.EndHistorical) {
@@ -100,6 +100,10 @@ namespace TickZoom.FIX
 				}
 			}
 			return result;
+		}
+		
+		private Yield ProcessTick() {
+			return onTick( symbol, lastTick);
 		}
 		
 		private void OnException( Exception ex) {
