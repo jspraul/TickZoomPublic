@@ -38,10 +38,10 @@ namespace TickZoom.Api
 	/// </summary>
 	[CLSCompliant(false)]
 	public static class SyncTicks {
-		private static int mockTradeCount = 0;
 		private static bool enabled = false;
 		private static Dictionary<long,TickSync> tickSyncs;
 		private static object locker = new object();
+		private static int mockTradeCount = 0;
 		
 		public static Dictionary<long, TickSync> TickSyncs {
 			get { 

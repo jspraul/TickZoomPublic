@@ -82,14 +82,18 @@ namespace TickZoom.FIX
 		}
 	    
 		private Yield ProcessQueue() {
-			var result = Yield.NoWork.Repeat;
 			if( SyncTicks.Enabled && !tickSync.TryLock()) {
 				TryCompleteTick();
-				return result;
+				return Yield.NoWork.Repeat;
 			}
+			if( trace) log.Trace("Locked tickSync for " + symbol);
+			return Yield.DidWork.Invoke(DequeueTick);
+		}
+		
+		private Yield DequeueTick() {
+			var result = Yield.NoWork.Repeat;
 			var binary = new TickBinary();
 			try { 
-				
 				if( reader.ReadQueue.TryDequeue( ref binary)) {
 				   	lastTick.Inject( binary);
 				   	result = Yield.DidWork.Invoke(ProcessTick);

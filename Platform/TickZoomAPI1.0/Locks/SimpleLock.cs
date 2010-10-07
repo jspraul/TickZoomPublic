@@ -29,35 +29,6 @@ using System.Threading;
 
 namespace TickZoom.Api
 {
-	public class TickSync : SimpleLock {
-		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TickSync));
-		private static readonly bool debug = log.IsDebugEnabled;		
-		private static readonly bool trace = log.IsTraceEnabled;		
-		private volatile bool completedTick = false;
-		private int completedOrders = 0;
-		public bool CompletedTick {
-			get { return completedTick; }
-			set { completedTick = value; }
-		}		
-		public void ClearPositionChange() {
-			var value = Interlocked.Exchange(ref completedOrders, 0);
-			if( trace) log.Trace("ClearPositionChange("+value+")");
-		}
-		public void SentPositionChange() {
-			var value = Interlocked.Increment( ref completedOrders);
-			if( trace) log.Trace("SentPositionChange("+value+")");
-		}
-		public void CompletedPositionChange() {
-			var value = Interlocked.Decrement( ref completedOrders);
-			if( trace) log.Trace("CompletedPositionChange("+value+")");
-			if( value < 0) {
-				log.Warn("Completed: value below zero: " + completedOrders);
-			}
-		}
-		public bool CompletedOrders {
-			get { return completedOrders == 0; }
-		}
-	}
 	public class SimpleLock : IDisposable {
 		private static Log log = Factory.SysLog.GetLogger(typeof(SimpleLock));
 		private string lastLock = "";

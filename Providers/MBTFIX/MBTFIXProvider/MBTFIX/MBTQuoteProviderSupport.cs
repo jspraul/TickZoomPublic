@@ -66,6 +66,7 @@ namespace TickZoom.MBTQuotes
 		private bool logRecovery = false;
 	    private string configFilePath;
 	    private string configName;
+        private bool useLocalTickTime = true;
 		
 		public MBTQuoteProviderSupport()
 		{
@@ -362,6 +363,7 @@ namespace TickZoom.MBTQuotes
 	            configFile.SetValue("ForexLive/ServerPort","5020");
 	        	configFile.SetValue("ForexLive/UserName","CHANGEME");
 	            configFile.SetValue("ForexLive/Password","CHANGEME");
+	        	configFile.SetValue("Simulate/UseLocalTickTime","false");
 	        	configFile.SetValue("Simulate/ServerAddress","127.0.0.1");
 	            configFile.SetValue("Simulate/ServerPort","6488");
 	        	configFile.SetValue("Simulate/UserName","simulate1");
@@ -374,6 +376,10 @@ namespace TickZoom.MBTQuotes
 		}
 	        
         private void ParseProperties(ConfigFile configFile) {
+			var value = configFile.GetValue(configName + "/UseLocalTickTime");
+			if( value != null && value.ToLower() == "false" ) {
+			   useLocalTickTime = false;
+			}
 			AddrStr = configFile.GetValue(configName + "/ServerAddress");
 			var portStr = configFile.GetValue(configName + "/ServerPort");
 			if( !ushort.TryParse(portStr, out port)) {
@@ -543,6 +549,10 @@ namespace TickZoom.MBTQuotes
 		public string ConfigName {
 			get { return configName; }
 			set { configName = value; }
+		}
+        
+		public bool UseLocalTickTime {
+			get { return useLocalTickTime; }
 		}
 	}
 }

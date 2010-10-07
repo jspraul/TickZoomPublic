@@ -420,11 +420,11 @@ namespace TickZoom.MBTFIX
 			sb.Append(';');
 			sb.Append("2052=00/00/2010;"); //Unknown
 			sb.Append("2005="); 
-			sb.Append(tick.AskLevel(0));
+			sb.Append(Math.Max((int)tick.AskLevel(0),1));
 			sb.Append(';');
 			sb.Append("2053=00/00/2010;"); //Unknown
 			sb.Append("2006=");
-			sb.Append(tick.BidLevel(0));
+			sb.Append(Math.Max((int)tick.BidLevel(0),1));
 			sb.Append(';');
 			sb.Append("2008=0.0;"); // Yesterday Close
 			sb.Append("2056=0.0;"); // Unknown

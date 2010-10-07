@@ -44,6 +44,10 @@ namespace TickZoom.Api
 		double Position {
 			get;
 		}
+		TimeStamp Time {
+			get;
+			set;
+		}
 		int AskSize {
 			get;
 			set;

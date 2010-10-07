@@ -73,6 +73,7 @@
     <Compile Include="Locks\SyncTicks.cs" />
     <Compile Include="Locks\TaskLock.cs">
     </Compile>
+    <Compile Include="Locks\TickSync.cs" />
     <Compile Include="Misc\Attributes\SkipCopy.cs" />
     <Compile Include="Classes\CheckedMemoryStream.cs" />
     <Compile Include="Classes\Factory.cs" />

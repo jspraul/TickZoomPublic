@@ -30,6 +30,7 @@ using TickZoom.Api;
 namespace TickZoom.Common
 {
 	public class SymbolHandlerDefault : SymbolHandler {
+		private static readonly Log log = Factory.SysLog.GetLogger(typeof(SymbolHandlerDefault));
 		private TickIO tickIO = Factory.TickUtil.TickIO();
 		private Receiver receiver;
 		private SymbolInfo symbol;
@@ -45,6 +46,8 @@ namespace TickZoom.Common
         private OrderAlgorithm logicalOrderHandler;
         private bool isRunning = false;
         private Pool<TickBinaryBox> tickPool = Factory.TickUtil.TickPool();
+        private TimeStamp time;
+        
 		public void Start()
 		{
 			isRunning = true;
@@ -61,18 +64,17 @@ namespace TickZoom.Common
 		}
 		
 		public void SendQuote() {
-			if( isQuoteInitialized) {
+			if( isQuoteInitialized || VerifyQuote()) {
 				if( isRunning && symbol.QuoteType == QuoteType.Level1) {
 					tickIO.Initialize();
 					tickIO.SetSymbol(symbol.BinaryIdentifier);
-					tickIO.SetTime(TimeStamp.UtcNow);
+					tickIO.SetTime(Time);
 					tickIO.SetQuote(Bid,Ask,(short)BidSize,(short)AskSize);
 					var box = tickPool.Create();
 					box.TickBinary = tickIO.Extract();
 					receiver.OnEvent(symbol,(int)EventType.Tick,box);
+					log.Info("Sent tick for " + symbol + ": " + tickIO);
 				}
-			} else {
-				VerifyQuote();
 			}
 		}
         
@@ -88,34 +90,34 @@ namespace TickZoom.Common
         	}
         }
         
-		private void VerifyQuote() {
+		private bool VerifyQuote() {
 			if(BidSize > 0 && Bid > 0 && AskSize > 0 && Ask > 0) {
 				isQuoteInitialized = true;
 			}
+			return isQuoteInitialized;
 		}
         
-		private void VerifyTrade() {
+		private bool VerifyTrade() {
 			if(LastSize > 0 & Last > 0) {
 				isTradeInitialized = true;
 			}
+			return isTradeInitialized;
 		}
         
 		public void SendTimeAndSales() {
 			if( !isRunning || symbol.TimeAndSales != TimeAndSales.ActualTrades ) {
 				return;
 			}
-			if( !isTradeInitialized ) {
-				VerifyTrade();
+			if( !isTradeInitialized && !VerifyTrade()) {
 				return;
 			}
-			if( symbol.QuoteType == QuoteType.Level1 && !isQuoteInitialized) {
-				VerifyQuote();
+			if( symbol.QuoteType == QuoteType.Level1 && !isQuoteInitialized && !VerifyQuote()) {
 				return;
 			}
 			if( symbol.TimeAndSales == TimeAndSales.ActualTrades) {
 				tickIO.Initialize();
 				tickIO.SetSymbol(symbol.BinaryIdentifier);
-				tickIO.SetTime(TimeStamp.UtcNow);
+				tickIO.SetTime(Time);
 				tickIO.SetTrade(Last,LastSize);
 				if( symbol.QuoteType == QuoteType.Level1) {
 					tickIO.SetQuote(Bid,Ask,(short)BidSize,(short)AskSize);
@@ -173,6 +175,11 @@ namespace TickZoom.Common
 		
 		public bool IsRunning {
 			get { return isRunning; }
+		}
+        
+		public TimeStamp Time {
+			get { return time; }
+			set { time = value; }
 		}
 	}
 }
