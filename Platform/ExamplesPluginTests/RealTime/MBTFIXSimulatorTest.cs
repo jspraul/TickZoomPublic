@@ -36,6 +36,7 @@ using TickZoom.Starters;
 
 namespace MockProvider
 {
+#if SIMULATOR
 	[TestFixture]
 	public class MBTFIXSimulatorTest : DualStrategyLimitOrder {
 		FIXSimulator fixServer;
@@ -84,7 +85,7 @@ namespace MockProvider
 				} catch( Exception) {
 				}
 			}
-		}
-		
+		}	
 	}
+#endif
 }

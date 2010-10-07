@@ -42,12 +42,14 @@ namespace TickZoom.Test
 		protected ActiveList<LogicalOrder> orders = new ActiveList<LogicalOrder>();
 		protected SymbolInfo symbol;
 		protected Action<TickIO, TickIO, long> assertTick;
-		private string providerAssembly = "TickZoomCombinedMock";
+		private string providerAssembly;
 		private string assemblyName;
 		
 		public BaseProviderTests() {
 			string providerAssembly = Factory.Settings["ProviderAssembly"];
-			if( !string.IsNullOrEmpty(providerAssembly)) {
+			if( string.IsNullOrEmpty(providerAssembly)) {
+				SetProviderAssembly( "TickZoomCombinedMock");
+			} else {
 				SetProviderAssembly( providerAssembly);
 			}
 		}

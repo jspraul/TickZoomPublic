@@ -40,7 +40,7 @@ using ZedGraph;
 namespace MockProvider
 {
 	[TestFixture]
-	public class TestException {
+	public class TestException : StrategyTest {
 		
 		public TestException() {
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
@@ -65,7 +65,12 @@ namespace MockProvider
 		
 		public Starter CreateStarter()
 		{
-			return new RealTimeStarter();
+			ushort servicePort = 6490;
+			SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
+			Starter starter = new RealTimeStarter();
+			starter.Config = "WarehouseTest.config";
+			starter.Port = servicePort;
+			return starter;
 		}
 		
 		private void DeleteFiles() {
