@@ -31,6 +31,8 @@ namespace TickZoom.Common
 {
 	public class SymbolHandlerDefault : SymbolHandler {
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(SymbolHandlerDefault));
+		private static readonly bool debug = log.IsDebugEnabled;
+		private static readonly bool trace = log.IsTraceEnabled;
 		private TickIO tickIO = Factory.TickUtil.TickIO();
 		private Receiver receiver;
 		private SymbolInfo symbol;
@@ -73,7 +75,7 @@ namespace TickZoom.Common
 					var box = tickPool.Create();
 					box.TickBinary = tickIO.Extract();
 					receiver.OnEvent(symbol,(int)EventType.Tick,box);
-					log.Info("Sent tick for " + symbol + ": " + tickIO);
+					if( trace) log.Trace("Sent tick for " + symbol + ": " + tickIO);
 				}
 			}
 		}

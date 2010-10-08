@@ -398,7 +398,7 @@ namespace TickZoom.MBTFIX
 					log.Error("Error looking up " + packetFIX.Symbol + ": " + ex.Message);
 					return;
 				}
-				log.Info("PositionUpdate: " + symbolInfo + "=" + position);
+				if( debug) log.Debug("PositionUpdate: " + symbolInfo + "=" + position);
 				var orderHandler = GetAlgorithm(symbolInfo.BinaryIdentifier);
 				orderHandler.SetActualPosition( position);
 			}
@@ -734,7 +734,7 @@ namespace TickZoom.MBTFIX
 				throw new ApplicationException("PositionChange event received prior to completing FIX recovery. Current connection status is: " + ConnectionStatus);
 			}
 			var count = inputOrders == null ? 0 : inputOrders.Count;
-			log.Info( "PositionChange " + symbol + ", desired " + desiredPosition + ", order count " + count);
+			if( debug) log.Debug( "PositionChange " + symbol + ", desired " + desiredPosition + ", order count " + count);
 			
 			var algorithm = GetAlgorithm(symbol.BinaryIdentifier);
 			algorithm.SetDesiredPosition(desiredPosition);
@@ -852,9 +852,9 @@ namespace TickZoom.MBTFIX
 			string message = fixMsg.ToString();
 			string view = message.Replace(FIXTBuffer.EndFieldStr,"  ");
 			if( isChange) {
-				log.Info("Change order: \n" + view);
+				if( debug) log.Debug("Change order: \n" + view);
 			} else {
-				log.Info("Create new order: \n" + view);
+				if( debug) log.Debug("Create new order: \n" + view);
 			}
 			packet.DataOut.Write(message.ToCharArray());
 			long end = Factory.Parallel.TickCount + 2000;
@@ -895,7 +895,7 @@ namespace TickZoom.MBTFIX
 			fixMsg.SetTransactTime(timeStamp);
 			string message = fixMsg.ToString();
 			packet.DataOut.Write(message.ToCharArray());
-			log.Info("Cancel order: \n" + packet);
+			if( debug) log.Debug("Cancel order: \n" + packet);
 			long end = Factory.Parallel.TickCount + 2000;
 			while( !Socket.TrySendPacket(packet)) {
 				if( IsInterrupted) return;
