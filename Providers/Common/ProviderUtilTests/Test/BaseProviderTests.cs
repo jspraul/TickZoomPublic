@@ -155,7 +155,7 @@ namespace TickZoom.Test
 	        	Assert.Greater(tick.Price,0);
 	    	    	Assert.Greater(tick.Size,0);
 	        	}
-	    		Assert.IsTrue(tick.Time>=lastTick.Time,"tick.Time > lastTick.Time");
+//	    		Assert.IsTrue(tick.Time>=lastTick.Time,"tick.Time > lastTick.Time");
 	    		Assert.AreEqual(symbol,tick.lSymbol);
 		}
 		
@@ -172,7 +172,7 @@ namespace TickZoom.Test
 	        	Assert.Greater(tick.Price,0);
 	    	    	Assert.Greater(tick.Size,0);
 	        	}
-	    		Assert.IsTrue(tick.Time>=lastTick.Time,"tick.Time > lastTick.Time");
+//	    		Assert.IsTrue(tick.Time>=lastTick.Time,"tick.Time > lastTick.Time");
 	    		Assert.AreEqual(symbol,tick.lSymbol);
 		}
 		

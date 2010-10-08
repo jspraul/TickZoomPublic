@@ -108,7 +108,9 @@ namespace TickZoom.Test
 		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
 		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
 			}
+			Thread.Sleep(2000);
 			log.Info("Starting to reconnect---------\n");
+			
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = CreateProvider(true)) {
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);

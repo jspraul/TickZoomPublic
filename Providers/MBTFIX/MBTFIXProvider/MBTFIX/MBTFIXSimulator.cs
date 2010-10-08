@@ -65,8 +65,14 @@ namespace TickZoom.MBTFIX
 			if( fixPacketTask != null) {
 				fixPacketTask.Stop();
 			}
+			if( fixPacketQueue != null) {
+				fixPacketQueue.Clear();
+			}
 			if( quotePacketTask != null) {
 				quotePacketTask.Stop();
+			}
+			if( quotePacketQueue != null) {
+				quotePacketQueue.Clear();
 			}
 		}
 			
@@ -98,6 +104,8 @@ namespace TickZoom.MBTFIX
 				case "D":
 					result = FIXNewOrder( packetFIX);
 					break;
+				default: 
+					throw new ApplicationException("Unknown FIX message type '" + packetFIX.MessageType + "'\n" + packetFIX);
 			}			
 			return result;
 		}
@@ -201,6 +209,7 @@ namespace TickZoom.MBTFIX
 			if( debug) log.Debug("Received physical Order: " + physicalOrder);
 			return physicalOrder;
 		}
+		
 		private string target;
 		private string sender;
 		private Yield FIXLogin(PacketFIX4_4 packet) {
@@ -481,6 +490,12 @@ namespace TickZoom.MBTFIX
 					}
 					if( quotePacketTask != null) {
 						quotePacketTask.Stop();
+					}
+					if( fixPacketQueue != null) {
+						fixPacketQueue.Clear();
+					}
+					if( quotePacketQueue != null) {
+						quotePacketQueue.Clear();
 					}
 				}
 			}
