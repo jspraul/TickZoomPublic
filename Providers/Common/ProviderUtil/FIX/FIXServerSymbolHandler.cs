@@ -73,8 +73,20 @@ namespace TickZoom.FIX
 			}
 		}
 		
-		public void AddOrder(PhysicalOrder order) {
+		public void CreateOrder(PhysicalOrder order) {
 			fillSimulator.OnCreateBrokerOrder( order);
+		}
+		
+		public void ChangeOrder(PhysicalOrder order) {
+			fillSimulator.OnChangeBrokerOrder( order);
+		}
+		
+		public void CancelOrder(PhysicalOrder order) {
+			fillSimulator.OnCancelBrokerOrder( order);
+		}
+		
+		public PhysicalOrder GetOrderById(string clientOrderId) {
+			return fillSimulator.GetOrderByTag( clientOrderId);
 		}
 		
 		public void ProcessOrders() {

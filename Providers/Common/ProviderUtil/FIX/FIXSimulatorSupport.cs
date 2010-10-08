@@ -195,10 +195,27 @@ namespace TickZoom.FIX
 			return symbolHandler.ActualPosition;
 		}
 
-		public void AddOrder(PhysicalOrder order)
+		public void CreateOrder(PhysicalOrder order)
 		{
 			var symbolHandler = symbolHandlers[order.Symbol.BinaryIdentifier];
-			symbolHandler.AddOrder(order);
+			symbolHandler.CreateOrder(order);
+		}
+
+		public void ChangeOrder(PhysicalOrder order)
+		{
+			var symbolHandler = symbolHandlers[order.Symbol.BinaryIdentifier];
+			symbolHandler.ChangeOrder(order);
+		}
+
+		public void CancelOrder(PhysicalOrder order)
+		{
+			var symbolHandler = symbolHandlers[order.Symbol.BinaryIdentifier];
+			symbolHandler.CancelOrder(order);
+		}
+		
+		public PhysicalOrder GetOrderById(SymbolInfo symbol, string clientOrderId) {
+			var symbolHandler = symbolHandlers[symbol.BinaryIdentifier];
+			return symbolHandler.GetOrderById(clientOrderId);
 		}
 
 		public void ProcessOrders(SymbolInfo symbol)

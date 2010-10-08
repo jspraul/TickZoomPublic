@@ -101,8 +101,13 @@ namespace TickZoom.MBTFIX
 					result = FIXPositionList( packetFIX);
 					break;
 				case "G":
+					result = FIXChangeOrder( packetFIX);
+					break;
 				case "D":
-					result = FIXNewOrder( packetFIX);
+					result = FIXCreateOrder( packetFIX);
+					break;
+				case "F":
+					result = FIXCancelOrder( packetFIX);
 					break;
 				default: 
 					throw new ApplicationException("Unknown FIX message type '" + packetFIX.MessageType + "'\n" + packetFIX);
@@ -152,18 +157,43 @@ namespace TickZoom.MBTFIX
 			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 		
-		private Yield FIXNewOrder(PacketFIX4_4 packet) {
-			var order = CreateOrder( packet);
-			AddOrder( order);
-			SendExecutionReport( order, "A", 0.0, 0, 0, (int) order.Size);
+		private Yield FIXChangeOrder(PacketFIX4_4 packet) {
+			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
+			var order = GetOrderById( symbol, packet.OriginalClientOrderId);
+			order = ConstructOrder( packet, order.BrokerOrder);
+			ChangeOrder(order);
+			ProcessOrders( order.Symbol);
+			SendExecutionReport( order, "E", 0.0, 0, 0, (int) order.Size, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			SendExecutionReport( order, "0", 0.0, 0, 0, (int) order.Size);
+			SendExecutionReport( order, "5", 0.0, 0, 0, (int) order.Size, packet.OriginalClientOrderId);
+			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
+			return Yield.DidWork.Repeat;
+		}
+		
+		private Yield FIXCancelOrder(PacketFIX4_4 packet) {
+			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
+			var order = GetOrderById( symbol, packet.OriginalClientOrderId);
+			CancelOrder( order);
+			SendExecutionReport( order, "6", 0.0, 0, 0, (int) order.Size, packet.OriginalClientOrderId);
+			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
+			SendExecutionReport( order, "4", 0.0, 0, 0, (int) order.Size, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			ProcessOrders( order.Symbol);
 			return Yield.DidWork.Repeat;
 		}
 		
-		private PhysicalOrder CreateOrder(PacketFIX4_4 packet) {
+		private Yield FIXCreateOrder(PacketFIX4_4 packet) {
+			var order = ConstructOrder( packet, null);
+			CreateOrder( order);
+			SendExecutionReport( order, "A", 0.0, 0, 0, (int) order.Size, null);
+			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
+			SendExecutionReport( order, "0", 0.0, 0, 0, (int) order.Size, null);
+			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
+			ProcessOrders( order.Symbol);
+			return Yield.DidWork.Repeat;
+		}
+		
+		private PhysicalOrder ConstructOrder(PacketFIX4_4 packet, object orderId) {
 			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
 			var side = OrderSide.Buy;
 			switch( packet.Side) {
@@ -205,7 +235,7 @@ namespace TickZoom.MBTFIX
 			var logicalId = int.Parse(clientId[0]);
 			var physicalOrder = Factory.Utility.PhysicalOrder(
 				OrderState.Active, symbol, side, type,
-				packet.Price, packet.OrderQuantity, logicalId, null, packet.ClientOrderId);
+				packet.Price, packet.OrderQuantity, logicalId, orderId, packet.ClientOrderId);
 			if( debug) log.Debug("Received physical Order: " + physicalOrder);
 			return physicalOrder;
 		}
@@ -248,7 +278,7 @@ namespace TickZoom.MBTFIX
 		private void OnPhysicalFill( PhysicalFill fill) {
 			if( debug) log.Debug("Converting physical fill to FIX: " + fill);
 			SendPositionUpdate(fill.Order.Symbol, GetPosition(fill.Order.Symbol));
-			SendExecutionReport( fill.Order, "2", fill.Price, (int) fill.Size, (int) fill.Size, (int) (fill.Order.Size - fill.Size));
+			SendExecutionReport( fill.Order, "2", fill.Price, (int) fill.Size, (int) fill.Size, (int) (fill.Order.Size - fill.Size), null);
 		}
 		
 		private void SendPositionUpdate(SymbolInfo symbol, int position) {
@@ -268,7 +298,7 @@ namespace TickZoom.MBTFIX
 			fixPacketQueue.Enqueue(writePacket);
 		}	
 		
-		private void SendExecutionReport(PhysicalOrder order, string status, double price, int cumQty, int lastQty, int leavesQty) {
+		private void SendExecutionReport(PhysicalOrder order, string status, double price, int cumQty, int lastQty, int leavesQty, string origClientOrderId) {
 			int orderType = 0;
 			switch( order.Type) {
 				case OrderType.BuyMarket:
@@ -312,9 +342,10 @@ namespace TickZoom.MBTFIX
 			mbtMsg.SetOrderType( orderType);
 			mbtMsg.SetSide( orderSide);
 			mbtMsg.SetClientOrderId( order.Tag.ToString());
-			if( lastQty > 0) {
-				mbtMsg.SetPrice( price);
+			if( origClientOrderId != null) {
+				mbtMsg.SetOriginalClientOrderId( origClientOrderId);
 			}
+			mbtMsg.SetPrice( order.Price);
 			mbtMsg.SetSymbol( order.Symbol.Symbol);
 			mbtMsg.SetTimeInForce( 0);
 			mbtMsg.SetExecutionType( status);
