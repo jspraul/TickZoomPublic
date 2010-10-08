@@ -855,7 +855,7 @@ namespace TickZoom.TickUtil
 				} else {
 					string msg = "Sorry. The Price property on a tick can only by accessed\n" +
 					             "if it has trade data. Please, check the IsTrade property.";
-					log.Error("msg");
+					log.Error(msg);
 					throw new ApplicationException(msg);
 				}
 			}

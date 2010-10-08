@@ -30,9 +30,9 @@ using System.Collections.Generic;
 namespace TickZoom.Api
 {
 	public interface FillSimulator : PhysicalOrderHandler {
+		void ReprocessOrders();
 		void ProcessOrders(Tick tick);
-		PhysicalOrder GetOrderById( long orderId);
-		PhysicalOrder GetOrderByTag( string tag);
+		PhysicalOrder GetOrderById( string orderId);
 		double ActualPosition { get; set; }
 		Action<PhysicalFill> OnPhysicalFill { get; set; }
 		Action<double> OnPositionChange { get; set; }

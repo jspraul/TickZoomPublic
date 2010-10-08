@@ -62,8 +62,8 @@ namespace TickZoom.Common
 				sb.Append(" at ");
 				sb.Append(price);
 			}
-			sb.Append(" for broker id: ");
-			sb.Append( brokerOrder);
+//			sb.Append(" for broker id: ");
+//			sb.Append( brokerOrder);
 			sb.Append(" and logical id: ");
 			sb.Append( logicalOrderId);
 			if( tag != null) {
@@ -73,7 +73,7 @@ namespace TickZoom.Common
 			return sb.ToString();
 		}
 		
-		public PhysicalOrderDefault(OrderState orderState, SymbolInfo symbol, LogicalOrder logical, OrderSide side, double size, object brokerOrder) {
+		public PhysicalOrderDefault(OrderState orderState, SymbolInfo symbol, LogicalOrder logical, OrderSide side, double size) {
 			this.orderState = orderState;
 			this.symbol = symbol;
 			this.side = side;
@@ -81,8 +81,8 @@ namespace TickZoom.Common
 			this.price = logical.Price;
 			this.size = size;
 			this.logicalOrderId = logical.Id;
-			this.brokerOrder = brokerOrder;
 			this.tag = logical.Tag;
+			this.brokerOrder = CreateBrokerOrderId(logicalOrderId);
 		}
 		
 		public PhysicalOrderDefault(OrderState orderState, SymbolInfo symbol, OrderSide side, OrderType type, double price, double size, int logicalOrderId, object brokerOrder, object tag) {
@@ -93,10 +93,18 @@ namespace TickZoom.Common
 			this.price = price;
 			this.size = size;
 			this.logicalOrderId = logicalOrderId;
-			this.brokerOrder = brokerOrder;
 			this.tag = tag;
+			this.brokerOrder = brokerOrder;
+			if( this.brokerOrder == null) {
+				this.brokerOrder = CreateBrokerOrderId(logicalOrderId);
+			}
 		}
-	
+
+		private static string CreateBrokerOrderId(int logicalId) {
+			var timeStamp = TimeStamp.UtcNow;
+			return logicalId + "." + timeStamp.Internal;
+		}
+		
 		public OrderType Type {
 			get { return type; }
 		}
@@ -107,6 +115,7 @@ namespace TickZoom.Common
 		
 		public double Size {
 			get { return size; }
+			set { size = value; }
 		}
 		
 		public object BrokerOrder {
@@ -128,6 +137,7 @@ namespace TickZoom.Common
 		
 		public OrderState OrderState {
 			get { return orderState; }
+			set { orderState = value; }
 		}
 		
 		public object Tag {

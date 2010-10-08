@@ -36,15 +36,15 @@ using TickZoom.Starters;
 
 namespace MockProvider
 {
-#if !SIMULATOR
+#if SIMULATOR
 	[TestFixture]
 	public class MBTFIXSimDualLimitOrder : DualStrategyLimitOrder {
 		public MBTFIXSimDualLimitOrder() {
 			SyncTicks.Enabled = true;
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			DeleteFiles();
-			CreateStarterCallback = CreateStarter;
 			Symbols = "USD/JPY,EUR/USD";
+			CreateStarterCallback = CreateStarter;
 			MatchTestResultsOf(typeof(DualStrategyLimitOrder));
 			ShowCharts = false;
 			StoreKnownGood = false;

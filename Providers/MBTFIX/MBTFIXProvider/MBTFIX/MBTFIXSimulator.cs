@@ -159,41 +159,56 @@ namespace TickZoom.MBTFIX
 		
 		private Yield FIXChangeOrder(PacketFIX4_4 packet) {
 			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
-			var order = GetOrderById( symbol, packet.OriginalClientOrderId);
-			order = ConstructOrder( packet, order.BrokerOrder);
-			ChangeOrder(order);
+			PhysicalOrder order = null;
+			log.Info( "FIXChangeOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId + ". Original client id: " + packet.OriginalClientOrderId);
+			try {
+				order = GetOrderById( symbol, packet.OriginalClientOrderId);
+			} catch( ApplicationException) {
+				log.Warn( symbol + ": Cannot find order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
+				return Yield.DidWork.Return;
+			}
+			order = ConstructOrder( packet);
+			ChangeOrder(order, packet.OriginalClientOrderId);
+			SendExecutionReport( order, "E", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
+			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
+			SendExecutionReport( order, "5", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
+			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			ProcessOrders( order.Symbol);
-			SendExecutionReport( order, "E", 0.0, 0, 0, (int) order.Size, packet.OriginalClientOrderId);
-			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			SendExecutionReport( order, "5", 0.0, 0, 0, (int) order.Size, packet.OriginalClientOrderId);
-			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			return Yield.DidWork.Repeat;
 		}
 		
 		private Yield FIXCancelOrder(PacketFIX4_4 packet) {
 			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
-			var order = GetOrderById( symbol, packet.OriginalClientOrderId);
-			CancelOrder( order);
-			SendExecutionReport( order, "6", 0.0, 0, 0, (int) order.Size, packet.OriginalClientOrderId);
+			log.Info( "FIXCancelOrder() for " + packet.Symbol + ". Original client id: " + packet.OriginalClientOrderId);
+			PhysicalOrder order = null;
+			try {
+				order = GetOrderById( symbol, packet.OriginalClientOrderId);
+			} catch( ApplicationException) {
+				log.Warn( symbol + ": Cannot find order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
+				return Yield.DidWork.Return;
+			}
+			CancelOrder( symbol, order.BrokerOrder);
+			SendExecutionReport( order, "6", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			SendExecutionReport( order, "4", 0.0, 0, 0, (int) order.Size, packet.OriginalClientOrderId);
+			SendExecutionReport( order, "4", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			ProcessOrders( order.Symbol);
 			return Yield.DidWork.Repeat;
 		}
 		
 		private Yield FIXCreateOrder(PacketFIX4_4 packet) {
-			var order = ConstructOrder( packet, null);
+			log.Info( "FIXCreateOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId);
+			var order = ConstructOrder( packet);
 			CreateOrder( order);
-			SendExecutionReport( order, "A", 0.0, 0, 0, (int) order.Size, null);
+			SendExecutionReport( order, "A", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			SendExecutionReport( order, "0", 0.0, 0, 0, (int) order.Size, null);
+			SendExecutionReport( order, "0", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			ProcessOrders( order.Symbol);
 			return Yield.DidWork.Repeat;
 		}
 		
-		private PhysicalOrder ConstructOrder(PacketFIX4_4 packet, object orderId) {
+		private PhysicalOrder ConstructOrder(PacketFIX4_4 packet) {
 			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
 			var side = OrderSide.Buy;
 			switch( packet.Side) {
@@ -235,7 +250,7 @@ namespace TickZoom.MBTFIX
 			var logicalId = int.Parse(clientId[0]);
 			var physicalOrder = Factory.Utility.PhysicalOrder(
 				OrderState.Active, symbol, side, type,
-				packet.Price, packet.OrderQuantity, logicalId, orderId, packet.ClientOrderId);
+				packet.Price, packet.OrderQuantity, logicalId, packet.ClientOrderId, null);
 			if( debug) log.Debug("Received physical Order: " + physicalOrder);
 			return physicalOrder;
 		}
@@ -278,7 +293,7 @@ namespace TickZoom.MBTFIX
 		private void OnPhysicalFill( PhysicalFill fill) {
 			if( debug) log.Debug("Converting physical fill to FIX: " + fill);
 			SendPositionUpdate(fill.Order.Symbol, GetPosition(fill.Order.Symbol));
-			SendExecutionReport( fill.Order, "2", fill.Price, (int) fill.Size, (int) fill.Size, (int) (fill.Order.Size - fill.Size), null);
+			SendExecutionReport( fill.Order, "2", fill.Price, (int) fill.Size, (int) fill.Size, (int) (fill.Order.Size - fill.Size), fill.Time, null);
 		}
 		
 		private void SendPositionUpdate(SymbolInfo symbol, int position) {
@@ -298,7 +313,7 @@ namespace TickZoom.MBTFIX
 			fixPacketQueue.Enqueue(writePacket);
 		}	
 		
-		private void SendExecutionReport(PhysicalOrder order, string status, double price, int cumQty, int lastQty, int leavesQty, string origClientOrderId) {
+		private void SendExecutionReport(PhysicalOrder order, string status, double price, int cumQty, int lastQty, int leavesQty, TimeStamp time, string origClientOrderId) {
 			int orderType = 0;
 			switch( order.Type) {
 				case OrderType.BuyMarket:
@@ -337,11 +352,10 @@ namespace TickZoom.MBTFIX
 			}
 			mbtMsg.SetCumulativeQuantity( cumQty);
 			mbtMsg.SetOrderStatus(status);
-			mbtMsg.SetOrderId( order.BrokerOrder.ToString());
 			mbtMsg.SetPositionEffect( "O");
 			mbtMsg.SetOrderType( orderType);
 			mbtMsg.SetSide( orderSide);
-			mbtMsg.SetClientOrderId( order.Tag.ToString());
+			mbtMsg.SetClientOrderId( order.BrokerOrder.ToString());
 			if( origClientOrderId != null) {
 				mbtMsg.SetOriginalClientOrderId( origClientOrderId);
 			}
@@ -349,12 +363,12 @@ namespace TickZoom.MBTFIX
 			mbtMsg.SetSymbol( order.Symbol.Symbol);
 			mbtMsg.SetTimeInForce( 0);
 			mbtMsg.SetExecutionType( status);
-			mbtMsg.SetTransactTime( TimeStamp.UtcNow);
+			mbtMsg.SetTransactTime( time);
 			mbtMsg.SetLeavesQuantity( leavesQty);
 			mbtMsg.AddHeader("8");
 			string message = mbtMsg.ToString();
 			writePacket.DataOut.Write(message.ToCharArray());
-			if(debug) log.Debug("Sending fill response: " + message);
+			if(debug) log.Debug("Sending execution report: " + message);
 			fixPacketQueue.Enqueue(writePacket);
 		}
 		
@@ -476,14 +490,14 @@ namespace TickZoom.MBTFIX
 			sb.Append("2012=6828928;"); // Volume Today
 			sb.Append("2013=20021;"); // Up/Down Tick
 			sb.Append("2014="); // Time
-			sb.Append(tick.Time.TimeOfDay);
+			sb.Append(tick.UtcTime.TimeOfDay);
 			sb.Append(';');
 			sb.Append("2015=");
-			sb.Append(tick.Time.Month.ToString("00"));
+			sb.Append(tick.UtcTime.Month.ToString("00"));
 			sb.Append('/');
-			sb.Append(tick.Time.Day.ToString("00"));
+			sb.Append(tick.UtcTime.Day.ToString("00"));
 			sb.Append('/');
-			sb.Append(tick.Time.Year);
+			sb.Append(tick.UtcTime.Year);
 			sb.Append('\n');
 			var message = sb.ToString();
 			if( trace) log.Trace("Tick message: " + message);

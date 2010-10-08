@@ -41,7 +41,7 @@ namespace TickZoom.Interceptors
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool notice = log.IsNoticeEnabled;
 
-		private Dictionary<long,PhysicalOrder> orderMap = new Dictionary<long, PhysicalOrder>();
+		private Dictionary<string,PhysicalOrder> orderMap = new Dictionary<string, PhysicalOrder>();
 		private ActiveList<PhysicalOrder> increaseOrders = new ActiveList<PhysicalOrder>();
 		private ActiveList<PhysicalOrder> decreaseOrders = new ActiveList<PhysicalOrder>();
 		private ActiveList<PhysicalOrder> marketOrders = new ActiveList<PhysicalOrder>();
@@ -56,6 +56,7 @@ namespace TickZoom.Interceptors
 		private double actualPosition = 0D;
 		private bool isChanged = false;
 		private TickSync tickSync;
+		private TickIO lastTick = Factory.TickUtil.TickIO();
 		
 		public FillSimulatorPhysical(SymbolInfo symbol)
 		{
@@ -71,46 +72,35 @@ namespace TickZoom.Interceptors
 			return activeOrders;
 		}
 	
-		private long nextOrderId = 1000;
-		public void OnChangeBrokerOrder(PhysicalOrder order)
+		public void OnChangeBrokerOrder(PhysicalOrder order, object origBrokerOrder)
 		{
 			if( debug) log.Debug("OnChangeBrokerOrder( " + order + ")");
-			CancelBrokerOrder( order);
+			CancelBrokerOrder( origBrokerOrder);
 			CreateBrokerOrder( order);
+			LogOpenOrders();
 		}
 		
-		public PhysicalOrder GetOrderById( long orderId) {
+		public PhysicalOrder GetOrderById( string orderId) {
+			LogOpenOrders();
 			PhysicalOrder order;
-			if( !orderMap.TryGetValue(orderId, out order)) {
-				throw new ApplicationException("Order id " + orderId + " was not found.");
+			if( !orderMap.TryGetValue( orderId, out order)) {
+				throw new ApplicationException( symbol + ": Cannot find physical order by id: " + orderId);
 			}
 			return order;
 		}
 		
-		public PhysicalOrder GetOrderByTag( string tag) {
-//			LogOpenOrders();
-			foreach( var kvp in orderMap) {
-				var order = kvp.Value;
-				if( order.Tag.Equals(tag)) {
-					return order;
-				}
-			}
-			throw new ApplicationException( "Cancel failed: Cannot find physical order by tag: " + tag);
-		}
-		
-		private void CancelBrokerOrder(PhysicalOrder origOrder) {
+		private void CancelBrokerOrder(object origBrokerOrder) {
 			IsChanged = true;
-			var oldOrderId = (long) origOrder.BrokerOrder;
+			var oldOrderId = (string) origBrokerOrder;
 			var oldOrder = GetOrderById(oldOrderId);
 			RemoveActive( oldOrder);
 			orderMap.Remove( oldOrderId);
+			LogOpenOrders();
 		}
 		
 		private void CreateBrokerOrder(PhysicalOrder order) {
 			isChanged = true;
-			var orderId = Interlocked.Increment(ref nextOrderId);
-			order.BrokerOrder = orderId;
-			orderMap.Add(orderId,order);
+			orderMap.Add((string)order.BrokerOrder,order);
 			SortAdjust(order);
 		}
 		
@@ -120,15 +110,25 @@ namespace TickZoom.Interceptors
 			CreateBrokerOrder(order);
 		}
 		
-		public void OnCancelBrokerOrder(PhysicalOrder order)
+		public void OnCancelBrokerOrder(object origBrokerOrder)
 		{
-			if( debug) log.Debug("OnCancelBrokerOrder( " + order + ")");
-			CancelBrokerOrder(order);
+			if( debug) log.Debug("OnCancelBrokerOrder( " + origBrokerOrder + ")");
+			CancelBrokerOrder(origBrokerOrder);
+		}
+		
+		public void ReprocessOrders() {
+			ProcessOrdersInternal( lastTick);
 		}
 		
 		public void ProcessOrders(Tick tick)
 		{
+			lastTick.Inject( ((TickIO) tick).Extract());
+			ProcessOrdersInternal( tick);
+		}
+
+		private void ProcessOrdersInternal(Tick tick) {
 			var result = false;
+			if( trace) log.Trace( "ProcessOrders( " + symbol + ", " + tick + " )") ;
 			if( symbol == null) {
 				throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
 			}
@@ -158,10 +158,12 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void LogOpenOrders() {
-			log.Info( "Simulator open orders for " + symbol + ":");
-			foreach( var kvp in orderMap) {
-				var order = kvp.Value;
-				log.Info( order.ToString());
+			if( debug) {
+				log.Debug( "Found " + orderMap.Count + " open orders for " + symbol + ":");
+				foreach( var kvp in orderMap) {
+					var order = kvp.Value;
+					log.Debug( order.ToString());
+				}
 			}
 		}
 		
@@ -345,9 +347,10 @@ namespace TickZoom.Interceptors
 			if( onPositionChange != null) {
 				onPositionChange( actualPosition);
 			}
-			if( debug) log.Debug("Filled: " + order + " -- actual symbol position: " + actualPosition);
-			CancelBrokerOrder(order);
+			if( debug) log.Debug("Filled order: " + order );
+			CancelBrokerOrder(order.BrokerOrder);
 			var fill = new PhysicalFillDefault(size,price,time,order);
+			if( debug) log.Debug("Fill: " + fill );
 			if( onPhysicalFill == null) {
 				throw new ApplicationException("Please set the OnPhysicalFill property.");
 			} else {
@@ -373,10 +376,6 @@ namespace TickZoom.Interceptors
 		public Action<PhysicalFill> OnPhysicalFill {
 			get { return onPhysicalFill; }
 			set { onPhysicalFill = value; }
-		}
-		
-		public Dictionary<long, PhysicalOrder> PhysicalOrders {
-			get { return orderMap; }
 		}
 		
 		public double GetActualPosition(SymbolInfo symbol) {

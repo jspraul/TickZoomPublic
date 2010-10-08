@@ -201,16 +201,16 @@ namespace TickZoom.FIX
 			symbolHandler.CreateOrder(order);
 		}
 
-		public void ChangeOrder(PhysicalOrder order)
+		public void ChangeOrder(PhysicalOrder order, object origBrokerOrder)
 		{
 			var symbolHandler = symbolHandlers[order.Symbol.BinaryIdentifier];
-			symbolHandler.ChangeOrder(order);
+			symbolHandler.ChangeOrder(order, origBrokerOrder);
 		}
 
-		public void CancelOrder(PhysicalOrder order)
+		public void CancelOrder(SymbolInfo symbol, object origBrokerOrder)
 		{
-			var symbolHandler = symbolHandlers[order.Symbol.BinaryIdentifier];
-			symbolHandler.CancelOrder(order);
+			var symbolHandler = symbolHandlers[symbol.BinaryIdentifier];
+			symbolHandler.CancelOrder(origBrokerOrder);
 		}
 		
 		public PhysicalOrder GetOrderById(SymbolInfo symbol, string clientOrderId) {
@@ -221,7 +221,7 @@ namespace TickZoom.FIX
 		public void ProcessOrders(SymbolInfo symbol)
 		{
 			var symbolHandler = symbolHandlers[symbol.BinaryIdentifier];
-			symbolHandler.ProcessOrders();
+			symbolHandler.ReprocessOrders();
 		}
 
 		private Yield QuotesReadLoop()

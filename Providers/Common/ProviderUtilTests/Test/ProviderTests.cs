@@ -119,7 +119,7 @@ namespace TickZoom.Test
 			}
 		}
 		
-#if OTHERS
+#if !OTHERS
 
 		[Test]
 		public void TestSeperateProcess() {

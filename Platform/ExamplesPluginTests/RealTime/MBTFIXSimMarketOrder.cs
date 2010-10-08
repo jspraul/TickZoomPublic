@@ -39,35 +39,37 @@ using ZedGraph;
 
 namespace MockProvider
 {
+#if SIMULATOR
 	[TestFixture]
-	public class TestException : StrategyTest {
-		
-		public TestException() {
+	public class MBTFIXSimMarketOrder : MarketOrderTest {
+		public MBTFIXSimMarketOrder() {
+			SyncTicks.Enabled = true;
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			DeleteFiles();
+			Symbols = "USD/JPY";
+			CreateStarterCallback = CreateStarter;
+			MatchTestResultsOf(typeof(MarketOrderTest));
+			ShowCharts = false;
+			StoreKnownGood = false;
 		}
 		
-		[Test]
 		public override void RunStrategy()
 		{
+			var fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
 			try {
-				MarketOrderTest testFixture = new MarketOrderTest();
-				testFixture.Symbols = "TestException";
-				testFixture.CreateStarterCallback = CreateStarter;
-				testFixture.RunStrategy();
-	    		Assert.Fail("Expected exception of propagation of exception never thrown.");
-	
-			} catch( Exception ex) {
-				string expectedMessage = @"System.InvalidOperationException: Test of Exception Propagation";
-				Assert.IsTrue(ex.InnerException.Message.StartsWith(expectedMessage));
+				base.RunStrategy();
+				LoadReconciliation();
+			} finally {
+				fixServer.Dispose();
 			}
 		}
 		
 		public Starter CreateStarter()
 		{
 			ushort servicePort = 6490;
-			SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
+			SetupWarehouseConfig("MBTFIXProvider/Simulate",servicePort);
 			Starter starter = new RealTimeStarter();
+			starter.ProjectProperties.Engine.SimulateRealTime = true;
 			starter.Config = "WarehouseTest.config";
 			starter.Port = servicePort;
 			return starter;
@@ -83,6 +85,6 @@ namespace MockProvider
 				}
 			}
 		}
-		
 	}
+#endif
 }

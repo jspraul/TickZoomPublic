@@ -37,6 +37,7 @@ namespace TickZoom.Api
 	public interface PhysicalOrder {
 		OrderState OrderState {
 			get;
+			set;
 		}
 		
 		SymbolInfo Symbol {
@@ -57,6 +58,7 @@ namespace TickZoom.Api
 		
 		double Size {
 			get;
+			set;
 		}
 		
 		int LogicalOrderId {

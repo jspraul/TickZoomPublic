@@ -39,7 +39,7 @@ namespace TickZoom.FIX
 		private Task queueTask;
 		private TickSync tickSync;
 		private SymbolInfo symbol;
-		private TickIO lastTick = Factory.TickUtil.TickIO();
+		private TickIO nextTick = Factory.TickUtil.TickIO();
 		
 		public FIXServerSymbolHandler( string symbolString, Func<SymbolInfo,Tick,Yield> onTick, Action<PhysicalFill> onPhysicalFill) {
 			this.onTick = onTick;
@@ -77,20 +77,20 @@ namespace TickZoom.FIX
 			fillSimulator.OnCreateBrokerOrder( order);
 		}
 		
-		public void ChangeOrder(PhysicalOrder order) {
-			fillSimulator.OnChangeBrokerOrder( order);
+		public void ChangeOrder(PhysicalOrder order, object origBrokerOrder) {
+			fillSimulator.OnChangeBrokerOrder( order, origBrokerOrder);
 		}
 		
-		public void CancelOrder(PhysicalOrder order) {
-			fillSimulator.OnCancelBrokerOrder( order);
+		public void CancelOrder(object origBrokerOrder) {
+			fillSimulator.OnCancelBrokerOrder( origBrokerOrder);
 		}
 		
 		public PhysicalOrder GetOrderById(string clientOrderId) {
-			return fillSimulator.GetOrderByTag( clientOrderId);
+			return fillSimulator.GetOrderById( clientOrderId);
 		}
 		
-		public void ProcessOrders() {
-			fillSimulator.ProcessOrders( lastTick);
+		public void ReprocessOrders() {
+			fillSimulator.ReprocessOrders();
 		}
 	    
 		private Yield ProcessQueue() {
@@ -107,7 +107,8 @@ namespace TickZoom.FIX
 			var binary = new TickBinary();
 			try { 
 				if( reader.ReadQueue.TryDequeue( ref binary)) {
-				   	lastTick.Inject( binary);
+				   	nextTick.Inject( binary);
+				   	fillSimulator.ProcessOrders( nextTick);
 				   	result = Yield.DidWork.Invoke(ProcessTick);
 				}
 			} catch( QueueException ex) {
@@ -119,7 +120,7 @@ namespace TickZoom.FIX
 		}
 		
 		private Yield ProcessTick() {
-			return onTick( symbol, lastTick);
+			return onTick( symbol, nextTick);
 		}
 		
 		private void OnException( Exception ex) {

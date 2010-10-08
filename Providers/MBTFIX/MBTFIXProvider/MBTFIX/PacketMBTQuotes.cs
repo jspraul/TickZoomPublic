@@ -168,9 +168,7 @@ namespace TickZoom.MBTQuotes
 		
 		public unsafe string GetString( ref byte* ptr) {
 			byte *sptr = ptr;
-			while (*(++ptr) != 59 && *ptr != 10) {
-				int x = 0;
-			}
+			while (*(++ptr) != 59 && *ptr != 10);
 	        int length = (int) (ptr - sptr);
 	        ++ptr;
 			var result = new string(dataIn.ReadChars(length));
