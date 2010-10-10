@@ -62,7 +62,7 @@ namespace TickZoom.Api
 				if( TickSyncs.TryGetValue(symbolBinaryId,out tickSync)) {
 				   	return tickSync;
 				} else {
-					tickSync = new TickSync();
+					tickSync = new TickSync(symbolBinaryId);
 					TickSyncs.Add(symbolBinaryId,tickSync);
 					return tickSync;
 				}

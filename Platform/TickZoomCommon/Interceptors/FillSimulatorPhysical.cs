@@ -55,7 +55,6 @@ namespace TickZoom.Interceptors
 		private bool useSyntheticLimits = true;
 		private SymbolInfo symbol;
 		private double actualPosition = 0D;
-		private bool isChanged = false;
 		private TickSync tickSync;
 		private TickIO lastTick = Factory.TickUtil.TickIO();
 		
@@ -82,7 +81,8 @@ namespace TickZoom.Interceptors
 			if( debug) log.Debug("OnChangeBrokerOrder( " + order + ")");
 			CancelBrokerOrder( origBrokerOrder);
 			CreateBrokerOrder( order);
-			LogOpenOrders();
+//			ReprocessOrders();
+			if( SyncTicks.Enabled) tickSync.RemovePhysicalOrder(order);
 		}
 		
 		public PhysicalOrder GetOrderById( string orderId) {
@@ -94,17 +94,16 @@ namespace TickZoom.Interceptors
 			return order;
 		}
 		
-		private void CancelBrokerOrder(object origBrokerOrder) {
-			IsChanged = true;
+		private PhysicalOrder CancelBrokerOrder(object origBrokerOrder) {
 			var oldOrderId = (string) origBrokerOrder;
 			var oldOrder = GetOrderById(oldOrderId);
 			RemoveActive( oldOrder);
 			orderMap.Remove( oldOrderId);
 			LogOpenOrders();
+			return oldOrder;
 		}
 		
 		private void CreateBrokerOrder(PhysicalOrder order) {
-			isChanged = true;
 			orderMap.Add((string)order.BrokerOrder,order);
 			SortAdjust(order);
 		}
@@ -113,12 +112,16 @@ namespace TickZoom.Interceptors
 		{
 			if( debug) log.Debug("OnCreateBrokerOrder( " + order + ")");
 			CreateBrokerOrder(order);
+//			ReprocessOrders();
+			if( SyncTicks.Enabled) tickSync.RemovePhysicalOrder(order);
 		}
 		
 		public void OnCancelBrokerOrder(object origBrokerOrder)
 		{
 			if( debug) log.Debug("OnCancelBrokerOrder( " + origBrokerOrder + ")");
-			CancelBrokerOrder(origBrokerOrder);
+			var order = CancelBrokerOrder(origBrokerOrder);
+//			ReprocessOrders();
+			if( SyncTicks.Enabled) tickSync.RemovePhysicalOrder(order);
 		}
 		
 		public void ReprocessOrders() {
@@ -146,34 +149,27 @@ namespace TickZoom.Interceptors
 			var next = marketOrders.First;
 			for( var node = next; node != null; node = node.Next) {
 				var order = node.Value;
-				if( OnProcessOrder(order, tick)) {
-					result = true;
-				}
+				OnProcessOrder(order, tick);
 			}
 			next = increaseOrders.First;
 			for( var node = next; node != null; node = node.Next) {
 				var order = node.Value;
-				if( OnProcessOrder(order, tick)) {
-					result = true;
-				}
+				OnProcessOrder(order, tick);
 			}
 			next = decreaseOrders.First;
 			for( var node = next; node != null; node = node.Next) {
 				var order = node.Value;
-				if( OnProcessOrder(order, tick)) {
-					result = true;
-				}
+				OnProcessOrder(order, tick);
 			}
-			tickSync.SentFills = result;
 			openTick = false;
 		}
 		
 		private void LogOpenOrders() {
-			if( debug) {
-				log.Debug( "Found " + orderMap.Count + " open orders for " + symbol + ":");
+			if( trace) {
+				log.Trace( "Found " + orderMap.Count + " open orders for " + symbol + ":");
 				foreach( var kvp in orderMap) {
 					var order = kvp.Value;
-					log.Debug( order.ToString());
+					log.Trace( order.ToString());
 				}
 			}
 		}
@@ -244,44 +240,30 @@ namespace TickZoom.Interceptors
 			}
 		}
 		
-		private bool OnProcessOrder(PhysicalOrder order, Tick tick)
+		private void OnProcessOrder(PhysicalOrder order, Tick tick)
 		{
-			bool retVal = false;
 			if (trace) log.Trace("OnProcessOrder()");
 	
 			switch (order.Type) {
 				case OrderType.SellMarket:
-					if( ProcessSellMarket(order, tick)) {
-						retVal = true;
-					}
+					ProcessSellMarket(order, tick);
 					break;
 				case OrderType.SellStop:
-					if( ProcessSellStop(order, tick)) {
-						retVal = true;
-					}
+					ProcessSellStop(order, tick);
 					break;
 				case OrderType.SellLimit:
-					if( ProcessSellLimit(order, tick)) {
-						retVal = true;
-					}
+					ProcessSellLimit(order, tick);
 					break;
 				case OrderType.BuyMarket:
-					if( ProcessBuyMarket(order, tick)) {
-						retVal = true;
-					}
+					ProcessBuyMarket(order, tick);
 					break;
 				case OrderType.BuyStop:
-					if( ProcessBuyStop(order, tick)) {
-						retVal = true;
-					}
+					ProcessBuyStop(order, tick);
 					break;
 				case OrderType.BuyLimit:
-					if( ProcessBuyLimit(order, tick)) {
-						retVal = true;
-					}
+					ProcessBuyLimit(order, tick);
 					break;
 			}
-			return retVal;
 		}
 		
 		private bool ProcessBuyStop(PhysicalOrder order, Tick tick)
@@ -368,6 +350,7 @@ namespace TickZoom.Interceptors
 			if( onPhysicalFill == null) {
 				throw new ApplicationException("Please set the OnPhysicalFill property.");
 			} else {
+				if( SyncTicks.Enabled) tickSync.AddPhysicalFill(fill);
 				onPhysicalFill(fill);
 			}
 		}
@@ -394,11 +377,6 @@ namespace TickZoom.Interceptors
 		
 		public double GetActualPosition(SymbolInfo symbol) {
 			return actualPosition;
-		}
-		
-		public bool IsChanged {
-			get { return isChanged; }
-			set { isChanged = value; }
 		}
 		
 		public double ActualPosition {

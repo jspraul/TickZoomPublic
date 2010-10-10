@@ -758,9 +758,9 @@ namespace TickZoom.MBTFIX
     			algorithm.PerformCompare();
 			}
 			var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
-			if( !tickSync.SentFills) {
-				log.Info("SyncTicks: CompletedPositionChange");
-				tickSync.CompletedPositionChange();
+			if( SyncTicks.Enabled ) {
+				if( trace) log.Trace("SyncTicks: RemovePositionChange");
+				tickSync.RemovePositionChange();
 			}				
 		}
 		

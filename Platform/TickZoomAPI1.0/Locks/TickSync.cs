@@ -33,36 +33,99 @@ namespace TickZoom.Api
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TickSync));
 		private static readonly bool debug = log.IsDebugEnabled;		
 		private static readonly bool trace = log.IsTraceEnabled;		
-		private volatile bool completedTick = false;
-		private int completedOrders = 0;
-		private volatile bool sentFills = false;
-		public bool CompletedTick {
-			get { return completedTick; }
-			set { completedTick = value; }
+		private int ticks = 0;
+		private int positionChanges = 0;
+		private int physicalFills = 0;
+		private int physicalOrders = 0;
+		private SymbolInfo symbol;
+		
+		public TickSync( long symbolId) {
+			this.symbol = Factory.Symbol.LookupSymbol(symbolId);
+		}
+		public bool Completed {
+			get { var value = CompletedInternal;
+//					if( trace && value) log.Trace(symbol + ": Completed()");
+					return value;
+			}
 		}		
-		public void ClearPositionChange() {
-			sentFills = false;
-			var value = Interlocked.Exchange(ref completedOrders, 0);
-			if( trace) log.Trace("ClearPositionChange("+value+")");
+		private bool CompletedInternal {
+			get { var value = ticks == 0 && positionChanges == 0 &&
+					physicalOrders == 0 && physicalFills == 0;
+					return value;
+			}
+		}		
+		public void Clear() {
+			if( !CompletedInternal) {
+				System.Diagnostics.Debugger.Break();
+				throw new ApplicationException(symbol + ": Tick, position changes, physical orders, and physical fills, must all complete before clearing the tick sync.");
+			}
+			ForceClear();
 		}
-		public void SentPositionChange() {
-			var value = Interlocked.Increment( ref completedOrders);
-			if( trace) log.Trace("SentPositionChange("+value+")");
+		public void ForceClear() {
+			if( this.ticks < 0) {
+				System.Diagnostics.Debugger.Break();
+			}
+			var ticks = Interlocked.Exchange(ref this.ticks, 0);
+			var orders = Interlocked.Exchange(ref physicalOrders, 0);
+			var changes = Interlocked.Exchange(ref positionChanges, 0);
+			var fills = Interlocked.Exchange(ref physicalFills, 0);
+			Unlock();
+			if( trace) log.Trace(symbol + ": Clear("+ticks+","+orders+","+changes+","+fills+")");
 		}
-		public void CompletedPositionChange() {
-			var value = Interlocked.Decrement( ref completedOrders);
-			if( trace) log.Trace("CompletedPositionChange("+value+")");
+		public void AddTick() {
+			var value = Interlocked.Increment( ref ticks);
+			if( trace) log.Trace(symbol + ": AddTick("+value+")");
+		}
+		public void RemoveTick() {
+			var value = Interlocked.Decrement( ref ticks);
+			if( trace) log.Trace(symbol + ": RemoveTick("+value+")");
 			if( value < 0) {
-				log.Warn("Completed: value below zero: " + completedOrders);
+				System.Diagnostics.Debugger.Break();
 			}
 		}
-		public bool CompletedOrders {
-			get { return completedOrders == 0; }
+		public void AddPhysicalFill(PhysicalFill fill) {
+			var value = Interlocked.Increment( ref physicalFills);
+			if( trace) log.Trace(symbol + ": AddPhysicalFill("+value+","+fill+","+fill.Order+")");
+		}
+		public void RemovePhysicalFill(object fill) {
+			var value = Interlocked.Decrement( ref physicalFills);
+			if( trace) log.Trace(symbol + ": RemovePhysicalFill("+value+","+fill+")");
+			if( value < 0) {
+				System.Diagnostics.Debugger.Break();
+			}
+		}
+		public void AddPhysicalOrder(PhysicalOrder order) {
+			var value = Interlocked.Increment( ref physicalOrders);
+			if( trace) log.Trace(symbol + ": AddPhysicalOrder("+value+","+order+")");
+		}
+		public void RemovePhysicalOrder(PhysicalOrder order) {
+			var value = Interlocked.Decrement( ref physicalOrders);
+			if( trace) log.Trace(symbol + ": RemovePhysicalOrder("+value+","+order+")");
+			if( value < 0) {
+				System.Diagnostics.Debugger.Break();
+			}
+		}
+		public void AddPositionChange() {
+			var value = Interlocked.Increment( ref positionChanges);
+			if( trace) log.Trace(symbol + ": AddPositionChange("+value+")");
+		}
+		public void RemovePositionChange() {
+			var value = Interlocked.Decrement( ref positionChanges);
+			if( trace) log.Trace(symbol + ": RemovePositionChange("+value+")");
+			if( value < 0) {
+				log.Warn(symbol + ": Completed: value below zero: " + positionChanges);
+			}
+			if( value < 0) {
+				System.Diagnostics.Debugger.Break();
+			}
 		}
 		
-		public bool SentFills {
-			get { return sentFills; }
-			set { sentFills = value; }
+		public bool SentPhysicalOrders {
+			get { return physicalOrders > 0; }
+		}
+		
+		public bool SentPhysicalFills {
+			get { return physicalFills > 0; }
 		}
 	}
 }

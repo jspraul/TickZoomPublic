@@ -51,9 +51,12 @@ namespace TickZoom.Common
 		private Action<SymbolInfo,LogicalFillBinary> onProcessFill;
 		private bool handleSimulatedExits = false;
 		private double actualPosition = 0D;
+		private int sentPhysicalOrders = 0;
+		private TickSync tickSync;
 		
 		public OrderAlgorithmDefault(SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
 			this.symbol = symbol;
+			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			this.physicalOrderHandler = brokerOrders;
 			this.originalLogicals = new ActiveList<LogicalOrder>();
 			this.originalPhysicals = new ActiveList<PhysicalOrder>();
@@ -102,6 +105,8 @@ namespace TickZoom.Common
 			    physical.Type != OrderType.BuyMarket &&
 			    physical.Type != OrderType.SellMarket) {
 				if( trace) log.Trace("Cancel Broker Order " + physical);
+				sentPhysicalOrders++;
+				TryAddPhysicalOrder(physical);
 				physicalOrderHandler.OnCancelBrokerOrder(physical.BrokerOrder);
 				result = true;	
 			}
@@ -111,12 +116,20 @@ namespace TickZoom.Common
 		private void TryChangeBrokerOrder(PhysicalOrder physical, object origBrokerId) {
 			if( physical.OrderState == OrderState.Active) {
 				if( trace) log.Trace("Change Broker Order " + physical);
+				sentPhysicalOrders++;
+				TryAddPhysicalOrder(physical);
 				physicalOrderHandler.OnChangeBrokerOrder(physical, origBrokerId);
 			}
 		}
 		
+		private void TryAddPhysicalOrder(PhysicalOrder physical) {
+			if( SyncTicks.Enabled) tickSync.AddPhysicalOrder(physical);
+		}
+		
 		private void CreateBrokerOrder(PhysicalOrder physical) {
 			if( trace) log.Trace("Create Broker Order " + physical);
+			sentPhysicalOrders++;
+			TryAddPhysicalOrder(physical);
 			physicalOrderHandler.OnCreateBrokerOrder(physical);
 		}
 		
@@ -482,12 +495,17 @@ namespace TickZoom.Common
 				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
 				if( debug) log.Debug("Skipping logical fill for an adjustment market order.");
 				if( debug) log.Debug("Performing extra compare.");
-				PerformCompare();
+				TryRemovePhysicalFill(physical);
+				PerformCompareInternal();
 				return;
 			}
 			if( debug) log.Debug("Fill price: " + fill);
 			ProcessFill( fill);
 		}		
+		
+		private void TryRemovePhysicalFill(PhysicalFill fill) {
+			if( SyncTicks.Enabled) tickSync.RemovePhysicalFill(fill);
+		}
 		
 		private void ProcessFill( LogicalFillBinary fill) {
 			if( debug) log.Debug( "ProcessFill() logical: " + fill );
@@ -563,11 +581,12 @@ namespace TickZoom.Common
 			} catch( ApplicationException) {
 				
 			}
-			if( debug) log.Debug("Performing extra compare.");
-			PerformCompare();
 			if( onProcessFill != null) {
+				if( debug) log.Debug("Sending logical fill for " + symbol + ": " + fill);
 				onProcessFill( symbol, fill);
 			}
+			if( debug) log.Debug("Performing extra compare.");
+			PerformCompareInternal();
 		}
 		
 		private void UpdateOrderCache(double fillSize, LogicalOrder order) {
@@ -579,7 +598,13 @@ namespace TickZoom.Common
 			orderCache.RemoveInactive(order);
 		}
 		
-		public void PerformCompare() {
+		public int PerformCompare() {
+			sentPhysicalOrders = 0;
+			PerformCompareInternal();
+			return sentPhysicalOrders;
+		}
+		
+		private void PerformCompareInternal() {
 			if( debug) log.Debug( "PerformCompare for " + symbol + " with " +
 			                     actualPosition + " actual " + 
 			                     desiredPosition + " desired and " +

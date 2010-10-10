@@ -33,7 +33,7 @@ namespace TickZoom.Api
 	public interface OrderAlgorithm {
 		void SetDesiredPosition(double position);
 		void SetLogicalOrders(Iterable<LogicalOrder> logicalOrders);
-		void PerformCompare();
+		int PerformCompare();
 		void ProcessFill( PhysicalFill fill);
 		bool HandleSimulatedExits { get; set; }
 		PhysicalOrderHandler PhysicalOrderHandler { get; }

@@ -55,13 +55,11 @@ namespace TickZoom.FIX
 		
 	    private void UnLockTickSync() {
 	    	if( trace) log.Trace("Unlocking TickSync.");
-	    	tickSync.CompletedTick = false;
-	    	tickSync.ClearPositionChange();
-			tickSync.Unlock();
+	    	tickSync.Clear();
 	    }
 	    
 	    private void TryCompleteTick() {
-	    	if( tickSync.CompletedTick && tickSync.CompletedOrders) {
+	    	if( tickSync.Completed) {
 		    	if( trace) log.Trace("TryCompleteTick()");
 		    	UnLockTickSync();
 	    	}

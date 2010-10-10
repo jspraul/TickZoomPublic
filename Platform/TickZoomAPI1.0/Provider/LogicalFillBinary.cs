@@ -45,6 +45,9 @@ namespace TickZoom.Api
 			this.price = price;
 			this.time = time;
 			this.orderId = orderId;
+			if( orderId == 0) {
+				System.Diagnostics.Debugger.Break();
+			}
 		}
 
 		public int OrderId {
