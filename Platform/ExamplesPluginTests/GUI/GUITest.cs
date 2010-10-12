@@ -36,7 +36,7 @@ using NUnit.Framework;
 using TickZoom;
 using TickZoom.Api;
 
-namespace MiscTest
+namespace Other
 {
 	[TestFixture]
 	public class GUITest

@@ -33,7 +33,7 @@ using TickZoom.Api;
 using TickZoom.Common;
 #endregion
 
-namespace MiscTest
+namespace Other
 {
     public class MQ_BadFakeTick_1 : Strategy
 	{

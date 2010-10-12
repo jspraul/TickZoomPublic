@@ -43,7 +43,7 @@ using TickZoom.Starters;
 #endif
 
 
-namespace MiscTest
+namespace Other
 {
 	[TestFixture]
 	public class DefectsTest : StrategyTest

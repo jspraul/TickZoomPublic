@@ -32,6 +32,7 @@ namespace TickZoom.Api
 	public enum YieldStatus {
 		None,
 		Invoke,
+		DelayInvoke,
 		Return,
 		Repeat,
 		Pause,
@@ -48,6 +49,12 @@ namespace TickZoom.Api
 		public Yield Invoke(YieldMethod method) {
 			Method = method;
 			Status = YieldStatus.Invoke;
+			return this;
+		}
+		
+		public Yield DelayInvoke(YieldMethod method) {
+			Method = method;
+			Status = YieldStatus.DelayInvoke;
 			return this;
 		}
 		

@@ -24,38 +24,50 @@
  */
 #endregion
 
+#region Namespaces
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Text;
 using TickZoom.Api;
 using TickZoom.Common;
+#endregion
 
-namespace MiscTest
+namespace Other
 {
-	/// <summary>
-	/// MQ_MorphLoader loads the Morph strategy for MicroQuant.
-	/// </summary>
-	public class MQ_BadFakeTickLoader : ModelLoaderCommon
-	{
-        public MQ_BadFakeTickLoader()
-        {
-			/// <summary>
-			/// IMPORTANT: You can personalize the name of each model loader.
-			/// </summary>
-			category = "MQ_Systems";
-			name = "BadFakeTick";
-			IsVisibleInGUI = false;
-		}
-		
-		public override void OnInitialize(ProjectProperties properties) {
-		}
+    public class MQ_BadFakeTick_2 : Strategy
+    {
 
-        public override void OnLoad(ProjectProperties properties)
-        {
-            AddDependency("PortfolioCommon", "MQ_BadFakeTick_0");
-            AddDependency("PortfolioCommon", "MQ_BadFakeTick_1");
-            AddDependency("PortfolioCommon", "MQ_BadFakeTick_2");
+        /// <summary>
+        /// Contracts to trade
+        /// </summary>
+        public int Quantity
+        { get { return quantity; } set { quantity = value; } }
+        int quantity = 50;
 
-            TopModel = GetPortfolio("PortfolioCommon");
+
+        public MQ_BadFakeTick_2()
+        {
         }
-	}
+
+        public override void OnInitialize()
+        {
+        }
+
+       	TimeStamp firstTime = new TimeStamp("2008-09-08 09:35:00");
+       	TimeStamp secondTime = new TimeStamp("2008-09-08 09:36:00");
+        public override bool OnIntervalClose()
+        {
+            if (Bars.EndTime[0] == firstTime)
+            {
+                Orders.Enter.ActiveNow.BuyLimit(127.92,quantity);
+            }
+            if (Bars.EndTime[0] == secondTime)
+            {
+                Orders.Exit.ActiveNow.SellStop(127.63);
+            }
+
+            return true;
+        }
+    }
 }

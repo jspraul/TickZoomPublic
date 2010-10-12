@@ -84,11 +84,11 @@
     <Compile Include="Loaders\TestLimitOrderLoader.cs" />
     <Compile Include="Loaders\TradeOnlyLimitOrderTest.cs" />
     <Compile Include="Loaders\TradeOnlySimpleTest.cs" />
-    <Compile Include="MiscTest\DefectsTest.cs" />
-    <Compile Include="MiscTest\MQ_BadFakeTickLoader.cs" />
-    <Compile Include="MiscTest\MQ_BadFakeTick_0.cs" />
-    <Compile Include="MiscTest\MQ_BadFakeTick_1.cs" />
-    <Compile Include="MiscTest\MQ_BadFakeTick_2.cs" />
+    <Compile Include="Other\DefectsTest.cs" />
+    <Compile Include="Other\MQ_BadFakeTickLoader.cs" />
+    <Compile Include="Other\MQ_BadFakeTick_0.cs" />
+    <Compile Include="Other\MQ_BadFakeTick_1.cs" />
+    <Compile Include="Other\MQ_BadFakeTick_2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealTime\BrokerDualLimitOrder.cs" />
     <Compile Include="RealTime\BrokerLimitOrderTickBar.cs" />
@@ -106,7 +106,7 @@
   <ItemGroup>
     <Folder Include="GUI" />
     <Folder Include="Loaders" />
-    <Folder Include="MiscTest" />
+    <Folder Include="Other" />
     <Folder Include="Lib" />
     <Folder Include="RealTime" />
     <ProjectReference Include="..\Charting\Charting.csproj">

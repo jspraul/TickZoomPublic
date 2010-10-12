@@ -33,41 +33,45 @@ using TickZoom.Api;
 using TickZoom.Common;
 #endregion
 
-namespace MiscTest
+namespace Other
 {
-    public class MQ_BadFakeTick_2 : Strategy
-    {
+    public class MQ_BadFakeTick_0 : Strategy
+	{
 
         /// <summary>
         /// Contracts to trade
         /// </summary>
         public int Quantity
         { get { return quantity; } set { quantity = value; } }
-        int quantity = 50;
+        int quantity = 100;
 
 
-        public MQ_BadFakeTick_2()
+        public MQ_BadFakeTick_0()
         {
-        }
+		}
+		   
+		public override void OnInitialize()
+		{
+		}
 
-        public override void OnInitialize()
-        {
-        }
+		public override bool OnIntervalClose()
+		{
+            // both these orders should fill on the next bar
 
-       	TimeStamp firstTime = new TimeStamp("2008-09-08 09:35:00");
-       	TimeStamp secondTime = new TimeStamp("2008-09-08 09:36:00");
-        public override bool OnIntervalClose()
-        {
-            if (Bars.EndTime[0] == firstTime)
+            if ((((DateTime)Bars.EndTime[0]).ToString("yyyyMMdd") == "20080908") &&
+                (Bars.EndTime[0].TimeOfDay == new Elapsed(9, 42, 0)))          
             {
-                Orders.Enter.ActiveNow.BuyLimit(127.92,quantity);
+                Orders.Enter.ActiveNow.SellLimit(127.74,quantity);
+                if (Bars.High[0] != Bars.Low[0]) {};
             }
-            if (Bars.EndTime[0] == secondTime)
+            if ((((DateTime)Bars.EndTime[0]).ToString("yyyyMMdd") == "20080908") &&
+                (Bars.EndTime[0].TimeOfDay == new Elapsed(9, 42, 0)))
             {
-                Orders.Exit.ActiveNow.SellStop(127.63);
+                Orders.Exit.ActiveNow.BuyLimit(127.48);
+                if (Bars.High[0] != Bars.Low[0]) { };
             }
 
-            return true;
-        }
+			return true;
+		}
     }
 }
