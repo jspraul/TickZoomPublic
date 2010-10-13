@@ -81,15 +81,15 @@ namespace Loaders
 		
 		[Test]
 		public void VerifyCurrentEquity() {
-			Assert.AreEqual( 6340.30D,Math.Round(portfolio.Performance.Equity.CurrentEquity,2),"current equity");
+			Assert.AreEqual( 6291.70D,Math.Round(portfolio.Performance.Equity.CurrentEquity,2),"current equity");
 		}
 		[Test]
 		public void VerifyOpenEquity() {
-			Assert.AreEqual( -496.40D,portfolio.Performance.Equity.OpenEquity,"open equity");
+			Assert.AreEqual( -497.00D,portfolio.Performance.Equity.OpenEquity,"open equity");
 		}
 		[Test]
 		public void VerifyClosedEquity() {
-			Assert.AreEqual( 6836.70,Math.Round(portfolio.Performance.Equity.ClosedEquity,2),"closed equity");
+			Assert.AreEqual( 6788.70,Math.Round(portfolio.Performance.Equity.ClosedEquity,2),"closed equity");
 		}
 		[Test]
 		public void VerifyStartingEquity() {

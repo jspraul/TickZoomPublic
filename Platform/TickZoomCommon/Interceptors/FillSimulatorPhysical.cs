@@ -46,6 +46,7 @@ namespace TickZoom.Interceptors
 		private ActiveList<PhysicalOrder> decreaseOrders = new ActiveList<PhysicalOrder>();
 		private ActiveList<PhysicalOrder> marketOrders = new ActiveList<PhysicalOrder>();
 		private NodePool<PhysicalOrder> nodePool = new NodePool<PhysicalOrder>();
+		private bool openTick = false;
 
 		private Action<PhysicalFill> onPhysicalFill;
 		private Action<double> onPositionChange;
@@ -62,6 +63,10 @@ namespace TickZoom.Interceptors
 		{
 			this.symbol = symbol;
 			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+		}
+		
+		public void OnOpen() {
+			openTick = true;
 		}
 		
 		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol) {
@@ -128,7 +133,13 @@ namespace TickZoom.Interceptors
 
 		private void ProcessOrdersInternal(Tick tick) {
 			var result = false;
-			if( trace) log.Trace( "ProcessOrders( " + symbol + ", " + tick + " )") ;
+			if( debug) {
+				if( openTick) {
+					log.Debug( "ProcessOrders( " + symbol + ", " + tick + " ) [OpenTick]") ;
+				} else {
+					log.Debug( "ProcessOrders( " + symbol + ", " + tick + " )") ;
+				}
+			}
 			if( symbol == null) {
 				throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
 			}
@@ -154,7 +165,7 @@ namespace TickZoom.Interceptors
 				}
 			}
 			tickSync.SentFills = result;
-			
+			openTick = false;
 		}
 		
 		private void LogOpenOrders() {
@@ -288,6 +299,9 @@ namespace TickZoom.Interceptors
 		{
 			bool retVal = false;
 			double price;
+			if( order.Price == 29.20 ) {
+				System.Diagnostics.Debugger.Break();
+			}
 			price = tick.IsQuote ? tick.Bid : tick.Price;
 			if (price <= order.Price) {
 				CreateLogicalFillHelper(-order.Size, price, tick.Time, order);

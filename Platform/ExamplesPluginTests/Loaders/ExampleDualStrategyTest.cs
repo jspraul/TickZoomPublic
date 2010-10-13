@@ -100,7 +100,7 @@ namespace Loaders
 			double portfolioTotal = portfolio.Performance.Equity.CurrentEquity;
 			portfolioTotal -= portfolio.Performance.Equity.StartingEquity;
 			Assert.AreEqual(Math.Round(expected,2), Math.Round(portfolioTotal,2));
-			Assert.AreEqual(Math.Round(-29.15,2), Math.Round(portfolioTotal,2));
+			Assert.AreEqual(Math.Round(-27.07,2), Math.Round(portfolioTotal,2));
 		}
 		
 		[Test]
@@ -114,7 +114,7 @@ namespace Loaders
 			double portfolioTotal = portfolio.Performance.Equity.ClosedEquity;
 			portfolioTotal -= portfolio.Performance.Equity.StartingEquity;
 			Assert.AreEqual(Math.Round(expected,2), Math.Round(portfolioTotal,2));
-			Assert.AreEqual(Math.Round(-28.98,2), Math.Round(portfolioTotal,2));
+			Assert.AreEqual(Math.Round(-26.90,2), Math.Round(portfolioTotal,2));
 		}
 		
 		[Test]
