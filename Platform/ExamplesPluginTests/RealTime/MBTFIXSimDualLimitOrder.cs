@@ -36,7 +36,7 @@ using TickZoom.Starters;
 
 namespace MockProvider
 {
-#if SIMULATOR
+#if !SIMULATOR
 	[TestFixture]
 	public class MBTFIXSimDualLimitOrder : DualStrategyLimitOrder {
 		public MBTFIXSimDualLimitOrder() {
@@ -63,7 +63,7 @@ namespace MockProvider
 		
 		[Test]
 		public void PerformReconciliationTest() {
-			PerformReconciliation();
+//			PerformReconciliation();
 		}
 	
 		public Starter CreateStarter()

@@ -661,11 +661,11 @@ namespace TickZoom.MBTFIX
 			if( quantity > 0) {
 				order.Size = quantity;
 				if( info && (LogRecovery || !IsRecovery) ) {
-					log.Info("Updated order: " + order + ".  Executed: " + packetFIX.CumulativeQuantity + " Remaining: " + packetFIX.LeavesQuantity);
+					if( debug) log.Debug("Updated order: " + order + ".  Executed: " + packetFIX.CumulativeQuantity + " Remaining: " + packetFIX.LeavesQuantity);
 				}
 			} else {
 				if( info && (LogRecovery || !IsRecovery) ) {
-					log.Info("Order Completely Filled. Id: " + packetFIX.ClientOrderId + ".  Executed: " + packetFIX.CumulativeQuantity);
+					if( debug) log.Debug("Order Completely Filled. Id: " + packetFIX.ClientOrderId + ".  Executed: " + packetFIX.CumulativeQuantity);
 				}
 				openOrders.Remove(packetFIX.ClientOrderId);
 			}
@@ -782,7 +782,7 @@ namespace TickZoom.MBTFIX
 	        
 		public void OnCreateBrokerOrder(PhysicalOrder physicalOrder)
 		{
-			log.Info( "OnCreateBrokerOrder " + physicalOrder);
+			if( debug) log.Debug( "OnCreateBrokerOrder " + physicalOrder);
 			OnCreateOrChangeBrokerOrder(physicalOrder, null);
 		}
 	        
@@ -792,7 +792,7 @@ namespace TickZoom.MBTFIX
 			
 			var fixMsg = new FIXMessage4_4(UserName,fixDestination);
 			openOrders[(string)physicalOrder.BrokerOrder] = physicalOrder;
-			log.Info( "Adding Order to open order list: " + physicalOrder);
+			if( debug) log.Debug( "Adding Order to open order list: " + physicalOrder);
 			fixMsg.SetClientOrderId((string)physicalOrder.BrokerOrder);
 			fixMsg.SetAccount(AccountNumber);
 			if( origBrokerOrder != null) {
@@ -884,7 +884,7 @@ namespace TickZoom.MBTFIX
 		public void OnCancelBrokerOrder(object origBrokerOrder)
 		{
 			var physicalOrder = GetOrderById( origBrokerOrder);
-			log.Info( "OnCancelBrokerOrder " + physicalOrder);
+			if( debug) log.Debug( "OnCancelBrokerOrder " + physicalOrder);
 			Packet packet = Socket.CreatePacket();
 			
 			var fixMsg = new FIXMessage4_4(UserName,fixDestination);
@@ -923,7 +923,7 @@ namespace TickZoom.MBTFIX
 		
 		public void OnChangeBrokerOrder(PhysicalOrder physicalOrder, object origBrokerOrder)
 		{
-			log.Info( "OnChangeBrokerOrder( " + physicalOrder + ", original client id: " + origBrokerOrder );
+			if( debug) log.Debug( "OnChangeBrokerOrder( " + physicalOrder + ", original client id: " + origBrokerOrder );
 			OnCreateOrChangeBrokerOrder( physicalOrder, origBrokerOrder);
 		}
 	}

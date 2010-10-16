@@ -637,7 +637,6 @@ namespace TickZoom.Common
 			
 			if( CheckForFilledOrders()) {
 				if( debug) log.Debug("Found already filled orders in position change event. Skipping compare.");
-				log.Info("Found already filled orders in position change event. Skipping compare.");
 				originalLogicals.Clear();
 				originalLogicals.AddLast(logicalOrders);
 			}

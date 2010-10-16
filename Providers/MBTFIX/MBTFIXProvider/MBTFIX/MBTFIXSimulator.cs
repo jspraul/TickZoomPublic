@@ -160,7 +160,7 @@ namespace TickZoom.MBTFIX
 		private Yield FIXChangeOrder(PacketFIX4_4 packet) {
 			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
 			PhysicalOrder order = null;
-			log.Info( "FIXChangeOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId + ". Original client id: " + packet.OriginalClientOrderId);
+			if( debug) log.Debug( "FIXChangeOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId + ". Original client id: " + packet.OriginalClientOrderId);
 			try {
 				order = GetOrderById( symbol, packet.OriginalClientOrderId);
 			} catch( ApplicationException) {
@@ -179,7 +179,7 @@ namespace TickZoom.MBTFIX
 		
 		private Yield FIXCancelOrder(PacketFIX4_4 packet) {
 			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
-			log.Info( "FIXCancelOrder() for " + packet.Symbol + ". Original client id: " + packet.OriginalClientOrderId);
+			if( debug) log.Debug( "FIXCancelOrder() for " + packet.Symbol + ". Original client id: " + packet.OriginalClientOrderId);
 			PhysicalOrder order = null;
 			try {
 				order = GetOrderById( symbol, packet.OriginalClientOrderId);
@@ -197,7 +197,7 @@ namespace TickZoom.MBTFIX
 		}
 		
 		private Yield FIXCreateOrder(PacketFIX4_4 packet) {
-			log.Info( "FIXCreateOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId);
+			if( debug) log.Debug( "FIXCreateOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId);
 			var order = ConstructOrder( packet);
 			SendExecutionReport( order, "A", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
