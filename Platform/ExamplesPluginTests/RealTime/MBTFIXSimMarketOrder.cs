@@ -39,7 +39,7 @@ using ZedGraph;
 
 namespace MockProvider
 {
-#if SIMULATOR
+#if !SIMULATOR
 	[TestFixture]
 	public class MBTFIXSimMarketOrder : MarketOrderTest {
 		public MBTFIXSimMarketOrder() {

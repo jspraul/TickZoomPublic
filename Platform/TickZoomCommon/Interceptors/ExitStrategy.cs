@@ -70,7 +70,6 @@ namespace TickZoom.Interceptors
 		public override void Intercept(EventContext context, EventType eventType, object eventDetail)
 		{
 			if( eventType == EventType.Initialize) {
-				int OptimizeTickEvent = 0;
 				Strategy.AddInterceptor( EventType.Tick, this);
 				Strategy.AddInterceptor( EventType.LogicalFill, this);
 				OnInitialize();

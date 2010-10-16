@@ -494,9 +494,9 @@ namespace TickZoom.Common
 			} catch( ApplicationException) {
 				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
 				if( debug) log.Debug("Skipping logical fill for an adjustment market order.");
-				if( debug) log.Debug("Performing extra compare.");
 				TryRemovePhysicalFill(physical);
-				PerformCompareInternal();
+//				if( debug) log.Debug("Performing extra compare.");
+//				PerformCompareInternal();
 				return;
 			}
 			if( debug) log.Debug("Fill price: " + fill);

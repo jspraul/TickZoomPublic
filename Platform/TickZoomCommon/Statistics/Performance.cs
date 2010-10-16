@@ -110,12 +110,15 @@ namespace TickZoom.Statistics
 		
 		public bool OnProcessFill(LogicalFill fill)
 		{
+			if( debug) log.Debug(model + ": OnProcessFill: " + fill);
+			
 			if( model is Portfolio) {
 				var portfolio = (Portfolio) model;
-				if( debug) log.Debug("OnProcessFill at position " + portfolio.Result.Position.Current + " : " + fill);
 				var portfolioPosition = portfolio.Result.Position;
 				fill = new LogicalFillBinary( portfolioPosition.Current, portfolioPosition.Price, fill.Time, fill.OrderId);
+				if( debug) log.Debug("For portfolio, converted to fill: " + fill);
 			}
+			
 			if( fill.Position != position.Current) {
 				if( position.IsFlat) {
 					EnterComboTrade(fill);

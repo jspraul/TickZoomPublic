@@ -49,7 +49,7 @@ namespace TickZoom.FIX
 			fillSimulator = Factory.Utility.FillSimulator( symbol);
 			fillSimulator.OnPhysicalFill = onPhysicalFill;
 			tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
-			UnLockTickSync();
+			tickSync.ForceClear();
 			queueTask = Factory.Parallel.Loop("FIXServerSymbol-"+symbolString, OnException, ProcessQueue);
 		}
 		
@@ -106,6 +106,7 @@ namespace TickZoom.FIX
 			try { 
 				if( reader.ReadQueue.TryDequeue( ref binary)) {
 				   	nextTick.Inject( binary);
+				   	tickSync.AddTick();
 				   	fillSimulator.ProcessOrders( nextTick);
 				   	result = Yield.DidWork.Invoke(ProcessTick);
 				}

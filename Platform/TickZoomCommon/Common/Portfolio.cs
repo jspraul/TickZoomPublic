@@ -40,6 +40,7 @@ namespace TickZoom.Common
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Portfolio));
 		private static readonly bool debug = log.IsDebugEnabled;
+		private static readonly bool trace = log.IsTraceEnabled;
 		private List<Strategy> strategies = new List<Strategy>();
 		private List<Portfolio> portfolios = new List<Portfolio>();
 		private Dictionary<ModelInterface,StrategyWatcher> watchers = new Dictionary<ModelInterface,StrategyWatcher>();
@@ -166,8 +167,7 @@ namespace TickZoom.Common
 			base.OnEvent(context, eventType, eventDetail);
 			
 			if( eventType == EventType.LogicalFill) {
-				TryMergeSingleSymbolPositions();
-				TryMergeMultiSymbolEquity();
+				ProcessFill();
 			}
 			
 			if( eventType == EventType.Tick ) {
@@ -175,6 +175,12 @@ namespace TickZoom.Common
 			}
 		}
 
+		public void ProcessFill() {
+			if( trace) log.Trace("LogicalFill event found.");
+			TryMergeSingleSymbolPositions();
+			TryMergeMultiSymbolEquity();
+		}
+		
 		private void TryMergeSingleSymbolPositions()
 		{
 			if( portfolioType != PortfolioType.SingleSymbol) return;

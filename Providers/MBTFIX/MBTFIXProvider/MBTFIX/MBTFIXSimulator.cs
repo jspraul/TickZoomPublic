@@ -199,12 +199,11 @@ namespace TickZoom.MBTFIX
 		private Yield FIXCreateOrder(PacketFIX4_4 packet) {
 			log.Info( "FIXCreateOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId);
 			var order = ConstructOrder( packet);
-			CreateOrder( order);
 			SendExecutionReport( order, "A", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			SendExecutionReport( order, "0", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			ProcessOrders( order.Symbol);
+			CreateOrder( order);
 			return Yield.DidWork.Repeat;
 		}
 		
@@ -347,7 +346,7 @@ namespace TickZoom.MBTFIX
 			mbtMsg.SetDestination("MBTX");
 			mbtMsg.SetOrderQuantity( (int) order.Size);
 			mbtMsg.SetLastQuantity( Math.Abs(lastQty));
-			if( lastQty > 0) {
+			if( lastQty != 0) {
 				mbtMsg.SetLastPrice( price);
 			}
 			mbtMsg.SetCumulativeQuantity( cumQty);

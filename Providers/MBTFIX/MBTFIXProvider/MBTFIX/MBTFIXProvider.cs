@@ -60,7 +60,7 @@ namespace TickZoom.MBTFIX
 				throw new ApplicationException("Please remove .config from config section name.");
 			}
   			ConfigSection = name;
-  			HeartbeatDelay = 35;
+  			HeartbeatDelay = 3500;
   			FIXFilter = new MBTFIXFilter();
 		}
 		
@@ -792,6 +792,7 @@ namespace TickZoom.MBTFIX
 			
 			var fixMsg = new FIXMessage4_4(UserName,fixDestination);
 			openOrders[(string)physicalOrder.BrokerOrder] = physicalOrder;
+			log.Info( "Adding Order to open order list: " + physicalOrder);
 			fixMsg.SetClientOrderId((string)physicalOrder.BrokerOrder);
 			fixMsg.SetAccount(AccountNumber);
 			if( origBrokerOrder != null) {

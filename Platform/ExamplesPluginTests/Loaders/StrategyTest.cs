@@ -96,6 +96,9 @@ namespace Loaders
 					Thread.Sleep(100);
 				}
 			}
+			int AddLogBindErrors = 0;
+//			SocketDefault.LogBindErrors();
+
 			if( testFailed) {
 //				log.Error("Shutting down due to test failure.");
 //				Environment.Exit(0);
