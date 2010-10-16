@@ -98,5 +98,9 @@ namespace TickZoom.Api
 			get;
 		}
 		
+		long SerialNumber {
+			get;
+		}
+		
 	}
 }

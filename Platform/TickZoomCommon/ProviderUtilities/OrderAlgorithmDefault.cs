@@ -53,6 +53,7 @@ namespace TickZoom.Common
 		private double actualPosition = 0D;
 		private int sentPhysicalOrders = 0;
 		private TickSync tickSync;
+		private Dictionary<long,long> filledOrders = new Dictionary<long,long>();
 		
 		public OrderAlgorithmDefault(SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
 			this.symbol = symbol;
@@ -526,7 +527,8 @@ namespace TickZoom.Common
 			}
 			try { 
 				var filledOrder = FindLogicalOrder( orderId);
-				if( debug) log.Debug( "Matched fill with orderId: " + orderId);
+				if( debug) log.Debug( "Matched fill with order: " + filledOrder);
+				filledOrders.Add(filledOrder.SerialNumber,TimeStamp.UtcNow.Internal);
 				originalLogicals.Remove(filledOrder);
 				
 			
@@ -603,6 +605,17 @@ namespace TickZoom.Common
 			PerformCompareInternal();
 			return sentPhysicalOrders;
 		}
+
+		private bool CheckForFilledOrders() {
+			foreach( var logical in originalLogicals) {
+				var binaryTime = 0L;
+				if( filledOrders.TryGetValue( logical.SerialNumber, out binaryTime)) {
+					if( debug) log.Debug("Found already filled order: " + logical);
+				   	return true;
+				}
+			}
+			return false;
+		}
 		
 		private void PerformCompareInternal() {
 			if( debug) log.Debug( "PerformCompare for " + symbol + " with " +
@@ -620,6 +633,13 @@ namespace TickZoom.Common
 				foreach( var order in originalPhysicals) {
 					log.Debug("Physical Order: " + order);
 				}
+			}
+			
+			if( CheckForFilledOrders()) {
+				if( debug) log.Debug("Found already filled orders in position change event. Skipping compare.");
+				log.Info("Found already filled orders in position change event. Skipping compare.");
+				originalLogicals.Clear();
+				originalLogicals.AddLast(logicalOrders);
 			}
 			
 			if( CheckForPending()) {
