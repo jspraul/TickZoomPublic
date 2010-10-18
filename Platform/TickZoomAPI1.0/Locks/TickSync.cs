@@ -39,8 +39,9 @@ namespace TickZoom.Api
 		private int physicalOrders = 0;
 		private SymbolInfo symbol;
 		
-		public TickSync( long symbolId) {
+		internal TickSync( long symbolId) {
 			this.symbol = Factory.Symbol.LookupSymbol(symbolId);
+			if( trace) log.Trace(symbol + ": created with binary symbol id = " + symbolId);
 		}
 		public bool Completed {
 			get { var value = CompletedInternal;

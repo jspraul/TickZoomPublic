@@ -34,7 +34,7 @@ namespace TickZoom.Api
 	{
 		long VerifyEvent(Action<SymbolInfo,int,object> assertEvent, SymbolInfo symbol, int timeout);
 		long Verify(Action<TickIO, TickIO, long> assertTick, SymbolInfo symbol, int timeout);
-		long Wait(SymbolInfo symbol, int timeout);
+		long Wait(SymbolInfo symbol, int expectedTicks, int timeout);
 		long Verify(int expectedCount, Action<TickIO, TickIO, long> assertTick, SymbolInfo symbol, int timeout);
 		double VerifyPosition(double expectedPosition, SymbolInfo symbol, int timeout);
 		bool VerifyState(BrokerState expectedBrokerState, ReceiverState expectedSymbolState, SymbolInfo symbol, int timeout);

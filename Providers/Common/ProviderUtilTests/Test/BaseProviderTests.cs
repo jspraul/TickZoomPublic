@@ -45,6 +45,7 @@ namespace TickZoom.Test
 		private string providerAssembly;
 		private string assemblyName;
 		private int lotSize = 1;
+		private TickSync tickSync;
 		
 		public BaseProviderTests() {
 			string providerAssembly = Factory.Settings["ProviderAssembly"];
@@ -105,6 +106,9 @@ namespace TickZoom.Test
 		
 		public void SetSymbol( string symbolString) {
 			symbol = Factory.Symbol.LookupSymbol(symbolString);
+			if( SyncTicks.Enabled) {
+				tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+			}
 		}
 		
 		public enum TickTest {
@@ -119,8 +123,19 @@ namespace TickZoom.Test
 	  		Assert.IsTrue(actualState,"Expected " + expectedBrokerState + " and " + expectedSymbolState);
 		}
 	
-		public void ClearOrders() {
+		public void ClearOrders(int temp) {
 			orders.Clear();
+		}
+		
+		public void ClearPosition(Provider provider, VerifyFeed verify, int secondsDelay) {
+			var expectedTicks = 1;
+  			var count = verify.Wait(symbol,expectedTicks,secondsDelay);
+  			Assert.GreaterOrEqual(count,expectedTicks,"at least one tick");
+			var expectedPosition = 0;
+  			if( SyncTicks.Enabled) tickSync.AddPositionChange();
+  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,orders));
+  			var actualPosition = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
+  			Assert.AreEqual(expectedPosition, actualPosition, "Starting position.");
 		}
 		
 		public void CreateEntry( Provider provider, VerifyFeed verify, OrderType orderType, double desiredPositions, double actualPosition) {
@@ -130,32 +145,32 @@ namespace TickZoom.Test
 			CreateOrder(provider, verify, TradeDirection.Exit,orderType,desiredPositions,actualPosition,actualPosition);
 		}
 		
+		private long nextSerialNumber = 1000000L;
 		public void CreateOrder( Provider provider, VerifyFeed verify, TradeDirection tradeDirection, OrderType orderType, double desiredPositions, double actualPosition, double strategyPosition) {
-	  			ActiveList<LogicalOrder> list = new ActiveList<LogicalOrder>();
-	  			LogicalOrder order = Factory.Engine.LogicalOrder(symbol,null);
-	  			order.StrategyId = 1;
-	  			order.StrategyPosition = strategyPosition;
-	  			order.TradeDirection = tradeDirection;
-	  			order.Type = orderType;
-	  			order.Positions = desiredPositions;
-	  			order.Status = OrderStatus.Active;
-	  			list.AddLast(order);
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,actualPosition,list));
+  			ActiveList<LogicalOrder> list = new ActiveList<LogicalOrder>();
+  			LogicalOrder order = Factory.Engine.LogicalOrder(symbol,null);
+  			order.StrategyId = 1;
+  			order.SerialNumber = Interlocked.Increment(ref nextSerialNumber);
+  			order.StrategyPosition = strategyPosition;
+  			order.TradeDirection = tradeDirection;
+  			order.Type = orderType;
+  			order.Positions = desiredPositions;
+  			order.Status = OrderStatus.Active;
+  			list.AddLast(order);
+  			if( SyncTicks.Enabled) tickSync.AddPositionChange();
+  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,actualPosition,list));
 		}
 		
 		public void AssertLevel1( TickIO tick, TickIO lastTick, long symbol) {
 	        	Assert.IsTrue(tick.IsQuote || tick.IsTrade);
 	        	if( tick.IsQuote) {
 	        	Assert.Greater(tick.Bid,0);
-	//	        	Assert.Greater(tick.BidLevel(0),0);
 	        	Assert.Greater(tick.Ask,0);
-	//	        	Assert.Greater(tick.AskLevel(0),0);
 	        	}
 	        	if( tick.IsTrade) {
 	        	Assert.Greater(tick.Price,0);
 	    	    	Assert.Greater(tick.Size,0);
 	        	}
-//	    		Assert.IsTrue(tick.Time>=lastTick.Time,"tick.Time > lastTick.Time");
 	    		Assert.AreEqual(symbol,tick.lSymbol);
 		}
 		
@@ -172,7 +187,6 @@ namespace TickZoom.Test
 	        	Assert.Greater(tick.Price,0);
 	    	    	Assert.Greater(tick.Size,0);
 	        	}
-//	    		Assert.IsTrue(tick.Time>=lastTick.Time,"tick.Time > lastTick.Time");
 	    		Assert.AreEqual(symbol,tick.lSymbol);
 		}
 		
@@ -219,6 +233,14 @@ namespace TickZoom.Test
 			logical.Price = price;
 			orders.AddLast(logical);
 			return logical;
+		}
+		
+		public void SendOrders(Provider provider, VerifyFeed verify, int secondsDelay) {
+			var expectedTicks = 1;
+  			var count = verify.Wait(symbol,expectedTicks,secondsDelay);
+  			Assert.GreaterOrEqual(count,expectedTicks,"at least one tick");
+  			if( SyncTicks.Enabled) tickSync.AddPositionChange();
+			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
 		}
 		
 		public string ProviderAssembly {

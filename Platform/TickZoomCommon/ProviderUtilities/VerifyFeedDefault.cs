@@ -39,7 +39,7 @@ namespace TickZoom.Common
 		private static readonly bool debug = log.IsDebugEnabled;
 		private TickQueue tickQueue = Factory.TickUtil.TickQueue(typeof(VerifyFeed));
 		private volatile bool isRealTime = false;
-		private SimpleLock syncTicks;
+		private TickSync tickSync;
 		private volatile ReceiverState receiverState = ReceiverState.Ready;
 		private volatile BrokerState brokerState = BrokerState.Disconnected;
 		private Task task;
@@ -87,10 +87,12 @@ namespace TickZoom.Common
 		public long Verify(int expectedCount, Action<TickIO, TickIO, long> assertTick, SymbolInfo symbol, int timeout)
 		{
 			if (debug) log.Debug("Verify");
-			syncTicks = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
-			long startTime = Factory.Parallel.TickCount;
+			if( SyncTicks.Enabled) {
+				tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+			}
+			long endTime = Factory.Parallel.TickCount + timeout * 1000;
 			count = 0;
-			while (Factory.Parallel.TickCount - startTime < timeout * 1000) {
+			while (Factory.Parallel.TickCount < endTime) {
 				if( propagateException != null) {
 					throw propagateException;
 				}
@@ -107,7 +109,7 @@ namespace TickZoom.Common
 							assertTick(tickIO, lastTick, symbol.BinaryIdentifier);
 						}
 						lastTick.Copy(tickIO);
-						syncTicks.Unlock();
+						if( SyncTicks.Enabled) tickSync.RemoveTick();
 						if (count >= expectedCount) {
 							break;
 						}
@@ -123,10 +125,12 @@ namespace TickZoom.Common
 			return count;
 		}
 		
-		public long Wait(SymbolInfo symbol, int timeout)
+		public long Wait(SymbolInfo symbol, int expectedTicks, int timeout)
 		{
 			if (debug) log.Debug("Wait");
-			syncTicks = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+			if( SyncTicks.Enabled) {
+				tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+			}
 			long startTime = Factory.Parallel.TickCount;
 			count = 0;
 			while (Factory.Parallel.TickCount - startTime < timeout * 1000) {
@@ -142,7 +146,10 @@ namespace TickZoom.Common
 						}
 						count++;
 						lastTick.Copy(tickIO);
-						syncTicks.Unlock();
+						if( SyncTicks.Enabled) tickSync.RemoveTick();
+						if( count >= expectedTicks) {
+							break;
+						}
 					} else {
 						Thread.Sleep(100);
 					}
@@ -160,7 +167,9 @@ namespace TickZoom.Common
 		                                 SymbolInfo symbol,
 		                                 int timeout) {
 			if (debug) log.Debug("VerifyFeed");
-			syncTicks = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+			if( SyncTicks.Enabled) {
+				tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+			}
 			long startTime = Factory.TickCount;
 			count = 0;
 			TickBinary binary = new TickBinary();
@@ -171,6 +180,8 @@ namespace TickZoom.Common
 				try { 
 					if( !tickQueue.TryDequeue(ref binary)) {
 						Thread.Sleep(100);
+					} else {
+						if( SyncTicks.Enabled) tickSync.RemoveTick();
 					}
 				} catch (QueueException ex) {
 					if( HandleQueueException(ex)) {
@@ -202,6 +213,7 @@ namespace TickZoom.Common
 						} else {
 							Thread.Sleep(10);
 						}
+						if( SyncTicks.Enabled) tickSync.RemoveTick();
 						if (count >= expectedCount) {
 							break;
 						}
@@ -235,6 +247,8 @@ namespace TickZoom.Common
 				try { 
 					if( !tickQueue.TryDequeue(ref binary)) {
 						Thread.Sleep(10);
+					} else {
+						if( SyncTicks.Enabled) tickSync.RemoveTick();
 					}
 				} catch (QueueException ex) {
 					if( HandleQueueException(ex)) {
@@ -335,13 +349,6 @@ namespace TickZoom.Common
 					if (!tickQueue.TryDequeue(ref tickBinary)) {
 						return Yield.NoWork.Repeat;
 					}
-//#if DEBUG					
-//					if( isRealTime && count % 10  == 0) {
-//#else
-//					if( isRealTime ) {
-//#endif
-//						Thread.Sleep(2);
-//					}
 					if( keepReceived) {
 						received.Add(tickBinary);
 					}
@@ -358,6 +365,7 @@ namespace TickZoom.Common
 					if (count % 1000000 == 0) {
 						log.Notice("Read " + count + " ticks");
 					}
+					if( SyncTicks.Enabled) tickSync.RemoveTick();
 					return Yield.DidWork.Repeat;
 				} catch (QueueException ex) {
 					HandleQueueException(ex);
@@ -396,10 +404,11 @@ namespace TickZoom.Common
 			return actualPositions[symbol.BinaryIdentifier];
 		}
 
-		public bool OnPositionChange(SymbolInfo symbol, LogicalFillBinary fill)
+		public bool OnLogicalFill(SymbolInfo symbol, LogicalFillBinary fill)
 		{
 			log.Info("Got Logical Fill of " + symbol + " at " + fill.Price + " for " + fill.Position);
 			actualPositions[symbol.BinaryIdentifier] = fill.Position;
+			if( SyncTicks.Enabled) tickSync.RemovePhysicalFill(fill);
 			return true;
 		}
 
@@ -540,7 +549,7 @@ namespace TickZoom.Common
 						result = OnError((ErrorDetail)eventDetail);
 						break;
 					case EventType.LogicalFill:
-						result = OnPositionChange(symbol,(LogicalFillBinary)eventDetail);
+						result = OnLogicalFill(symbol,(LogicalFillBinary)eventDetail);
 						break;
 					case EventType.Terminate:
 						result = OnStop();

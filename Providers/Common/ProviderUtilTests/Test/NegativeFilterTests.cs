@@ -49,15 +49,14 @@ namespace TickZoom.Test
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);				
-				ClearOrders();
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			var actualPosition = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition, actualPosition, "Starting position.");
+				ClearOrders(0);
+				ClearPosition(provider,verify,secondsDelay);
 	  			long count = verify.Verify(2,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			int strategyId = 1;
+	  			double actualPosition = 0D;
 	  			while( true) {
-					ClearOrders();
+					ClearOrders(0);
 					CreateEntry(OrderType.BuyMarket,0.0,(int)sizeIncrease,strategyId++);
 		  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,orders));
 		  			expectedPosition += sizeIncrease;
@@ -80,15 +79,14 @@ namespace TickZoom.Test
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);				
-				ClearOrders();
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			var actualPosition = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition, actualPosition, "Starting position.");
+				ClearOrders(0);
+				ClearPosition(provider,verify,secondsDelay);
 	  			long count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			int strategyId = 1;
+	  			double actualPosition = 0D;
 	  			while( true) {
-					ClearOrders();
+					ClearOrders(0);
 					CreateEntry(OrderType.SellMarket,0.0,(int)sizeIncrease, strategyId++);
 		  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,orders));
 		  			expectedPosition-=sizeIncrease;
@@ -108,16 +106,14 @@ namespace TickZoom.Test
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);				
-				ClearOrders();
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			double position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition, position, "Starting position.");
+				ClearOrders(0);
+				ClearPosition(provider,verify,secondsDelay);
 	  			long count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			expectedPosition = 10;
 	  			CreateLogicalEntry(OrderType.BuyMarket,0.0,(int)expectedPosition);
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
+	  			var position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(expectedPosition, position, "Increasing position.");
 	  			Thread.Sleep(2000);
 			}
@@ -133,16 +129,14 @@ namespace TickZoom.Test
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);				
-				ClearOrders();
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			double position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(expectedPosition, position, "Starting position.");
+				ClearOrders(0);
+				ClearPosition(provider,verify,secondsDelay);
 	  			long count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			expectedPosition = -10;
 	  			CreateLogicalEntry(OrderType.SellMarket,0.0,(int)Math.Abs(expectedPosition));
 	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
-	  			position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
+	  			var position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(expectedPosition, position, "Increasing position.");
 	  			Thread.Sleep(2000);
 			}
