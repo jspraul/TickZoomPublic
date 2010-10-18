@@ -69,8 +69,8 @@ namespace TickZoom.Common
 			return new PositionCommon(model);
 		}
 		
-		public PhysicalFill PhysicalFill(double size, double price, TimeStamp time, PhysicalOrder order) {
-			return new PhysicalFillDefault(size,price,time,order);
+		public PhysicalFill PhysicalFill(double size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
+			return new PhysicalFillDefault(size,price,time,utcTime,order);
 		}
 	}
 }

@@ -490,12 +490,15 @@ namespace TickZoom.MBTFIX
 		public void SendFill( PacketFIX4_4 packetFIX) {
 			if( debug ) log.Debug("SendFill( " + packetFIX.ClientOrderId + ")");
 			var symbolInfo = Factory.Symbol.LookupSymbol(packetFIX.Symbol);
+			var timeZone = new SymbolTimeZone(symbolInfo);
 			if( GetSymbolStatus(symbolInfo)) {
 				var algorithm = GetAlgorithm(symbolInfo.BinaryIdentifier);
 				var order = GetPhysicalOrder( packetFIX.ClientOrderId);
 				var fillPosition = (double) packetFIX.LastQuantity * SideToSign(packetFIX.Side);
 				var executionTime = new TimeStamp(packetFIX.TransactionTime);
-				var fill = Factory.Utility.PhysicalFill(fillPosition,packetFIX.LastPrice,executionTime,order);
+				var configTime = executionTime;
+				configTime.AddSeconds( timeZone.UtcOffset(executionTime));
+				var fill = Factory.Utility.PhysicalFill(fillPosition,packetFIX.LastPrice,configTime,executionTime,order);
 				if( debug) log.Debug( "Sending physical fill: " + fill);
             	openOrders.Remove(packetFIX.ClientOrderId);
 	            algorithm.ProcessFill( fill);

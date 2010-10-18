@@ -78,5 +78,10 @@ namespace MockProvider
 			}
 		}
 		
+		[Test]
+		public void PerformReconciliationTest() {
+			PerformReconciliation();
+		}
+	
 	}
 }

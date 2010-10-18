@@ -35,12 +35,14 @@ namespace TickZoom.Interceptors
 		private double size;
 		private double price;
 		private TimeStamp time;
+		private TimeStamp utcTime;
 		private PhysicalOrder order;
 		
-		public PhysicalFillDefault( double size, double price, TimeStamp time, PhysicalOrder order) {
+		public PhysicalFillDefault( double size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			this.size = size;
 			this.price = price;
 			this.time = time;
+			this.utcTime = utcTime;
 			this.order = order;
 		}
 		
@@ -60,6 +62,10 @@ namespace TickZoom.Interceptors
 
 		public TimeStamp Time {
 			get { return time; }
+		}
+
+		public TimeStamp UtcTime {
+			get { return utcTime; }
 		}
 
 		public double Price {

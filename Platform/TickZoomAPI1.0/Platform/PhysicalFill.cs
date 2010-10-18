@@ -31,6 +31,7 @@ namespace TickZoom.Api
 	public interface PhysicalFill
 	{
 		TimeStamp Time { get; }
+		TimeStamp UtcTime { get; }
 		double Price { get; }
 		double Size { get; }
 		PhysicalOrder Order { get; }

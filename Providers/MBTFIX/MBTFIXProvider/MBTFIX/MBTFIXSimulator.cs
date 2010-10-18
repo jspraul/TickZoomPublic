@@ -292,7 +292,7 @@ namespace TickZoom.MBTFIX
 		private void OnPhysicalFill( PhysicalFill fill) {
 			if( debug) log.Debug("Converting physical fill to FIX: " + fill);
 			SendPositionUpdate(fill.Order.Symbol, GetPosition(fill.Order.Symbol));
-			SendExecutionReport( fill.Order, "2", fill.Price, (int) fill.Size, (int) fill.Size, (int) (fill.Order.Size - fill.Size), fill.Time, null);
+			SendExecutionReport( fill.Order, "2", fill.Price, (int) fill.Size, (int) fill.Size, (int) (fill.Order.Size - fill.Size), fill.UtcTime, null);
 		}
 		
 		private void SendPositionUpdate(SymbolInfo symbol, int position) {

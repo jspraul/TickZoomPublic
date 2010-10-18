@@ -265,6 +265,11 @@ namespace TickZoom.Api
 			int year = Convert.ToInt32(strings[0]);
 			int month = Convert.ToInt32(strings[1]);
 			int day = Convert.ToInt32(strings[2]);
+			if( day > 1000) {
+				month = Convert.ToInt32(strings[0]);
+				day = Convert.ToInt32(strings[1]);
+				year = Convert.ToInt32(strings[2]);
+			}
 			_timeStamp = CalendarDateTotimeStamp( year, month, day, hour, minute, second, millis );
 		}
 		

@@ -481,6 +481,7 @@ namespace TickZoom.Common
 		
 		public void ProcessFill( PhysicalFill physical) {
 			if( debug) log.Debug( "ProcessFill() physical: " + physical);
+//			log.Warn( "ProcessFill() physical: " + physical);
 			physicalOrders.Remove(physical.Order);
 			LogicalFillBinary fill;
 			try { 
@@ -491,7 +492,7 @@ namespace TickZoom.Common
 				var position = logical.StrategyPosition;
 				if( debug) log.Debug("Creating logical fill with position " + position + " from strategy position " + logical.StrategyPosition);
 				fill = new LogicalFillBinary(
-					position, physical.Price, physical.Time, physical.Order.LogicalOrderId);
+					position, physical.Price, physical.Time, physical.UtcTime, physical.Order.LogicalOrderId);
 			} catch( ApplicationException) {
 				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
 				if( debug) log.Debug("Skipping logical fill for an adjustment market order.");

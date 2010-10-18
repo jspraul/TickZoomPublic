@@ -34,6 +34,7 @@ namespace TickZoom.Api
 	{
 		int OrderId { get; }
 		TimeStamp Time { get; }
+		TimeStamp UtcTime { get; }
 		double Price { get; }
 		double Position { get; }
 	}

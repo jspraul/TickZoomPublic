@@ -43,6 +43,10 @@ namespace TickZoom.Api
 			get { return LogicalFillBinary.Time; }
 		}
 
+		public TimeStamp UtcTime {
+			get { return LogicalFillBinary.UtcTime; }
+		}
+
 		public double Price {
 			get { return LogicalFillBinary.Price; }
 		}

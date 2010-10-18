@@ -270,7 +270,7 @@ namespace TickZoom.Interceptors
 			bool retVal = false;
 			double price = tick.IsTrade ? tick.Price : tick.Ask;
 			if (price >= order.Price) {
-				CreateLogicalFillHelper(order.Size, price, tick.Time, order);
+				CreateLogicalFillHelper(order.Size, price, tick.Time, tick.UtcTime, order);
 				retVal = true;
 			}
 			return retVal;
@@ -285,7 +285,7 @@ namespace TickZoom.Interceptors
 			}
 			price = tick.IsQuote ? tick.Bid : tick.Price;
 			if (price <= order.Price) {
-				CreateLogicalFillHelper(-order.Size, price, tick.Time, order);
+				CreateLogicalFillHelper(-order.Size, price, tick.Time, tick.UtcTime, order);
 				retVal = true;
 			}
 			return retVal;
@@ -294,7 +294,7 @@ namespace TickZoom.Interceptors
 		private bool ProcessBuyMarket(PhysicalOrder order, Tick tick)
 		{
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
-			CreateLogicalFillHelper(order.Size, price, tick.Time, order);
+			CreateLogicalFillHelper(order.Size, price, tick.Time, tick.UtcTime, order);
 			return true;
 		}
 
@@ -309,7 +309,7 @@ namespace TickZoom.Interceptors
 				isFilled = true;
 			}
 			if (isFilled) {
-				CreateLogicalFillHelper(order.Size, price, tick.Time, order);
+				CreateLogicalFillHelper(order.Size, price, tick.Time, tick.UtcTime, order);
 			}
 			return isFilled;
 		}
@@ -317,7 +317,7 @@ namespace TickZoom.Interceptors
 		private bool ProcessSellMarket(PhysicalOrder order, Tick tick)
 		{
 			double price = tick.IsQuote ? tick.Bid : tick.Price;
-			CreateLogicalFillHelper(-order.Size, price, tick.Time, order);
+			CreateLogicalFillHelper(-order.Size, price, tick.Time, tick.UtcTime, order);
 			return true;
 		}
 
@@ -332,19 +332,19 @@ namespace TickZoom.Interceptors
 				isFilled = true;
 			}
 			if (isFilled) {
-				CreateLogicalFillHelper(-order.Size, price, tick.Time, order);
+				CreateLogicalFillHelper(-order.Size, price, tick.Time, tick.UtcTime, order);
 			}
 			return isFilled;
 		}
 		
-		private void CreateLogicalFillHelper(double size, double price, TimeStamp time, PhysicalOrder order) {
+		private void CreateLogicalFillHelper(double size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			this.actualPosition += size;
 			if( onPositionChange != null) {
 				onPositionChange( actualPosition);
 			}
 			if( debug) log.Debug("Filled order: " + order );
 			CancelBrokerOrder(order.BrokerOrder);
-			var fill = new PhysicalFillDefault(size,price,time,order);
+			var fill = new PhysicalFillDefault(size,price,time,utcTime,order);
 			if( debug) log.Debug("Fill: " + fill );
 			if( onPhysicalFill == null) {
 				throw new ApplicationException("Please set the OnPhysicalFill property.");
