@@ -36,6 +36,8 @@ namespace TickZoom.Transactions
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		public static readonly string TIMEFORMAT = "yyyy-MM-dd HH:mm:ss.fff";
+		private int entryOrderId;
+		private int exitOrderId;
 		private long entryTime;
 		private long exitTime;
 		private double direction;
@@ -53,9 +55,11 @@ namespace TickZoom.Transactions
 			string[] fields = value.Split(',');
 			int field = 0;
 			pair.direction = double.Parse(fields[field++]);
+			pair.entryOrderId = int.Parse(fields[field++]);
 			pair.entryBar = int.Parse(fields[field++]);
 			pair.entryPrice = double.Parse(fields[field++]);
 			pair.entryTime = TimeStamp.Parse(fields[field++]).Internal;
+			pair.exitOrderId = int.Parse(fields[field++]);
 			pair.exitBar = int.Parse(fields[field++]);
 			pair.exitPrice = double.Parse(fields[field++]);
 			pair.exitTime = TimeStamp.Parse(fields[field++]).Internal;
@@ -95,6 +99,8 @@ namespace TickZoom.Transactions
 			entryBar = other.entryBar;
 			completed = other.completed;
 			volume = other.volume;
+			entryOrderId = other.entryOrderId;
+			exitOrderId = other.exitOrderId;
 		}
 		
 		public void TryUpdate(Tick tick) {
@@ -120,21 +126,23 @@ namespace TickZoom.Transactions
 			exitPrice = price;
 		}
 		
-		public void Enter( double direction, double price, TimeStamp time, int bar) {
+		public void Enter( double direction, double price, TimeStamp time, int bar, int entryOrderId) {
 			this.direction = direction;
 			this.volume = Math.Abs(direction);
 			this.entryPrice = price;
 			this.maxPrice = this.minPrice = entryPrice;
 			this.entryTime = time.Internal;
 			this.entryBar = bar;
+			this.entryOrderId = entryOrderId;
 		}
 		
-		public void Exit( double price, TimeStamp time, int bar) {
+		public void Exit( double price, TimeStamp time, int bar, int exitOrderId) {
 			this.volume += Math.Abs( direction);
 			this.exitPrice = price;
 			this.exitTime = time.Internal;
 			this.exitBar = bar;
 			this.completed = true;
+			this.exitOrderId = exitOrderId;
 		}
 		
 		public void Update( double price, TimeStamp time, int bar) {
@@ -175,8 +183,8 @@ namespace TickZoom.Transactions
 		}
 		
 		public override string ToString() {
-			return direction + "," + entryBar + "," + entryPrice + "," + EntryTime.ToString(TIMEFORMAT) + "," +
-				exitBar + "," + exitPrice + "," + ExitTime.ToString(TIMEFORMAT) + "," + maxPrice + "," + minPrice;
+			return direction + "," + entryOrderId + "," + entryBar + "," + entryPrice + "," + EntryTime.ToString(TIMEFORMAT) + "," +
+				exitOrderId + "," + exitBar + "," + exitPrice + "," + ExitTime.ToString(TIMEFORMAT) + "," + maxPrice + "," + minPrice;
 		}
 		
 		public override int GetHashCode() {
@@ -221,6 +229,14 @@ namespace TickZoom.Transactions
 		
 		public double Volume {
 			get { return volume; }
+		}
+		
+		public int EntryOrderId {
+			get { return entryOrderId; }
+		}
+		
+		public int ExitOrderId {
+			get { return exitOrderId; }
 		}
 	}
 }

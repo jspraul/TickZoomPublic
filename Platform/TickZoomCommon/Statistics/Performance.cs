@@ -150,7 +150,7 @@ namespace TickZoom.Statistics
 		
 		public void EnterComboTrade(LogicalFill fill) {
 			TransactionPairBinary pair = TransactionPairBinary.Create();
-			pair.Enter(fill.Position, fill.Price, fill.Time, model.Chart.ChartBars.BarCount);
+			pair.Enter(fill.Position, fill.Price, fill.Time, model.Chart.ChartBars.BarCount, fill.OrderId);
 			comboTradesBinary.Add(pair);
 			if( trace) {
 				log.Trace( "Enter trade: " + pair);
@@ -175,7 +175,7 @@ namespace TickZoom.Statistics
 		
 		public void ExitComboTrade(LogicalFill fill) {
 			TransactionPairBinary comboTrade = comboTradesBinary.Tail;
-			comboTrade.Exit( fill.Price, fill.Time, model.Chart.ChartBars.BarCount);
+			comboTrade.Exit( fill.Price, fill.Time, model.Chart.ChartBars.BarCount, fill.OrderId);
 			comboTradesBinary.Tail = comboTrade;
 			double pnl = profitLoss.CalculateProfit(comboTrade.Direction,comboTrade.EntryPrice,comboTrade.ExitPrice);
 			Equity.OnChangeClosedEquity( pnl);

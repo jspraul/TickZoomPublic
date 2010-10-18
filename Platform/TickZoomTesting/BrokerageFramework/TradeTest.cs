@@ -44,8 +44,8 @@ namespace TickZoom.BrokerageFramework
 		public void Constructor()
 		{
 			pair = TransactionPairBinary.Create();
-			pair.Enter(1,12344,entryTime,1);
-			pair.Exit(125440,exitTime,1);
+			pair.Enter(1,12344,entryTime,1,0);
+			pair.Exit(125440,exitTime,1,0);
 			Assert.IsNotNull(pair,"Trade constructor");
 		}
 		
@@ -136,7 +136,8 @@ namespace TickZoom.BrokerageFramework
 		public void ToStringTest()
 		{
 			Constructor();
-			string expected = "1,1,12344,2005-05-02 08:33:34.432,1,125440,2005-05-02 08:43:34.432,12344,12344";
+							   
+			string expected = "1,0,1,12344,2005-05-02 08:33:34.432,0,1,125440,2005-05-02 08:43:34.432,12344,12344";
 			string actual = pair.ToString();
 			Assert.AreEqual(expected,actual,"ToString");
 			

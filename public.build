@@ -76,10 +76,10 @@
     <echo message=""/>
     
     <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
-	  commandline='TickZoomTesting.dll /labels '/>
-
-    <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
           commandline='ExamplesTest.exe /labels '/>
+          
+    <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
+	  commandline='TickZoomTesting.dll /labels '/>
   </target>
   
 </project>
