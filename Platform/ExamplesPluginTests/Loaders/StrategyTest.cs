@@ -334,14 +334,12 @@ namespace Loaders
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
 			string newPath = Factory.SysLog.LogFolder + @"\Stats.log";
 			string knownGoodPath = fileDir + testFileName + "Stats.log";
-			if( File.Exists(newPath)) {
-				if( StoreKnownGood) {
-					File.Copy(newPath,knownGoodPath,true);
-				}
-				testStatsMap.Clear();
-				LoadStats(newPath,testStatsMap);
+			if( !File.Exists(newPath)) return;
+			if( StoreKnownGood) {
+				File.Copy(newPath,knownGoodPath,true);
 			}
-			
+			testStatsMap.Clear();
+			LoadStats(newPath,testStatsMap);
 			goodStatsMap.Clear();
 			LoadStats(knownGoodPath,goodStatsMap);
 		}
