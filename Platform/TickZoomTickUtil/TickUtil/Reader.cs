@@ -54,6 +54,7 @@ namespace TickZoom.TickUtil
 		long length;
 		private Receiver receiver;
 		Task fileReaderTask;
+		private static object readerListLocker = new object();
 		private static List<Reader> readerList = new List<Reader>();
 		private object taskLocker = new object();
 		private volatile bool isDisposed = false;
@@ -71,7 +72,9 @@ namespace TickZoom.TickUtil
 			if (storageFolder == null) {
 				throw new ApplicationException("Must set AppDataFolder property in app.config");
 			}
-			readerList.Add(this);
+			lock(readerListLocker) {
+				readerList.Add(this);
+			}
 			memory = new MemoryStream();
 			memory.SetLength(TickImpl.minTickSize);
 			buffer = memory.GetBuffer();
@@ -506,17 +509,21 @@ namespace TickZoom.TickUtil
 					if (dataIn != null) {
 						dataIn.Close();
 					}
-					readerList.Remove(this);
+					lock( readerListLocker) {
+						readerList.Remove(this);
+					}
 				}
 			}
 		}
 
 		public void CloseAll()
 		{
-			for (int i = 0; i < readerList.Count; i++) {
-				readerList[i].Dispose();
+			lock( readerListLocker) {
+				for (int i = 0; i < readerList.Count; i++) {
+					readerList[i].Dispose();
+				}
+				readerList.Clear();
 			}
-			readerList.Clear();
 		}
 
 		void progressCallback(string text, Int64 current, Int64 final)
