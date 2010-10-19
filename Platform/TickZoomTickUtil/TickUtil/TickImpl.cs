@@ -1018,11 +1018,7 @@ namespace TickZoom.TickUtil
 
 		public void Inject(TickBinary tick) {
 			binary = tick;
-			try { 
-				SetTime( new TimeStamp(binary.UtcTime));
-			} catch( Exception) {
-				int x = 0;
-			}
+			SetTime( new TimeStamp(binary.UtcTime));
 		}
 		
 		public bool IsRealTime {

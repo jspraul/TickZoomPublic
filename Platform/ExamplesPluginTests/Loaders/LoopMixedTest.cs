@@ -67,7 +67,7 @@ namespace Loaders
 				test.VerifySingleSymbolStats();
 				test.VerifyMultiSymbolStatsCount();
 				test.VerifyMultiSymbolStats();
-				test.CloseCharts();
+				test.EndStrategy();
 			}
 		}
 	}

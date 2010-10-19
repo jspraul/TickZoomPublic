@@ -61,7 +61,7 @@ namespace TickZoom.Interceptors
 		}
 	
 		public void ProcessFill(StrategyInterface strategyInterface, LogicalFill fill) {
-			if( debug) Log.Debug( "Considering fill: " + fill + " for strategy " + strategyInterface);
+			if( debug) Log.Debug( "ProcessFill: " + fill + " for strategy " + strategyInterface);
 			Strategy strategy = (Strategy) strategyInterface;
 			bool cancelAllEntries = false;
 			bool cancelAllExits = false;

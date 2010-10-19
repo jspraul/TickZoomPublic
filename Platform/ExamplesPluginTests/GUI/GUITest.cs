@@ -94,7 +94,7 @@ namespace Other
 				form.TxtSymbol.Text = "USD/JPY";
 				form.DefaultBox.Text = "1";
 				form.DefaultCombo.Text = "Hour";
-				for( int i=0; i<10; i++) {
+				for( int i=0; i<3; i++) {
 					log.Notice("Processing #" + (i+1));
 					form.HistoricalButtonClick(null,null);
 					WaitComplete(120, () => { return !form.ProcessWorker.IsBusy && form.PortfolioDocs[i].Visible; } );
