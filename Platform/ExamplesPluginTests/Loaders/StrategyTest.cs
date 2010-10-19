@@ -99,10 +99,10 @@ namespace Loaders
 			int AddLogBindErrors = 0;
 //			SocketDefault.LogBindErrors();
 
-			if( testFailed) {
-				log.Error("Shutting down due to test failure.");
-				Environment.Exit(0);
-			}
+//			if( testFailed) {
+//				log.Error("Shutting down due to test failure.");
+//				Environment.Exit(1);
+//			}
 		}
 		
 		public void SetupWarehouseConfig(string providerAssembly, ushort servicePort)

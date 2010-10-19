@@ -80,10 +80,11 @@ namespace Other
 				Application.DoEvents();
 				form.Catch();
 				if( onCompleteCallback != null && onCompleteCallback()) {
-					break;
+					return;
 				}
 				Thread.Sleep(1);
 			}
+			throw new ApplicationException(seconds + " seconds timeout expired waiting on application to complete.");
 		}
 		
 		[Test]
@@ -98,8 +99,8 @@ namespace Other
 					form.HistoricalButtonClick(null,null);
 					WaitComplete(120, () => { return !form.ProcessWorker.IsBusy && form.PortfolioDocs[i].Visible; } );
 					Assert.AreEqual(form.PortfolioDocs.Count,i+1,"Charts");
-					Assert.IsTrue(form.PortfolioDocs[i].Visible,"Chart visible failed at " + i);
 					Assert.IsFalse(form.ProcessWorker.IsBusy,"ProcessWorker.Busy");
+					Assert.IsTrue(form.PortfolioDocs[i].Visible,"Chart visible failed at " + i);
 				}
 			}
 		}
@@ -119,14 +120,14 @@ namespace Other
 				form.DefaultBox.Text = "10";
 				form.DefaultCombo.Text = "Tick";
 				form.RealTimeButtonClick(null,null);
-				WaitComplete(30000, () => { return form.PortfolioDocs.Count == 2 &&
+				WaitComplete(120, () => { return form.PortfolioDocs.Count == 2 &&
 				             		form.PortfolioDocs[0].Visible &&
 				             		form.PortfolioDocs[1].Visible; } );
 				Assert.AreEqual(2,form.PortfolioDocs.Count,"Charts");
 				Assert.IsTrue(form.PortfolioDocs[0].Visible &&
 				             		form.PortfolioDocs[1].Visible,"Charts Visible");
 				form.btnStop_Click(null,null);
-				WaitComplete(10000, () => { return !form.ProcessWorker.IsBusy; } );
+				WaitComplete(120, () => { return !form.ProcessWorker.IsBusy; } );
 				Assert.IsFalse(form.ProcessWorker.IsBusy,"ProcessWorker.Busy");
 			}
 		}
@@ -181,12 +182,12 @@ namespace Other
 				form.DefaultCombo.Text = "Minute";
 				form.EndTime = DateTime.Now;
 				form.RealTimeButtonClick(null,null);
-				WaitComplete(20, () => { return form.PortfolioDocs.Count == 1 &&
+				WaitComplete(120, () => { return form.PortfolioDocs.Count == 1 &&
 				             		form.PortfolioDocs[0].Visible; } );
 				Assert.AreEqual(1,form.PortfolioDocs.Count,"Charts");
-				WaitComplete(20, () => { return false; } );
+				WaitComplete(120, () => { return false; } );
 				form.btnStop_Click(null,null);
-				WaitComplete(20, () => { return !form.ProcessWorker.IsBusy; } );
+				WaitComplete(120, () => { return !form.ProcessWorker.IsBusy; } );
 				Assert.IsFalse(form.ProcessWorker.IsBusy,"ProcessWorker.Busy");
 				Assert.Greater(form.LogOutput.Lines.Length,2,"number of log lines");
 				string appData = Factory.Settings["AppDataFolder"];

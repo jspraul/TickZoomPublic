@@ -74,11 +74,12 @@
     <echo message=""/>
     <echo message=" === Test Platform ${config.platform} === "/>
     <echo message=""/>
-    <echo message="/fixture:MockProvider "/>
     
     <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
           commandline='ExamplesTest.exe /labels '/>
           
+    <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
+	  commandline='TickZoomTesting.dll /labels '/>
   </target>
   
 </project>
