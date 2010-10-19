@@ -195,14 +195,14 @@ namespace TickZoom.Statistics
 
 		void CalcNew(TransactionPairsBinary periodTrades) {
 			TransactionPairBinary trade = TransactionPairBinary.Create();
-			trade.Enter(1, CurrentEquity, model.Ticks[0].Time, 0, 0);
+			trade.Enter(1, CurrentEquity, model.Ticks[0].Time, model.Ticks[0].Time, 0, 0);
 			periodTrades.Add(trade);
 		}
 
 		void CalcEnd(TransactionPairsBinary periodTrades) {
 			if( periodTrades.Count>0) {
 				TransactionPairBinary pair = periodTrades[periodTrades.Count - 1];
-				pair.Exit(CurrentEquity, model.Ticks[0].Time, 0, 0);
+				pair.Exit(CurrentEquity, model.Ticks[0].Time, model.Ticks[0].Time, 0, 0);
 				periodTrades[periodTrades.Count - 1] = pair;
 			}
 		}

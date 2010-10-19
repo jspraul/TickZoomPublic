@@ -39,6 +39,7 @@ namespace TickZoom.Api
 		private double price;
 		private TimeStamp time;
 		private TimeStamp utcTime;
+		private TimeStamp postedTime;
 		private int orderId;
 		public LogicalFillBinary(double position, double price, TimeStamp time, TimeStamp utcTime, int orderId)
 		{
@@ -47,6 +48,7 @@ namespace TickZoom.Api
 			this.time = time;
 			this.utcTime = utcTime;
 			this.orderId = orderId;
+			this.postedTime = new TimeStamp(1800,1,1);
 			if( orderId == 0) {
 				System.Diagnostics.Debugger.Break();
 			}
@@ -62,6 +64,11 @@ namespace TickZoom.Api
 
 		public TimeStamp UtcTime {
 			get { return utcTime; }
+		}
+		
+		public TimeStamp PostedTime {
+			get { return postedTime; }
+			set { postedTime = value; }
 		}
 		
 		public double Price {
@@ -84,6 +91,8 @@ namespace TickZoom.Api
 			sb.Append( time);
 			sb.Append( ",");
 			sb.Append( utcTime);
+			sb.Append( ",");
+			sb.Append( postedTime);
 			return sb.ToString();
 		}
 
@@ -95,7 +104,9 @@ namespace TickZoom.Api
 			var position = double.Parse(fields[field++]);
 			var time = TimeStamp.Parse(fields[field++]);
 			var utcTime = TimeStamp.Parse(fields[field++]);
+			var postedTime = TimeStamp.Parse(fields[field++]);
 			var fill = new LogicalFillBinary(position,price,time,utcTime,orderId);
+			fill.postedTime = postedTime;
 			return fill;
 		}		
 	}
