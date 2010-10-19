@@ -425,7 +425,7 @@ namespace TickZoom.Common
 			double delta = positionDelta - pendingAdjustments;
 			PhysicalOrder physical;
 			if( delta > 0) {
-				physical = new PhysicalOrderDefault(OrderState.Active, symbol,OrderSide.Buy,OrderType.BuyMarket,0,delta,0,null,null);
+				physical = new PhysicalOrderDefault(OrderState.Active, symbol,OrderSide.Buy,OrderType.BuyMarket,0,delta,0,0,null,null);
 				CreateBrokerOrder(physical);
 				return true;
 			} else if( delta < 0) {
@@ -437,7 +437,7 @@ namespace TickZoom.Common
 					side = OrderSide.SellShort;
 				}
 				side = (long) actualPosition >= (long) Math.Abs(delta) ? OrderSide.Sell : OrderSide.SellShort;
-				physical = new PhysicalOrderDefault(OrderState.Active, symbol,side,OrderType.SellMarket,0,Math.Abs(delta),0,null,null);
+				physical = new PhysicalOrderDefault(OrderState.Active, symbol,side,OrderType.SellMarket,0,Math.Abs(delta),0,0,null,null);
 				CreateBrokerOrder(physical);
 				return true;
 			} else {
@@ -492,7 +492,7 @@ namespace TickZoom.Common
 				var position = logical.StrategyPosition;
 				if( debug) log.Debug("Creating logical fill with position " + position + " from strategy position " + logical.StrategyPosition);
 				fill = new LogicalFillBinary(
-					position, physical.Price, physical.Time, physical.UtcTime, physical.Order.LogicalOrderId);
+					position, physical.Price, physical.Time, physical.UtcTime, physical.Order.LogicalOrderId, physical.Order.LogicalSerialNumber);
 			} catch( ApplicationException) {
 				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
 				if( debug) log.Debug("Skipping logical fill for an adjustment market order.");

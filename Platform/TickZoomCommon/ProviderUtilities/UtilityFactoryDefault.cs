@@ -33,8 +33,8 @@ namespace TickZoom.Common
 	[Diagram(AttributeExclude=true)]
 	public class UtilityFactoryDefault : UtilityFactory
 	{
-		public PhysicalOrder PhysicalOrder( OrderState orderState, SymbolInfo symbol, OrderSide side, OrderType type, double price, int size, int logicalOrderId, object brokerOrder, object tag) {
-			return new PhysicalOrderDefault(orderState, symbol,side,type,price,size,logicalOrderId,brokerOrder,tag);
+		public PhysicalOrder PhysicalOrder( OrderState orderState, SymbolInfo symbol, OrderSide side, OrderType type, double price, int size, int logicalOrderId, long logicalSerialNumber, object brokerOrder, object tag) {
+			return new PhysicalOrderDefault(orderState, symbol,side,type,price,size,logicalOrderId,logicalSerialNumber,brokerOrder,tag);
 		}
 		
 		public ProviderService CommandLineProcess() {

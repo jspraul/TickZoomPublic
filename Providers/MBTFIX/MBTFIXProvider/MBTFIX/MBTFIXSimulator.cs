@@ -249,7 +249,7 @@ namespace TickZoom.MBTFIX
 			var logicalId = int.Parse(clientId[0]);
 			var physicalOrder = Factory.Utility.PhysicalOrder(
 				OrderState.Active, symbol, side, type,
-				packet.Price, packet.OrderQuantity, logicalId, packet.ClientOrderId, null);
+				packet.Price, packet.OrderQuantity, logicalId, 0, packet.ClientOrderId, null);
 			if( debug) log.Debug("Received physical Order: " + physicalOrder);
 			return physicalOrder;
 		}

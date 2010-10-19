@@ -37,7 +37,9 @@ namespace TickZoom.Transactions
 		private static readonly bool trace = log.IsTraceEnabled;
 		public static readonly string TIMEFORMAT = "yyyy-MM-dd HH:mm:ss.fff";
 		private int entryOrderId;
+		private long entrySerialNumber;
 		private int exitOrderId;
+		private long exitSerialNumber;
 		private long entryTime;
 		private long postedEntryTime;
 		private long exitTime;
@@ -58,11 +60,13 @@ namespace TickZoom.Transactions
 			int field = 0;
 			pair.direction = double.Parse(fields[field++]);
 			pair.entryOrderId = int.Parse(fields[field++]);
+			pair.entrySerialNumber = long.Parse(fields[field++]);
 			pair.entryBar = int.Parse(fields[field++]);
 			pair.entryPrice = double.Parse(fields[field++]);
 			pair.entryTime = TimeStamp.Parse(fields[field++]).Internal;
 			pair.postedEntryTime = TimeStamp.Parse(fields[field++]).Internal;
 			pair.exitOrderId = int.Parse(fields[field++]);
+			pair.exitSerialNumber = long.Parse(fields[field++]);
 			pair.exitBar = int.Parse(fields[field++]);
 			pair.exitPrice = double.Parse(fields[field++]);
 			pair.exitTime = TimeStamp.Parse(fields[field++]).Internal;
@@ -73,8 +77,8 @@ namespace TickZoom.Transactions
 		}
 	
 		public override string ToString() {
-			return direction + "," + entryOrderId + "," + entryBar + "," + entryPrice + "," + new TimeStamp(entryTime) + "," + new TimeStamp(postedEntryTime) + "," +
-				exitOrderId + "," + exitBar + "," + exitPrice + "," + new TimeStamp(exitTime) + "," + new TimeStamp(postedExitTime) + "," + maxPrice + "," + minPrice;
+			return direction + "," + entryOrderId + "," + entrySerialNumber + "," + entryBar + "," + entryPrice + "," + new TimeStamp(entryTime) + "," + new TimeStamp(postedEntryTime) + "," +
+				exitOrderId + "," + exitSerialNumber + "," + exitBar + "," + exitPrice + "," + new TimeStamp(exitTime) + "," + new TimeStamp(postedExitTime) + "," + maxPrice + "," + minPrice;
 		}
 		
 		
@@ -111,7 +115,9 @@ namespace TickZoom.Transactions
 			completed = other.completed;
 			volume = other.volume;
 			entryOrderId = other.entryOrderId;
+			entrySerialNumber = other.entrySerialNumber;
 			exitOrderId = other.exitOrderId;
+			exitSerialNumber = other.entrySerialNumber;
 		}
 		
 		public void TryUpdate(Tick tick) {
@@ -137,7 +143,7 @@ namespace TickZoom.Transactions
 			exitPrice = price;
 		}
 		
-		public void Enter( double direction, double price, TimeStamp time, TimeStamp postedTime, int bar, int entryOrderId) {
+		public void Enter( double direction, double price, TimeStamp time, TimeStamp postedTime, int bar, int entryOrderId, long entrySerialNumber) {
 			this.direction = direction;
 			this.volume = Math.Abs(direction);
 			this.entryPrice = price;
@@ -146,9 +152,10 @@ namespace TickZoom.Transactions
 			this.postedEntryTime = postedTime.Internal;
 			this.entryBar = bar;
 			this.entryOrderId = entryOrderId;
+			this.entrySerialNumber = entrySerialNumber;
 		}
 		
-		public void Exit( double price, TimeStamp time, TimeStamp postedTime, int bar, int exitOrderId) {
+		public void Exit( double price, TimeStamp time, TimeStamp postedTime, int bar, int exitOrderId, long exitSerialNumber) {
 			this.volume += Math.Abs( direction);
 			this.exitPrice = price;
 			this.exitTime = time.Internal;
@@ -156,6 +163,7 @@ namespace TickZoom.Transactions
 			this.exitBar = bar;
 			this.completed = true;
 			this.exitOrderId = exitOrderId;
+			this.exitSerialNumber = exitSerialNumber;
 		}
 		
 		public void Update( double price, TimeStamp time, int bar) {

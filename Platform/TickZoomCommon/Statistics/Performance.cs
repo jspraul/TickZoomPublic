@@ -115,7 +115,7 @@ namespace TickZoom.Statistics
 			if( model is Portfolio) {
 				var portfolio = (Portfolio) model;
 				var portfolioPosition = portfolio.Result.Position;
-				fill = new LogicalFillBinary( portfolioPosition.Current, portfolioPosition.Price, fill.Time, fill.UtcTime, fill.OrderId);
+				fill = new LogicalFillBinary( portfolioPosition.Current, portfolioPosition.Price, fill.Time, fill.UtcTime, fill.OrderId, fill.OrderSerialNumber);
 				if( debug) log.Debug("For portfolio, converted to fill: " + fill);
 			}
 			
@@ -150,7 +150,7 @@ namespace TickZoom.Statistics
 		
 		public void EnterComboTrade(LogicalFill fill) {
 			TransactionPairBinary pair = TransactionPairBinary.Create();
-			pair.Enter(fill.Position, fill.Price, fill.Time, fill.PostedTime, model.Chart.ChartBars.BarCount, fill.OrderId);
+			pair.Enter(fill.Position, fill.Price, fill.Time, fill.PostedTime, model.Chart.ChartBars.BarCount, fill.OrderId, fill.OrderSerialNumber);
 			comboTradesBinary.Add(pair);
 			if( trace) {
 				log.Trace( "Enter trade: " + pair);
@@ -175,7 +175,7 @@ namespace TickZoom.Statistics
 		
 		public void ExitComboTrade(LogicalFill fill) {
 			TransactionPairBinary comboTrade = comboTradesBinary.Tail;
-			comboTrade.Exit( fill.Price, fill.Time, fill.PostedTime, model.Chart.ChartBars.BarCount, fill.OrderId);
+			comboTrade.Exit( fill.Price, fill.Time, fill.PostedTime, model.Chart.ChartBars.BarCount, fill.OrderId, fill.OrderSerialNumber);
 			comboTradesBinary.Tail = comboTrade;
 			double pnl = profitLoss.CalculateProfit(comboTrade.Direction,comboTrade.EntryPrice,comboTrade.ExitPrice);
 			Equity.OnChangeClosedEquity( pnl);

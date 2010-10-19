@@ -33,6 +33,7 @@ namespace TickZoom.Api
 	public interface LogicalFill
 	{
 		int OrderId { get; }
+		long OrderSerialNumber { get; }
 		TimeStamp Time { get; }
 		TimeStamp UtcTime { get; }
 		TimeStamp PostedTime { get; }

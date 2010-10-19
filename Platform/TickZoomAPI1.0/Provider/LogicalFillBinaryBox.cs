@@ -39,6 +39,10 @@ namespace TickZoom.Api
 			get { return LogicalFillBinary.OrderId; }
 		}
 
+		public long OrderSerialNumber {
+			get { return LogicalFillBinary.OrderSerialNumber; }
+		}
+
 		public TimeStamp Time {
 			get { return LogicalFillBinary.Time; }
 		}

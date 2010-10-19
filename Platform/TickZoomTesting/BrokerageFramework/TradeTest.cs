@@ -44,8 +44,8 @@ namespace TickZoom.BrokerageFramework
 		public void Constructor()
 		{
 			pair = TransactionPairBinary.Create();
-			pair.Enter(1,12344,entryTime,entryTime,1,0);
-			pair.Exit(125440,exitTime,exitTime,1,0);
+			pair.Enter(1,12344,entryTime,entryTime,1,0,0);
+			pair.Exit(125440,exitTime,exitTime,1,0,0);
 			Assert.IsNotNull(pair,"Trade constructor");
 		}
 		

@@ -41,13 +41,15 @@ namespace TickZoom.Api
 		private TimeStamp utcTime;
 		private TimeStamp postedTime;
 		private int orderId;
-		public LogicalFillBinary(double position, double price, TimeStamp time, TimeStamp utcTime, int orderId)
+		private long orderSerialNumber;
+		public LogicalFillBinary(double position, double price, TimeStamp time, TimeStamp utcTime, int orderId, long orderSerialNumber)
 		{
 			this.position = position;
 			this.price = price;
 			this.time = time;
 			this.utcTime = utcTime;
 			this.orderId = orderId;
+			this.orderSerialNumber = orderSerialNumber;
 			this.postedTime = new TimeStamp(1800,1,1);
 			if( orderId == 0) {
 				System.Diagnostics.Debugger.Break();
@@ -57,7 +59,11 @@ namespace TickZoom.Api
 		public int OrderId {
 			get { return orderId; }
 		}
-
+		
+		public long OrderSerialNumber {
+			get { return orderSerialNumber; }
+		}
+		
 		public TimeStamp Time {
 			get { return time; }
 		}
@@ -84,6 +90,8 @@ namespace TickZoom.Api
 			StringBuilder sb = new StringBuilder();
 			sb.Append( orderId);
 			sb.Append( ",");
+			sb.Append( orderSerialNumber);
+			sb.Append( ",");
 			sb.Append( price);
 			sb.Append( ",");
 			sb.Append( position);
@@ -100,12 +108,13 @@ namespace TickZoom.Api
 			string[] fields = value.Split(',');
 			int field = 0;
 			var orderId = int.Parse(fields[field++]);
+			var orderSerialNumber = long.Parse(fields[field++]);
 			var price = double.Parse(fields[field++]);
 			var position = double.Parse(fields[field++]);
 			var time = TimeStamp.Parse(fields[field++]);
 			var utcTime = TimeStamp.Parse(fields[field++]);
 			var postedTime = TimeStamp.Parse(fields[field++]);
-			var fill = new LogicalFillBinary(position,price,time,utcTime,orderId);
+			var fill = new LogicalFillBinary(position,price,time,utcTime,orderId,orderSerialNumber);
 			fill.postedTime = postedTime;
 			return fill;
 		}		

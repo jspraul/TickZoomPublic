@@ -65,6 +65,10 @@ namespace TickZoom.Api
 			get;
 		}
 		
+		long LogicalSerialNumber {
+			get;
+		}
+		
 		object BrokerOrder {
 			get;
 			set;

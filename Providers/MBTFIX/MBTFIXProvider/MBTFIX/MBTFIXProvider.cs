@@ -654,7 +654,7 @@ namespace TickZoom.MBTFIX
 				var type = GetOrderType( packetFIX);
 				var side = GetOrderSide( packetFIX);
 				var logicalId = GetLogicalOrderId( packetFIX);
-				order = Factory.Utility.PhysicalOrder(OrderState.Active, symbolInfo, side, type, packetFIX.Price, packetFIX.LeavesQuantity, logicalId, packetFIX.ClientOrderId, null);
+				order = Factory.Utility.PhysicalOrder(OrderState.Active, symbolInfo, side, type, packetFIX.Price, packetFIX.LeavesQuantity, logicalId, 0, packetFIX.ClientOrderId, null);
 				openOrders[packetFIX.ClientOrderId] = order;
 			}
 			if( debug && (LogRecovery || !IsRecovery) ) {

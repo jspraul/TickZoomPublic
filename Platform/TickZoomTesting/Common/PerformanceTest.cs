@@ -204,8 +204,8 @@ namespace TickZoom.Common
 		public void TradeTesting() {
 			PerformanceInner manager = TradeTickProcessing(0,0,30000);
 			TransactionPairBinary expected = TransactionPairBinary.Create();
-			expected.Enter(1,105.660,new TimeStamp(2005,2,8,11,57,22,429),emptyTime,1,0);
-			expected.Exit(105.670,new TimeStamp(2005,2,8,11,57,51,479),emptyTime,1,0);
+			expected.Enter(1,105.660,new TimeStamp(2005,2,8,11,57,22,429),emptyTime,1,0,0);
+			expected.Exit(105.670,new TimeStamp(2005,2,8,11,57,51,479),emptyTime,1,0,0);
 			TransactionPairs rts = manager.ComboTrades;
 			Assert.AreEqual(-.034,Math.Round(rts.CalcProfitLoss(0),3),"First Trade PnL");
 		}
@@ -214,16 +214,16 @@ namespace TickZoom.Common
 		public void TradeTesting7() {
 			Performance manager = TradeTickProcessing(0,0,30000);
 			TransactionPairBinary expected = TransactionPairBinary.Create();
-			expected.Enter(-1,105.650,new TimeStamp(2005,2,8,11,59,52,745),emptyTime,1,0);
-			expected.Exit(105.660,new TimeStamp(2005,2,08,11,59,58,763),emptyTime,1,0);
+			expected.Enter(-1,105.650,new TimeStamp(2005,2,8,11,59,52,745),emptyTime,1,0,0);
+			expected.Exit(105.660,new TimeStamp(2005,2,08,11,59,58,763),emptyTime,1,0,0);
 		}
 		
 		[Test]
 		public void TradeTesting8() {
 			Performance manager = TradeTickProcessing(0,0,30000);
 			TransactionPairBinary expected = TransactionPairBinary.Create();
-			expected.Enter(1,105.66,new TimeStamp(2005,2,08,11,59,58,763),emptyTime,1,0);
-			expected.Exit(105.75,new TimeStamp(2005,2,9,8,51,10,816),emptyTime,1,0);
+			expected.Enter(1,105.66,new TimeStamp(2005,2,08,11,59,58,763),emptyTime,1,0,0);
+			expected.Exit(105.75,new TimeStamp(2005,2,9,8,51,10,816),emptyTime,1,0,0);
 		}
 		[Test]
 		public void DailyTesting() {

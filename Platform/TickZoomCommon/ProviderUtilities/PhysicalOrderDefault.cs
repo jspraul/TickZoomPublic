@@ -43,6 +43,7 @@ namespace TickZoom.Common
 		private double size;
 		private OrderSide side;
 		private int logicalOrderId;
+		private long logicalSerialNumber;
 		private object brokerOrder;
 		private object tag;
 		
@@ -66,6 +67,8 @@ namespace TickZoom.Common
 //			sb.Append( brokerOrder);
 			sb.Append(" and logical id: ");
 			sb.Append( logicalOrderId);
+			sb.Append( "-");
+			sb.Append( logicalSerialNumber);
 			if( tag != null) {
 				sb.Append(" ");
 				sb.Append(tag);
@@ -81,11 +84,12 @@ namespace TickZoom.Common
 			this.price = logical.Price;
 			this.size = size;
 			this.logicalOrderId = logical.Id;
+			this.logicalSerialNumber = logical.SerialNumber;
 			this.tag = logical.Tag;
 			this.brokerOrder = CreateBrokerOrderId(logicalOrderId);
 		}
 		
-		public PhysicalOrderDefault(OrderState orderState, SymbolInfo symbol, OrderSide side, OrderType type, double price, double size, int logicalOrderId, object brokerOrder, object tag) {
+		public PhysicalOrderDefault(OrderState orderState, SymbolInfo symbol, OrderSide side, OrderType type, double price, double size, int logicalOrderId, long logicalSerialNumber, object brokerOrder, object tag) {
 			this.orderState = orderState;
 			this.symbol = symbol;
 			this.side = side;
@@ -93,6 +97,7 @@ namespace TickZoom.Common
 			this.price = price;
 			this.size = size;
 			this.logicalOrderId = logicalOrderId;
+			this.logicalSerialNumber = logicalSerialNumber;
 			this.tag = tag;
 			this.brokerOrder = brokerOrder;
 			if( this.brokerOrder == null) {
@@ -142,6 +147,10 @@ namespace TickZoom.Common
 		
 		public object Tag {
 			get { return tag; }
+		}
+		
+		public long LogicalSerialNumber {
+			get { return logicalSerialNumber; }
 		}
 	}
 }
