@@ -87,6 +87,16 @@ namespace Other
 			throw new ApplicationException(seconds + " seconds timeout expired waiting on application to complete.");
 		}
 		
+		private void Pause(int seconds) {
+			long end = Factory.TickCount + (seconds * 1000);
+			long current;
+			while( (current = Factory.TickCount) < end) {
+				Application.DoEvents();
+				form.Catch();
+				Thread.Sleep(1);
+			}
+		}
+#if TESTSTARTRUN
 		[Test]
 		public void TestStartRun()
 		{
@@ -104,7 +114,7 @@ namespace Other
 				}
 			}
 		}
-		
+#endif
 		public void WaitForEngine(Form1 form) {
 			while( !form.IsEngineLoaded) {
 				Thread.Sleep(1);
@@ -185,7 +195,7 @@ namespace Other
 				WaitComplete(120, () => { return form.PortfolioDocs.Count == 1 &&
 				             		form.PortfolioDocs[0].Visible; } );
 				Assert.AreEqual(1,form.PortfolioDocs.Count,"Charts");
-				WaitComplete(120, () => { return false; } );
+				Pause(2);
 				form.btnStop_Click(null,null);
 				WaitComplete(120, () => { return !form.ProcessWorker.IsBusy; } );
 				Assert.IsFalse(form.ProcessWorker.IsBusy,"ProcessWorker.Busy");
