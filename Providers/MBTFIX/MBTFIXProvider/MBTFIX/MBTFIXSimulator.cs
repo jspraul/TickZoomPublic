@@ -165,6 +165,10 @@ namespace TickZoom.MBTFIX
 				order = GetOrderById( symbol, packet.OriginalClientOrderId);
 			} catch( ApplicationException) {
 				log.Warn( symbol + ": Cannot find order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
+				if( SyncTicks.Enabled) {
+					var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+					tickSync.RemovePhysicalOrder();
+				}
 				return Yield.DidWork.Return;
 			}
 			order = ConstructOrder( packet);
@@ -185,6 +189,10 @@ namespace TickZoom.MBTFIX
 				order = GetOrderById( symbol, packet.OriginalClientOrderId);
 			} catch( ApplicationException) {
 				log.Warn( symbol + ": Cannot find order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
+				if( SyncTicks.Enabled) {
+					var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+					tickSync.RemovePhysicalOrder();
+				}
 				return Yield.DidWork.Return;
 			}
 			CancelOrder( symbol, order.BrokerOrder);

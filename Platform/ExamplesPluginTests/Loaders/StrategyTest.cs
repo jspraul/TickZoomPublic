@@ -445,7 +445,7 @@ namespace Loaders
 			}
 		}
 		
-		public void PerformReconciliation() {
+		protected void PerformReconciliation() {
 			try {
 				foreach( var kvp in goodReconciliationMap) {
 					var symbol = kvp.Key;

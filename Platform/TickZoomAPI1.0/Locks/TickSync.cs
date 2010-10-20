@@ -106,6 +106,13 @@ namespace TickZoom.Api
 				System.Diagnostics.Debugger.Break();
 			}
 		}
+		public void RemovePhysicalOrder() {
+			var value = Interlocked.Decrement( ref physicalOrders);
+			if( trace) log.Trace(symbol + ": RemovePhysicalOrder("+value+")");
+			if( value < 0) {
+				System.Diagnostics.Debugger.Break();
+			}
+		}
 		public void AddPositionChange() {
 			var value = Interlocked.Increment( ref positionChanges);
 			if( trace) log.Trace(symbol + ": AddPositionChange("+value+")");
