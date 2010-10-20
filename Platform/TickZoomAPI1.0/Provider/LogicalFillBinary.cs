@@ -51,9 +51,9 @@ namespace TickZoom.Api
 			this.orderId = orderId;
 			this.orderSerialNumber = orderSerialNumber;
 			this.postedTime = new TimeStamp(1800,1,1);
-			if( orderId == 0) {
-				System.Diagnostics.Debugger.Break();
-			}
+//			if( orderId == 0) {
+//				System.Diagnostics.Debugger.Break();
+//			}
 		}
 
 		public int OrderId {

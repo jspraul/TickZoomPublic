@@ -148,7 +148,7 @@ namespace TickZoom.Test
 		private long nextSerialNumber = 1000000L;
 		public void CreateOrder( Provider provider, VerifyFeed verify, TradeDirection tradeDirection, OrderType orderType, double desiredPositions, double actualPosition, double strategyPosition) {
   			ActiveList<LogicalOrder> list = new ActiveList<LogicalOrder>();
-  			LogicalOrder order = Factory.Engine.LogicalOrder(symbol,null);
+  			LogicalOrder order = Factory.Engine.LogicalOrder(symbol,Interlocked.Increment(ref nextOrderId));
   			order.StrategyId = 1;
   			order.SerialNumber = Interlocked.Increment(ref nextSerialNumber);
   			order.StrategyPosition = strategyPosition;
@@ -202,7 +202,7 @@ namespace TickZoom.Test
 		}
 		
 		public LogicalOrder CreateEntry(OrderType type, double price, int size, int strategyId) {
-			var logical = Factory.Engine.LogicalOrder(symbol,null);
+			var logical = Factory.Engine.LogicalOrder(symbol);
 			logical.StrategyId = strategyId;
 			logical.StrategyPosition = 0D;
 	  		logical.Status = OrderStatus.Active;
@@ -214,8 +214,9 @@ namespace TickZoom.Test
 			return logical;
 		}
 		
+		private int nextOrderId = 1;
 		public LogicalOrder CreateLogicalEntry(OrderType type, double price, int size) {
-			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,null);
+			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,Interlocked.Increment(ref nextOrderId));
 	  			logical.Status = OrderStatus.Active;
 			logical.TradeDirection = TradeDirection.Entry;
 			logical.Type = type;
@@ -226,7 +227,7 @@ namespace TickZoom.Test
 		}
 		
 		public LogicalOrder CreateLogicalExit(OrderType type, double price) {
-			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,null);
+			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,Interlocked.Increment(ref nextOrderId));
 	  			logical.Status = OrderStatus.Active;
 			logical.TradeDirection = TradeDirection.Exit;
 			logical.Type = type;

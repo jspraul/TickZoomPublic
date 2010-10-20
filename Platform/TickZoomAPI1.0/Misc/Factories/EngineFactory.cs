@@ -71,6 +71,10 @@ namespace TickZoom.Api
 		
 		LogicalOrder LogicalOrder(SymbolInfo symbol, StrategyInterface strategy);
 		
+		LogicalOrder LogicalOrder(SymbolInfo symbol, int orderId);
+		
+		LogicalOrder LogicalOrder(SymbolInfo symbol);
+		
 		TimeSyncGenerator TimeSyncGenerator(SymbolInfo symbol);
 		
 		BinaryStore PageStore(string baseName);
