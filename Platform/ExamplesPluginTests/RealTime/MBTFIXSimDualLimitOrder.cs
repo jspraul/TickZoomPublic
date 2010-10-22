@@ -32,6 +32,7 @@ using System.IO;
 using Loaders;
 using NUnit.Framework;
 using TickZoom.Api;
+using TickZoom.Common;
 using TickZoom.Starters;
 
 namespace MockProvider
@@ -40,6 +41,7 @@ namespace MockProvider
 	[TestFixture]
 	public class MBTFIXSimDualLimitOrder : DualStrategyLimitOrder {
 		public MBTFIXSimDualLimitOrder() {
+			PhysicalOrderDefault.ResetOrderId();
 			SyncTicks.Enabled = true;
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			DeleteFiles();
