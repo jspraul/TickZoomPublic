@@ -201,10 +201,10 @@ namespace TickZoom.FIX
 			symbolHandler.CreateOrder(order);
 		}
 
-		public void ChangeOrder(PhysicalOrder order, object origBrokerOrder)
+		public void ChangeOrder(PhysicalOrder order)
 		{
 			var symbolHandler = symbolHandlers[order.Symbol.BinaryIdentifier];
-			symbolHandler.ChangeOrder(order, origBrokerOrder);
+			symbolHandler.ChangeOrder(order);
 		}
 
 		public void CancelOrder(SymbolInfo symbol, object origBrokerOrder)

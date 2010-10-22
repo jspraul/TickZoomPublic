@@ -164,15 +164,16 @@ namespace TickZoom.MBTFIX
 			try {
 				order = GetOrderById( symbol, packet.OriginalClientOrderId);
 			} catch( ApplicationException) {
-				log.Warn( symbol + ": Cannot find order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
+				log.Warn( symbol + ": Cannot change order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
 				if( SyncTicks.Enabled) {
 					var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 					tickSync.RemovePhysicalOrder();
 				}
 				return Yield.DidWork.Return;
 			}
+//			log.Info( packet.Symbol + ": Changing order for client id: " + packet.OriginalClientOrderId);
 			order = ConstructOrder( packet);
-			ChangeOrder(order, packet.OriginalClientOrderId);
+			ChangeOrder(order);
 			SendExecutionReport( order, "E", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			SendExecutionReport( order, "5", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
@@ -188,13 +189,14 @@ namespace TickZoom.MBTFIX
 			try {
 				order = GetOrderById( symbol, packet.OriginalClientOrderId);
 			} catch( ApplicationException) {
-				log.Warn( symbol + ": Cannot find order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
+				log.Warn( symbol + ": Cannot cancel order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
 				if( SyncTicks.Enabled) {
 					var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 					tickSync.RemovePhysicalOrder();
 				}
 				return Yield.DidWork.Return;
 			}
+//			log.Info( packet.Symbol + ": Canceling order for client id: " + packet.OriginalClientOrderId);
 			CancelOrder( symbol, order.BrokerOrder);
 			SendExecutionReport( order, "6", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
@@ -207,6 +209,10 @@ namespace TickZoom.MBTFIX
 		private Yield FIXCreateOrder(PacketFIX4_4 packet) {
 			if( debug) log.Debug( "FIXCreateOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId);
 			var order = ConstructOrder( packet);
+//			log.Info( packet.Symbol + ": Creating order for client id: " + packet.ClientOrderId);
+			if( string.IsNullOrEmpty(packet.ClientOrderId)) {
+				System.Diagnostics.Debugger.Break();
+			}
 			SendExecutionReport( order, "A", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			SendExecutionReport( order, "0", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
@@ -216,6 +222,10 @@ namespace TickZoom.MBTFIX
 		}
 		
 		private PhysicalOrder ConstructOrder(PacketFIX4_4 packet) {
+			var clientOrderId = packet.ClientOrderId;
+			if( !string.IsNullOrEmpty(packet.OriginalClientOrderId)) {
+				clientOrderId = packet.OriginalClientOrderId;
+			}
 			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
 			var side = OrderSide.Buy;
 			switch( packet.Side) {
@@ -253,11 +263,11 @@ namespace TickZoom.MBTFIX
 					}
 					break;
 			}
-			var clientId = packet.ClientOrderId.Split(new char[] {'.'});
+			var clientId = clientOrderId.Split(new char[] {'.'});
 			var logicalId = int.Parse(clientId[0]);
 			var physicalOrder = Factory.Utility.PhysicalOrder(
 				OrderState.Active, symbol, side, type,
-				packet.Price, packet.OrderQuantity, logicalId, 0, packet.ClientOrderId, null);
+				packet.Price, packet.OrderQuantity, logicalId, 0, clientOrderId, null);
 			if( debug) log.Debug("Received physical Order: " + physicalOrder);
 			return physicalOrder;
 		}

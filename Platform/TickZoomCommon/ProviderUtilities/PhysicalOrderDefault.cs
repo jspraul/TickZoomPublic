@@ -105,9 +105,18 @@ namespace TickZoom.Common
 			}
 		}
 
+		private static long nextOrderId = 1000000000L;
+		public static void ResetOrderId() {
+			nextOrderId = 1000000000L;
+		}
 		private static string CreateBrokerOrderId(int logicalId) {
-			var timeStamp = TimeStamp.UtcNow;
-			return logicalId + "." + timeStamp.Internal;
+			var longId = 0L;
+			if( true) {
+				longId = Interlocked.Increment( ref nextOrderId);
+			} else {
+			    longId = TimeStamp.UtcNow.Internal;
+			}
+			return logicalId + "." + longId;
 		}
 		
 		public OrderType Type {

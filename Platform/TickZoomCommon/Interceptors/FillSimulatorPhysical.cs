@@ -76,10 +76,10 @@ namespace TickZoom.Interceptors
 			return activeOrders;
 		}
 	
-		public void OnChangeBrokerOrder(PhysicalOrder order, object origBrokerOrder)
+		public void OnChangeBrokerOrder(PhysicalOrder order)
 		{
 			if( debug) log.Debug("OnChangeBrokerOrder( " + order + ")");
-			CancelBrokerOrder( origBrokerOrder);
+			CancelBrokerOrder( order.BrokerOrder);
 			CreateBrokerOrder( order);
 			ReprocessOrders();
 			if( SyncTicks.Enabled) tickSync.RemovePhysicalOrder(order);
@@ -135,11 +135,11 @@ namespace TickZoom.Interceptors
 		}
 
 		private void ProcessOrdersInternal(Tick tick) {
-			if( debug) {
+			if( trace) {
 				if( openTick) {
-					log.Debug( "ProcessOrders( " + symbol + ", " + tick + " ) [OpenTick]") ;
+					log.Trace( "ProcessOrders( " + symbol + ", " + tick + " ) [OpenTick]") ;
 				} else {
-					log.Debug( "ProcessOrders( " + symbol + ", " + tick + " )") ;
+					log.Trace( "ProcessOrders( " + symbol + ", " + tick + " )") ;
 				}
 			}
 			if( symbol == null) {

@@ -32,6 +32,7 @@ using System.IO;
 using Loaders;
 using NUnit.Framework;
 using TickZoom.Api;
+using TickZoom.Common;
 using TickZoom.Starters;
 
 namespace MockProvider
@@ -43,7 +44,7 @@ namespace MockProvider
 		private bool error = false;
 		[Test]
 		public void LoopTest() {
-			for( int i=0; i<100; i++) {
+			for( int i=0; i<10; i++) {
 				error = false;
 				log.Warn("---------  LoopTest # " + i + " -----------------------");
 				var test = new MBTFIXSimDualLimitOrder();
@@ -72,6 +73,7 @@ namespace MockProvider
 				if( error) {
 					Assert.Fail("Check log file for failures.");
 				}
+				PhysicalOrderDefault.ResetOrderId();
 			}
 		}
 		private void Test(Action action) {
