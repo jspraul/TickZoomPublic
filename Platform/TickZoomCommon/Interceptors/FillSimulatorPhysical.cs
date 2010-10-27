@@ -42,6 +42,7 @@ namespace TickZoom.Interceptors
 		private static readonly bool notice = log.IsNoticeEnabled;
 
 		private Dictionary<string,PhysicalOrder> orderMap = new Dictionary<string, PhysicalOrder>();
+		private object listLocker = new object();
 		private ActiveList<PhysicalOrder> increaseOrders = new ActiveList<PhysicalOrder>();
 		private ActiveList<PhysicalOrder> decreaseOrders = new ActiveList<PhysicalOrder>();
 		private ActiveList<PhysicalOrder> marketOrders = new ActiveList<PhysicalOrder>();
@@ -69,11 +70,13 @@ namespace TickZoom.Interceptors
 		}
 		
 		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol) {
-			ActiveList<PhysicalOrder> activeOrders = new ActiveList<PhysicalOrder>();
-			activeOrders.AddLast(increaseOrders);
-			activeOrders.AddLast(decreaseOrders);
-			activeOrders.AddLast(marketOrders);
-			return activeOrders;
+			lock( listLocker) {
+				ActiveList<PhysicalOrder> activeOrders = new ActiveList<PhysicalOrder>();
+				activeOrders.AddLast(increaseOrders);
+				activeOrders.AddLast(decreaseOrders);
+				activeOrders.AddLast(marketOrders);
+				return activeOrders;
+			}
 		}
 	
 		public void OnChangeBrokerOrder(PhysicalOrder order)
@@ -145,20 +148,22 @@ namespace TickZoom.Interceptors
 			if( symbol == null) {
 				throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
 			}
-			var next = marketOrders.First;
-			for( var node = next; node != null; node = node.Next) {
-				var order = node.Value;
-				OnProcessOrder(order, tick);
-			}
-			next = increaseOrders.First;
-			for( var node = next; node != null; node = node.Next) {
-				var order = node.Value;
-				OnProcessOrder(order, tick);
-			}
-			next = decreaseOrders.First;
-			for( var node = next; node != null; node = node.Next) {
-				var order = node.Value;
-				OnProcessOrder(order, tick);
+			lock( listLocker) {
+				var next = marketOrders.First;
+				for( var node = next; node != null; node = node.Next) {
+					var order = node.Value;
+					OnProcessOrder(order, tick);
+				}
+				next = increaseOrders.First;
+				for( var node = next; node != null; node = node.Next) {
+					var order = node.Value;
+					OnProcessOrder(order, tick);
+				}
+				next = decreaseOrders.First;
+				for( var node = next; node != null; node = node.Next) {
+					var order = node.Value;
+					OnProcessOrder(order, tick);
+				}
 			}
 			openTick = false;
 		}
@@ -174,28 +179,32 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void SortAdjust(PhysicalOrder order) {
-			switch( order.Type) {
-				case OrderType.BuyLimit:					
-				case OrderType.SellStop:
-					SortAdjust( decreaseOrders, order, (x,y) => y.Price - x.Price);
-					break;
-				case OrderType.SellLimit:
-				case OrderType.BuyStop:
-					SortAdjust( increaseOrders, order, (x,y) => x.Price - y.Price);
-					break;
-				case OrderType.BuyMarket:
-				case OrderType.SellMarket:
-					Adjust( marketOrders, order);
-					break;
-				default:
-					throw new ApplicationException("Unexpected order type: " + order.Type);
+			lock( listLocker) {
+				switch( order.Type) {
+					case OrderType.BuyLimit:					
+					case OrderType.SellStop:
+						SortAdjust( decreaseOrders, order, (x,y) => y.Price - x.Price);
+						break;
+					case OrderType.SellLimit:
+					case OrderType.BuyStop:
+						SortAdjust( increaseOrders, order, (x,y) => x.Price - y.Price);
+						break;
+					case OrderType.BuyMarket:
+					case OrderType.SellMarket:
+						Adjust( marketOrders, order);
+						break;
+					default:
+						throw new ApplicationException("Unexpected order type: " + order.Type);
+				}
 			}
 		}
 		
 		private void RemoveActive(PhysicalOrder order) {
-			Remove( increaseOrders, order);
-			Remove( decreaseOrders, order);
-			Remove( marketOrders, order);
+			lock( listLocker) {
+				Remove( increaseOrders, order);
+				Remove( decreaseOrders, order);
+				Remove( marketOrders, order);
+			}
 		}
 		
 		private void Adjust(ActiveList<PhysicalOrder> list, PhysicalOrder order) {
