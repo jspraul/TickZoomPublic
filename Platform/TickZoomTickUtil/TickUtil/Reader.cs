@@ -339,7 +339,8 @@ namespace TickZoom.TickUtil
 					dataVersion = tickIO.DataVersion;
 				}
 			}
-			tickIO.SetTime(new TimeStamp(tickIO.Extract().UtcTime));
+			var utcTime = new TimeStamp(tickIO.Extract().UtcTime);
+			tickIO.SetTime(utcTime);
 			return true;
 		}
 		
