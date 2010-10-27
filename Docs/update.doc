@@ -37,33 +37,37 @@ Version: $(VERSION)
 You can use these steps to update your local TickZoomPublic clone to another, usually, the latest
 version of TickZoom.
 
-@note
-Please ignore references to autosetuprebase in the previous version of this documentation since
-it turns out that does not apply to this situation.
+@section setup_git_sect Setup Git With GitHub
 
-Okay. to update you need to open a Git Bash prompt on the folder that holds your local clone of
-the TickZoomPublic project and then enter these commands:
+If this is your first time to use Git or GitHub, follow these steps.
+
+   -# Install Git version 1.6.5.1<BR>
+      http://cloud.github.com/downloads/tickzoom/TickZoomPublic/Git-1.6.5.1-preview20091022.exe <BR>
+      Select the option to use git commands at the windows prompt.
+   -# Install TortoiseGit version 1.2.1.0-32bit and select SSH (instead of PLink) when asked.<BR>
+   http://cloud.github.com/downloads/tickzoom/TickZoomPublic/TortoiseGit-1.2.1.0-32bit.msi
+
+@section setup_rebase Updating Your Local Version of TickZoom Platform
+
+To update your source code to a newer version of TickZoom you need to open a Git Bash prompt on the TickZoomSource\\Public folder. Then you need to execute the following git commands.
 
 Explanation of these follows.
 
 @verbatim 
+git fetch origin
 git stash
-git pull --rebase upstream integrate
-git push
+git rebase origin/integrate
 git stash apply
 @endverbatim
 
-@note
-You should consider creating a new branch on your local repository prior to updating. That way,
-you may easily check out your previous branch if you encounter any serious difficulty. But you 
-can also use "git rebase --abort" if you have problems to reset things back how they were.
+Here's the purpose of each of these commands:
 
-Here's the low down of each of these commands:
-
+-# git fetch origin - "Fetches" any of your uncommitted changes which means that it extracts them
+from the code and stores them in a separate buffer so you can re-apply them later. For example,
+these might be patches to code which you never submitted for the main source.
 -# git stash - "Stashes" any of your uncommitted changes which means that it extracts them
 from the code and stores them in a separate buffer so you can re-apply them later. For example,
-these might be changes you make to app.config files or other configuration which you never want to commit
-permanently.
+these might be patches to code which you never submitted for the main source.
 -# git pull --rebase - Pulls the latest version of code from the upstream repository. "integrate" may
 be replaced by another available branch name such as "stable" or "master".  For "upstream" you can 
 replace it with someone else's repository whose changes you wish to add to yours.

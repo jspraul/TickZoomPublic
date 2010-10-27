@@ -39,45 +39,47 @@ You can use these steps to setup your TickZoom development environment to create
 @note The TickZoom open source application auto downloads the TickZoom data engine for which
 a secure user key is required. You may request a 2 week FREE demo at http://www.tickzoom.com
 
--# @ref setup_git_sect 
--# @ref setup_clone_sect 
--# @ref setup_run_sect 
+-# @ref setup_unzip 
+-# @ref setup_run_sect
+-# @ref setup_user_key 
+-# @ref setup_sample_data
+-# @ref setup_editors
     -# @ref sharpd_setup 
     -# @ref vs_setup 
 
-@section setup_git_sect Setup Git With GitHub
+@section setup_unzip Unzip the Installation File
 
-If this is your first time to use Git or GitHub, follow these steps.
+   -# Download this file.
+\htmlonly
+<a href="http://c0020426.cdn1.cloudfiles.rackspacecloud.com/TickZoom-Public-$(VERSION).zip"> http://c0020426.cdn1.cloudfiles.rackspacecloud.com/TickZoom-Public-$(VERSION).zip</a>
+\endhtmlonly
+   -# Create a folder for the source called anywhere you like. Suggested folder name: TickZoomSource
+   -# Unzip the file into that folder. It will create sub-folders called, Public, Tools, and User.
 
-   -# Install Git version 1.6.5.1<BR>
-      http://cloud.github.com/downloads/tickzoom/TickZoomPublic/Git-1.6.5.1-preview20091022.exe <BR>
-      Select the option to use git commands at the windows prompt.
-   -# Install TortoiseGit version 1.2.1.0-32bit and select SSH (instead of PLink) when asked.<BR>
-   http://cloud.github.com/downloads/tickzoom/TickZoomPublic/TortoiseGit-1.2.1.0-32bit.msi
+@section setup_run_sect Run TickZoom For The First Time
 
-You have completed setup and install of Git with GitHub. Now proceed with setup of TickZooom.
-
-@section setup_clone_sect Setup Your Clone of the Source for TickZoom
-
-   -# Select a folder in Windows Explorer where you want to keep your TickZoomPublic source project.
-   -# Right-click on that folder in Windows Explorer and select "Git Clone..." to open the clone window.
-      TortoiseGit added the "Git Clone..." menu item when you installed it.
-   -# Paste the following into the URL field:
-      @verbatim git://github.com/tickzoom/TickZoomPublic.git @endverbatim
-      Accept the other defaults and click okay.
-   -# You will see the progress as it creates the TickZoomPublic folder. That takes about 30 to 60 seconds.
-
-@section setup_run_sect Setup To Write Your Own Strategies
-
-   -# You need an IDE if you don’t have one. Either SharpDevelop or Visual Studio will work. You can find installation tips for those further below, after this section.
-   -# Once you complete installation of SharpDevelop or Visual Studio, then you can navigate to the TickZoomPublic folder in Windows Explorer, then find the Platform\\TickZoom.sln file and open it in either SharpDevelop or Visual Studio.
-   -# Right click on the GUI project and select "Set as StartUp Project" in SharpDevelop or similar in Visual Studio.
+   -# You need either SharpDevelop or Visual Studio for writing your strategies. You can find installation steps for those further below, after this section.
+   -# Using SharpDevelop or VisualStudio, navigate to the User folder and open the User solution file called User.sln.
    -# Run the application using the big green arrow at the stop of SharpDevelop or similar in Visual Studio.
-   -# TickZoom will select your disk drive with the largest amount of free space and create the folder called TickZoom at the root of that drive.
-   -# If you already have a TickZoom folder at the root of any of a disk drive, then TickZoom will "self configure" by locating and attaching to that one.
-   -# Next download the Sample data and extract it into your TickZoom folder. If you don’t know where it is, you can find it at the top of your disk drive with the largest amount of free space. For example:
-      C:\\TickZoom or E:\\TickZoom<BR>
+   -# TickZoom will select your disk drive with the largest amount of free space and create a folder called TickZoomHome at the root of that drive.
+   -# The simply GUI form will show errors due to a missing User Key.
+   
+@section setup_user_key Installing Your User Key
+
+   -# Upon approval, you receive a TickZoomUser.key file via email.
+   -# Simply save this file into your TickZoomHome\\AutoUpdate folder.
+   -# Close the TickZoom application and restart it in the IDE.
+   -# You should see it report a successful "AutoUpdate".
+   -# You are finished installing unless you want to download sample data.
+   
+@section setup_sample_data Downloading Sample Data
+   -# Next download the Sample data and extract it into your TickZoomHome/DataCache folder. If you don't know where to find the TickZoomHome folder, you can find it at the top of your disk drive with the largest amount of free space. For example:
+      C:\\TickZoomHome or E:\\TickZoomHome<BR>
       http://cloud.github.com/downloads/tickzoom/TickZoomPublic/TickZoomData.zip
+      
+@section setup_editors Tools For Developing Strategies
+
+   -# For writing your own strategies you need either SharpDevelop or Visual Studio. Here are the steps to install or configure them specifically for TickZoom.
 
 @section sharpd_setup Setup SharpDevelop for TickZoom
 
