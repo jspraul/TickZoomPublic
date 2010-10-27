@@ -156,8 +156,6 @@ namespace TickZoom
 
 		private void TryUpdate(BackgroundWorker bw) {
 			if( Factory.AutoUpdate(bw)) {
-        		projectConfig.SetValue("AutoUpdate","false");
-				SaveAutoUpdate();
 				log.Notice("AutoUpdate succesful. Restart unnecessary.");
 			}
         	CheckForEngineInvoke();
@@ -388,6 +386,7 @@ namespace TickZoom
         }
         
         public void SaveAutoUpdate() {
+       		projectConfig.SetValue("AutoUpdate","false");
 			
 			// Add an entry to appSettings.
 			int appStgCnt = ConfigurationManager.AppSettings.Count;
@@ -704,8 +703,8 @@ namespace TickZoom
 	   			TickEngine engine = Factory.Engine.TickEngine;
 	   			isEngineLoaded = true;
    			} catch( Exception ex) {
-   				string msg = "Engine load failed, see log for further detail: " + ex.Message;
-   				log.Info(msg,ex);
+   				string msg = "Sorry, cannot find an engine compatible with this version.";
+   				log.Notice(msg);
    			}
    			if( isEngineLoaded) {
 	        	initialInterval = Factory.Engine.DefineInterval(BarUnit.Day,1);
