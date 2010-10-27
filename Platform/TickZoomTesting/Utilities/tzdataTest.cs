@@ -27,6 +27,8 @@
 using System;
 using System.Configuration;
 using System.IO;
+using System.Text;
+using System.Threading;
 
 using Microsoft.Win32;
 using NUnit.Framework;
@@ -38,6 +40,10 @@ namespace TickZoom.Utilities
 	[TestFixture]
 	public class tzdataTest
 	{
+		public static void Main( string[] args) {
+			var fixture = new tzdataTest();
+			fixture.TestImport();
+		}
 		[Test]
 		public void TestFilter()
 		{
@@ -52,6 +58,76 @@ namespace TickZoom.Utilities
 	       	Filter filter = new Filter();
 	       	filter.AssemblyName = "tzdata";
 	       	filter.Run(args);
+		}
+		
+		[Test]
+		public void TestImport()
+		{
+	       	string storageFolder = Factory.Settings["AppDataFolder"];
+	       	if( storageFolder == null) {
+	       		throw new ApplicationException( "Must set AppDataFolder property in app.config");
+	       	}
+	       	var symbol = Factory.Symbol.LookupSymbol("KC");
+			string[] args = {
+	       		symbol.ToString(),
+				storageFolder + @"\Test\\ImportData\KC.csv",
+			};
+	       	var import = new Import();
+	       	import.AssemblyName = "tzdata";
+	       	import.Run(args);
+	       	
+	       	var reader = Factory.TickUtil.TickReader();
+	       	reader.Initialize(@"DataCache", symbol.ToString());
+	       	var queue = reader.ReadQueue;
+	       	var binary = new TickBinary();
+	       	var tickIO = Factory.TickUtil.TickIO();
+	       	var sb = new StringBuilder();
+	       	long lineCount = 0;
+	       	using( var inputFile = new StreamReader(storageFolder + @"\Test\\ImportData\KC.csv")) {
+	       		lineCount++;
+				var heading = inputFile.ReadLine();
+		       	while( true) {
+	       			try {
+			       		while( ! queue.TryDequeue( ref binary)) {
+			       			Thread.Sleep(1);
+			       		}
+			       		lineCount++;
+						tickIO.Inject(binary);
+						sb.Length = 0;
+						sb.AppendFormat("{0:00}",tickIO.Time.Month);
+						sb.Append("/");
+						sb.AppendFormat("{0:00}",tickIO.Time.Day);
+						sb.Append("/");
+						sb.AppendFormat("{0:00}",tickIO.Time.Year);
+						sb.Append(",");
+						
+						sb.AppendFormat("{0:00}",tickIO.Time.Hour);
+						sb.Append(":");
+						sb.AppendFormat("{0:00}",tickIO.Time.Minute);
+						sb.Append(":");
+						sb.AppendFormat("{0:00}",tickIO.Time.Second);
+						sb.Append(",");
+						
+						sb.AppendFormat("{0:.00}", tickIO.Price);
+						sb.Append(",");
+						
+						sb.AppendFormat("{0:.00}", tickIO.Price);
+						sb.Append(",");
+						
+						sb.AppendFormat("{0:.00}", tickIO.Price);
+						sb.Append(",");
+						
+						sb.AppendFormat("{0:.00}", tickIO.Price);
+						sb.Append(",");
+						
+						sb.Append(tickIO.Size);
+						var original = inputFile.ReadLine();
+						Assert.AreEqual(original,sb.ToString(),"comparing at line " + lineCount);
+	       			} catch( QueueException) {
+	       				break;
+	       			}
+		       	}
+	       	}
 		}
 		
 		[Test]

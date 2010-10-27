@@ -436,6 +436,10 @@ namespace TickZoom.Symbols
         <property name=""UseSyntheticStops"" value=""false"" />
         <property name=""UseSyntheticMarkets"" value=""false"" />
       </symbol>
+      <symbol name=""KC"">
+	    <property name=""TimeZone"" value=""Eastern Standard Time"" />
+	    <property name=""MinimumTick"" value=""0.05"" />
+      </symbol>
       <symbol name=""/ESZ9"">
         <property name=""Commission"" value=""CustomCommission"" />
         <property name=""Fees"" value=""CustomFees"" />

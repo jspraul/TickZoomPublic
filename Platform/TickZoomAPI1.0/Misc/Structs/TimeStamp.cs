@@ -242,12 +242,12 @@ namespace TickZoom.Api
 			if( strings.Length > 1) {
 				string time = strings[1];
 				strings = time.Split(new char[] {':'});
-				hour = Convert.ToInt32(strings[0]);
-				minute = Convert.ToInt32(strings[1]);
+				hour = ToInt32(strings[0]);
+				minute = ToInt32(strings[1]);
 				strings = strings[2].Split(new char[] {'.'});
-				second = Convert.ToInt32(strings[0]);
+				second = ToInt32(strings[0]);
 				if( strings.Length>1) {
-					millis = Convert.ToInt32(strings[1]);
+					millis = ToInt32(strings[1]);
 				}
 			}
 			if( dateSeparator != null) {
@@ -262,16 +262,32 @@ namespace TickZoom.Api
 					throw new ApplicationException("Unknown date separator for " + timeString);
 				}
 			}
-			int year = Convert.ToInt32(strings[0]);
-			int month = Convert.ToInt32(strings[1]);
-			int day = Convert.ToInt32(strings[2]);
+			int year = ToInt32(strings[0]);
+			int month = ToInt32(strings[1]);
+			int day = ToInt32(strings[2]);
 			if( day > 1000) {
-				month = Convert.ToInt32(strings[0]);
-				day = Convert.ToInt32(strings[1]);
-				year = Convert.ToInt32(strings[2]);
+				month = ToInt32(strings[0]);
+				day = ToInt32(strings[1]);
+				year = ToInt32(strings[2]);
 			}
 			_timeStamp = CalendarDateTotimeStamp( year, month, day, hour, minute, second, millis );
 		}
+	    
+	    private static int ToInt32(string value) {
+	    	if( string.IsNullOrEmpty(value)){
+	    		return 0;
+	    	}
+	    	int result = 0;
+	    	for(int i=0; i<value.Length; i++) {
+	    		var digit = (byte) value[i];
+	    		if( digit < 48 || digit > 57) {
+	    			throw new ApplicationException("Format Error. Digit " + i + " in '" + value + "' is not a numerical digit.");
+	    		}
+	    		result *= 10;
+	    		result += digit - 48;
+	    	}
+	    	return result;
+	    }
 		
 		public TimeStamp( long timeStamp )
 		{

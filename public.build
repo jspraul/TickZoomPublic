@@ -79,7 +79,7 @@
           commandline='ExamplesTest.exe /labels '/>
           
     <exec program="${tools.nunit}" workingdir="${target.assemblies}\${config.platform}" 
-	  commandline='TickZoomTesting.dll /labels '/>
+	  commandline='TickZoomTesting.exe /labels '/>
   </target>
   
 </project>

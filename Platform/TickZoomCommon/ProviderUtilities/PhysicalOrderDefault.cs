@@ -70,6 +70,8 @@ namespace TickZoom.Common
 			sb.Append( "-");
 			sb.Append( logicalSerialNumber);
 			if( tag != null) {
+			
+				
 				sb.Append(" ");
 				sb.Append(tag);
 			}

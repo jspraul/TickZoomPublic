@@ -43,7 +43,7 @@ namespace TickZoom.TickUtil
    		int maxCount = 0;
    		SymbolInfo symbol = null;
 		string fileName = null;
-		Thread appendThread = null;
+		Task appendTask = null;
 		protected TickQueue writeQueue;
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TickWriter));
 		private static readonly bool debug = log.IsDebugEnabled;
@@ -54,7 +54,6 @@ namespace TickZoom.TickUtil
 		FileStream fs = null;
 		MemoryStream memory = null;
 		bool isInitialized = false;
-		bool isPaused = false;
 		string storageFolder;
 		Progress progress = new Progress();
 		
@@ -75,12 +74,11 @@ namespace TickZoom.TickUtil
 		
 		public void Pause() {
 			log.Notice("Disk I/O for " + symbol + " is temporarily paused.");
-			isPaused = true;	
+			appendTask.Pause();
 		}
 		
 		public void Resume() {
 			log.Notice("Disk I/O for " + symbol + " has resumed.");
-			isPaused = false;
 		}
 		
 		bool CancelPending {
@@ -121,52 +119,42 @@ namespace TickZoom.TickUtil
 		public void Initialize(string filePath) {
 			isInitialized = false;
 		}
+		
+		private void OnException( Exception ex) {
+			log.Error( ex.Message, ex);
+		}
 
 		protected virtual void StartAppendThread() {
 			string baseName = Path.GetFileNameWithoutExtension(fileName);
-	        appendThread = new Thread(AppendDataLoop);
-	        appendThread.Name = baseName + " writer";
-	        appendThread.IsBackground = true;
-	        appendThread.Start();
+			appendTask = Factory.Parallel.Loop(baseName + " writer",OnException, AppendData);
 		}
 		
 		TickBinary tick = new TickBinary();
 		TickIO tickIO = new TickImpl();
-		protected virtual void AppendDataLoop() {
-			try { 
-				while( AppendData());
-			} catch( Exception ex) {
-				log.Error( ex.GetType() + ": " + ex.Message + Environment.NewLine + ex.StackTrace);
-			}
-		}
 		
-		protected virtual bool AppendData() {
+		protected virtual Yield AppendData() {
 			try {
-				while( isPaused) {
-					Thread.Sleep(1);
+				if( writeQueue.Count == 0) {
+					return Yield.NoWork.Repeat;
 				}
-				if( writeQueue.Count > 0) {
-					if( !keepFileOpen) {
-		    			fs = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.Read);
-		    			if( trace) log.Trace("!keepFileOpen - Open()");
-		    			memory = new MemoryStream();
-					}
-					while( writeQueue.TryDequeue(ref tick)) {
-						tickIO.Inject(tick);
-						if( trace) {
-							log.Trace("Writing to file: " + tickIO);
-						}
-						WriteToFile(memory, tickIO);
-					}
-					if( !keepFileOpen) {
-			    		fs.Close();
-			    		if( trace) log.Trace("!keepFileOpen - Close()");
-			    		fs = null;
-			    	}
-				} else {
-					Thread.Sleep(1);
+				if( !keepFileOpen) {
+	    			fs = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.Read);
+	    			if( trace) log.Trace("!keepFileOpen - Open()");
+	    			memory = new MemoryStream();
 				}
-	    		return true;
+				while( writeQueue.TryDequeue(ref tick)) {
+					tickIO.Inject(tick);
+					if( trace) {
+						log.Trace("Writing to file: " + tickIO);
+					}
+					WriteToFile(memory, tickIO);
+				}
+				if( !keepFileOpen) {
+		    		fs.Close();
+		    		if( trace) log.Trace("!keepFileOpen - Close()");
+		    		fs = null;
+		    	}
+	    		return Yield.DidWork.Repeat;
 		    } catch (QueueException ex) {
 				if( ex.EntryType == EventType.Terminate) {
 					log.Debug("Exiting, queue terminated.");
@@ -174,7 +162,7 @@ namespace TickZoom.TickUtil
 						fs.Close();
 	    				log.Debug("Terminate - Close()");
 					}
-					return false;
+					return Yield.Terminate;
 				} else {
 					Exception exception = new ApplicationException("Queue returned unexpected: " + ex.EntryType);
 					writeQueue.Terminate(exception);
@@ -244,11 +232,11 @@ namespace TickZoom.TickUtil
 				throw new ApplicationException("Please initialized TickWriter first.");
 			}
 			if( debug) log.Debug("Entering Close()");
-    		if( appendThread != null && writeQueue != null) {
+    		if( appendTask != null && writeQueue != null) {
 				while( !writeQueue.TryEnqueue(EventType.Terminate, symbol)) {
 					Thread.Sleep(1);
 				}
-				appendThread.Join();
+				appendTask.Join();
 			}
 			if( keepFileOpen && fs!=null ) {
 	    		fs.Close();

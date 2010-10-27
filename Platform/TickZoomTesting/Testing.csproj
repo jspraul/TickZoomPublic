@@ -3,7 +3,7 @@
     <ProjectGuid>{2183BC2B-A766-40DA-9A99-9EA5F8B428CA}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>TickZoomTesting</RootNamespace>
     <AssemblyName>TickZoomTesting</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
@@ -118,6 +118,10 @@
     <None Include="app.config" />
     <None Include="Lib\nunit.framework.dll" />
     <None Include="Startup\optimizeResults.csv" />
+    <Content Include="ProfilingSessions\Session20101026_173524.sdps" />
+    <Content Include="ProfilingSessions\Session20101026_173929.sdps" />
+    <Content Include="ProfilingSessions\Session20101026_175221.sdps" />
+    <Content Include="ProfilingSessions\Session20101026_180331.sdps" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Charting\Charting.csproj">

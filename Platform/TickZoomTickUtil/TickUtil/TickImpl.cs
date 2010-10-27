@@ -52,7 +52,7 @@ namespace TickZoom.TickUtil
 		private static readonly bool trace = log.IsTraceEnabled;
 		private static readonly bool debug = log.IsDebugEnabled;
 		private bool isCompressStarted;
-		private long minimumTick;
+		private long pricePrecision;
 
 		byte dataVersion;
 		TickBinary binary;
@@ -244,6 +244,7 @@ namespace TickZoom.TickUtil
 			BidSize,
 			AskSize,
 			ContentMask,
+			Precision,
 			Reset=30,
 			Empty=31
 		}
@@ -299,6 +300,19 @@ namespace TickZoom.TickUtil
 				}
 			}
 		}
+		private void SetPricePrecision() {
+			var symbol = Factory.Symbol.LookupSymbol(binary.Symbol);
+			var minimumTick = symbol.MinimumTick;
+			var decimals=0;
+			while ((int)minimumTick % 10 == 0)
+			{
+				minimumTick*=10;
+				decimals++;
+			}
+			var temp = Math.Pow( 0.1, decimals);
+			pricePrecision = temp.ToLong();
+		}
+		
 		private unsafe void ToWriterVersion9(MemoryStream writer) {
 			dataVersion = 9;
 			writer.SetLength( writer.Position+minTickSize);
@@ -308,9 +322,10 @@ namespace TickZoom.TickUtil
 				ptr++; // Save space for size header.
 				*(ptr) = dataVersion; ptr++;
 				ptr++; // Save space for checksum.
-				if( minimumTick == 0L) {
-					var symbol = Factory.Symbol.LookupSymbol(binary.Symbol);
-					minimumTick = Math.Max(1,symbol.MinimumTick.ToLong());
+				if( pricePrecision == 0L) {
+					SetPricePrecision();
+					if( debug) log.Debug("Writing decimal places use in price compression.");
+					WriteField( BinaryField.Precision, &ptr, pricePrecision);
 				}
 				if( !isCompressStarted) {
 					if( debug) log.Debug("Writing Reset token during tick compression.");
@@ -321,11 +336,11 @@ namespace TickZoom.TickUtil
 				WriteField( BinaryField.ContentMask, &ptr, binary.ContentMask - lastBinary.ContentMask);
 				WriteField( BinaryField.Time, &ptr, binary.UtcTime - lastBinary.UtcTime);
 				if( IsQuote) {
-					WriteField( BinaryField.Bid, &ptr, (binary.Bid - lastBinary.Bid) / minimumTick);
-					WriteField( BinaryField.Ask, &ptr, (binary.Ask - lastBinary.Ask) / minimumTick);
+					WriteField( BinaryField.Bid, &ptr, (binary.Bid - lastBinary.Bid) / pricePrecision);
+					WriteField( BinaryField.Ask, &ptr, (binary.Ask - lastBinary.Ask) / pricePrecision);
 				}
 				if( IsTrade) {
-					WriteField( BinaryField.Price, &ptr, (binary.Price - lastBinary.Price) / minimumTick);
+					WriteField( BinaryField.Price, &ptr, (binary.Price - lastBinary.Price) / pricePrecision);
 					WriteField( BinaryField.Size, &ptr, binary.Size - lastBinary.Size);
 				}
 				if( HasDepthOfMarket) {
@@ -443,14 +458,14 @@ namespace TickZoom.TickUtil
 			for( var p = fptr+1; p<end; p++) {
 				testchecksum ^= *p;	
 			}
-			if( minimumTick == 0L) {
-				var symbol = Factory.Symbol.LookupSymbol(binary.Symbol);
-				minimumTick = symbol.MinimumTick.ToLong();
-			}
 			
 			while( (ptr - fptr) < length) {
 				var field = (BinaryField) (*ptr >> 3);
 				switch( field) {
+					case BinaryField.Precision:
+						if( debug) log.Debug("Processing decimal place precision during tick de-compression.");
+						pricePrecision = ReadField( &ptr);
+						break;
 					case BinaryField.Reset:
 						if( debug) log.Debug("Processing Reset during tick de-compression.");
 						ReadField( &ptr);
@@ -467,13 +482,13 @@ namespace TickZoom.TickUtil
 						var ts = new TimeStamp(binary.UtcTime);
 						break;
 					case BinaryField.Bid:
-						binary.Bid += ReadField( &ptr) * minimumTick;
+						binary.Bid += ReadField( &ptr) * pricePrecision;
 						break;
 					case BinaryField.Ask:
-						binary.Ask += ReadField( &ptr) * minimumTick;
+						binary.Ask += ReadField( &ptr) * pricePrecision;
 						break;
 					case BinaryField.Price:
-						binary.Price += ReadField( &ptr) * minimumTick;
+						binary.Price += ReadField( &ptr) * pricePrecision;
 						break;
 					case BinaryField.Size:
 						binary.Size += (int) ReadField( &ptr);

@@ -37,7 +37,7 @@ using TickZoom.Starters;
 
 namespace MockProvider
 {
-#if !LOOPTEST
+#if LOOPTEST
 	[TestFixture] 
 	public class LoopMBTFIXSimDualLimitOrder {
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(LoopMBTFIXSimDualLimitOrder));
