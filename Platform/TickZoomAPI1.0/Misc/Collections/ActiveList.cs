@@ -39,13 +39,6 @@ namespace TickZoom.Api
 	}
 	
 	public class ActiveList<T> : LinkedList<T>, Iterable<T> {
-		
-//		public void Iterate( Action<T> action ) {
-//			LinkedListNode<T> next = null;
-//			for( var node = First; node != null; node = next) {
-//				next = node.Next;
-//				action(node.Value);
-//			}
-//		}
+		public object Locker = new object();
 	}
 }
