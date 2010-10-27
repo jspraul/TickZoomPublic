@@ -523,12 +523,14 @@ namespace TickZoom.MBTFIX
 
 		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol) {
 			var result = new ActiveList<PhysicalOrder>();
-	        foreach( var kvp in openOrders) {
-				var order = kvp.Value;
-				if( order.Symbol == symbol) {
-					result.AddLast(order);
-				}
-	        }
+			lock( openOrdersLocker) {
+		        foreach( var kvp in openOrders) {
+					var order = kvp.Value;
+					if( order.Symbol == symbol) {
+						result.AddLast(order);
+					}
+		        }
+			}
 			return result;
 		}
 		
