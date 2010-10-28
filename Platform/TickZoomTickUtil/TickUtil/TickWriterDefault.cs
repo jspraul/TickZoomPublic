@@ -87,14 +87,19 @@ namespace TickZoom.TickUtil
 		
 		public void Initialize(string folderOrfile, string _symbol) {
 			SymbolInfo symbolInfo = Factory.Symbol.LookupSymbol(_symbol);
+			
 			symbol = Factory.Symbol.LookupSymbol(_symbol);
-			if( Directory.Exists(storageFolder + @"\" + folderOrfile)) {
-				fileName = storageFolder + @"\" + folderOrfile + @"\" + symbol.Symbol.StripInvalidPathChars() + ".tck";
+			if( string.IsNullOrEmpty(Path.GetExtension(folderOrfile))) {
+				fileName = storageFolder + Path.DirectorySeparatorChar + folderOrfile + Path.DirectorySeparatorChar + symbol.Symbol.StripInvalidPathChars() + ".tck";
 			} else {
-       			fileName = folderOrfile;
+    			fileName = folderOrfile;
 			}
+			          
     		log.Notice("TickWriter fileName: " + fileName);
-			Directory.CreateDirectory( Path.GetDirectoryName(FileName));
+    		var path = Path.GetDirectoryName(fileName);
+    		if( path != null) {
+    			Directory.CreateDirectory( path);
+    		}
 			if( eraseFileToStart) {
     			File.Delete( fileName);
     			log.Notice("TickWriter file was erased to begin writing.");
