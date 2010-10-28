@@ -437,14 +437,14 @@ namespace TickZoom.MBTFIX
 						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						break;
 					case "4": // Canceled
-						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
+						RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
 						break;
 					case "5": // Replaced
-						UpdateOrder( packetFIX, OrderState.Active, null);
-//						RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+						ReplaceOrder( packetFIX, OrderState.Active, null);
 						break;
 					case "6": // Pending Cancel
-						RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+						var clientOrderId = packetFIX.OriginalClientOrderId == null ? packetFIX.ClientOrderId : packetFIX.OriginalClientOrderId;
+						RemoveOrder( packetFIX, clientOrderId);
 						break;
 					case "8": // Rejected
 						RejectOrder( packetFIX);
@@ -576,6 +576,9 @@ namespace TickZoom.MBTFIX
 				log.Debug("RemoveOrder( " + clientOrderId + ")");
 			}
 			lock( openOrdersLocker) {
+				if( clientOrderId == null) {
+					int x = 0;
+				}
 				if( openOrders.ContainsKey(clientOrderId)) {
 					if( trace) log.Trace( "Removing open order id: " + clientOrderId);
 					openOrders.Remove(clientOrderId);
@@ -656,6 +659,21 @@ namespace TickZoom.MBTFIX
 			if( !string.IsNullOrEmpty(packetFIX.OriginalClientOrderId)) {
 			   	clientOrderId = packetFIX.OriginalClientOrderId;
 			}
+			if( debug && (LogRecovery || !IsRecovery) ) {
+				log.Debug("UpdateOrder( " + clientOrderId + ", state = " + orderState + ")");
+			}
+			UpdateOrReplaceOrder( packetFIX, clientOrderId, clientOrderId, orderState, note);
+		}
+		
+		public void ReplaceOrder( PacketFIX4_4 packetFIX, OrderState orderState, object note) {
+			if( debug && (LogRecovery || !IsRecovery) ) {
+				log.Debug("ReplaceOrder( " + packetFIX.OriginalClientOrderId + ", state = " + orderState + " => " + packetFIX.ClientOrderId + ")");
+			}
+			UpdateOrReplaceOrder( packetFIX, packetFIX.OriginalClientOrderId, packetFIX.ClientOrderId, orderState, note);
+			RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+		}
+		
+		public void UpdateOrReplaceOrder( PacketFIX4_4 packetFIX, string clientOrderId, string newClientOrderId, OrderState orderState, object note) {
 			SymbolInfo symbolInfo;
 			try {
 				symbolInfo = Factory.Symbol.LookupSymbol(packetFIX.Symbol);
@@ -670,13 +688,10 @@ namespace TickZoom.MBTFIX
 				var type = GetOrderType( packetFIX);
 				var side = GetOrderSide( packetFIX);
 				var logicalId = GetLogicalOrderId( packetFIX);
-				order = Factory.Utility.PhysicalOrder(OrderState.Active, symbolInfo, side, type, packetFIX.Price, packetFIX.LeavesQuantity, logicalId, 0, clientOrderId, null);
+				order = Factory.Utility.PhysicalOrder(OrderState.Active, symbolInfo, side, type, packetFIX.Price, packetFIX.LeavesQuantity, logicalId, 0, newClientOrderId, null);
 				lock( openOrdersLocker) {
 					openOrders[packetFIX.ClientOrderId] = order;
 				}
-			}
-			if( debug && (LogRecovery || !IsRecovery) ) {
-				log.Debug("UpdateOrder( " + clientOrderId + ", state = " + orderState + ")");
 			}
 			int quantity = packetFIX.LeavesQuantity;
 			if( quantity > 0) {
@@ -688,9 +703,9 @@ namespace TickZoom.MBTFIX
 				if( info && (LogRecovery || !IsRecovery) ) {
 					if( debug) log.Debug("Order Completely Filled. Id: " + packetFIX.ClientOrderId + ".  Executed: " + packetFIX.CumulativeQuantity);
 				}
-				lock( openOrdersLocker) {
-					openOrders.Remove(packetFIX.ClientOrderId);
-				}
+//				lock( openOrdersLocker) {
+//					openOrders.Remove(packetFIX.ClientOrderId);
+//				}
 			}
 			
 			if( trace) {
@@ -810,10 +825,10 @@ namespace TickZoom.MBTFIX
 		public void OnCreateBrokerOrder(PhysicalOrder physicalOrder)
 		{
 			if( debug) log.Debug( "OnCreateBrokerOrder " + physicalOrder);
-			OnCreateOrChangeBrokerOrder(physicalOrder,false);
+			OnCreateOrChangeBrokerOrder(physicalOrder,null, false);
 		}
 	        
-		private void OnCreateOrChangeBrokerOrder(PhysicalOrder physicalOrder, bool isChange)
+		private void OnCreateOrChangeBrokerOrder(PhysicalOrder physicalOrder, object origBrokerOrder, bool isChange)
 		{
 			Packet packet = Socket.CreatePacket();
 			
@@ -823,8 +838,8 @@ namespace TickZoom.MBTFIX
 			}
 			if( debug) log.Debug( "Adding Order to open order list: " + physicalOrder);
 			if( isChange) {
-				fixMsg.SetClientOrderId(physicalOrder.LogicalOrderId + "." + TimeStamp.UtcNow.Internal);
-				fixMsg.SetOriginalClientOrderId((string)physicalOrder.BrokerOrder);
+				fixMsg.SetClientOrderId((string)physicalOrder.BrokerOrder);
+				fixMsg.SetOriginalClientOrderId((string)origBrokerOrder);
 			} else {
 				fixMsg.SetClientOrderId((string)physicalOrder.BrokerOrder);
 			}
@@ -969,10 +984,10 @@ namespace TickZoom.MBTFIX
 			}
 		}
 		
-		public void OnChangeBrokerOrder(PhysicalOrder physicalOrder)
+		public void OnChangeBrokerOrder(PhysicalOrder physicalOrder, object origBrokerOrder)
 		{
 			if( debug) log.Debug( "OnChangeBrokerOrder( " + physicalOrder + ")");
-			OnCreateOrChangeBrokerOrder( physicalOrder, true);
+			OnCreateOrChangeBrokerOrder( physicalOrder, origBrokerOrder, true);
 		}
 	}
 }

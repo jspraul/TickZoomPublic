@@ -75,8 +75,8 @@ namespace TickZoom.FIX
 			fillSimulator.OnCreateBrokerOrder( order);
 		}
 		
-		public void ChangeOrder(PhysicalOrder order) {
-			fillSimulator.OnChangeBrokerOrder( order);
+		public void ChangeOrder(PhysicalOrder order, object origBrokerOrder) {
+			fillSimulator.OnChangeBrokerOrder( order, origBrokerOrder);
 		}
 		
 		public void CancelOrder(object origBrokerOrder) {

@@ -95,9 +95,9 @@ namespace TickZoom.MBTFIX
     		}
 	    }
 		
-		public void OnChangeBrokerOrder(PhysicalOrder order)
+		public void OnChangeBrokerOrder(PhysicalOrder order, object origBrokerOrder)
 		{
-			fixProvider.OnChangeBrokerOrder(order);
+			fixProvider.OnChangeBrokerOrder(order, origBrokerOrder);
 		}
 		
 		public void OnCreateBrokerOrder(PhysicalOrder order)

@@ -172,8 +172,8 @@ namespace TickZoom.MBTFIX
 				return Yield.DidWork.Return;
 			}
 //			log.Info( packet.Symbol + ": Changing order for client id: " + packet.OriginalClientOrderId);
-			order = ConstructOrder( packet);
-			ChangeOrder(order);
+			order = ConstructOrder( packet, packet.ClientOrderId);
+			ChangeOrder(order, packet.OriginalClientOrderId);
 			SendExecutionReport( order, "E", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			SendExecutionReport( order, "5", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
@@ -208,7 +208,7 @@ namespace TickZoom.MBTFIX
 		
 		private Yield FIXCreateOrder(PacketFIX4_4 packet) {
 			if( debug) log.Debug( "FIXCreateOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId);
-			var order = ConstructOrder( packet);
+			var order = ConstructOrder( packet, packet.ClientOrderId);
 //			log.Info( packet.Symbol + ": Creating order for client id: " + packet.ClientOrderId);
 			if( string.IsNullOrEmpty(packet.ClientOrderId)) {
 				System.Diagnostics.Debugger.Break();
@@ -221,11 +221,7 @@ namespace TickZoom.MBTFIX
 			return Yield.DidWork.Repeat;
 		}
 		
-		private PhysicalOrder ConstructOrder(PacketFIX4_4 packet) {
-			var clientOrderId = packet.ClientOrderId;
-			if( !string.IsNullOrEmpty(packet.OriginalClientOrderId)) {
-				clientOrderId = packet.OriginalClientOrderId;
-			}
+		private PhysicalOrder ConstructOrder(PacketFIX4_4 packet, string clientOrderId) {
 			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
 			var side = OrderSide.Buy;
 			switch( packet.Side) {

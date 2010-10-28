@@ -67,7 +67,7 @@ namespace TickZoom.FIX
 		private string providerName;
 		private long heartbeatTimeout;
 		private int heartbeatDelay = 30;
-		private bool logRecovery = false;
+		private bool logRecovery = true;
         private string configFilePath;
         private string configSection;
 		

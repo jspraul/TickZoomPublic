@@ -113,7 +113,7 @@ namespace TickZoom.Common
 		}
 		private static string CreateBrokerOrderId(int logicalId) {
 			var longId = 0L;
-			if( true) {
+			if( false) {
 				longId = Interlocked.Increment( ref nextOrderId);
 			} else {
 			    longId = TimeStamp.UtcNow.Internal;

@@ -92,9 +92,6 @@ namespace TickZoom.FIX
 		}
 		
 		public void BeforeRead() {
-//			if( trace && !IsQuietRecovery) {
-//				log.Trace("Reading message: \n" + this);
-//			}
 			data.Position = 0;
 		}
 		
@@ -146,10 +143,10 @@ namespace TickZoom.FIX
 		}
 		
 		private void LogMessage() {
-			if( debug &&
+			if( trace &&
 			   !IsQuietRecovery &&
 			   messageType != "1" && messageType != "0") {
-				log.Debug("Reading message: \n" + this);
+				log.Trace("Reading message: \n" + this);
 			}
 		}
 		
