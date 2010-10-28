@@ -74,6 +74,7 @@ namespace TickZoom
    		
         public Form1(string projectName)
         {
+			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
         	log = Factory.SysLog.GetLogger(typeof(Form1));
         	string storageFolder = Factory.Settings["AppDataFolder"];
         	string workspace = Path.Combine(storageFolder,"Workspace");

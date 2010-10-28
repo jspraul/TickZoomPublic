@@ -187,6 +187,8 @@ namespace TickZoom.MBTQuotes
 			SymbolHandler handler = null;
 			MemoryStream data = packet.Data;
 			data.Position += 2;
+			string time = null;
+			string date = null;
 			fixed( byte *bptr = data.GetBuffer()) {
 				byte *ptr = bptr + data.Position;
 				while( ptr - bptr < data.Length) {
@@ -196,6 +198,12 @@ namespace TickZoom.MBTQuotes
 							string symbol = packet.GetString( ref ptr);
 							SymbolInfo symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 							handler = symbolHandlers[symbolInfo.BinaryIdentifier];
+							break;
+						case 2014: // Time
+							time = packet.GetString( ref ptr);
+							break;
+						case 2015: // Date
+							date = packet.GetString( ref ptr);
 							break;
 						case 2002: // Last Trade Price
 							handler.Last = packet.GetDouble(ref ptr);
@@ -231,6 +239,13 @@ namespace TickZoom.MBTQuotes
 							break;
 					}
 					if( *(ptr-1) == 10) {
+						if( UseLocalTickTime) {
+							handler.Time = TimeStamp.UtcNow;
+						} else {
+							var strings = date.Split( new char[] { '/' } );
+							date = strings[2] + "/" + strings[0] + "/" + strings[1];
+							handler.Time = new TimeStamp( date + " " + time);
+						}
 						handler.SendTimeAndSales();
 						data.Position ++;
 						return;
