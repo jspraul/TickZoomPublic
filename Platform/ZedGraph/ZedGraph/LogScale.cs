@@ -99,7 +99,11 @@ namespace ZedGraph
 		public override double Min
 		{
 			get { return _min; }
-			set { if ( value > 0 ) _min = value; }
+			set { if ( value > 0 ) _min = value;
+				if( double.IsNaN( _min) ) {
+					throw new ApplicationException("_min is NaN");
+				}
+			}
 		}
 
 		/// <summary>
@@ -348,10 +352,16 @@ namespace ZedGraph
 			{
 				_min = 1.0;
 				_max = 10.0;
+				if( double.IsNaN( _min) ) {
+					throw new ApplicationException("_min is NaN");
+				}
 			}
 			else if ( _min <= 0.0 )
 			{
 				_min = _max / 10.0;
+				if( double.IsNaN( _min) ) {
+					throw new ApplicationException("_min is NaN");
+				}
 			}
 			else if ( _max <= 0.0 )
 			{
@@ -365,12 +375,18 @@ namespace ZedGraph
 					_max = _max * 2.0;
 				if ( _minAuto )
 					_min = _min / 2.0;
+				if( double.IsNaN( _min) ) {
+					throw new ApplicationException("_min is NaN");
+				}
 			}
 
 			// Get the nearest power of 10 (no partial log cycles allowed)
 			if ( _minAuto )
 				_min = Math.Pow( (double) 10.0,
 					Math.Floor( Math.Log10( _min ) ) );
+			if( double.IsNaN( _min) ) {
+				throw new ApplicationException("_min is NaN");
+			}
 			if ( _maxAuto )
 				_max = Math.Pow( (double) 10.0,
 					Math.Ceiling( Math.Log10( _max ) ) );

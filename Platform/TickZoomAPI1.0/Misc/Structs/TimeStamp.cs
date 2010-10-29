@@ -194,11 +194,11 @@ namespace TickZoom.Api
 		public static TimeStamp Parse(string value) {
 			return new TimeStamp(value);
 		}
-
 		private static DateTime GetAdjustedDateTime() {
         	DateTime nowUtcTime = DateTime.UtcNow;
         	long dateTimeDelta = nowUtcTime.Ticks - lastDateTime;
-        	long stopWatchDelta = (System.Diagnostics.Stopwatch.GetTimestamp() - lastStopWatch) * tickFrequency / stopWatchFrequency ;
+        	var stopWatch = System.Diagnostics.Stopwatch.GetTimestamp();
+        	long stopWatchDelta = ( stopWatch - lastStopWatch) * tickFrequency / stopWatchFrequency ;
         	long timeDelta = stopWatchDelta - dateTimeDelta;
         	// Check is system time was change.
         	if( timeDelta > 1000000L || timeDelta < -1000000L) {

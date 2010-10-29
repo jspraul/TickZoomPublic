@@ -87,6 +87,9 @@ namespace ZedGraph
 		{
 			dest._scale._min = source._scale._min;
 			dest._scale._max = source._scale._max;
+			if( double.IsNaN( dest._scale._min) ) {
+				throw new ApplicationException("_min is NaN");
+			}
 			dest._scale._majorStep = source._scale._majorStep;
 			dest._scale._minorStep = source._scale._minorStep;
 			dest._scale._minAuto = source._scale._minAuto;

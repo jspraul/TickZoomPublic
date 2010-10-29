@@ -102,7 +102,11 @@ namespace ZedGraph
 		public override double Min
 		{
 			get { return _min; }
-			set { _min = XDate.MakeValidDate( value ); _minAuto = false; }
+			set { _min = XDate.MakeValidDate( value ); _minAuto = false;
+				if( double.IsNaN( _min) ) {
+					throw new ApplicationException("_min is NaN");
+				}
+			}
 		}
 
 		/// <summary>

@@ -70,6 +70,9 @@ namespace ZedGraph
 		public ScaleState( Axis axis )
 		{
 			_min = axis._scale._min;
+			if( double.IsNaN( _min) ) {
+				throw new ApplicationException("_min is NaN");
+			}
 			_minorStep = axis._scale._minorStep;
 			_majorStep = axis._scale._majorStep;
 			_max = axis._scale._max;

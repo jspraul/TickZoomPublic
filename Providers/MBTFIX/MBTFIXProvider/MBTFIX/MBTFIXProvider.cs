@@ -62,7 +62,7 @@ namespace TickZoom.MBTFIX
 				throw new ApplicationException("Please remove .config from config section name.");
 			}
   			ConfigSection = name;
-  			HeartbeatDelay = 3500;
+  			HeartbeatDelay = 35;
   			FIXFilter = new MBTFIXFilter();
 		}
 		
@@ -310,6 +310,9 @@ namespace TickZoom.MBTFIX
 						break;
 					case "j":
 						BusinessReject( packetFIX);
+						break;
+					case "h":
+						log.Info("Ignoring packet: '" + packetFIX.MessageType + "'\n" + packetFIX);
 						break;
 					default:
 						log.Warn("Ignoring packet: '" + packetFIX.MessageType + "'\n" + packetFIX);
@@ -688,11 +691,12 @@ namespace TickZoom.MBTFIX
 				var type = GetOrderType( packetFIX);
 				var side = GetOrderSide( packetFIX);
 				var logicalId = GetLogicalOrderId( packetFIX);
-				order = Factory.Utility.PhysicalOrder(OrderState.Active, symbolInfo, side, type, packetFIX.Price, packetFIX.LeavesQuantity, logicalId, 0, newClientOrderId, null);
+				order = Factory.Utility.PhysicalOrder(orderState, symbolInfo, side, type, packetFIX.Price, packetFIX.LeavesQuantity, logicalId, 0, newClientOrderId, null);
 				lock( openOrdersLocker) {
 					openOrders[packetFIX.ClientOrderId] = order;
 				}
 			}
+			order.OrderState = orderState;
 			int quantity = packetFIX.LeavesQuantity;
 			if( quantity > 0) {
 				order.Size = quantity;
@@ -703,9 +707,6 @@ namespace TickZoom.MBTFIX
 				if( info && (LogRecovery || !IsRecovery) ) {
 					if( debug) log.Debug("Order Completely Filled. Id: " + packetFIX.ClientOrderId + ".  Executed: " + packetFIX.CumulativeQuantity);
 				}
-//				lock( openOrdersLocker) {
-//					openOrders.Remove(packetFIX.ClientOrderId);
-//				}
 			}
 			
 			if( trace) {
@@ -824,6 +825,7 @@ namespace TickZoom.MBTFIX
 	        
 		public void OnCreateBrokerOrder(PhysicalOrder physicalOrder)
 		{
+			physicalOrder.OrderState = OrderState.Pending;
 			if( debug) log.Debug( "OnCreateBrokerOrder " + physicalOrder);
 			OnCreateOrChangeBrokerOrder(physicalOrder,null, false);
 		}

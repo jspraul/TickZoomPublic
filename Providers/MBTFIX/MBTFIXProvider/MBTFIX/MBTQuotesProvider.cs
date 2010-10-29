@@ -40,6 +40,7 @@ namespace TickZoom.MBTQuotes
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
         private Dictionary<long,SymbolHandler> symbolHandlers = new Dictionary<long,SymbolHandler>();	
+		private TimeStamp prevTime;		
 		
 		public MBTQuotesProvider(string name)
 		{
@@ -51,7 +52,7 @@ namespace TickZoom.MBTQuotes
 			RetryStart = 1;
 			RetryIncrease = 1;
 			RetryMaximum = 30;
-  			HeartbeatDelay = 15000;
+  			HeartbeatDelay = 15;
         }
 		
 		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, Iterable<LogicalOrder> orders)
@@ -168,7 +169,12 @@ namespace TickZoom.MBTQuotes
 					}
 					if( *(ptr-1) == 10) {
 						if( UseLocalTickTime) {
-							handler.Time = TimeStamp.UtcNow;
+							var currentTime = TimeStamp.UtcNow;
+							if( currentTime == prevTime) {
+								currentTime.Internal = prevTime.Internal + 1;
+							}
+							prevTime = currentTime;
+							handler.Time = currentTime;
 						} else {
 							var strings = date.Split( new char[] { '/' } );
 							date = strings[2] + "/" + strings[0] + "/" + strings[1];
@@ -189,6 +195,7 @@ namespace TickZoom.MBTQuotes
 			data.Position += 2;
 			string time = null;
 			string date = null;
+			SymbolInfo symbolInfo = null;
 			fixed( byte *bptr = data.GetBuffer()) {
 				byte *ptr = bptr + data.Position;
 				while( ptr - bptr < data.Length) {
@@ -196,7 +203,7 @@ namespace TickZoom.MBTQuotes
 					switch( key) {
 						case 1003: // Symbol
 							string symbol = packet.GetString( ref ptr);
-							SymbolInfo symbolInfo = Factory.Symbol.LookupSymbol(symbol);
+							symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 							handler = symbolHandlers[symbolInfo.BinaryIdentifier];
 							break;
 						case 2014: // Time
@@ -240,11 +247,19 @@ namespace TickZoom.MBTQuotes
 					}
 					if( *(ptr-1) == 10) {
 						if( UseLocalTickTime) {
-							handler.Time = TimeStamp.UtcNow;
+							var currentTime = TimeStamp.UtcNow;
+							if( currentTime <= prevTime) {
+								currentTime.Internal = prevTime.Internal + 1;
+							}
+							prevTime = currentTime;
+							handler.Time = currentTime;
 						} else {
 							var strings = date.Split( new char[] { '/' } );
 							date = strings[2] + "/" + strings[0] + "/" + strings[1];
 							handler.Time = new TimeStamp( date + " " + time);
+						}
+						if( handler.Last == 0D) {
+							log.Warn("About to call SendTimeAndSales with Last price = zero.");
 						}
 						handler.SendTimeAndSales();
 						data.Position ++;

@@ -169,7 +169,7 @@ namespace TickZoom.FIX
 		
 		private void OnDisconnect( Socket socket) {
 			if( this.socket != socket) {
-				log.Warn("OnDisconnect( " + this.socket + " != " + socket + " ) - Ignored.");
+				log.Info("OnDisconnect( " + this.socket + " != " + socket + " ) - Ignored.");
 				return;
 			}
 			log.Info("OnDisconnect( " + socket + " ) ");

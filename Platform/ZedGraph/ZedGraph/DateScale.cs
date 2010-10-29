@@ -100,7 +100,11 @@ namespace ZedGraph
 		public override double Min
 		{
 			get { return _min; }
-			set { _min = XDate.MakeValidDate( value ); _minAuto = false; }
+			set { _min = XDate.MakeValidDate( value ); _minAuto = false;
+				if( double.IsNaN( _min) ) {
+					throw new ApplicationException("_min is NaN");
+				}
+			}
 		}
 
 		/// <summary>
@@ -440,6 +444,9 @@ namespace ZedGraph
 					_max = _max + 0.2 * ( _max == 0 ? 1.0 : Math.Abs( _max ) );
 				if ( _minAuto )
 					_min = _min - 0.2 * ( _min == 0 ? 1.0 : Math.Abs( _min ) );
+				if( double.IsNaN( _min) ) {
+					throw new ApplicationException("_min is NaN");
+				}
 			}
 
 			double targetSteps = ( _ownerAxis is XAxis || _ownerAxis is X2Axis ) ?
@@ -466,6 +473,9 @@ namespace ZedGraph
 			// Calculate the scale minimum
 			if ( _minAuto )
 				_min = CalcEvenStepDate( _min, -1 );
+			if( double.IsNaN( _min) ) {
+				throw new ApplicationException("_min is NaN");
+			}
 
 			// Calculate the scale maximum
 			if ( _maxAuto )

@@ -705,6 +705,9 @@ namespace ZedGraph
 
 			_min = rhs._min;
 			_max = rhs._max;
+			if( double.IsNaN( _min) ) {
+				throw new ApplicationException("_min is NaN");
+			}
 			_majorStep = rhs._majorStep;
 			_minorStep = rhs._minorStep;
 			_exponent = rhs._exponent;
@@ -844,6 +847,9 @@ namespace ZedGraph
 			int sch = info.GetInt32( "schema" );
 
 			_min = info.GetDouble( "min" );
+			if( double.IsNaN( _min) ) {
+				throw new ApplicationException("_min is NaN");
+			}
 			_max = info.GetDouble( "max" );
 			_majorStep = info.GetDouble( "majorStep" );
 			_minorStep = info.GetDouble( "minorStep" );
@@ -1034,7 +1040,11 @@ namespace ZedGraph
 		public virtual double Min
 		{
 			get { return _min; }
-			set { _min = value; _minAuto = false; }
+			set { _min = value; _minAuto = false;
+				if( double.IsNaN( _min) ) {
+					throw new ApplicationException("_min is NaN");
+				}
+			}
 		}
 		/// <summary>
 		/// Gets or sets the maximum scale value for this <see cref="Scale" />.
@@ -2416,6 +2426,9 @@ namespace ZedGraph
 			if ( _minAuto )
 			{
 				_min = minVal;
+				if( double.IsNaN( _min) ) {
+					throw new ApplicationException("_min is NaN");
+				}
 				// Do not let the grace value extend the axis below zero when all the values were positive
 				if ( numType && ( _min < 0 || minVal - _minGrace * range >= 0.0 ) )
 					_min = minVal - _minGrace * range;
@@ -2434,6 +2447,9 @@ namespace ZedGraph
 				{
 					_max *= ( _min < 0 ? 0.95 : 1.05 );
 					_min *= ( _min < 0 ? 1.05 : 0.95 );
+					if( double.IsNaN( _min) ) {
+						throw new ApplicationException("_min is NaN");
+					}
 				}
 				else
 				{
@@ -2448,6 +2464,9 @@ namespace ZedGraph
 					_max = _min + 1.0;
 				else if ( _minAuto )
 					_min = _max - 1.0;
+				if( double.IsNaN( _min) ) {
+					throw new ApplicationException("_min is NaN");
+				}
 			}
 
 		}

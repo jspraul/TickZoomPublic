@@ -126,6 +126,9 @@ namespace TickZoom.Common
 				}
 				var box = tickPool.Create();
 				box.TickBinary = tickIO.Extract();
+				if( tickIO.IsTrade && tickIO.Price == 0D) {
+					log.Warn("Found trade tick with zero price: " + tickIO);
+				}
 				receiver.OnEvent(symbol,(int)EventType.Tick,box);
 			}
 		}
