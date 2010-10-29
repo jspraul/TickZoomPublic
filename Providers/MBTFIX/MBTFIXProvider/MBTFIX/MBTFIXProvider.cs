@@ -672,17 +672,22 @@ namespace TickZoom.MBTFIX
 			if( debug && (LogRecovery || !IsRecovery) ) {
 				log.Debug("ReplaceOrder( " + packetFIX.OriginalClientOrderId + ", state = " + orderState + " => " + packetFIX.ClientOrderId + ")");
 			}
-			UpdateOrReplaceOrder( packetFIX, packetFIX.OriginalClientOrderId, packetFIX.ClientOrderId, orderState, note);
-			RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+			var order = UpdateOrReplaceOrder( packetFIX, packetFIX.OriginalClientOrderId, packetFIX.ClientOrderId, orderState, note);
+			if( order != null) {
+				lock( openOrdersLocker) {
+					openOrders[packetFIX.ClientOrderId] = order;
+				}
+				RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+			}
 		}
 		
-		public void UpdateOrReplaceOrder( PacketFIX4_4 packetFIX, string clientOrderId, string newClientOrderId, OrderState orderState, object note) {
+		public PhysicalOrder UpdateOrReplaceOrder( PacketFIX4_4 packetFIX, string clientOrderId, string newClientOrderId, OrderState orderState, object note) {
 			SymbolInfo symbolInfo;
 			try {
 				symbolInfo = Factory.Symbol.LookupSymbol(packetFIX.Symbol);
 			} catch( ApplicationException ex) {
 				log.Error("Error looking up " + packetFIX.Symbol + ": " + ex.Message);
-				return;
+				return null;
 			}
 			PhysicalOrder order;
 			try {
@@ -696,6 +701,7 @@ namespace TickZoom.MBTFIX
 					openOrders[packetFIX.ClientOrderId] = order;
 				}
 			}
+			order.BrokerOrder = newClientOrderId;
 			order.OrderState = orderState;
 			int quantity = packetFIX.LeavesQuantity;
 			if( quantity > 0) {
@@ -718,6 +724,7 @@ namespace TickZoom.MBTFIX
 					}
 				}
 			}
+			return order;
 		}
 
 		private void TestMethod(PacketFIX4_4 packetFIX) {

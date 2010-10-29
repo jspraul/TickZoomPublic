@@ -97,7 +97,8 @@ namespace TickZoom.Api
 				  int millis;
 				  int micros;
 				  GetDate(out other,out other,out other,out hour,out minute,out second,out millis, out micros);
-				  return new Elapsed(millis+
+				  return new Elapsed(micros+
+				        millis*MicrosecondsPerMillisecond+
 				  		second*MicrosecondsPerSecond+
 				  		minute*MicroecondsPerMinute+
 				  		hour*MicrosecondsPerHour);

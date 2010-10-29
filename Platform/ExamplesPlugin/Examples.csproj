@@ -87,7 +87,6 @@
     <Compile Include="Loaders\ExampleBreakoutStopsLoader.cs" />
     <Compile Include="Loaders\ExampleChartIndicator.cs" />
     <Compile Include="Loaders\ExampleCustomBarsLoader.cs" />
-    <Compile Include="Loaders\ExampleDataConverterLoader.cs" />
     <Compile Include="Loaders\ExampleMixedLoader.cs" />
     <Compile Include="Loaders\ExampleMultiSymbolLoader.cs" />
     <Compile Include="Loaders\ExampleOrdersLoader.cs" />

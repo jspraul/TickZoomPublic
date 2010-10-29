@@ -63,15 +63,15 @@ namespace TickZoom.Common
 				sb.Append(" at ");
 				sb.Append(price);
 			}
-//			sb.Append(" for broker id: ");
-//			sb.Append( brokerOrder);
 			sb.Append(" and logical id: ");
 			sb.Append( logicalOrderId);
 			sb.Append( "-");
 			sb.Append( logicalSerialNumber);
+			if( brokerOrder != null) {
+				sb.Append(" broker: ");
+				sb.Append( brokerOrder);
+			}
 			if( tag != null) {
-			
-				
 				sb.Append(" ");
 				sb.Append(tag);
 			}
