@@ -45,12 +45,14 @@ namespace TickZoom.Api
 		public const long HoursPerDay = 24L;
 		public const long MinutesPerHour = 60L;
 		public const long SecondsPerMinute = 60L;
+		public const long MillisecondsPerSecond = 1000L;
 		public const long MinutesPerDay = 1440L;
 		public const long SecondsPerDay = 86400L;
-		public const long MillisecondsPerSecond = 1000L;
-		public const long MillisecondsPerMinute = 60000L;
-		public const long MillisecondsPerHour = 3600000L;
-		public const long MillisecondsPerDay = 86400000L;
+		public const long MicrosecondsPerMillisecond =1000L;
+		public const long MicrosecondsPerSecond =  1000000L;
+		public const long MicrosecondsPerMinute = 60000000L;
+		public const long MicrosecondsPerHour = 3600000000L;
+		public const long MicrosecondsPerDay = 86400000000L;
 		public const string DefaultFormatStr = "g";
 		
 		public Elapsed( long elapsed) {
@@ -58,43 +60,43 @@ namespace TickZoom.Api
 		}
 		
 		public Elapsed( int hour, int minute, int second) {
-			this.elapsed = hour * MillisecondsPerHour + minute * MillisecondsPerMinute + second * MillisecondsPerSecond;
+			this.elapsed = hour * MicrosecondsPerHour + minute * MicrosecondsPerMinute + second * MicrosecondsPerSecond;
 		}
 		
 		public int Hours {
-			get { return (int) ( (elapsed / MillisecondsPerHour) % HoursPerDay); }
+			get { return (int) ( (elapsed / MicrosecondsPerHour) % HoursPerDay); }
 		}
 		
 		public int Minutes {
-			get { return (int) ( (elapsed / MillisecondsPerMinute) % MinutesPerHour); }
+			get { return (int) ( (elapsed / MicrosecondsPerMinute) % MinutesPerHour); }
 		}
 		
 		public int Seconds {
-			get { return (int) ( (elapsed / MillisecondsPerSecond) % SecondsPerMinute); }
+			get { return (int) ( (elapsed / MicrosecondsPerSecond) % SecondsPerMinute); }
 		}
 		
 		public int Milliseconds {
-			get { return (int) ( elapsed % MillisecondsPerSecond); }
+			get { return (int) ( (elapsed / MicrosecondsPerMillisecond) % MillisecondsPerSecond); }
 		}
 		
 		public long TotalSeconds {
-			get { return (long) (elapsed / MillisecondsPerSecond); }
+			get { return (long) (elapsed / MicrosecondsPerSecond); }
 		}
 		
 		public long TotalMilliseconds {
-			get { return elapsed; }
+			get { return (long) (elapsed / MicrosecondsPerMillisecond); }
 		}
 		
 		public int TotalHours {
-			get { return (int) (elapsed / MillisecondsPerHour); }
+			get { return (int) (elapsed / MicrosecondsPerHour); }
 		}
 		
 		public int TotalDays {
-			get { return (int) (elapsed / MillisecondsPerDay); }
+			get { return (int) (elapsed / MicrosecondsPerDay); }
 		}
 		
 		public int TotalMinutes {
-			get { return (int) (elapsed / MillisecondsPerMinute); }
+			get { return (int) (elapsed / MicrosecondsPerMinute); }
 		}
 		
 		public static implicit operator Elapsed( long elapsed )

@@ -334,7 +334,8 @@ namespace TickZoom.TickUtil
 					isCompressStarted = true;
 				}
 				WriteField( BinaryField.ContentMask, &ptr, binary.ContentMask - lastBinary.ContentMask);
-				WriteField( BinaryField.Time, &ptr, binary.UtcTime - lastBinary.UtcTime);
+				var diff = (binary.UtcTime/1000 - lastBinary.UtcTime/1000);
+				WriteField( BinaryField.Time, &ptr, diff);
 				if( IsQuote) {
 					WriteField( BinaryField.Bid, &ptr, (binary.Bid - lastBinary.Bid) / pricePrecision);
 					WriteField( BinaryField.Ask, &ptr, (binary.Ask - lastBinary.Ask) / pricePrecision);
@@ -478,8 +479,8 @@ namespace TickZoom.TickUtil
 						binary.ContentMask += (byte) ReadField( &ptr);
 						break;
 					case BinaryField.Time:
-						binary.UtcTime += ReadField( &ptr);
-						var ts = new TimeStamp(binary.UtcTime);
+						var diff = ReadField( &ptr);
+						binary.UtcTime += ( diff * 1000);
 						break;
 					case BinaryField.Bid:
 						binary.Bid += ReadField( &ptr) * pricePrecision;
@@ -516,7 +517,8 @@ namespace TickZoom.TickUtil
 		
 		private unsafe int FromFileVersion8(byte *fptr) {
 			byte *ptr = fptr;
-	    	binary.UtcTime = *(long*)ptr; ptr+=sizeof(double);
+	    	binary.UtcTime = *(long*)ptr; ptr+=sizeof(long);
+	    	binary.UtcTime *= 1000;
 			binary.ContentMask = *ptr; ptr++;
 			if( IsQuote ) {
 				binary.Bid = * (long*) ptr; ptr+=sizeof(long);
@@ -550,9 +552,6 @@ namespace TickZoom.TickUtil
 //				int x = 0;
 //			}
 			binary.UtcTime = new TimeStamp(d).Internal;
-//			if( binary.UtcTime.ToString().Contains("Error")) {
-//				int x = 0;
-//			}
 			binary.ContentMask = reader.ReadByte(); position += 1;
 			if( IsQuote ) {
 				binary.Bid = reader.ReadInt64(); position += 8;
@@ -748,7 +747,6 @@ namespace TickZoom.TickUtil
 			DateTime tickTime = DateTime.FromBinary(int64); position += 8;
 			TimeStamp timeStamp = (TimeStamp) tickTime.AddHours(-4);
 			binary.UtcTime = timeStamp.Internal;
-			
 			binary.Bid = reader.ReadInt32(); position += 4;
 			sbyte spread = reader.ReadSByte();	position += 1;
 			binary.Ask = binary.Bid+spread;
