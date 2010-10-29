@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="GUI\GUITest.cs" />
     <Compile Include="GUI\GUIThread.cs" />
+    <Compile Include="Loaders\ApexStrategyTest.cs" />
     <Compile Include="Loaders\ChartThread.cs" />
     <Compile Include="Loaders\CompareSimulatedTest.cs" />
     <Compile Include="Loaders\DualStrategyLimitOrder.cs" />

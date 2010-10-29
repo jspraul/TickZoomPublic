@@ -486,6 +486,7 @@ namespace TickZoom
 			if( intervalChartBar.BarUnit == BarUnit.Default) {
 				starter.ProjectProperties.Chart.IntervalChartBar = intervalDefault;
 			}
+			log.Info("Running Loader named: " + modelLoaderText);
 			starter.Run(Plugins.Instance.GetLoader(modelLoaderText));
         }
         
