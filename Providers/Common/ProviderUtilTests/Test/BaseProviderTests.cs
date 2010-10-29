@@ -60,9 +60,8 @@ namespace TickZoom.Test
 		public virtual void Init()
 		{
 			string appData = Factory.Settings["AppDataFolder"];
-			File.Delete( Factory.SysLog.LogFolder + @"\" + assemblyName+"Tests.log");
-			File.Delete( Factory.SysLog.LogFolder + @"\" + assemblyName+".log");
-			
+//			File.Delete( Factory.SysLog.LogFolder + @"\" + assemblyName+"Tests.log");
+//			File.Delete( Factory.SysLog.LogFolder + @"\" + assemblyName+".log");			
 		}
 		
 		public void SetProviderAssembly( string providerAssembly) {

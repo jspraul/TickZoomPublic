@@ -58,6 +58,7 @@ namespace TickZoom.Interceptors
 		private double actualPosition = 0D;
 		private TickSync tickSync;
 		private TickIO lastTick = Factory.TickUtil.TickIO();
+		private object processOrdersLocker = new object();
 		
 		public FillSimulatorPhysical(SymbolInfo symbol)
 		{
@@ -135,32 +136,34 @@ namespace TickZoom.Interceptors
 		}
 
 		private void ProcessOrdersInternal(Tick tick) {
-			if( trace) {
-				if( openTick) {
-					log.Trace( "ProcessOrders( " + symbol + ", " + tick + " ) [OpenTick]") ;
-				} else {
-					log.Trace( "ProcessOrders( " + symbol + ", " + tick + " )") ;
+			lock( processOrdersLocker) {
+				if( trace) {
+					if( openTick) {
+						log.Trace( "ProcessOrders( " + symbol + ", " + tick + " ) [OpenTick]") ;
+					} else {
+						log.Trace( "ProcessOrders( " + symbol + ", " + tick + " )") ;
+					}
 				}
+				if( symbol == null) {
+					throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
+				}
+				var next = marketOrders.First;
+				for( var node = next; node != null; node = node.Next) {
+					var order = node.Value;
+					OnProcessOrder(order, tick);
+				}
+				next = increaseOrders.First;
+				for( var node = next; node != null; node = node.Next) {
+					var order = node.Value;
+					OnProcessOrder(order, tick);
+				}
+				next = decreaseOrders.First;
+				for( var node = next; node != null; node = node.Next) {
+					var order = node.Value;
+					OnProcessOrder(order, tick);
+				}
+				openTick = false;
 			}
-			if( symbol == null) {
-				throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
-			}
-			var next = marketOrders.First;
-			for( var node = next; node != null; node = node.Next) {
-				var order = node.Value;
-				OnProcessOrder(order, tick);
-			}
-			next = increaseOrders.First;
-			for( var node = next; node != null; node = node.Next) {
-				var order = node.Value;
-				OnProcessOrder(order, tick);
-			}
-			next = decreaseOrders.First;
-			for( var node = next; node != null; node = node.Next) {
-				var order = node.Value;
-				OnProcessOrder(order, tick);
-			}
-			openTick = false;
 		}
 		
 		private void LogOpenOrders() {

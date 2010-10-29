@@ -456,7 +456,7 @@ namespace TickZoom.MBTFIX
 						UpdateOrder( packetFIX, OrderState.Suspended, packetFIX);
 						// Ignore 
 						break;
-					case "A": // Accepted
+					case "A": // PendingNew
 						UpdateOrder( packetFIX, OrderState.Active, null);
 						break;
 					case "E": // Pending Replace
@@ -988,6 +988,7 @@ namespace TickZoom.MBTFIX
 		
 		public void OnChangeBrokerOrder(PhysicalOrder physicalOrder, object origBrokerOrder)
 		{
+			physicalOrder.OrderState = OrderState.Pending;
 			if( debug) log.Debug( "OnChangeBrokerOrder( " + physicalOrder + ")");
 			OnCreateOrChangeBrokerOrder( physicalOrder, origBrokerOrder, true);
 		}

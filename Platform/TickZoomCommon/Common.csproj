@@ -77,7 +77,6 @@
     <Compile Include="Common\Result.cs" />
     <Compile Include="Common\Strategy.cs" />
     <Compile Include="Common\StrategyWatcher.cs" />
-    <Compile Include="Data\TSTickConverter.cs" />
     <Compile Include="Enums\Trend.cs" />
     <Compile Include="Interceptors\FillHandlerDefault.cs" />
     <Compile Include="Interceptors\FillManager.cs" />
@@ -158,7 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common" />
-    <Folder Include="Data" />
     <Folder Include="Indicators" />
     <Folder Include="Enums" />
     <Folder Include="Interceptors" />

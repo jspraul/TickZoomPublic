@@ -173,9 +173,9 @@ namespace TickZoom.MBTFIX
 			}
 //			log.Info( packet.Symbol + ": Changing order for client id: " + packet.OriginalClientOrderId);
 			order = ConstructOrder( packet, packet.ClientOrderId);
-			ChangeOrder(order, packet.OriginalClientOrderId);
 			SendExecutionReport( order, "E", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
+			ChangeOrder(order, packet.OriginalClientOrderId);
 			SendExecutionReport( order, "5", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			ProcessOrders( order.Symbol);
