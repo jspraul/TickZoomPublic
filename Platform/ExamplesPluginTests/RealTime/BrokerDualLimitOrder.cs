@@ -39,56 +39,21 @@ namespace MockProvider
 
 	[TestFixture]
 	public class BrokerDualLimitOrder : DualStrategyLimitOrder {
+		public static void Main( string[] args) {
+			
+		}
 		
 		public BrokerDualLimitOrder() {
-			SyncTicks.Enabled = true;
-			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
-			DeleteFiles();
-			CreateStarterCallback = CreateStarter;
-			Symbols = "USD/JPY,EUR/USD";
+			AutoTestMode = AutoTestMode.RealTime;
 			MatchTestResultsOf(typeof(DualStrategyLimitOrder));
 			ShowCharts = false;
 			StoreKnownGood = false;
 		}
 	
-		
-		public static void Main( string[] args) {
-			
-		}
-		
-		public override void RunStrategy()
-		{
-			base.RunStrategy();
-			LoadReconciliation();
-		}
-		
 		[Test]
 		public void PerformReconciliationTest() {
 			PerformReconciliation();
 		}
 	
-		public Starter CreateStarter()
-		{
-			ushort servicePort = 6490;
-			SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
-			Starter starter = new RealTimeStarter();
-			starter.ProjectProperties.Engine.SimulateRealTime = true;
-			starter.Config = "WarehouseTest.config";
-			starter.Port = servicePort;
-			return starter;
-		}
-		
-		private void DeleteFiles() {
-			while( true) {
-				try {
-					string appData = Factory.Settings["AppDataFolder"];
-		 			File.Delete( appData + @"\Test\\ServerCache\EURUSD.tck");
-		 			File.Delete( appData + @"\Test\\ServerCache\USDJPY.tck");
-					break;
-				} catch( Exception) {
-				}
-			}
-		}
-		
 	}
 }

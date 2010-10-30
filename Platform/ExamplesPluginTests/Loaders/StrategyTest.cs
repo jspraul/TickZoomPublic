@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -43,6 +44,12 @@ using ZedGraph;
 namespace Loaders
 {
 	public delegate Starter CreateStarterCallback();
+	
+	public enum AutoTestMode {
+		Historical,
+		RealTime,
+		FIXSimulator,
+	}
 	
 	public class StrategyTest
 	{
@@ -73,6 +80,7 @@ namespace Loaders
 		private TimeStamp endTime = TimeStamp.UtcNow;
 		private Interval intervalDefault = Intervals.Minute1;
 		private ModelInterface topModel = null;
+		private AutoTestMode autoTestMode = AutoTestMode.Historical;
 
 		public StrategyTest( AutoTestSettings testSettings ) {
 			this.loaderName = testSettings.LoaderName;
@@ -91,8 +99,32 @@ namespace Loaders
 			createStarterCallback = CreateStarter;
 		}
 		
+		public Starter CreateRealtimeStarter()
+		{
+			SyncTicks.Enabled = true;
+			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
+			ushort servicePort = 6490;
+			SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
+			Starter starter = new RealTimeStarter();
+			starter.ProjectProperties.Engine.SimulateRealTime = true;
+			starter.Config = "WarehouseTest.config";
+			starter.Port = servicePort;
+			return starter;
+		}
+		
 		public Starter SetupStarter() {
-			Starter starter = CreateStarterCallback();
+			Starter starter;
+			switch( autoTestMode) {
+				case AutoTestMode.Historical:
+					starter = CreateStarterCallback();
+					break;
+				case AutoTestMode.RealTime:
+					starter = CreateRealtimeStarter();
+					break;
+				case AutoTestMode.FIXSimulator:
+				default:
+					throw new ApplicationException("AutoTestMode " + autoTestMode + " is unknown.");
+			}
 			
 			// Set run properties as in the GUI.
 			starter.ProjectProperties.Starter.StartTime = startTime;
@@ -142,6 +174,7 @@ namespace Loaders
 		}
 		
 		public void CleanupFiles() {
+			CleanupServerCache();
 			string filePath = Factory.SysLog.LogFolder + @"\Trades.log";
 			File.Delete(filePath);
 			filePath = Factory.SysLog.LogFolder + @"\BarData.log";
@@ -150,6 +183,22 @@ namespace Loaders
 			File.Delete(filePath);
 			filePath = Factory.SysLog.LogFolder + @"\Transactions.log";
 			File.Delete(filePath);
+		}
+		
+		private void CleanupServerCache() {
+			if( Symbols == null) return;
+			while( true) {
+				try {
+					string appData = Factory.Settings["AppDataFolder"];
+					var symbolStrings = Symbols.Split(new char[] { ',' });
+					foreach( var symbol in symbolStrings) {
+						var symbolFile = symbol.Trim().StripInvalidPathChars();
+			 			File.Delete( appData + @"\Test\\ServerCache\" + symbolFile + ".tck");
+					}
+					break;
+				} catch( Exception) {
+				}
+			}
 		}
 		
 		[TestFixtureTearDown]
@@ -983,6 +1032,10 @@ namespace Loaders
 			get { return endTime; }
 			set { endTime = value; }
 		}
-
+		
+		public AutoTestMode AutoTestMode {
+			get { return autoTestMode; }
+			set { autoTestMode = value; }
+		}
 	}
 }

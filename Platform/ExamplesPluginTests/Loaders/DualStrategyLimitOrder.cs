@@ -46,22 +46,17 @@ namespace Loaders
 			Symbols = "USD/JPY,EUR/USD";
 			ShowCharts = false;
 			StoreKnownGood = false;
+			StartTime = new TimeStamp(1800,1,1);
+			EndTime = new TimeStamp(2009,06,10);
+			IntervalDefault = Intervals.Minute1;
 		}
 			
 		[TestFixtureSetUp]
 		public override void RunStrategy() {
 			CleanupFiles();
 			try {
-				Starter starter = CreateStarterCallback();
+				Starter starter = SetupStarter();
 				
-				// Set run properties as in the GUI.
-				starter.ProjectProperties.Starter.StartTime = new TimeStamp(1800,1,1);
-	    		starter.ProjectProperties.Starter.EndTime = new TimeStamp(2009,06,10);
-	    		starter.DataFolder = "Test\\DataCache";
-	    		starter.ProjectProperties.Starter.SetSymbols(Symbols);
-				starter.ProjectProperties.Starter.IntervalDefault = Intervals.Minute1;
-	    		starter.CreateChartCallback = new CreateChartCallback(HistoricalCreateChart);
-	    		starter.ShowChartCallback = new ShowChartCallback(HistoricalShowChart);
 				// Run the loader.
 				TestDualStrategyLoader loader = new TestDualStrategyLoader();
 	    		starter.Run(loader);
@@ -73,6 +68,7 @@ namespace Loaders
 	    		LoadTrades();
 	    		LoadTransactions();
 	    		LoadBarData();
+				LoadReconciliation();
 			} catch( Exception ex) {
 				log.Error("Setup error.", ex);
 				throw;
