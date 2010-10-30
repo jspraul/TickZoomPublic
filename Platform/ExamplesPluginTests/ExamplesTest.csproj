@@ -70,6 +70,9 @@
   <ItemGroup>
     <Compile Include="GUI\GUITest.cs" />
     <Compile Include="GUI\GUIThread.cs" />
+    <Compile Include="Loaders\AutoTestFixtureAttribute.cs" />
+    <Compile Include="Loaders\AutoTests.cs" />
+    <Compile Include="Loaders\AutoTestSettings.cs" />
     <Compile Include="Loaders\ChartThread.cs" />
     <Compile Include="Loaders\CompareSimulatedTest.cs" />
     <Compile Include="Loaders\DualStrategyLimitOrder.cs" />
@@ -84,6 +87,7 @@
     <Compile Include="Loaders\ExampleSimpleTradeOnlyTest.cs" />
     <Compile Include="Loaders\ExampleSimulatedTest.cs" />
     <Compile Include="Loaders\ExampleDualSymbolTest.cs" />
+    <Compile Include="Loaders\IAutoTestFixture.cs" />
     <Compile Include="Loaders\LimitOrderTest.cs" />
     <Compile Include="Loaders\LimitOrderTickBarTest.cs" />
     <Compile Include="Loaders\LoopMixedTest.cs" />

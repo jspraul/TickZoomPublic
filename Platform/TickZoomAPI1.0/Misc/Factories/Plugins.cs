@@ -72,14 +72,23 @@ namespace TickZoom.Api
 		}
 		
 		public ModelLoaderInterface GetLoader( string name) {
+			var count = 0;
+			ModelLoaderInterface result = null;
 			for( int i=0; i<modelLoaders.Count; i++) {
 				Type type = modelLoaders[i];
-				ModelLoaderInterface loader = (ModelLoaderInterface)Activator.CreateInstance(type);
+				var loader = (ModelLoaderInterface)Activator.CreateInstance(type);
 				if( loader.Name.Equals(name)) {
-					return loader;
+					count++;
+					result = loader;
 				}
 			}
-			throw new ApplicationException("ModelLoader '"+name+"' not found.");
+			if( count == 1) {
+				return result;
+			} else if( count > 0) {
+				throw new ApplicationException("More than one ModelLoader '"+name+"' was found.");
+			} else {
+				throw new ApplicationException("ModelLoader '"+name+"' not found.");
+			}
 		}
 		
 		public Serializer GetSerializer( int eventType) {

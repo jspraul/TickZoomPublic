@@ -26,40 +26,18 @@
 
 
 using System;
-using NUnit.Framework;
-using System.Threading;
-using TickZoom;
 using TickZoom.Api;
-using TickZoom.Common;
-using TickZoom.Examples;
 
 namespace Loaders
 {
-	public class TestDualStrategyLoader : ModelLoaderCommon
-	{
-		public TestDualStrategyLoader() {
-			/// <summary>
-			/// IMPORTANT: You can personalize the name of each model loader.
-			/// </summary>
-			category = "Test";
-			name = "Dual Strategy";
-			this.IsVisibleInGUI = false;
-		}
-		
-		public override void OnInitialize(ProjectProperties properties) {
-		}
-		
-		public override void OnLoad(ProjectProperties properties) {
-			properties.Engine.RealtimeOutput = false;
-			Portfolio portfolio = CreatePortfolio("Portfolio","EntirePortfolio");
-			foreach( var symbol in properties.Starter.SymbolProperties) {
-				string name = "ExampleOrderStrategy+" + symbol.Symbol;
-				ExampleOrderStrategy strategy = (ExampleOrderStrategy) CreateStrategy("ExampleOrderStrategy",name);
-				strategy.Multiplier = 10D;
-				strategy.SymbolDefault = symbol.Symbol;
-				AddDependency(portfolio,strategy);
-			}
-			TopModel = portfolio;
-		}
+	public class AutoTestSettings {
+		public string TestName;
+		public string LoaderName;
+		public string Symbols;
+		public bool StoreKnownGood;
+		public bool ShowCharts;
+		public TimeStamp StartTime;
+		public TimeStamp EndTime;
+		public Interval IntervalDefault;
 	}
 }

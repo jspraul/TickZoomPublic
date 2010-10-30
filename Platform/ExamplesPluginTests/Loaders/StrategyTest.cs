@@ -74,14 +74,15 @@ namespace Loaders
 		private Interval intervalDefault = Intervals.Minute1;
 		private ModelInterface topModel = null;
 
-		public StrategyTest( string loaderName, string symbols, bool storeKnownGood, bool showCharts, TimeStamp startTime, TimeStamp endTime) {
-			this.loaderName = loaderName;
-			this.symbols = symbols;
-			this.StoreKnownGood = storeKnownGood;
-			this.ShowCharts = showCharts;
-			this.startTime = startTime;
-			this.endTime = endTime;
- 			testFileName = GetType().Name;
+		public StrategyTest( AutoTestSettings testSettings ) {
+			this.loaderName = testSettings.LoaderName;
+			this.symbols = testSettings.Symbols;
+			this.StoreKnownGood = testSettings.StoreKnownGood;
+			this.ShowCharts = testSettings.ShowCharts;
+			this.startTime = testSettings.StartTime;
+			this.endTime = testSettings.EndTime;
+ 			this.testFileName = testSettings.TestName;
+ 			this.intervalDefault = testSettings.IntervalDefault;
 			createStarterCallback = CreateStarter;
 		}
 		
@@ -268,6 +269,7 @@ namespace Loaders
 			if( StoreKnownGood) {
 				File.Copy(newPath,knownGoodPath,true);
 			}
+			if( !File.Exists(knownGoodPath)) return;
 			goodFinalStatsMap.Clear();
 			LoadFinalStats(knownGoodPath,goodFinalStatsMap);
 			testFinalStatsMap.Clear();
@@ -275,7 +277,6 @@ namespace Loaders
 		}
 		
 		public void LoadFinalStats(string filePath, Dictionary<string,FinalStatsInfo> tempFinalStats) {
-			if( !File.Exists(filePath)) return;
 			using( FileStream fileStream = new FileStream(filePath,FileMode.Open,FileAccess.Read,FileShare.ReadWrite)) {
 				StreamReader file = new StreamReader(fileStream);
 				string line;
@@ -302,6 +303,7 @@ namespace Loaders
 			if( StoreKnownGood) {
 				File.Copy(newPath,knownGoodPath,true);
 			}
+			if( !File.Exists(knownGoodPath)) return;
 			goodTradeMap.Clear();
 			LoadTrades(knownGoodPath,goodTradeMap);
 			testTradeMap.Clear();
@@ -309,7 +311,6 @@ namespace Loaders
 		}
 		
 		public void LoadTrades(string filePath, Dictionary<string,List<TradeInfo>> tempTrades) {
-			if( !File.Exists(filePath)) return;
 			using( FileStream fileStream = new FileStream(filePath,FileMode.Open,FileAccess.Read,FileShare.ReadWrite)) {
 				StreamReader file = new StreamReader(fileStream);
 				string line;
@@ -344,6 +345,7 @@ namespace Loaders
 			if( StoreKnownGood) {
 				File.Copy(newPath,knownGoodPath,true);
 			}
+			if( !File.Exists(knownGoodPath)) return;
 			goodTransactionMap.Clear();
 			LoadTransactions(knownGoodPath,goodTransactionMap);
 			testTransactionMap.Clear();
@@ -351,7 +353,6 @@ namespace Loaders
 		}
 		
 		public void LoadTransactions(string filePath, Dictionary<string,List<TransactionInfo>> tempTransactions) {
-			if( !File.Exists(filePath)) return;
 			using( FileStream fileStream = new FileStream(filePath,FileMode.Open,FileAccess.Read,FileShare.ReadWrite)) {
 				StreamReader file = new StreamReader(fileStream);
 				string line;
@@ -385,6 +386,7 @@ namespace Loaders
 			if( StoreKnownGood) {
 				File.Copy(newPath,knownGoodPath,true);
 			}
+			if( !File.Exists(knownGoodPath)) return;
 			goodReconciliationMap.Clear();
 			LoadReconciliation(knownGoodPath,goodReconciliationMap);
 			testReconciliationMap.Clear();
@@ -392,7 +394,6 @@ namespace Loaders
 		}
 		
 		public void LoadReconciliation(string filePath, Dictionary<string,List<TransactionInfo>> tempReconciliation) {
-			if( !File.Exists(filePath)) return;
 			using( FileStream fileStream = new FileStream(filePath,FileMode.Open,FileAccess.Read,FileShare.ReadWrite)) {
 				StreamReader file = new StreamReader(fileStream);
 				string line;
@@ -426,6 +427,7 @@ namespace Loaders
 			if( StoreKnownGood) {
 				File.Copy(newPath,knownGoodPath,true);
 			}
+			if( !File.Exists(knownGoodPath)) return;
 			goodBarDataMap.Clear();
 			LoadBarData(knownGoodPath,goodBarDataMap);
 			testBarDataMap.Clear();
@@ -468,6 +470,7 @@ namespace Loaders
 			if( StoreKnownGood) {
 				File.Copy(newPath,knownGoodPath,true);
 			}
+			if( !File.Exists(knownGoodPath)) return;
 			testStatsMap.Clear();
 			LoadStats(newPath,testStatsMap);
 			goodStatsMap.Clear();
@@ -875,6 +878,7 @@ namespace Loaders
    		}
    		
 		public void CompareChart(StrategyInterface strategy) {
+   			if( strategy.SymbolDefault == "TimeSync") return;
    			var strategyBars = strategy.Bars;
    			var chart = GetChart(strategy.SymbolDefault);
      		GraphPane pane = chart.DataGraph.MasterPane.PaneList[0];

@@ -24,42 +24,40 @@
  */
 #endregion
 
-
 using System;
-using NUnit.Framework;
-using System.Threading;
-using TickZoom;
 using TickZoom.Api;
 using TickZoom.Common;
-using TickZoom.Examples;
 
 namespace Loaders
 {
-	public class TestDualStrategyLoader : ModelLoaderCommon
-	{
-		public TestDualStrategyLoader() {
-			/// <summary>
-			/// IMPORTANT: You can personalize the name of each model loader.
-			/// </summary>
-			category = "Test";
-			name = "Dual Strategy";
-			this.IsVisibleInGUI = false;
-		}
-		
-		public override void OnInitialize(ProjectProperties properties) {
-		}
-		
-		public override void OnLoad(ProjectProperties properties) {
-			properties.Engine.RealtimeOutput = false;
-			Portfolio portfolio = CreatePortfolio("Portfolio","EntirePortfolio");
-			foreach( var symbol in properties.Starter.SymbolProperties) {
-				string name = "ExampleOrderStrategy+" + symbol.Symbol;
-				ExampleOrderStrategy strategy = (ExampleOrderStrategy) CreateStrategy("ExampleOrderStrategy",name);
-				strategy.Multiplier = 10D;
-				strategy.SymbolDefault = symbol.Symbol;
-				AddDependency(portfolio,strategy);
-			}
-			TopModel = portfolio;
+	[AutoTestFixture]
+	public class AutoTests : IAutoTestFixture {
+		public AutoTestSettings[] GetAutoTestSettings() {
+			var list = new System.Collections.Generic.List<AutoTestSettings>();
+			
+			list.Add( new AutoTestSettings {
+			    TestName = "ApexStrategyTest",
+				LoaderName = "APX_Systems: APX Multi-Symbol Loader",
+				Symbols = "USD/JPY",
+				StoreKnownGood = false,
+				ShowCharts = false,
+				StartTime = new TimeStamp( 1800, 1, 1),
+				EndTime = new TimeStamp( 2009, 6, 10),
+				IntervalDefault = Intervals.Minute1,
+			});
+			
+			list.Add( new AutoTestSettings {
+			    TestName = "DualStrategyLimitOrder",
+				LoaderName = "Test: Dual Strategy",
+				Symbols = "USD/JPY,EUR/USD",
+				StoreKnownGood = true,
+				ShowCharts = false,
+				StartTime = new TimeStamp( 1800, 1, 1),
+				EndTime = new TimeStamp( 2009, 6, 10),
+				IntervalDefault = Intervals.Minute1,
+			});
+			
+			return list.ToArray();
 		}
 	}
 }

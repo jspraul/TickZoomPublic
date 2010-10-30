@@ -181,7 +181,7 @@ namespace Loaders
 			/// IMPORTANT: You can personalize the name of each model loader.
 			/// </summary>
 			category = "Example";
-			name = "Dual Symbol";
+			name = "Dual Strategy";
 			IsVisibleInGUI = false;
 		}
 		
