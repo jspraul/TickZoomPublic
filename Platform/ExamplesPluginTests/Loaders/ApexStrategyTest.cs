@@ -35,22 +35,6 @@ using TickZoom.Common;
 
 namespace Loaders
 {
-	[SuiteBuilder]
-	public class DynamicTestSuite : ISuiteBuilder
-	{
-		private static readonly Log log = Factory.SysLog.GetLogger(typeof(DynamicTestSuite));
-		public Test BuildFrom(Type type)
-		{
-			var loaders = Plugins.Instance.GetLoaders();
-			return null;
-		}
-	
-		public bool CanBuildFrom(Type type)
-		{
-			return type == typeof(DynamicTestSuite);
-		}		
-	}
-	
 	[TestFixture]
 	public class ApexStrategyTest : StrategyTest
 	{

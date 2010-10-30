@@ -36,8 +36,8 @@ using TickZoom;
 using TickZoom.Api;
 using TickZoom.Common;
 using TickZoom.Starters;
-using TickZoom.Transactions;
 using TickZoom.Statistics;
+using TickZoom.Transactions;
 using ZedGraph;
 
 namespace Loaders
@@ -73,6 +73,17 @@ namespace Loaders
 		private TimeStamp endTime = TimeStamp.UtcNow;
 		private Interval intervalDefault = Intervals.Minute1;
 		private ModelInterface topModel = null;
+
+		public StrategyTest( string loaderName, string symbols, bool storeKnownGood, bool showCharts, TimeStamp startTime, TimeStamp endTime) {
+			this.loaderName = loaderName;
+			this.symbols = symbols;
+			this.StoreKnownGood = storeKnownGood;
+			this.ShowCharts = showCharts;
+			this.startTime = startTime;
+			this.endTime = endTime;
+ 			testFileName = GetType().Name;
+			createStarterCallback = CreateStarter;
+		}
 		
 		public StrategyTest() {
  			testFileName = GetType().Name;
@@ -494,8 +505,8 @@ namespace Loaders
 			DynamicTradeCount(strategy.Name);
 		}
 		
-		[Test, TestCaseSource("GetModelNames")]
 		public void DynamicTradeCount(string strategyName) {
+			if( string.IsNullOrEmpty(strategyName)) return;
 			List<TradeInfo> goodTrades = null;
 			goodTradeMap.TryGetValue(strategyName,out goodTrades);
 			List<TradeInfo> testTrades = null;
@@ -522,8 +533,8 @@ namespace Loaders
 			DynamicBarDataCount( strategy.Name);
 		}
 		
-		[Test, TestCaseSource("GetModelNames")]
 		public void DynamicBarDataCount(string strategyName) {
+			if( string.IsNullOrEmpty(strategyName)) return;
 			List<BarInfo> goodBarData = goodBarDataMap[strategyName];
 			List<BarInfo> testBarData = testBarDataMap[strategyName];
 			Assert.AreEqual(goodBarData.Count,testBarData.Count,"bar data count");
@@ -533,8 +544,8 @@ namespace Loaders
 			DynamicTrades(strategy.Name);
 		}
 		
-		[Test, TestCaseSource("GetModelNames")]
 		public void DynamicTrades(string strategyName) {
+			if( string.IsNullOrEmpty(strategyName)) return;
 			try {
 				assertFlag = false;
 				List<TradeInfo> goodTrades = null;
@@ -617,8 +628,8 @@ namespace Loaders
 			DynamicStatsCount( strategy.Name);
 		}
 		
-		[Test, TestCaseSource("GetModelNames")]
 		public void DynamicStatsCount(string strategyName) {
+			if( string.IsNullOrEmpty(strategyName)) return;
 			List<StatsInfo> goodStats = goodStatsMap[strategyName];
 			List<StatsInfo> testStats = testStatsMap[strategyName];
 			Assert.AreEqual(goodStats.Count,testStats.Count,"Stats count");
@@ -650,8 +661,8 @@ namespace Loaders
 			DynamicFinalStats( strategy.Name);
 		}
 		
-		[Test, TestCaseSource("GetModelNames")]
 		public void DynamicFinalStats(string strategyName) {
+			if( string.IsNullOrEmpty(strategyName)) return;
 			try {
 				assertFlag = false;
 				FinalStatsInfo goodInfo = goodFinalStatsMap[strategyName];
@@ -672,8 +683,8 @@ namespace Loaders
 			DynamicStats( strategy.Name);
 		}
 		
-		[Test, TestCaseSource("GetModelNames")]
 		public void DynamicStats(string strategyName) {
+			if( string.IsNullOrEmpty(strategyName)) return;
 			try {
 				assertFlag = false;
 				List<StatsInfo> goodStats = goodStatsMap[strategyName];
@@ -697,8 +708,8 @@ namespace Loaders
 			DynamicBarData(strategy.Name);
 		}
 		
-		[Test, TestCaseSource("GetModelNames")]
 		public void DynamicBarData(string strategyName) {
+			if( string.IsNullOrEmpty(strategyName)) return;
 			try {
 				assertFlag = false;
 				List<BarInfo> goodBarData = goodBarDataMap[strategyName];
@@ -811,7 +822,7 @@ namespace Loaders
    			get { return chartThreads.Count; }
 		}
    		
-   		public ChartControl GetChart( string symbol) {
+   		protected ChartControl GetChart( string symbol) {
    			ChartControl chart;
    			for( int i=0; i<chartThreads.Count; i++) {
 				chart = GetChart(i);
@@ -822,7 +833,7 @@ namespace Loaders
    			return null;
    		}
 
-   		public ChartControl GetChart( int num) {
+   		protected ChartControl GetChart( int num) {
    			return chartThreads[num].PortfolioDoc.ChartControl;
    		}
 		
@@ -854,9 +865,9 @@ namespace Loaders
    			throw new ApplicationException("Model was not found for the name: " + modelName);
    		}
    		
-   		[Test, TestCaseSource("GetModelNames")]
-		public void DynamicCompareChart(string name) {
-   			var model = GetModelByName( name);
+		public void DynamicCompareChart(string strategyName) {
+			if( string.IsNullOrEmpty(strategyName)) return;
+   			var model = GetModelByName( strategyName);
    			if( !(model is StrategyInterface)) {
    				return;
    			}

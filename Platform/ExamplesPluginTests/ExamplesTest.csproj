@@ -14,7 +14,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <StartWorkingDirectory>..\..\bin\Debug</StartWorkingDirectory>
-    <StartArguments>ExamplesTest.dll</StartArguments>
+    <StartArguments>ExamplesTest.exe</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\bin\Debug\</OutputPath>
@@ -70,10 +70,10 @@
   <ItemGroup>
     <Compile Include="GUI\GUITest.cs" />
     <Compile Include="GUI\GUIThread.cs" />
-    <Compile Include="Loaders\ApexStrategyTest.cs" />
     <Compile Include="Loaders\ChartThread.cs" />
     <Compile Include="Loaders\CompareSimulatedTest.cs" />
     <Compile Include="Loaders\DualStrategyLimitOrder.cs" />
+    <Compile Include="Loaders\DynamicTestSuite.cs" />
     <Compile Include="Loaders\ExampleBreakoutReversalTest.cs" />
     <Compile Include="Loaders\ExampleBreakoutStopsTest.cs" />
     <Compile Include="Loaders\ExampleCustomBarsTest.cs" />

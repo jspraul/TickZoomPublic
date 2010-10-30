@@ -31,10 +31,10 @@ using System.Reflection;
 using NUnit.Core;
 using NUnit.Core.Extensibility;
 
-namespace Loaders
+namespace TickZoom.DynamicTest.Add
 {
 	[SuiteBuilder, NUnitAddin]
-	public class DynamicTestSuite : ISuiteBuilder, IAddin
+	public class SuiteBuilderLoader : ISuiteBuilder, IAddin
 	{
 		Assembly assembly;
 		ISuiteBuilder builder;
