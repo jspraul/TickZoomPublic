@@ -83,13 +83,14 @@ namespace Loaders
 		private AutoTestMode autoTestMode = AutoTestMode.Historical;
 
 		public StrategyTest( AutoTestSettings testSettings ) {
+			this.autoTestMode = testSettings.Mode;
 			this.loaderName = testSettings.LoaderName;
 			this.symbols = testSettings.Symbols;
 			this.StoreKnownGood = testSettings.StoreKnownGood;
 			this.ShowCharts = testSettings.ShowCharts;
 			this.startTime = testSettings.StartTime;
 			this.endTime = testSettings.EndTime;
- 			this.testFileName = testSettings.TestName;
+ 			this.testFileName = testSettings.Name;
  			this.intervalDefault = testSettings.IntervalDefault;
 			createStarterCallback = CreateStarter;
 		}

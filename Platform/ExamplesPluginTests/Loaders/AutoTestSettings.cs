@@ -31,7 +31,8 @@ using TickZoom.Api;
 namespace Loaders
 {
 	public class AutoTestSettings {
-		public string TestName;
+		public AutoTestMode Mode;
+		public string Name;
 		public string LoaderName;
 		public string Symbols;
 		public bool StoreKnownGood;

@@ -39,26 +39,38 @@ namespace Loaders
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(DynamicTestSuite));
 		public Test BuildFrom(Type type)
 		{
-			var suite = new TestSuite(this.GetType().Name);
 			var autoTestFixture = (IAutoTestFixture) Reflect.Construct(type);
+			var mainSuite = new TestSuite("Dynamic");
+			var suite = new TestSuite("Historical");
+			mainSuite.Add(suite);
+			AddDynamicTestFixtures(suite,autoTestFixture, AutoTestMode.Historical);
+			suite = new TestSuite("Realtime");
+			mainSuite.Add(suite);
+			AddDynamicTestFixtures(suite,autoTestFixture, AutoTestMode.RealTime);
+			suite = new TestSuite("FIXSimulator");
+			mainSuite.Add(suite);
+			AddDynamicTestFixtures(suite,autoTestFixture, AutoTestMode.RealTime);
+			return mainSuite;
+		}
+		
+		private void AddDynamicTestFixtures(TestSuite suite, IAutoTestFixture autoTestFixture, AutoTestMode autoTestMode) {
 			foreach( var testSettings in autoTestFixture.GetAutoTestSettings() ) {
+				testSettings.Mode = autoTestMode;
 				try { 
-					var fixture = AddDynamicTests(testSettings);
-					suite.Add(fixture);
+					AddDynamicTestCases(suite, testSettings);
 				} catch( ApplicationException ex) {
 					if( !ex.Message.Contains("not found")) {
 						throw;
 					}
 				}
 			}
-			return suite;
 		}
-		
-		private NUnitTestFixture AddDynamicTests(AutoTestSettings testSettings) {
+			
+		private void AddDynamicTestCases(TestSuite suite, AutoTestSettings testSettings) {
 			var userFixtureType = typeof(StrategyTest);
 			var strategyTest = (StrategyTest) Reflect.Construct(userFixtureType, new object[] { testSettings } );
 			var fixture = new NUnitTestFixture(userFixtureType, new object[] { testSettings } );
-			fixture.TestName.Name = testSettings.TestName;
+			fixture.TestName.Name = testSettings.Name;
 			foreach( var modelName in strategyTest.GetModelNames()) {
 				var paramaterizedTest = new ParameterizedMethodSuite(modelName);
 				fixture.Add(paramaterizedTest);
@@ -74,7 +86,7 @@ namespace Loaders
 					}
 				}
 			}
-			return fixture;
+			suite.Add(fixture);
 		}
 	
 		public bool CanBuildFrom(Type type)
