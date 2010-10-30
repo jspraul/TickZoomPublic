@@ -51,7 +51,7 @@ namespace Loaders
 			
 		[TestFixtureSetUp]
 		public override void RunStrategy() {
-			base.RunStrategy();
+			CleanupFiles();
 			Starter starter = new HistoricalStarter();
 			
 			// Set run properties as in the GUI.

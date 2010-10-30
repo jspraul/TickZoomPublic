@@ -44,7 +44,7 @@ namespace TickZoom.Update
 		private static object locker = new object();
 		private static bool IsResolverSetup = false;
 		private static readonly Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-		private bool debugFlag = false;
+		private bool debugFlag = true;
 
 		public FactoryLoaderDefault()
 		{
@@ -79,7 +79,7 @@ namespace TickZoom.Update
 		{
 			if (debugFlag) {
 				Console.WriteLine(message);
-				System.Diagnostics.Debug.WriteLine(message);
+				System.Diagnostics.Debug.WriteLine("Debug: " + message);
 			}
 		}
 

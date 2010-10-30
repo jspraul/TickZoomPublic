@@ -49,7 +49,7 @@ namespace Loaders
 			
 		[TestFixtureSetUp]
 		public override void RunStrategy() {
-			base.RunStrategy();
+			CleanupFiles();
 			try {
 				Starter starter = new HistoricalStarter();
 				

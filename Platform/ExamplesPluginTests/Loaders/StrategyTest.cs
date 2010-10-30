@@ -37,6 +37,7 @@ using TickZoom.Api;
 using TickZoom.Common;
 using TickZoom.Starters;
 using TickZoom.Transactions;
+using TickZoom.Statistics;
 using ZedGraph;
 
 namespace Loaders
@@ -47,6 +48,7 @@ namespace Loaders
 	{
 		static readonly Log log = Factory.SysLog.GetLogger(typeof(StrategyTest));
 		static readonly bool debug = log.IsDebugEnabled;
+		private string loaderName;
 		private string testFileName;
 		string dataFolder = "Test\\DataCache";
 		string symbols;
@@ -57,6 +59,8 @@ namespace Loaders
 		Dictionary<string,List<BarInfo>> testBarDataMap = new Dictionary<string,List<BarInfo>>();
 		Dictionary<string,List<TradeInfo>> goodTradeMap = new Dictionary<string,List<TradeInfo>>();
 		Dictionary<string,List<TradeInfo>> testTradeMap = new Dictionary<string,List<TradeInfo>>();
+		Dictionary<string,FinalStatsInfo> goodFinalStatsMap = new Dictionary<string,FinalStatsInfo>();
+		Dictionary<string,FinalStatsInfo> testFinalStatsMap = new Dictionary<string,FinalStatsInfo>();
 		Dictionary<string,List<TransactionInfo>> goodTransactionMap = new Dictionary<string,List<TransactionInfo>>();
 		Dictionary<string,List<TransactionInfo>> testTransactionMap = new Dictionary<string,List<TransactionInfo>>();
 		Dictionary<string,List<TransactionInfo>> goodReconciliationMap = new Dictionary<string,List<TransactionInfo>>();
@@ -65,18 +69,67 @@ namespace Loaders
 		public bool StoreKnownGood = false;
 		public CreateStarterCallback createStarterCallback;
 		protected bool testFailed = false;		
+		private TimeStamp startTime = new TimeStamp(1800,1,1);
+		private TimeStamp endTime = TimeStamp.UtcNow;
+		private Interval intervalDefault = Intervals.Minute1;
+		private ModelInterface topModel = null;
 		
 		public StrategyTest() {
  			testFileName = GetType().Name;
 			createStarterCallback = CreateStarter;
 		}
 		
+		public Starter SetupStarter() {
+			Starter starter = CreateStarterCallback();
+			
+			// Set run properties as in the GUI.
+			starter.ProjectProperties.Starter.StartTime = startTime;
+    		starter.ProjectProperties.Starter.EndTime = endTime;
+    		
+    		starter.DataFolder = "Test\\DataCache";
+    		starter.ProjectProperties.Starter.SetSymbols( Symbols);
+			starter.ProjectProperties.Starter.IntervalDefault = intervalDefault;
+    		starter.CreateChartCallback = new CreateChartCallback(HistoricalCreateChart);
+    		starter.ShowChartCallback = new ShowChartCallback(HistoricalShowChart);
+    		return starter;
+		}
+			
 		public void MatchTestResultsOf( Type type) {
 			testFileName = type.Name;
 		}
 		
 		[TestFixtureSetUp]
 		public virtual void RunStrategy() {
+			log.Notice("Beginning RunStrategy()");
+			CleanupFiles();
+			try {
+				var starter = SetupStarter();
+				// Run the loader.
+				try { 
+					var loader = Plugins.Instance.GetLoader(LoaderName);
+		    		starter.Run(loader);
+		    		topModel = loader.TopModel;
+				} catch( ApplicationException ex) {
+					if( ex.Message.Contains("not found")) {
+						Assert.Ignore("LoaderName could not be loaded.");
+						return;
+					}
+				}
+				WriteFinalStats();
+	
+	    		// Get the stategy
+	    		LoadTransactions();
+	    		LoadTrades();
+	    		LoadBarData();
+	    		LoadStats();
+	    		LoadFinalStats();
+			} catch( Exception ex) {
+				log.Error("Setup error.", ex);
+				throw;
+			}
+		}
+		
+		public void CleanupFiles() {
 			string filePath = Factory.SysLog.LogFolder + @"\Trades.log";
 			File.Delete(filePath);
 			filePath = Factory.SysLog.LogFolder + @"\BarData.log";
@@ -152,6 +205,13 @@ namespace Loaders
 			}
 		}
 		
+		public class FinalStatsInfo {
+			public double StartingEquity;
+			public double ClosedEquity;
+			public double OpenEquity;
+			public double CurrentEquity;
+		}
+		
 		public class StatsInfo {
 			public TimeStamp Time;
 			public double ClosedEquity;
@@ -163,6 +223,66 @@ namespace Loaders
 			return new HistoricalStarter();			
 		}
 		
+		public void WriteFinalStats() {
+			string newPath = Factory.SysLog.LogFolder + @"\FinalStats.log";
+			using( var writer = new StreamWriter(newPath)) {
+				foreach( var model in GetAllModels(topModel)) {
+					Performance performance;
+					if( model is Strategy) {
+						performance = ((Strategy) model).Performance;
+					} else if( model is Portfolio) {
+						performance = ((Portfolio) model).Performance;
+					} else {
+						continue;
+					}
+					writer.Write(model.Name);
+					writer.Write(",");
+					writer.Write(performance.Equity.StartingEquity);
+					writer.Write(",");
+					writer.Write(performance.Equity.ClosedEquity);
+					writer.Write(",");
+					writer.Write(performance.Equity.OpenEquity);
+					writer.Write(",");
+					writer.Write(performance.Equity.CurrentEquity);
+					writer.WriteLine();
+				}
+			}
+		}
+		
+		public void LoadFinalStats() {
+			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
+			string knownGoodPath = fileDir + testFileName + "FinalStats.log";
+			string newPath = Factory.SysLog.LogFolder + @"\FinalStats.log";
+			if( !File.Exists(newPath)) return;
+			if( StoreKnownGood) {
+				File.Copy(newPath,knownGoodPath,true);
+			}
+			goodFinalStatsMap.Clear();
+			LoadFinalStats(knownGoodPath,goodFinalStatsMap);
+			testFinalStatsMap.Clear();
+			LoadFinalStats(newPath,testFinalStatsMap);
+		}
+		
+		public void LoadFinalStats(string filePath, Dictionary<string,FinalStatsInfo> tempFinalStats) {
+			if( !File.Exists(filePath)) return;
+			using( FileStream fileStream = new FileStream(filePath,FileMode.Open,FileAccess.Read,FileShare.ReadWrite)) {
+				StreamReader file = new StreamReader(fileStream);
+				string line;
+				while( (line = file.ReadLine()) != null) {
+					string[] fields = line.Split(',');
+					int fieldIndex = 0;
+					string strategyName = fields[fieldIndex++];
+					var testInfo = new FinalStatsInfo();
+					
+					testInfo.StartingEquity = double.Parse(fields[fieldIndex++]);
+					testInfo.ClosedEquity = double.Parse(fields[fieldIndex++]);
+					testInfo.OpenEquity = double.Parse(fields[fieldIndex++]);
+					testInfo.CurrentEquity = double.Parse(fields[fieldIndex++]);
+					
+					tempFinalStats.Add(strategyName,testInfo);
+				}
+			}
+		}
 		public void LoadTrades() {
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
 			string knownGoodPath = fileDir + testFileName + "Trades.log";
@@ -371,11 +491,19 @@ namespace Loaders
 		}
 		
 		public void VerifyTradeCount(StrategyInterface strategy) {
+			DynamicTradeCount(strategy.Name);
+		}
+		
+		[Test, TestCaseSource("GetModelNames")]
+		public void DynamicTradeCount(string strategyName) {
 			List<TradeInfo> goodTrades = null;
-			goodTradeMap.TryGetValue(strategy.Name,out goodTrades);
+			goodTradeMap.TryGetValue(strategyName,out goodTrades);
 			List<TradeInfo> testTrades = null;
-			testTradeMap.TryGetValue(strategy.Name,out testTrades);
-			Assert.IsNotNull(goodTrades, "good trades");
+			testTradeMap.TryGetValue(strategyName,out testTrades);
+			if( goodTrades == null) {
+				Assert.IsNull(testTrades, "test trades empty like good trades");
+				return;
+			}
 			Assert.IsNotNull(testTrades, "test trades");
 			Assert.AreEqual(goodTrades.Count,testTrades.Count,"trade count");
 		}
@@ -391,26 +519,39 @@ namespace Loaders
 		}
 		
 		public void VerifyBarDataCount(StrategyInterface strategy) {
-			List<BarInfo> goodBarData = goodBarDataMap[strategy.Name];
-			List<BarInfo> testBarData = testBarDataMap[strategy.Name];
+			DynamicBarDataCount( strategy.Name);
+		}
+		
+		[Test, TestCaseSource("GetModelNames")]
+		public void DynamicBarDataCount(string strategyName) {
+			List<BarInfo> goodBarData = goodBarDataMap[strategyName];
+			List<BarInfo> testBarData = testBarDataMap[strategyName];
 			Assert.AreEqual(goodBarData.Count,testBarData.Count,"bar data count");
 		}
 		
 		public void VerifyTrades(StrategyInterface strategy) {
+			DynamicTrades(strategy.Name);
+		}
+		
+		[Test, TestCaseSource("GetModelNames")]
+		public void DynamicTrades(string strategyName) {
 			try {
 				assertFlag = false;
 				List<TradeInfo> goodTrades = null;
-				goodTradeMap.TryGetValue(strategy.Name,out goodTrades);
+				goodTradeMap.TryGetValue(strategyName,out goodTrades);
 				List<TradeInfo> testTrades = null;
-				testTradeMap.TryGetValue(strategy.Name,out testTrades);
-				Assert.IsNotNull(goodTrades, "good trades");
+				testTradeMap.TryGetValue(strategyName,out testTrades);
+				if( goodTrades == null) {
+					Assert.IsNull(testTrades, "test trades should be null because good was null.");
+					return;
+				}
 				Assert.IsNotNull(testTrades, "test trades");
 				for( int i=0; i<testTrades.Count && i<goodTrades.Count; i++) {
 					TradeInfo testInfo = testTrades[i];
 					TradeInfo goodInfo = goodTrades[i];
 					TransactionPairBinary goodTrade = goodInfo.Trade;
 					TransactionPairBinary testTrade = testInfo.Trade;
-					AssertEqual(goodTrade,testTrade,strategy.Name + " Trade at " + i);
+					AssertEqual(goodTrade,testTrade,strategyName + " Trade at " + i);
 					AssertEqual(goodInfo.ProfitLoss,testInfo.ProfitLoss,"ProfitLoss at " + i);
 					AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,"ClosedEquity at " + i);
 				}
@@ -473,8 +614,13 @@ namespace Loaders
 		}
 		
 		public void VerifyStatsCount(StrategyInterface strategy) {
-			List<StatsInfo> goodStats = goodStatsMap[strategy.Name];
-			List<StatsInfo> testStats = testStatsMap[strategy.Name];
+			DynamicStatsCount( strategy.Name);
+		}
+		
+		[Test, TestCaseSource("GetModelNames")]
+		public void DynamicStatsCount(string strategyName) {
+			List<StatsInfo> goodStats = goodStatsMap[strategyName];
+			List<StatsInfo> testStats = testStatsMap[strategyName];
 			Assert.AreEqual(goodStats.Count,testStats.Count,"Stats count");
 		}
 		
@@ -500,18 +646,45 @@ namespace Loaders
 			}
 		}
 		
-		public void VerifyStats(StrategyInterface strategy) {
+		public void VerifyFinalStats(StrategyInterface strategy) {
+			DynamicFinalStats( strategy.Name);
+		}
+		
+		[Test, TestCaseSource("GetModelNames")]
+		public void DynamicFinalStats(string strategyName) {
 			try {
 				assertFlag = false;
-				List<StatsInfo> goodStats = goodStatsMap[strategy.Name];
-				List<StatsInfo> testStats = testStatsMap[strategy.Name];
+				FinalStatsInfo goodInfo = goodFinalStatsMap[strategyName];
+				FinalStatsInfo testInfo = testFinalStatsMap[strategyName];
+				AssertEqual(goodInfo.StartingEquity,testInfo.StartingEquity,strategyName + " Starting Equity");
+				AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,strategyName + " Closed Equity");
+				AssertEqual(goodInfo.OpenEquity,testInfo.OpenEquity,strategyName + " Open Equity");
+				AssertEqual(goodInfo.CurrentEquity,testInfo.CurrentEquity,strategyName + " Current Equity");
+				Assert.IsFalse(assertFlag,"Checking for final statistics errors.");
+			} catch { 
+				log.Error( strategyName + " was not found in at least one of the lists.");
+				testFailed = true;
+				throw;
+			}
+		}
+		
+		public void VerifyStats(StrategyInterface strategy) {
+			DynamicStats( strategy.Name);
+		}
+		
+		[Test, TestCaseSource("GetModelNames")]
+		public void DynamicStats(string strategyName) {
+			try {
+				assertFlag = false;
+				List<StatsInfo> goodStats = goodStatsMap[strategyName];
+				List<StatsInfo> testStats = testStatsMap[strategyName];
 				for( int i=0; i<testStats.Count && i<goodStats.Count; i++) {
 					StatsInfo testInfo = testStats[i];
 					StatsInfo goodInfo = goodStats[i];
-					AssertEqual(goodInfo.Time,testInfo.Time,strategy.Name + " - [" + i + "] Stats time at " + testInfo.Time);
-					AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,strategy.Name + " - [" + i + "] Closed Equity time at " + testInfo.Time);
-					AssertEqual(goodInfo.OpenEquity,testInfo.OpenEquity,strategy.Name + " - [" + i + "] Open Equity time at " + testInfo.Time);
-					AssertEqual(goodInfo.CurrentEquity,testInfo.CurrentEquity,strategy.Name + " - [" + i + "] Current Equity time at " + testInfo.Time);
+					AssertEqual(goodInfo.Time,testInfo.Time,strategyName + " - [" + i + "] Stats time at " + testInfo.Time);
+					AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,strategyName + " - [" + i + "] Closed Equity time at " + testInfo.Time);
+					AssertEqual(goodInfo.OpenEquity,testInfo.OpenEquity,strategyName + " - [" + i + "] Open Equity time at " + testInfo.Time);
+					AssertEqual(goodInfo.CurrentEquity,testInfo.CurrentEquity,strategyName + " - [" + i + "] Current Equity time at " + testInfo.Time);
 				}
 				Assert.IsFalse(assertFlag,"Checking for stats errors.");
 			} catch { 
@@ -521,11 +694,19 @@ namespace Loaders
 		}
 		
 		public void VerifyBarData(StrategyInterface strategy) {
+			DynamicBarData(strategy.Name);
+		}
+		
+		[Test, TestCaseSource("GetModelNames")]
+		public void DynamicBarData(string strategyName) {
 			try {
 				assertFlag = false;
-				List<BarInfo> goodBarData = goodBarDataMap[strategy.Name];
-				List<BarInfo> testBarData = testBarDataMap[strategy.Name];
-				Assert.IsNotNull(goodBarData, "good bar data");
+				List<BarInfo> goodBarData = goodBarDataMap[strategyName];
+				List<BarInfo> testBarData = testBarDataMap[strategyName];
+				if( goodBarData == null) {
+					Assert.IsNull(testBarData, "test bar data matches good bar data");
+					return;
+				}
 				Assert.IsNotNull(testBarData, "test test data");
 				int i=0;
 				for( ; i<testBarData.Count && i<goodBarData.Count; i++) {
@@ -660,12 +841,35 @@ namespace Loaders
     		Assert.AreEqual(expectedCount,pane.CurveList[0].Points.Count,"Chart Curve");
 		}
    		
-		public static void CompareChart(StrategyInterface strategy, ChartControl chart) {
+		public void CompareChart(StrategyInterface strategy, ChartControl chart) {
+   			CompareChart( strategy);
+   		}
+   		
+   		private ModelInterface GetModelByName(string modelName) {
+   			foreach( var model in GetAllModels(topModel)) {
+   				if( model.Name == modelName) {
+   					return model;
+   				}
+   			}
+   			throw new ApplicationException("Model was not found for the name: " + modelName);
+   		}
+   		
+   		[Test, TestCaseSource("GetModelNames")]
+		public void DynamicCompareChart(string name) {
+   			var model = GetModelByName( name);
+   			if( !(model is StrategyInterface)) {
+   				return;
+   			}
+   			CompareChart(model as StrategyInterface);
+   		}
+   		
+		public void CompareChart(StrategyInterface strategy) {
+   			var strategyBars = strategy.Bars;
+   			var chart = GetChart(strategy.SymbolDefault);
      		GraphPane pane = chart.DataGraph.MasterPane.PaneList[0];
     		Assert.IsNotNull(pane.CurveList);
     		Assert.Greater(pane.CurveList.Count,0);
     		OHLCBarItem chartBars = (OHLCBarItem) pane.CurveList[0];
-			Bars strategyBars = strategy.Bars;
 			int firstMisMatch = int.MaxValue;
 			int i, j;
     		for( i=0; i<strategyBars.Count; i++) {
@@ -702,6 +906,28 @@ namespace Loaders
 			}
    		}
 			
+		public IEnumerable<string> GetModelNames() {
+			var starter = SetupStarter();
+			var loader = Plugins.Instance.GetLoader(LoaderName);
+			loader.OnInitialize(starter.ProjectProperties);
+			loader.OnLoad(starter.ProjectProperties);
+    		foreach( var model in GetAllModels(loader.TopModel)) {
+    			yield return model.Name;
+    		}
+		}
+		
+		public static IEnumerable<ModelInterface> GetAllModels( ModelInterface topModel) {
+			yield return topModel;
+			if( topModel is Portfolio) {
+				foreach( var chainLink in topModel.Chain.Dependencies) {
+					var model = chainLink.Model;
+					foreach( var child in GetAllModels(model)) {
+						yield return child;
+					}
+				}
+			}
+		}
+		
 		public void CompareChartCount(Strategy strategy) {
 			ChartControl chart = GetChart(strategy.SymbolDefault);
      		GraphPane pane = chart.DataGraph.MasterPane.PaneList[0];
@@ -723,5 +949,25 @@ namespace Loaders
 			get { return createStarterCallback; }
 			set { createStarterCallback = value; }
 		}
+		
+		public string LoaderName {
+			get { return loaderName; }
+			set { loaderName = value; }
+		}
+		public Interval IntervalDefault {
+			get { return intervalDefault; }
+			set { intervalDefault = value; }
+		}		
+		
+		public TimeStamp StartTime {
+			get { return startTime; }
+			set { startTime = value; }
+		}
+		
+		public TimeStamp EndTime {
+			get { return endTime; }
+			set { endTime = value; }
+		}
+
 	}
 }

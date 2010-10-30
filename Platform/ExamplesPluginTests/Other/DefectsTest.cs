@@ -58,6 +58,12 @@ namespace Other
        			throw new ApplicationException( "Must set AppDataFolder property in app.config");
    			}
 	    }
+	    
+	    [TestFixtureSetUp]
+		public override void RunStrategy()
+		{
+		
+		}
 		
 		[Test]
 		public void Ticket123()

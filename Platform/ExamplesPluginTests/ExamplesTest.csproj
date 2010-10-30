@@ -13,6 +13,8 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <StartWorkingDirectory>..\..\bin\Debug</StartWorkingDirectory>
+    <StartArguments>ExamplesTest.dll</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\bin\Debug\</OutputPath>
@@ -21,6 +23,8 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\Tools\1.0\NUnit\bin\net-2.0\nunit.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\..\bin\Release</OutputPath>
@@ -46,6 +50,12 @@
     <Copy SourceFiles="@(EngineFilesToCopy)" DestinationFolder="$(OutputPath)" />
   </Target>
   <ItemGroup>
+    <Reference Include="nunit.core">
+      <HintPath>..\..\..\Tools\1.0\NUnit\bin\net-2.0\lib\nunit.core.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>..\..\..\Tools\1.0\NUnit\bin\net-2.0\lib\nunit.core.interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Lib\nunit.framework.dll</HintPath>
     </Reference>

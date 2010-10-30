@@ -1,0 +1,775 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\Local\TickZoom\Project\Public\TickZoom.nunit" total="145" errors="72" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2010-10-30" time="11:07:07">
+  <environment nunit-version="2.5.1.0" clr-version="2.0.50727.3615" os-version="Microsoft Windows NT 5.1.2600 Service Pack 3" platform="Win32NT" cwd="C:\Local\TickZoom\Project\Public\bin\Debug" machine-name="XPMIGRATE" user="Wayne Walter" user-domain="XPMIGRATE" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite name="C:\Local\TickZoom\Project\Public\TickZoom.nunit" executed="True" success="False" time="27.016" asserts="0">
+    <results>
+      <test-suite name="C:\Local\TickZoom\Project\Public\bin\Debug\ExamplesTest.dll" executed="True" success="False" time="27.016" asserts="0">
+        <results>
+          <test-suite name="Loaders" executed="True" success="False" time="27.000" asserts="0">
+            <results>
+              <test-suite name="ApexStrategyTest" executed="True" success="False" time="27.000" asserts="0">
+                <results>
+                  <test-suite name="DynamicBarData" executed="True" success="False" time="1.344" asserts="0">
+                    <results>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;EntirePortfolio&quot;)" executed="True" success="False" time="0.203" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Master_USD/JPY&quot;)" executed="True" success="False" time="0.047" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_1_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_2_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_3_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_4_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_5_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_6_USD/JPY&quot;)" executed="True" success="False" time="0.063" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_7_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_8_USD/JPY&quot;)" executed="True" success="False" time="0.063" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_9_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_10_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_11_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_12_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_13_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_14_USD/JPY&quot;)" executed="True" success="False" time="0.063" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_15_USD/JPY&quot;)" executed="True" success="False" time="0.063" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarData(&quot;APX_Trader_16_USD/JPY&quot;)" executed="True" success="False" time="0.188" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarData(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 732
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite name="DynamicBarDataCount" executed="True" success="False" time="0.656" asserts="0">
+                    <results>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;EntirePortfolio&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Master_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_1_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_2_USD/JPY&quot;)" executed="True" success="False" time="0.047" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_3_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_4_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_5_USD/JPY&quot;)" executed="True" success="False" time="0.047" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_6_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_7_USD/JPY&quot;)" executed="True" success="False" time="0.047" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_8_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_9_USD/JPY&quot;)" executed="True" success="False" time="0.047" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_10_USD/JPY&quot;)" executed="True" success="False" time="0.078" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_11_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_12_USD/JPY&quot;)" executed="True" success="False" time="0.078" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_13_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_14_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_15_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicBarDataCount(&quot;APX_Trader_16_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicBarDataCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 527
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite name="DynamicCompareChart" executed="True" success="True" time="6.203" asserts="0">
+                    <results>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;EntirePortfolio&quot;)" executed="True" success="True" time="0.359" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Master_USD/JPY&quot;)" executed="True" success="True" time="0.359" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_1_USD/JPY&quot;)" executed="True" success="True" time="0.344" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_2_USD/JPY&quot;)" executed="True" success="True" time="0.328" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_3_USD/JPY&quot;)" executed="True" success="True" time="0.359" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_4_USD/JPY&quot;)" executed="True" success="True" time="0.328" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_5_USD/JPY&quot;)" executed="True" success="True" time="0.328" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_6_USD/JPY&quot;)" executed="True" success="True" time="0.313" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_7_USD/JPY&quot;)" executed="True" success="True" time="0.344" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_8_USD/JPY&quot;)" executed="True" success="True" time="0.344" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_9_USD/JPY&quot;)" executed="True" success="True" time="0.328" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_10_USD/JPY&quot;)" executed="True" success="True" time="0.359" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_11_USD/JPY&quot;)" executed="True" success="True" time="0.359" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_12_USD/JPY&quot;)" executed="True" success="True" time="0.344" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_13_USD/JPY&quot;)" executed="True" success="True" time="0.328" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_14_USD/JPY&quot;)" executed="True" success="True" time="0.328" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_15_USD/JPY&quot;)" executed="True" success="True" time="0.328" asserts="2" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicCompareChart(&quot;APX_Trader_16_USD/JPY&quot;)" executed="True" success="True" time="0.359" asserts="2" />
+                    </results>
+                  </test-suite>
+                  <test-suite name="DynamicFinalStats" executed="True" success="True" time="0.016" asserts="0">
+                    <results>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;EntirePortfolio&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Master_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_1_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_2_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_3_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_4_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_5_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_6_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_7_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_8_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_9_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_10_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_11_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_12_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_13_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_14_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_15_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicFinalStats(&quot;APX_Trader_16_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                    </results>
+                  </test-suite>
+                  <test-suite name="DynamicStats" executed="True" success="False" time="0.594" asserts="0">
+                    <results>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;EntirePortfolio&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Master_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_1_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_2_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_3_USD/JPY&quot;)" executed="True" success="False" time="0.141" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_4_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_5_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_6_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_7_USD/JPY&quot;)" executed="True" success="False" time="0.000" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_8_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_9_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_10_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_11_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_12_USD/JPY&quot;)" executed="True" success="False" time="0.000" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_13_USD/JPY&quot;)" executed="True" success="False" time="0.047" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_14_USD/JPY&quot;)" executed="True" success="False" time="0.047" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_15_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStats(&quot;APX_Trader_16_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStats(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 692
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite name="DynamicStatsCount" executed="True" success="False" time="0.422" asserts="0">
+                    <results>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;EntirePortfolio&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Master_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_1_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_2_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_3_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_4_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_5_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_6_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_7_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_8_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_9_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_10_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_11_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_12_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_13_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_14_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_15_USD/JPY&quot;)" executed="True" success="False" time="0.031" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicStatsCount(&quot;APX_Trader_16_USD/JPY&quot;)" executed="True" success="False" time="0.016" asserts="0">
+                        <failure>
+                          <message><![CDATA[System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.]]></message>
+                          <stack-trace><![CDATA[at System.ThrowHelper.ThrowKeyNotFoundException()
+at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+at Loaders.StrategyTest.DynamicStatsCount(String strategyName) in c:\Local\TickZoom\Project\Public\Platform\ExamplesPluginTests\Loaders\StrategyTest.cs:line 622
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite name="DynamicTradeCount" executed="True" success="True" time="0.031" asserts="0">
+                    <results>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;EntirePortfolio&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Master_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_1_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_2_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_3_USD/JPY&quot;)" executed="True" success="True" time="0.016" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_4_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_5_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_6_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_7_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_8_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_9_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_10_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_11_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_12_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_13_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_14_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_15_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTradeCount(&quot;APX_Trader_16_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                    </results>
+                  </test-suite>
+                  <test-suite name="DynamicTrades" executed="True" success="True" time="0.031" asserts="0">
+                    <results>
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;EntirePortfolio&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Master_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_1_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_2_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_3_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_4_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_5_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_6_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_7_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_8_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_9_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_10_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_11_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_12_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_13_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_14_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_15_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                      <test-case name="Loaders.ApexStrategyTest.DynamicTrades(&quot;APX_Trader_16_USD/JPY&quot;)" executed="True" success="True" time="0.000" asserts="1" />
+                    </results>
+                  </test-suite>
+                  <test-case name="Loaders.ApexStrategyTest.SimpleTest" executed="True" success="True" time="0.000" asserts="0" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

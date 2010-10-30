@@ -24,50 +24,63 @@
  */
 #endregion
 
-
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+
 using NUnit.Core;
 using NUnit.Core.Extensibility;
-using NUnit.Framework;
-using TickZoom.Api;
-using TickZoom.Common;
 
 namespace Loaders
 {
-	[SuiteBuilder]
-	public class DynamicTestSuite : ISuiteBuilder
+	[SuiteBuilder, NUnitAddin]
+	public class DynamicTestSuite : ISuiteBuilder, IAddin
 	{
-		private static readonly Log log = Factory.SysLog.GetLogger(typeof(DynamicTestSuite));
+		Assembly assembly;
+		ISuiteBuilder builder;
 		public Test BuildFrom(Type type)
 		{
-			var loaders = Plugins.Instance.GetLoaders();
-			return null;
+			TryLoadBuilder(type.Assembly);
+			if( builder == null) {
+				return null;
+			}
+			return builder.BuildFrom(type);
+		}
+		
+		private void TryLoadBuilder(Assembly assembly) {
+			if( this.assembly == assembly) return;
+			this.assembly = assembly;
+			builder = null;
+			var count = 0;
+			foreach( var type in assembly.GetTypes()) {
+				if( Reflect.HasInterface(type,typeof(ISuiteBuilder).FullName)) {
+			        count++;
+					builder = (ISuiteBuilder) Reflect.Construct(type);
+				}
+			}
+			if( count > 1) {
+				throw new ApplicationException("Found more than one class with interface " + typeof(ISuiteBuilder).Name + " in the assembly: " + assembly.GetName().Name);
+			}
 		}
 	
 		public bool CanBuildFrom(Type type)
 		{
-			return type == typeof(DynamicTestSuite);
-		}		
-	}
-	
-	[TestFixture]
-	public class ApexStrategyTest : StrategyTest
-	{
-		Log log = Factory.SysLog.GetLogger(typeof(ApexStrategyTest));
-		
-		public ApexStrategyTest() {
-			LoaderName = "APX_Systems: APX Multi-Symbol Loader";
-			Symbols = "USD/JPY";
-			StoreKnownGood = true;
-			ShowCharts = false;
-			StartTime = new TimeStamp( 1800, 1, 1);
-			EndTime = new TimeStamp( 2009, 6, 10);
+			TryLoadBuilder(type.Assembly);
+			if( builder == null) {
+				return false;
+			} else {
+				return builder.CanBuildFrom(type);
+			}
 		}
 		
-		[Test]
-		public void SimpleTest() {
-			
+		public bool Install(IExtensionHost host)
+		{
+		    IExtensionPoint builders = host.GetExtensionPoint("SuiteBuilders");
+		    if (builders == null)
+		        return false;
+		
+		    builders.Install(this);
+		    return true;			
 		}
 	}
 }

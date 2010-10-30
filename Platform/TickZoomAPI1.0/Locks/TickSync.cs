@@ -63,9 +63,9 @@ namespace TickZoom.Api
 			ForceClear();
 		}
 		public void ForceClear() {
-			if( this.ticks < 0) {
-				System.Diagnostics.Debugger.Break();
-			}
+//			if( this.ticks < 0) {
+//				System.Diagnostics.Debugger.Break();
+//			}
 			var ticks = Interlocked.Exchange(ref this.ticks, 0);
 			var orders = Interlocked.Exchange(ref physicalOrders, 0);
 			var changes = Interlocked.Exchange(ref positionChanges, 0);
@@ -80,9 +80,9 @@ namespace TickZoom.Api
 		public void RemoveTick() {
 			var value = Interlocked.Decrement( ref ticks);
 			if( trace) log.Trace(symbol + ": RemoveTick("+value+")");
-			if( value < 0) {
-				System.Diagnostics.Debugger.Break();
-			}
+//			if( value < 0) {
+//				System.Diagnostics.Debugger.Break();
+//			}
 		}
 		public void AddPhysicalFill(PhysicalFill fill) {
 			var value = Interlocked.Increment( ref physicalFills);

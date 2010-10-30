@@ -93,6 +93,7 @@ a secure user key is required. You may request a 2 week FREE demo at http://www.
    -# TickZoom offers "best effort" support for Visual Studio. If you have any doubt, please choose SharpDevelop instead of Visual Studio so as to get full support with any issues you have from TickZoom.
    -# You will need a version of Visual Studio which supports .NET 3.5. The install typically includes the Windows SDK.
    -# In Visual Studio, you must disable the feature that pops up dialog boxs for unhandled exceptions because of a defect in Visual Studio where it intercepts ordinary exceptions passed between DLLs. Otherwise, you will continually get these dialog boxes popping up when using Visual Studio with TickZoom.
+	-# In VS 2008, do these steps:  Select the "Debug" menu from the top menu bar. Then click "Exceptions...". On the dialog box, uncheck the box beside "Common Language Runtime Exceptions"  under the column "User-Unhandled".  Then select Okay and exit the dialog box.
 
 The members only site for questions, tickets, and forums is at www.tickzoom.com
 */
