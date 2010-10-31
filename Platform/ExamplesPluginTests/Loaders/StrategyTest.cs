@@ -45,14 +45,6 @@ namespace Loaders
 {
 	public delegate Starter CreateStarterCallback();
 	
-	[Flags]
-	public enum AutoTestMode {
-		None = 0x0,
-		Historical = 0x1,
-		RealTime = 0x2,
-		FIXSimulator = 0x4,
-	}
-	
 	public class StrategyTest
 	{
 		static readonly Log log = Factory.SysLog.GetLogger(typeof(StrategyTest));
@@ -83,6 +75,7 @@ namespace Loaders
 		private Interval intervalDefault = Intervals.Minute1;
 		private ModelInterface topModel = null;
 		private AutoTestMode autoTestMode = AutoTestMode.Historical;
+		private FIXSimulator fixServer;
 
 		public StrategyTest( AutoTestSettings testSettings ) {
 			this.autoTestMode = testSettings.Mode;
@@ -102,12 +95,11 @@ namespace Loaders
 			createStarterCallback = CreateStarter;
 		}
 		
-		public Starter CreateRealtimeStarter()
+		public Starter CreateRealtimeStarter(ushort servicePort)
 		{
+			PhysicalOrderDefault.ResetOrderId();
 			SyncTicks.Enabled = true;
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
-			ushort servicePort = 6490;
-			SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
 			Starter starter = new RealTimeStarter();
 			starter.ProjectProperties.Engine.SimulateRealTime = true;
 			starter.Config = "WarehouseTest.config";
@@ -115,16 +107,22 @@ namespace Loaders
 			return starter;
 		}
 		
-		public Starter SetupStarter() {
+		public Starter SetupStarter(AutoTestMode autoTestMode) {
 			Starter starter;
+			ushort servicePort = 6490;
 			switch( autoTestMode) {
 				case AutoTestMode.Historical:
 					starter = CreateStarterCallback();
 					break;
 				case AutoTestMode.RealTime:
-					starter = CreateRealtimeStarter();
+					SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
+					starter = CreateRealtimeStarter(servicePort);
 					break;
 				case AutoTestMode.FIXSimulator:
+					fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
+					SetupWarehouseConfig("MBTFIXProvider/Simulate",servicePort);
+					starter = CreateRealtimeStarter(servicePort);
+					break;			
 				default:
 					throw new ApplicationException("AutoTestMode " + autoTestMode + " is unknown.");
 			}
@@ -150,9 +148,9 @@ namespace Loaders
 			log.Notice("Beginning RunStrategy()");
 			CleanupFiles();
 			try {
-				var starter = SetupStarter();
 				// Run the loader.
 				try { 
+					var starter = SetupStarter(autoTestMode);
 					var loader = Plugins.Instance.GetLoader(LoaderName);
 		    		starter.Run(loader);
 		    		topModel = loader.TopModel;
@@ -160,6 +158,10 @@ namespace Loaders
 					if( ex.Message.Contains("not found")) {
 						Assert.Ignore("LoaderName could not be loaded.");
 						return;
+					}
+				} finally {
+					if( fixServer != null) {
+						fixServer.Dispose();
 					}
 				}
 				WriteFinalStats();
@@ -974,7 +976,7 @@ namespace Loaders
    		}
 			
 		public IEnumerable<string> GetModelNames() {
-			var starter = SetupStarter();
+			var starter = SetupStarter(AutoTestMode.Historical);
 			var loader = Plugins.Instance.GetLoader(LoaderName);
 			loader.OnInitialize(starter.ProjectProperties);
 			loader.OnLoad(starter.ProjectProperties);

@@ -48,7 +48,9 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.Historical | AutoTestMode.RealTime,
+			    Mode = AutoTestMode.Historical |
+			           AutoTestMode.RealTime |
+			           AutoTestMode.FIXSimulator,
 			    Name = "DualStrategyLimitOrder",
 				LoaderName = "Test: Dual Strategy",
 				Symbols = "USD/JPY,EUR/USD",

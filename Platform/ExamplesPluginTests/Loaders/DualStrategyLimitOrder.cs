@@ -55,7 +55,7 @@ namespace Loaders
 		public override void RunStrategy() {
 			CleanupFiles();
 			try {
-				Starter starter = SetupStarter();
+				Starter starter = SetupStarter(AutoTestMode);
 				
 				// Run the loader.
 				TestDualStrategyLoader loader = new TestDualStrategyLoader();

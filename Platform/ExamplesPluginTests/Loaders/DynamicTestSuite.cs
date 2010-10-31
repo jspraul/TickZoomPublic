@@ -92,54 +92,39 @@ namespace Loaders
 			if( Reflect.HasAttribute( type, typeof(AutoTestFixtureAttribute).FullName, false) 
 			   && Reflect.HasInterface( type, typeof(IAutoTestFixture).FullName) ) {
 				var autoTestFixture = (IAutoTestFixture) Reflect.Construct(type);
-				foreach( var testSettings in autoTestFixture.GetAutoTestSettings() ) {
-					var userFixtureType = typeof(StrategyTest);
-					var strategyTest = (StrategyTest) Reflect.Construct(userFixtureType, new object[] { testSettings } );
-					try {
-						foreach( var modelName in strategyTest.GetModelNames()) {
-							result = true; // If at least one entry.
-							break;
-						}
-					} catch( ApplicationException ex) {
-						if( !ex.Message.Contains("not found") ) {
-							log.Error("Model Loader '" + testSettings.LoaderName + "' was unable to load dynamically.");
-							throw;
-						}
-					}
+				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.Historical)) {
+					result = true;
+				}
+				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.RealTime)) {
+					result = true;
+				}
+				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.FIXSimulator)) {
+					result = true;
 				}
 			}
 			return result;
 		}		
+		
+		private bool CheckCanBuild(IAutoTestFixture autoTestFixture, AutoTestMode autoTestMode) {
+			var result = false;
+			foreach( var testSettings in autoTestFixture.GetAutoTestSettings() ) {
+				if( (testSettings.Mode & autoTestMode) != autoTestMode) continue;
+				testSettings.Mode = autoTestMode;
+				var userFixtureType = typeof(StrategyTest);
+				var strategyTest = (StrategyTest) Reflect.Construct(userFixtureType, new object[] { testSettings } );
+				try {
+					foreach( var modelName in strategyTest.GetModelNames()) {
+						result = true; // If at least one entry.
+						break;
+					}
+				} catch( ApplicationException ex) {
+					if( !ex.Message.Contains("not found") ) {
+						log.Error("Model Loader '" + testSettings.LoaderName + "' was unable to load dynamically.");
+						throw;
+					}
+				}
+			}
+			return result;
+		}
 	}
-	
-    public class ParameterizedMethodSuite : TestSuite
-    {
-        public ParameterizedMethodSuite(string name)
-            : base(name, name)
-        {
-            this.maintainTestOrder = true;
-        }
-
-        public override TestResult Run(EventListener listener, ITestFilter filter)
-        {
-            if (this.Parent != null)
-            {
-                this.Fixture = this.Parent.Fixture;
-                TestSuite suite = this.Parent as TestSuite;
-                if (suite != null)
-                {
-                    this.setUpMethods = suite.GetSetUpMethods();
-                    this.tearDownMethods = suite.GetTearDownMethods();
-                }
-            }
-            return base.Run(listener, filter);
-        }
-
-        protected override void DoOneTimeSetUp(TestResult suiteResult)
-        {
-        }
-        protected override void DoOneTimeTearDown(TestResult suiteResult)
-        {
-        }
-    }
 }
