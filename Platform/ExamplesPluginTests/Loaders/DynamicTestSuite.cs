@@ -43,7 +43,7 @@ namespace Loaders
 			var mainSuite = new TestSuite("DynamicTest");
 			AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.Historical);
 			AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.RealTime);
-			AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.FIXSimulator);
+			AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.SimulateFIX);
 			return mainSuite;
 		}
 		
@@ -97,7 +97,7 @@ namespace Loaders
 				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.RealTime)) {
 					result = true;
 				}
-				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.FIXSimulator)) {
+				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.SimulateFIX)) {
 					result = true;
 				}
 			}

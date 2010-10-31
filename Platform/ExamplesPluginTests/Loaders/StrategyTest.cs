@@ -118,7 +118,7 @@ namespace Loaders
 					SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
 					starter = CreateRealtimeStarter(servicePort);
 					break;
-				case AutoTestMode.FIXSimulator:
+				case AutoTestMode.SimulateFIX:
 					fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
 					SetupWarehouseConfig("MBTFIXProvider/Simulate",servicePort);
 					starter = CreateRealtimeStarter(servicePort);
@@ -158,6 +158,8 @@ namespace Loaders
 					if( ex.Message.Contains("not found")) {
 						Assert.Ignore("LoaderName could not be loaded.");
 						return;
+					} else {
+						throw;
 					}
 				} finally {
 					if( fixServer != null) {

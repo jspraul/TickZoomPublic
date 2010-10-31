@@ -90,6 +90,30 @@ namespace Loaders
 				IntervalDefault = Intervals.Minute1,
 			});
 			
+			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.Historical,
+			    Name = "ExampleReversalOnSimData",
+			    Loader = new ExampleReversalLoader(),
+				Symbols = "Daily4Sim",
+				StoreKnownGood = true,
+				ShowCharts = false,
+				StartTime = new TimeStamp(1800,1,1),
+				EndTime = new TimeStamp(1990,1,1),
+				IntervalDefault = Intervals.Day1,
+			});
+			
+			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.All,
+			    Name = "ExampleReversalTest",
+			    Loader = new ExampleReversalLoader(),
+				Symbols = "USD/JPY",
+				StoreKnownGood = true,
+				ShowCharts = false,
+				StartTime = new TimeStamp( 1800, 1, 1),
+				EndTime = new TimeStamp( 2009, 6, 10),
+				IntervalDefault = Intervals.Minute1,
+			});
+			
 			return list.ToArray();
 		}
 	}
