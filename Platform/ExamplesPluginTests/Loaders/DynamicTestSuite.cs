@@ -73,12 +73,17 @@ namespace Loaders
 				fixture.Add(paramaterizedTest);
 				var parms = new ParameterSet();
 				parms.Arguments = new object[] { modelName };
-				var modelNames = strategyTest.GetType().GetMethods();
-				foreach( var method in modelNames ) {
+				var methods = strategyTest.GetType().GetMethods();
+				foreach( var method in methods ) {
 					var parameters = method.GetParameters();
 					if( !method.IsSpecialName && method.IsPublic && parameters.Length == 1 && parameters[0].ParameterType == typeof(string)) {
 						var testCase = NUnitTestCaseBuilder.BuildSingleTestMethod(method,parms);
 						testCase.TestName.Name = method.Name;
+						testCase.TestName.FullName = suite.Parent.TestName.Name + "." +
+							suite.TestName.Name + "." + 
+							fixture.TestName.Name + "." +
+							modelName + "." +
+							method.Name;
 						paramaterizedTest.Add( testCase);
 					}
 				}
