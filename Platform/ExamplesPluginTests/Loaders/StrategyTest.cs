@@ -102,6 +102,7 @@ namespace Loaders
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			Starter starter = new RealTimeStarter();
 			starter.ProjectProperties.Engine.SimulateRealTime = true;
+//			starter.ProjectProperties.Engine.RealtimeOutput = false;
 			starter.Config = "WarehouseTest.config";
 			starter.Port = servicePort;
 			return starter;
