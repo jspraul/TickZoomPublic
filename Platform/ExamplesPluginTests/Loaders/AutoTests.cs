@@ -55,7 +55,7 @@ namespace Loaders
 			}
 			
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.Historical,
+			    Mode = AutoTestMode.All,
 			    Name = "DualStrategyLimitOrder",
 			    Loader = new TestDualStrategyLoader(),
 				Symbols = "USD/JPY,EUR/USD",
@@ -107,7 +107,19 @@ namespace Loaders
 			    Name = "ExampleReversalOnSimData",
 			    Loader = new ExampleReversalLoader(),
 				Symbols = "Daily4Sim",
-				StoreKnownGood = true,
+				StoreKnownGood = false,
+				ShowCharts = false,
+				StartTime = new TimeStamp(1800,1,1),
+				EndTime = new TimeStamp(1990,1,1),
+				IntervalDefault = Intervals.Day1,
+			});
+			
+			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.Historical,
+			    Name = "ExampleMixedSimulated",
+			    Loader = new ExampleMixedLoader(),
+				Symbols = "FullTick,Daily4Sim",
+				StoreKnownGood = false,
 				ShowCharts = false,
 				StartTime = new TimeStamp(1800,1,1),
 				EndTime = new TimeStamp(1990,1,1),
@@ -116,10 +128,22 @@ namespace Loaders
 			
 			list.Add( new AutoTestSettings {
 			    Mode = AutoTestMode.All,
+			    Name = "ExampleMixedTest",
+			    Loader = new ExampleMixedLoader(),
+				Symbols = "USD/JPY,EUR/USD",
+				StoreKnownGood = false,
+				ShowCharts = false,
+				StartTime = new TimeStamp( 1800, 1, 1),
+				EndTime = new TimeStamp( 2009, 6, 10),
+				IntervalDefault = Intervals.Minute1,
+			});
+			
+			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.All,
 			    Name = "ExampleReversalTest",
 			    Loader = new ExampleReversalLoader(),
 				Symbols = "USD/JPY",
-				StoreKnownGood = true,
+				StoreKnownGood = false,
 				ShowCharts = false,
 				StartTime = new TimeStamp( 1800, 1, 1),
 				EndTime = new TimeStamp( 2009, 6, 10),
