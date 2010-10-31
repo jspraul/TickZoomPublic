@@ -45,6 +45,8 @@ namespace TickZoom.MBTFIX
 		private Queue quotePacketQueue = Queue.Synchronized(new Queue());
 		private Task fixPacketTask;
 		private Task quotePacketTask;
+		private TimeStamp heartbeatTimer;
+		private bool firstHearbeat = true;
 		
 		public MBTFIXSimulator() : base( 6489, 6488, new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes()) {
 			
@@ -57,6 +59,7 @@ namespace TickZoom.MBTFIX
 			base.OnConnectFIX(socket);
 			fixPacketTask = Factory.Parallel.Loop( "FIXServerMock", OnException, ProcessFIXPackets);			
 			quotePacketTask = Factory.Parallel.Loop( "MBTQuotesMock", OnException, ProcessQuotePackets);			
+			firstHearbeat = true;
 		}
 		
 		protected override void CloseSockets()
@@ -108,6 +111,10 @@ namespace TickZoom.MBTFIX
 					break;
 				case "F":
 					result = FIXCancelOrder( packetFIX);
+					break;
+				case "0":
+					// Ignore heartbeat.
+					result = Yield.DidWork.Repeat;
 					break;
 				default: 
 					throw new ApplicationException("Unknown FIX message type '" + packetFIX.MessageType + "'\n" + packetFIX);
@@ -290,6 +297,29 @@ namespace TickZoom.MBTFIX
 			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 		
+		private void IncreaseHeartbeat(Tick tick) {
+			heartbeatTimer = tick.Time;
+			heartbeatTimer.AddSeconds(30);
+		}
+		
+		private void TryRequestHeartbeat(Tick tick) {
+			if( firstHearbeat) {
+				IncreaseHeartbeat(tick);
+				firstHearbeat = false;
+				return;
+			}
+			if( tick.Time > heartbeatTimer) {
+				IncreaseHeartbeat(tick);
+				var writePacket = fixSocket.CreatePacket();
+				var mbtMsg = new FIXMessage4_4(target,sender);
+				mbtMsg.AddHeader("1");
+				string message = mbtMsg.ToString();
+				writePacket.DataOut.Write(message.ToCharArray());
+				if( trace) log.Trace("Requesting heartbeat: " + message);
+				fixPacketQueue.Enqueue(writePacket);
+			}
+		}
+		
 		private Yield QuotesLogin(PacketMBTQuotes packet) {
 			if( quoteState != ServerState.Startup) {
 				return CloseWithQuotesError(packet, "Invalid login request. Already logged in.");
@@ -453,6 +483,7 @@ namespace TickZoom.MBTFIX
 			if( quotePacketQueue.Count > 10) {
 				return Yield.NoWork.Repeat;
 			}
+			TryRequestHeartbeat( tick);
 			if( trace) log.Trace("Sending tick: " + tick);
 			var packet = quoteSocket.CreatePacket();
 			StringBuilder sb = new StringBuilder();
