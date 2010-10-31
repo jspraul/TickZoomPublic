@@ -36,17 +36,23 @@ namespace Loaders
 		public AutoTestSettings[] GetAutoTestSettings() {
 			var list = new System.Collections.Generic.List<AutoTestSettings>();
 			
-			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.Historical,
-			    Name = "ApexStrategyTest",
-			    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
-				Symbols = "USD/JPY",
-				StoreKnownGood = false,
-				ShowCharts = false,
-				StartTime = new TimeStamp( 1800, 1, 1),
-				EndTime = new TimeStamp( 2009, 6, 10),
-				IntervalDefault = Intervals.Minute1,
-			});
+			try { 
+				list.Add( new AutoTestSettings {
+				    Mode = AutoTestMode.Historical,
+				    Name = "ApexStrategyTest",
+				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
+					Symbols = "USD/JPY",
+					StoreKnownGood = false,
+					ShowCharts = false,
+					StartTime = new TimeStamp( 1800, 1, 1),
+					EndTime = new TimeStamp( 2009, 6, 10),
+					IntervalDefault = Intervals.Minute1,
+				});
+			} catch( ApplicationException ex) {
+				if( !ex.Message.Contains("not found")) {
+					throw;
+				}
+			}
 			
 			list.Add( new AutoTestSettings {
 			    Mode = AutoTestMode.Historical,

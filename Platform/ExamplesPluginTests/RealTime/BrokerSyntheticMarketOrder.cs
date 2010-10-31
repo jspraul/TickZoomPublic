@@ -39,10 +39,8 @@ using ZedGraph;
 
 namespace MockProvider
 {
-
-	
 	[TestFixture]
-	public class BrokerSyntheticMarketOrder : MarketOrderTest {
+	public class BrokerSyntheticMarketOrder : StrategyTest {
 		
 		public BrokerSyntheticMarketOrder() {
 			SyncTicks.Enabled = true;

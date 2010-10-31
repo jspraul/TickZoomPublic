@@ -104,13 +104,9 @@
     <Compile Include="Other\MQ_BadFakeTick_2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealTime\BrokerLimitOrderTickBar.cs" />
-    <Compile Include="RealTime\BrokerMarketOrder.cs" />
     <Compile Include="RealTime\BrokerReversalTest.cs" />
     <Compile Include="RealTime\BrokerSyntheticMarketOrder.cs" />
     <Compile Include="RealTime\ExperimentWithEnums.cs" />
-    <Compile Include="RealTime\LoopLimitOrderTest.cs" />
-    <Compile Include="RealTime\LoopMBTFIXSimMarketOrder.cs" />
-    <Compile Include="RealTime\MBTFIXSimMarketOrder.cs" />
     <Compile Include="RealTime\TestException.cs" />
     <None Include="app.config" />
     <None Include="Lib\nunit.framework.dll" />

@@ -53,13 +53,7 @@ namespace Loaders
 			foreach( var testSettings in autoTestFixture.GetAutoTestSettings() ) {
 				if( (testSettings.Mode & autoTestMode) != autoTestMode) continue;
 				testSettings.Mode = autoTestMode;
-				try { 
-					AddDynamicTestCases(suite, testSettings);
-				} catch( ApplicationException ex) {
-					if( !ex.Message.Contains("not found")) {
-						throw;
-					}
-				}
+				AddDynamicTestCases(suite, testSettings);
 			}
 		}
 			
@@ -117,16 +111,9 @@ namespace Loaders
 				testSettings.Mode = autoTestMode;
 				var userFixtureType = typeof(StrategyTest);
 				var strategyTest = (StrategyTest) Reflect.Construct(userFixtureType, new object[] { testSettings } );
-				try {
-					foreach( var modelName in strategyTest.GetModelNames()) {
-						result = true; // If at least one entry.
-						break;
-					}
-				} catch( ApplicationException ex) {
-					if( !ex.Message.Contains("not found") ) {
-						log.Error("Model Loader '" + testSettings.Loader + "' was unable to load dynamically.");
-						throw;
-					}
+				foreach( var modelName in strategyTest.GetModelNames()) {
+					result = true; // If at least one entry.
+					break;
 				}
 			}
 			return result;
