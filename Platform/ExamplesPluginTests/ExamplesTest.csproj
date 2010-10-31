@@ -103,7 +103,6 @@
     <Compile Include="Other\MQ_BadFakeTick_2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealTime\BrokerLimitOrderTickBar.cs" />
-    <Compile Include="RealTime\BrokerSyntheticMarketOrder.cs" />
     <Compile Include="RealTime\ExperimentWithEnums.cs" />
     <Compile Include="RealTime\TestException.cs" />
     <None Include="app.config" />

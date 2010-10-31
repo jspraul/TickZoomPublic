@@ -91,6 +91,18 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.All,
+			    Name = "SyntheticMarketOrderTest",
+			    Loader = new MarketOrderLoader(),
+				Symbols = "USD/JPY_Synthetic",
+				StoreKnownGood = false,
+				ShowCharts = false,
+				StartTime = new TimeStamp( 1800, 1, 1),
+				EndTime = new TimeStamp( 2009, 6, 10),
+				IntervalDefault = Intervals.Minute1,
+			});
+			
+			list.Add( new AutoTestSettings {
 			    Mode = AutoTestMode.Historical,
 			    Name = "ExampleReversalOnSimData",
 			    Loader = new ExampleReversalLoader(),
