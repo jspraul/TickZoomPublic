@@ -76,7 +76,6 @@
     <Compile Include="Loaders\AutoTestSettings.cs" />
     <Compile Include="Loaders\ChartThread.cs" />
     <Compile Include="Loaders\CompareSimulatedTest.cs" />
-    <Compile Include="Loaders\DualStrategyLimitOrder.cs" />
     <Compile Include="Loaders\DynamicTestSuite.cs" />
     <Compile Include="Loaders\ExampleBreakoutReversalTest.cs" />
     <Compile Include="Loaders\ExampleBreakoutStopsTest.cs" />
@@ -89,7 +88,6 @@
     <Compile Include="Loaders\ExampleSimulatedTest.cs" />
     <Compile Include="Loaders\ExampleDualSymbolTest.cs" />
     <Compile Include="Loaders\IAutoTestFixture.cs" />
-    <Compile Include="Loaders\LimitOrderTest.cs" />
     <Compile Include="Loaders\LimitOrderTickBarTest.cs" />
     <Compile Include="Loaders\LoopMixedTest.cs" />
     <Compile Include="Loaders\MarketOrderTest.cs" />
@@ -105,13 +103,11 @@
     <Compile Include="Other\MQ_BadFakeTick_1.cs" />
     <Compile Include="Other\MQ_BadFakeTick_2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RealTime\BrokerDualLimitOrder.cs" />
     <Compile Include="RealTime\BrokerLimitOrderTickBar.cs" />
     <Compile Include="RealTime\BrokerMarketOrder.cs" />
     <Compile Include="RealTime\BrokerReversalTest.cs" />
     <Compile Include="RealTime\BrokerSyntheticMarketOrder.cs" />
     <Compile Include="RealTime\ExperimentWithEnums.cs" />
-    <Compile Include="RealTime\BrokerLimitOrderTest.cs" />
     <Compile Include="RealTime\LoopLimitOrderTest.cs" />
     <Compile Include="RealTime\LoopMBTFIXSimMarketOrder.cs" />
     <Compile Include="RealTime\MBTFIXSimDualLimitOrder.cs" />
