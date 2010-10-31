@@ -40,7 +40,10 @@ namespace MockProvider
 	
 	[TestFixture]
 	public class ExperimentWithEnums {
-		
+	
+		public static void Main( string[] args) {
+			
+		}
 		[Test]
 		public void TestCastingEnum() {
 			EventType eventType = (EventType) 405;

@@ -110,7 +110,6 @@
     <Compile Include="RealTime\ExperimentWithEnums.cs" />
     <Compile Include="RealTime\LoopLimitOrderTest.cs" />
     <Compile Include="RealTime\LoopMBTFIXSimMarketOrder.cs" />
-    <Compile Include="RealTime\MBTFIXSimDualLimitOrder.cs" />
     <Compile Include="RealTime\MBTFIXSimMarketOrder.cs" />
     <Compile Include="RealTime\TestException.cs" />
     <None Include="app.config" />

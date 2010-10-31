@@ -124,7 +124,7 @@ namespace Loaders
 					}
 				} catch( ApplicationException ex) {
 					if( !ex.Message.Contains("not found") ) {
-						log.Error("Model Loader '" + testSettings.LoaderName + "' was unable to load dynamically.");
+						log.Error("Model Loader '" + testSettings.Loader + "' was unable to load dynamically.");
 						throw;
 					}
 				}

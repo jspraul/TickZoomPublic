@@ -27,6 +27,7 @@
 using System;
 using TickZoom.Api;
 using TickZoom.Common;
+using TickZoom.Examples;
 
 namespace Loaders
 {
@@ -38,7 +39,7 @@ namespace Loaders
 			list.Add( new AutoTestSettings {
 			    Mode = AutoTestMode.Historical,
 			    Name = "ApexStrategyTest",
-				LoaderName = "APX_Systems: APX Multi-Symbol Loader",
+			    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
 				Symbols = "USD/JPY",
 				StoreKnownGood = false,
 				ShowCharts = false,
@@ -48,9 +49,9 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.All,
+			    Mode = AutoTestMode.Historical,
 			    Name = "DualStrategyLimitOrder",
-				LoaderName = "Test: Dual Strategy",
+			    Loader = new TestDualStrategyLoader(),
 				Symbols = "USD/JPY,EUR/USD",
 				StoreKnownGood = false,
 				ShowCharts = false,
@@ -62,7 +63,19 @@ namespace Loaders
 			list.Add( new AutoTestSettings {
 			    Mode = AutoTestMode.All,
 			    Name = "LimitOrderTest",
-				LoaderName = "Example: Limit Order",
+			    Loader = new TestLimitOrderLoader(),
+				Symbols = "USD/JPY",
+				StoreKnownGood = false,
+				ShowCharts = false,
+				StartTime = new TimeStamp( 1800, 1, 1),
+				EndTime = new TimeStamp( 2009, 6, 10),
+				IntervalDefault = Intervals.Minute1,
+			});
+			
+			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.All,
+			    Name = "MarketOrderTest",
+			    Loader = new MarketOrderLoader(),
 				Symbols = "USD/JPY",
 				StoreKnownGood = false,
 				ShowCharts = false,

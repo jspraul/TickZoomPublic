@@ -33,7 +33,7 @@ namespace Loaders
 	public class AutoTestSettings {
 		public AutoTestMode Mode;
 		public string Name;
-		public string LoaderName;
+		public ModelLoaderInterface Loader;
 		public string Symbols;
 		public bool StoreKnownGood;
 		public bool ShowCharts;

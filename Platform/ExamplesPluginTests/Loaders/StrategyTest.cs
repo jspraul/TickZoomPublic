@@ -49,7 +49,7 @@ namespace Loaders
 	{
 		static readonly Log log = Factory.SysLog.GetLogger(typeof(StrategyTest));
 		static readonly bool debug = log.IsDebugEnabled;
-		private string loaderName;
+		private ModelLoaderInterface loader;
 		private string testFileName;
 		string dataFolder = "Test\\DataCache";
 		string symbols;
@@ -79,7 +79,7 @@ namespace Loaders
 
 		public StrategyTest( AutoTestSettings testSettings ) {
 			this.autoTestMode = testSettings.Mode;
-			this.loaderName = testSettings.LoaderName;
+			this.loader = testSettings.Loader;
 			this.symbols = testSettings.Symbols;
 			this.StoreKnownGood = testSettings.StoreKnownGood;
 			this.ShowCharts = testSettings.ShowCharts;
@@ -150,10 +150,10 @@ namespace Loaders
 			try {
 				// Run the loader.
 				try { 
+					var loaderInstance = GetLoaderInstance();
 					var starter = SetupStarter(autoTestMode);
-					var loader = Plugins.Instance.GetLoader(LoaderName);
-		    		starter.Run(loader);
-		    		topModel = loader.TopModel;
+		    		starter.Run(loaderInstance);
+		    		topModel = loaderInstance.TopModel;
 				} catch( ApplicationException ex) {
 					if( ex.Message.Contains("not found")) {
 						Assert.Ignore("LoaderName could not be loaded.");
@@ -176,6 +176,11 @@ namespace Loaders
 				log.Error("Setup error.", ex);
 				throw;
 			}
+		}
+		
+		private ModelLoaderInterface GetLoaderInstance() {
+			var type = loader.GetType();
+			return (ModelLoaderInterface) type.Assembly.CreateInstance(type.FullName);
 		}
 		
 		public void CleanupFiles() {
@@ -977,10 +982,10 @@ namespace Loaders
 			
 		public IEnumerable<string> GetModelNames() {
 			var starter = SetupStarter(AutoTestMode.Historical);
-			var loader = Plugins.Instance.GetLoader(LoaderName);
-			loader.OnInitialize(starter.ProjectProperties);
-			loader.OnLoad(starter.ProjectProperties);
-    		foreach( var model in GetAllModels(loader.TopModel)) {
+			var loaderInstance = GetLoaderInstance();
+			loaderInstance.OnInitialize(starter.ProjectProperties);
+			loaderInstance.OnLoad(starter.ProjectProperties);
+    		foreach( var model in GetAllModels(loaderInstance.TopModel)) {
     			yield return model.Name;
     		}
 		}
@@ -1019,10 +1024,6 @@ namespace Loaders
 			set { createStarterCallback = value; }
 		}
 		
-		public string LoaderName {
-			get { return loaderName; }
-			set { loaderName = value; }
-		}
 		public Interval IntervalDefault {
 			get { return intervalDefault; }
 			set { intervalDefault = value; }
