@@ -40,21 +40,18 @@ namespace Loaders
 		public Test BuildFrom(Type type)
 		{
 			var autoTestFixture = (IAutoTestFixture) Reflect.Construct(type);
-			var mainSuite = new TestSuite("Dynamic");
-			var suite = new TestSuite("Historical");
-			mainSuite.Add(suite);
-			AddDynamicTestFixtures(suite,autoTestFixture, AutoTestMode.Historical);
-			suite = new TestSuite("Realtime");
-			mainSuite.Add(suite);
-			AddDynamicTestFixtures(suite,autoTestFixture, AutoTestMode.RealTime);
-			suite = new TestSuite("FIXSimulator");
-			mainSuite.Add(suite);
-			AddDynamicTestFixtures(suite,autoTestFixture, AutoTestMode.RealTime);
+			var mainSuite = new TestSuite("DynamicTest");
+			AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.Historical);
+			AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.RealTime);
+			AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.FIXSimulator);
 			return mainSuite;
 		}
 		
-		private void AddDynamicTestFixtures(TestSuite suite, IAutoTestFixture autoTestFixture, AutoTestMode autoTestMode) {
+		private void AddDynamicTestFixtures(TestSuite mainSuite, IAutoTestFixture autoTestFixture, AutoTestMode autoTestMode) {
+			var suite = new TestSuite(autoTestMode.ToString());
+			mainSuite.Add(suite);
 			foreach( var testSettings in autoTestFixture.GetAutoTestSettings() ) {
+				if( (testSettings.Mode & autoTestMode) != autoTestMode) continue;
 				testSettings.Mode = autoTestMode;
 				try { 
 					AddDynamicTestCases(suite, testSettings);

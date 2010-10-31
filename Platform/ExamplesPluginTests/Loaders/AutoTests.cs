@@ -36,6 +36,7 @@ namespace Loaders
 			var list = new System.Collections.Generic.List<AutoTestSettings>();
 			
 			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.Historical,
 			    Name = "ApexStrategyTest",
 				LoaderName = "APX_Systems: APX Multi-Symbol Loader",
 				Symbols = "USD/JPY",
@@ -47,10 +48,11 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.Historical | AutoTestMode.RealTime,
 			    Name = "DualStrategyLimitOrder",
 				LoaderName = "Test: Dual Strategy",
 				Symbols = "USD/JPY,EUR/USD",
-				StoreKnownGood = true,
+				StoreKnownGood = false,
 				ShowCharts = false,
 				StartTime = new TimeStamp( 1800, 1, 1),
 				EndTime = new TimeStamp( 2009, 6, 10),

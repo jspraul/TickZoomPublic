@@ -147,14 +147,20 @@ namespace TickZoom.FIX
 					}
 				}
 			}
-			if (fixTask != null)
+			if (fixTask != null) {
 				fixTask.Stop();
-			if (fixSocket != null)
+				fixTask.Join();
+			}
+			if (fixSocket != null) {
 				fixSocket.Dispose();
-			if (quoteTask != null)
+			}
+			if (quoteTask != null) {
 				quoteTask.Stop();
-			if (quoteSocket != null)
+				quoteTask.Join();
+			}
+			if (quoteSocket != null) {
 				quoteSocket.Dispose();
+			}
 		}
 
 		public virtual void StartFIXSimulation()

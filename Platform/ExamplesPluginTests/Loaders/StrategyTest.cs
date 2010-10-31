@@ -45,10 +45,12 @@ namespace Loaders
 {
 	public delegate Starter CreateStarterCallback();
 	
+	[Flags]
 	public enum AutoTestMode {
-		Historical,
-		RealTime,
-		FIXSimulator,
+		None = 0x0,
+		Historical = 0x1,
+		RealTime = 0x2,
+		FIXSimulator = 0x4,
 	}
 	
 	public class StrategyTest
