@@ -52,7 +52,8 @@ namespace TickZoom.MBTQuotes
 			RetryStart = 1;
 			RetryIncrease = 1;
 			RetryMaximum = 30;
-  			HeartbeatDelay = 15;
+  			HeartbeatDelay = 1500;
+  			int WARNING_FixHeartbeatDelay = 0;
         }
 		
 		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, Iterable<LogicalOrder> orders)

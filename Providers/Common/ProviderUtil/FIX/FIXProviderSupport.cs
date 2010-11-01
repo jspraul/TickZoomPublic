@@ -254,6 +254,7 @@ namespace TickZoom.FIX
 							}
 							if( Factory.Parallel.TickCount >= heartbeatTimeout) {
 								log.Warn("Heartbeat Timeout");
+								SyncTicks.LogStatus();
 								SetupRetry();
 								IncreaseRetryTimeout();
 								return Yield.DidWork.Repeat;

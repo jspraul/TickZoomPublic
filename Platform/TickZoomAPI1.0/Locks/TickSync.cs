@@ -45,7 +45,6 @@ namespace TickZoom.Api
 		}
 		public bool Completed {
 			get { var value = CompletedInternal;
-//					if( trace && value) log.Trace(symbol + ": Completed()");
 					return value;
 			}
 		}		
@@ -71,8 +70,14 @@ namespace TickZoom.Api
 			var changes = Interlocked.Exchange(ref positionChanges, 0);
 			var fills = Interlocked.Exchange(ref physicalFills, 0);
 			Unlock();
-			if( trace) log.Trace(symbol + ": Clear("+ticks+","+orders+","+changes+","+fills+")");
+			if( trace) log.Trace(symbol + ": Clear() " + this);
 		}
+		
+		public override string ToString()
+		{
+			return "TickSync("+ticks+","+physicalOrders+","+positionChanges+","+physicalFills+")";
+		}
+		
 		public void AddTick() {
 			var value = Interlocked.Increment( ref ticks);
 			if( trace) log.Trace(symbol + ": AddTick("+value+")");

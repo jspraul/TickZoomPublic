@@ -243,11 +243,13 @@ namespace TickZoom.Interceptors
 				}
 			}
 		}
-		
+		TimeStamp debugTime = new TimeStamp("2009-06-09 16:27:06.556");
 		private void OnProcessOrder(PhysicalOrder order, Tick tick)
 		{
 			if (trace) log.Trace("OnProcessOrder()");
-	
+			if( tick.Time == debugTime) {
+				int x = 0;
+			}
 			switch (order.Type) {
 				case OrderType.SellMarket:
 					ProcessSellMarket(order, tick);
@@ -273,6 +275,10 @@ namespace TickZoom.Interceptors
 		private bool ProcessBuyStop(PhysicalOrder order, Tick tick)
 		{
 			bool retVal = false;
+			long lprice = tick.IsTrade ? tick.lPrice : tick.lAsk;
+			if (lprice >= order.Price.ToLong()) {
+				int y = 0;
+			}
 			double price = tick.IsTrade ? tick.Price : tick.Ask;
 			if (price >= order.Price) {
 				CreateLogicalFillHelper(order.Size, price, tick.Time, tick.UtcTime, order);

@@ -81,7 +81,6 @@
     <Compile Include="Loaders\ExampleBreakoutStopsTest.cs" />
     <Compile Include="Loaders\ExampleCustomBarsTest.cs" />
     <Compile Include="Loaders\ExampleDualStrategyTest.cs" />
-    <Compile Include="Loaders\ExampleMixedTest.cs" />
     <Compile Include="Loaders\ExampleScannerTest.cs" />
     <Compile Include="Loaders\ExampleSimpleTradeOnlyTest.cs" />
     <Compile Include="Loaders\ExampleSimulatedTest.cs" />

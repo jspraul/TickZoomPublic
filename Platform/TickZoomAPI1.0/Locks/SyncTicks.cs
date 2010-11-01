@@ -38,6 +38,7 @@ namespace TickZoom.Api
 	/// </summary>
 	[CLSCompliant(false)]
 	public static class SyncTicks {
+		private static Log log = Factory.SysLog.GetLogger(typeof(SyncTicks));
 		private static bool enabled = false;
 		private static Dictionary<long,TickSync> tickSyncs;
 		private static object locker = new object();
@@ -68,6 +69,14 @@ namespace TickZoom.Api
 				}
 			}
 		}
+		
+		public static void LogStatus() {
+			log.Info("TickSync status...");
+			foreach( var tickSync in TickSyncs) {
+				log.Info(tickSync);
+			}
+		}
+		
 		
 		public static bool Enabled {
 			get { return enabled; }

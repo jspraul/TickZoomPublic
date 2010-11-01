@@ -62,7 +62,8 @@ namespace TickZoom.MBTFIX
 				throw new ApplicationException("Please remove .config from config section name.");
 			}
   			ConfigSection = name;
-  			HeartbeatDelay = 35;
+  			HeartbeatDelay = 3500;
+			int WARNING_Fix_Heartbeat_Delay = 0;
   			FIXFilter = new MBTFIXFilter();
 		}
 		
@@ -579,9 +580,6 @@ namespace TickZoom.MBTFIX
 				log.Debug("RemoveOrder( " + clientOrderId + ")");
 			}
 			lock( openOrdersLocker) {
-				if( clientOrderId == null) {
-					int x = 0;
-				}
 				if( openOrders.ContainsKey(clientOrderId)) {
 					if( trace) log.Trace( "Removing open order id: " + clientOrderId);
 					openOrders.Remove(clientOrderId);
