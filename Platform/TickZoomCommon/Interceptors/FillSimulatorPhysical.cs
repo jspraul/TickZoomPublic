@@ -243,13 +243,10 @@ namespace TickZoom.Interceptors
 				}
 			}
 		}
-		TimeStamp debugTime = new TimeStamp("2009-06-09 16:27:06.556");
+		
 		private void OnProcessOrder(PhysicalOrder order, Tick tick)
 		{
 			if (trace) log.Trace("OnProcessOrder()");
-			if( tick.Time == debugTime) {
-				int x = 0;
-			}
 			switch (order.Type) {
 				case OrderType.SellMarket:
 					ProcessSellMarket(order, tick);
@@ -275,13 +272,9 @@ namespace TickZoom.Interceptors
 		private bool ProcessBuyStop(PhysicalOrder order, Tick tick)
 		{
 			bool retVal = false;
-			long lprice = tick.IsTrade ? tick.lPrice : tick.lAsk;
-			if (lprice >= order.Price.ToLong()) {
-				int y = 0;
-			}
-			double price = tick.IsTrade ? tick.Price : tick.Ask;
-			if (price >= order.Price) {
-				CreateLogicalFillHelper(order.Size, price, tick.Time, tick.UtcTime, order);
+			long price = tick.IsTrade ? tick.lPrice : tick.lAsk;
+			if (price >= order.Price.ToLong()) {
+				CreateLogicalFillHelper(order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
 				retVal = true;
 			}
 			return retVal;
@@ -290,13 +283,9 @@ namespace TickZoom.Interceptors
 		private bool ProcessSellStop(PhysicalOrder order, Tick tick)
 		{
 			bool retVal = false;
-			double price;
-			if( order.Price == 29.20 ) {
-				System.Diagnostics.Debugger.Break();
-			}
-			price = tick.IsQuote ? tick.Bid : tick.Price;
-			if (price <= order.Price) {
-				CreateLogicalFillHelper(-order.Size, price, tick.Time, tick.UtcTime, order);
+			long price = tick.IsQuote ? tick.lBid : tick.lPrice;
+			if (price <= order.Price.ToLong()) {
+				CreateLogicalFillHelper(-order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
 				retVal = true;
 			}
 			return retVal;
@@ -311,16 +300,17 @@ namespace TickZoom.Interceptors
 
 		private bool ProcessBuyLimit(PhysicalOrder order, Tick tick)
 		{
-			double price = tick.IsQuote ? tick.Ask : tick.Price;
+			long orderPrice = order.Price.ToLong();
+			long price = tick.IsQuote ? tick.lAsk : tick.lPrice;
 			bool isFilled = false;
-			if (price <= order.Price) {
+			if (price <= orderPrice) {
 				isFilled = true;
-			} else if (tick.IsTrade && tick.Price < order.Price) {
-				price = order.Price;
+			} else if (tick.IsTrade && tick.lPrice < orderPrice) {
+				price = orderPrice;
 				isFilled = true;
 			}
 			if (isFilled) {
-				CreateLogicalFillHelper(order.Size, price, tick.Time, tick.UtcTime, order);
+				CreateLogicalFillHelper(order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
 			}
 			return isFilled;
 		}
@@ -334,16 +324,17 @@ namespace TickZoom.Interceptors
 
 		private bool ProcessSellLimit(PhysicalOrder order, Tick tick)
 		{
-			double price = tick.IsQuote ? tick.Bid : tick.Price;
+			long orderPrice = order.Price.ToLong();
+			long price = tick.IsQuote ? tick.lBid : tick.lPrice;
 			bool isFilled = false;
-			if (price >= order.Price) {
+			if (price >= orderPrice) {
 				isFilled = true;
-			} else if (tick.IsTrade && tick.Price > order.Price) {
-				price = order.Price;
+			} else if (tick.IsTrade && tick.lPrice > orderPrice) {
+				price = orderPrice;
 				isFilled = true;
 			}
 			if (isFilled) {
-				CreateLogicalFillHelper(-order.Size, price, tick.Time, tick.UtcTime, order);
+				CreateLogicalFillHelper(-order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
 			}
 			return isFilled;
 		}
