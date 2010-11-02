@@ -37,5 +37,6 @@ namespace TickZoom.Api
 		double ActualPosition { get; set; }
 		Action<PhysicalFill> OnPhysicalFill { get; set; }
 		Action<double> OnPositionChange { get; set; }
+		PhysicalOrderHandler ConfirmOrders { get; set; }
 	}
 }

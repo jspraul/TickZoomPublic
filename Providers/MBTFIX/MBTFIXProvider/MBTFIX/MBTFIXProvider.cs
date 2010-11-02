@@ -44,7 +44,7 @@ namespace TickZoom.MBTFIX
 		private static readonly bool debug = log.IsDebugEnabled;
 		private static readonly bool trace = log.IsTraceEnabled;
 		private static long nextConnectTime = 0L;
-		private readonly object orderHandlerLocker = new object();
+		private readonly object orderAlgorithmLocker = new object();
         private Dictionary<long,OrderAlgorithm> orderAlgorithms = new Dictionary<long,OrderAlgorithm>();
         private object openOrdersLocker = new object();
 		private Dictionary<string,PhysicalOrder> openOrders = new Dictionary<string,PhysicalOrder>();
@@ -424,9 +424,12 @@ namespace TickZoom.MBTFIX
 					log.Debug("ExecutionReport: " + packetFIX);
 				}
 				string orderStatus = packetFIX.OrderStatus;
+				var symbol = Factory.Symbol.LookupSymbol( packetFIX.Symbol);
+				var algorithm = GetAlgorithm( symbol.BinaryIdentifier);
 				switch( orderStatus) {
 					case "0": // New
-						UpdateOrder( packetFIX, OrderState.Active, null);
+						var order = UpdateOrder( packetFIX, OrderState.Active, null);
+						algorithm.OnCreateBrokerOrder( order);
 						break;
 					case "1": // Partial
 						UpdateOrder( packetFIX, OrderState.Active, null);
@@ -442,9 +445,11 @@ namespace TickZoom.MBTFIX
 						break;
 					case "4": // Canceled
 						RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+						algorithm.OnCancelBrokerOrder( symbol, packetFIX.OriginalClientOrderId);
 						break;
 					case "5": // Replaced
-						ReplaceOrder( packetFIX, OrderState.Active, null);
+						order = ReplaceOrder( packetFIX, OrderState.Active, null);
+						algorithm.OnChangeBrokerOrder( order, packetFIX.OriginalClientOrderId);
 						break;
 					case "6": // Pending Cancel
 						var clientOrderId = packetFIX.OriginalClientOrderId == null ? packetFIX.ClientOrderId : packetFIX.OriginalClientOrderId;
@@ -655,7 +660,7 @@ namespace TickZoom.MBTFIX
 			return logicalOrderId;
 		}
 		
-		public void UpdateOrder( PacketFIX4_4 packetFIX, OrderState orderState, object note) {
+		public PhysicalOrder UpdateOrder( PacketFIX4_4 packetFIX, OrderState orderState, object note) {
 			var clientOrderId = packetFIX.ClientOrderId;
 			if( !string.IsNullOrEmpty(packetFIX.OriginalClientOrderId)) {
 			   	clientOrderId = packetFIX.OriginalClientOrderId;
@@ -663,10 +668,10 @@ namespace TickZoom.MBTFIX
 			if( debug && (LogRecovery || !IsRecovery) ) {
 				log.Debug("UpdateOrder( " + clientOrderId + ", state = " + orderState + ")");
 			}
-			UpdateOrReplaceOrder( packetFIX, clientOrderId, clientOrderId, orderState, note);
+			return UpdateOrReplaceOrder( packetFIX, clientOrderId, clientOrderId, orderState, note);
 		}
 		
-		public void ReplaceOrder( PacketFIX4_4 packetFIX, OrderState orderState, object note) {
+		public PhysicalOrder ReplaceOrder( PacketFIX4_4 packetFIX, OrderState orderState, object note) {
 			if( debug && (LogRecovery || !IsRecovery) ) {
 				log.Debug("ReplaceOrder( " + packetFIX.OriginalClientOrderId + ", state = " + orderState + " => " + packetFIX.ClientOrderId + ")");
 			}
@@ -677,6 +682,7 @@ namespace TickZoom.MBTFIX
 				}
 				RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
 			}
+			return order;
 		}
 		
 		public PhysicalOrder UpdateOrReplaceOrder( PacketFIX4_4 packetFIX, string clientOrderId, string newClientOrderId, OrderState orderState, object note) {
@@ -768,7 +774,7 @@ namespace TickZoom.MBTFIX
 		
 		private OrderAlgorithm GetAlgorithm(long symbol) {
 			OrderAlgorithm algorithm;
-			lock( orderHandlerLocker) {
+			lock( orderAlgorithmLocker) {
 				if( !orderAlgorithms.TryGetValue(symbol, out algorithm)) {
 					var symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 					algorithm = Factory.Utility.OrderAlgorithm( symbolInfo, this);
@@ -780,7 +786,7 @@ namespace TickZoom.MBTFIX
 		}
 		
 		private bool RemoveOrderHandler(long symbol) {
-			lock( orderHandlerLocker) {
+			lock( orderAlgorithmLocker) {
 				if( orderAlgorithms.ContainsKey(symbol)) {
 					orderAlgorithms.Remove(symbol);
 					return true;
@@ -813,7 +819,7 @@ namespace TickZoom.MBTFIX
 		
 		private void CompareLogicalOrders(SymbolInfo symbol) {
 			var algorithm = GetAlgorithm(symbol.BinaryIdentifier);
-			lock( orderHandlerLocker) {
+			lock( orderAlgorithmLocker) {
     			algorithm.PerformCompare();
 			}
 		}

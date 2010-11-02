@@ -30,7 +30,7 @@ using System.Collections.Generic;
 namespace TickZoom.Api
 {
 
-	public interface OrderAlgorithm {
+	public interface OrderAlgorithm : PhysicalOrderHandler {
 		void SetDesiredPosition(double position);
 		void SetLogicalOrders(Iterable<LogicalOrder> logicalOrders);
 		int PerformCompare();

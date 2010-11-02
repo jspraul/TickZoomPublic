@@ -731,5 +731,26 @@ namespace TickZoom.Common
 			get { return handleSimulatedExits; }
 			set { handleSimulatedExits = value; }
 		}
+		
+		// This is a callback to confirm order was properly placed.
+		public void OnChangeBrokerOrder(PhysicalOrder order, object origBrokerOrder)
+		{
+			tickSync.RemovePhysicalOrder( order);
+		}
+		
+		public void OnCreateBrokerOrder(PhysicalOrder order)
+		{
+			tickSync.RemovePhysicalOrder( order);
+		}
+		
+		public void OnCancelBrokerOrder(SymbolInfo symbol, object origBrokerOrder)
+		{
+			tickSync.RemovePhysicalOrder( origBrokerOrder);
+		}
+		
+		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

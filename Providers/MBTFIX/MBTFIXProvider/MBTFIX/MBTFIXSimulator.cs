@@ -47,6 +47,8 @@ namespace TickZoom.MBTFIX
 		private Task quotePacketTask;
 		private TimeStamp heartbeatTimer;
 		private bool firstHearbeat = true;
+		private long fixDelayTimer = 0;
+		private long fixDelayMilliseconds = 1;
 		
 		public MBTFIXSimulator() : base( 6489, 6488, new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes()) {
 			
@@ -415,15 +417,14 @@ namespace TickZoom.MBTFIX
 			fixPacketQueue.Enqueue(writePacket);
 		}
 		
-		long fixMessageTimer = 0;
 		private Yield ProcessFIXPackets() {
 			if( fixPacketQueue.Count == 0) {
 				return Yield.NoWork.Repeat;
 			}
-			if( Factory.TickCount < fixMessageTimer) {
+			if( Factory.TickCount < fixDelayTimer) {
 				return Yield.NoWork.Repeat;
 			} else {
-				fixMessageTimer = Factory.TickCount + 10;
+				fixDelayTimer = Factory.TickCount + fixDelayMilliseconds;
 			}
 			fixWritePacket = (Packet) fixPacketQueue.Dequeue();
 			

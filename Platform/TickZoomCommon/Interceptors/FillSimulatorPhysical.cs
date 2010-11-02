@@ -59,6 +59,7 @@ namespace TickZoom.Interceptors
 		private TickSync tickSync;
 		private TickIO lastTick = Factory.TickUtil.TickIO();
 		private object processOrdersLocker = new object();
+		private PhysicalOrderHandler confirmOrders;
 		
 		public FillSimulatorPhysical(SymbolInfo symbol)
 		{
@@ -84,7 +85,7 @@ namespace TickZoom.Interceptors
 			CancelBrokerOrder( origBrokerOrder);
 			CreateBrokerOrder( order);
 			ReprocessOrders();
-			if( SyncTicks.Enabled) tickSync.RemovePhysicalOrder(order);
+			if( confirmOrders != null) confirmOrders.OnChangeBrokerOrder(order, origBrokerOrder);
 		}
 		
 		public PhysicalOrder GetOrderById( string orderId) {
@@ -115,14 +116,14 @@ namespace TickZoom.Interceptors
 			if( debug) log.Debug("OnCreateBrokerOrder( " + order + ")");
 			CreateBrokerOrder(order);
 			ReprocessOrders();
-			if( SyncTicks.Enabled) tickSync.RemovePhysicalOrder(order);
+			if( confirmOrders != null) confirmOrders.OnCreateBrokerOrder(order);
 		}
 		
 		public void OnCancelBrokerOrder(SymbolInfo symbol, object origBrokerOrder)
 		{
 			if( debug) log.Debug("OnCancelBrokerOrder( " + origBrokerOrder + ")");
 			var order = CancelBrokerOrder(origBrokerOrder);
-			if( SyncTicks.Enabled) tickSync.RemovePhysicalOrder(order);
+			if( confirmOrders != null) confirmOrders.OnCancelBrokerOrder(symbol, origBrokerOrder);
 		}
 		
 		public void ReprocessOrders() {
@@ -389,5 +390,11 @@ namespace TickZoom.Interceptors
 			get { return onPositionChange; }
 			set { onPositionChange = value; }
 		}
+		
+		public PhysicalOrderHandler ConfirmOrders {
+			get { return confirmOrders; }
+			set { confirmOrders = value; }
+		}
 	}
 }
+
