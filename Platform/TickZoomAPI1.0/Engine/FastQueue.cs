@@ -41,6 +41,7 @@ namespace TickZoom.Api
 	{
 		bool EnqueueStruct(ref T tick);
 		bool DequeueStruct(ref T tick);
+		bool PeekStruct(ref T tick);
 	    bool TryEnqueueStruct(ref T tick);
 	    bool TryDequeueStruct(ref T tick);
 		void Clear();

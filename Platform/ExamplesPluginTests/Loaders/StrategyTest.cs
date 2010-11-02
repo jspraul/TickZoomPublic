@@ -175,6 +175,9 @@ namespace Loaders
 	    		LoadBarData();
 	    		LoadStats();
 	    		LoadFinalStats();
+	    		if( autoTestMode == AutoTestMode.RealTime) {
+		    		LoadReconciliation();
+	    		}
 			} catch( Exception ex) {
 				log.Error("Setup error.", ex);
 				throw;
@@ -195,6 +198,8 @@ namespace Loaders
 			filePath = Factory.SysLog.LogFolder + @"\Stats.log";
 			File.Delete(filePath);
 			filePath = Factory.SysLog.LogFolder + @"\Transactions.log";
+			File.Delete(filePath);
+			filePath = Factory.SysLog.LogFolder + @"\MockProviderTransactions.log";
 			File.Delete(filePath);
 		}
 		
@@ -445,9 +450,8 @@ namespace Loaders
 			string knownGoodPath = fileDir + testFileName + "Transactions.log";
 			string newPath = Factory.SysLog.LogFolder + @"\MockProviderTransactions.log";
 			if( !File.Exists(newPath)) return;
-			if( StoreKnownGood) {
-				File.Copy(newPath,knownGoodPath,true);
-			}
+			// Never store known good. That will get stored by LoadTransactions
+			// and merely used for reconciliation.
 			if( !File.Exists(knownGoodPath)) return;
 			goodReconciliationMap.Clear();
 			LoadReconciliation(knownGoodPath,goodReconciliationMap);
@@ -638,15 +642,21 @@ namespace Loaders
 			}
 		}
 		
-		public void VerifyTransactions(StrategyInterface strategy) {
+		public void DynamicTransactions(string strategyName) {
+			if( string.IsNullOrEmpty(strategyName)) return;
+			var model = GetModelByName(strategyName);
+			if( model is PortfolioInterface) return;
 			try {
 				assertFlag = false;
 				List<TransactionInfo> goodTransactions = null;
-				goodTransactionMap.TryGetValue(strategy.Name,out goodTransactions);
+				goodTransactionMap.TryGetValue(strategyName,out goodTransactions);
 				List<TransactionInfo> testTransactions = null;
-				testTransactionMap.TryGetValue(strategy.Name,out testTransactions);
-				Assert.IsNotNull(goodTransactions, "good trades");
-				Assert.IsNotNull(testTransactions, "test trades");
+				testTransactionMap.TryGetValue(strategyName,out testTransactions);
+				if( goodTransactions == null) {
+					Assert.IsNull(testTransactions, "test transactions empty like good transactions");
+					return;
+				}
+				Assert.IsNotNull(testTransactions, "test transactions");
 				for( int i=0; i<testTransactions.Count && i<goodTransactions.Count; i++) {
 					var testInfo = testTransactions[i];
 					var goodInfo = goodTransactions[i];
@@ -662,27 +672,25 @@ namespace Loaders
 			}
 		}
 		
-		protected void PerformReconciliation() {
+		public void PerformReconciliation(SymbolInfo symbolInfo) {
 			try {
-				foreach( var kvp in goodReconciliationMap) {
-					var symbol = kvp.Key;
-					assertFlag = false;
-					List<TransactionInfo> goodTransactions = null;
-					goodReconciliationMap.TryGetValue(symbol,out goodTransactions);
-					List<TransactionInfo> testTransactions = null;
-					testReconciliationMap.TryGetValue(symbol,out testTransactions);
-					Assert.IsNotNull(goodTransactions, "front-end trades");
-					Assert.IsNotNull(testTransactions, "back-end trades");
-					for( int i=0; i<testTransactions.Count && i<goodTransactions.Count; i++) {
-						var testInfo = testTransactions[i];
-						var goodInfo = goodTransactions[i];
-						var goodFill = goodInfo.Fill;
-						var testFill = testInfo.Fill;
-						AssertReconcile(goodFill,testFill,symbol + " transaction Fill at " + i);
-						AssertEqual(goodInfo.Symbol,testInfo.Symbol,symbol + " transaction symbol at " + i);
-					}
-					Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
+				var symbol = symbolInfo.Symbol;
+				assertFlag = false;
+				List<TransactionInfo> goodTransactions = null;
+				goodReconciliationMap.TryGetValue(symbol,out goodTransactions);
+				List<TransactionInfo> testTransactions = null;
+				testReconciliationMap.TryGetValue(symbol,out testTransactions);
+				Assert.IsNotNull(goodTransactions, "front-end trades");
+				Assert.IsNotNull(testTransactions, "back-end trades");
+				for( int i=0; i<testTransactions.Count && i<goodTransactions.Count; i++) {
+					var testInfo = testTransactions[i];
+					var goodInfo = goodTransactions[i];
+					var goodFill = goodInfo.Fill;
+					var testFill = testInfo.Fill;
+					AssertReconcile(goodFill,testFill,symbol + " transaction Fill at " + i);
+					AssertEqual(goodInfo.Symbol,testInfo.Symbol,symbol + " transaction symbol at " + i);
 				}
+				Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
 			} catch { 
 				testFailed = true;
 				throw;
@@ -992,6 +1000,14 @@ namespace Loaders
     			yield return model.Name;
     		}
 		}
+
+   		public IEnumerable<SymbolInfo> GetSymbols() {
+			var starter = SetupStarter(AutoTestMode.Historical);
+			foreach( var symbol in starter.ProjectProperties.Starter.SymbolProperties) {
+   				yield return symbol;
+			}
+		}
+
 		
 		public static IEnumerable<ModelInterface> GetAllModels( ModelInterface topModel) {
 			yield return topModel;

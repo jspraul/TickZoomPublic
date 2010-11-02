@@ -735,17 +735,23 @@ namespace TickZoom.Common
 		// This is a callback to confirm order was properly placed.
 		public void OnChangeBrokerOrder(PhysicalOrder order, object origBrokerOrder)
 		{
-			tickSync.RemovePhysicalOrder( order);
+			if( SyncTicks.Enabled) {
+				tickSync.RemovePhysicalOrder( order);
+			}
 		}
 		
 		public void OnCreateBrokerOrder(PhysicalOrder order)
 		{
-			tickSync.RemovePhysicalOrder( order);
+			if( SyncTicks.Enabled) {
+				tickSync.RemovePhysicalOrder( order);
+			}
 		}
 		
 		public void OnCancelBrokerOrder(SymbolInfo symbol, object origBrokerOrder)
 		{
-			tickSync.RemovePhysicalOrder( origBrokerOrder);
+			if( SyncTicks.Enabled) {
+				tickSync.RemovePhysicalOrder( origBrokerOrder);
+			}
 		}
 		
 		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol)

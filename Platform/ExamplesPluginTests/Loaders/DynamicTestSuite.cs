@@ -36,6 +36,7 @@ namespace Loaders
 	[SuiteBuilder]
 	public class DynamicTestSuite : ISuiteBuilder
 	{
+		Type userFixtureType = typeof(StrategyTest);
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(DynamicTestSuite));
 		public Test BuildFrom(Type type)
 		{
@@ -53,15 +54,18 @@ namespace Loaders
 			foreach( var testSettings in autoTestFixture.GetAutoTestSettings() ) {
 				if( (testSettings.Mode & autoTestMode) != autoTestMode) continue;
 				testSettings.Mode = autoTestMode;
-				AddDynamicTestCases(suite, testSettings);
+				var fixture = new NUnitTestFixture(userFixtureType, new object[] { testSettings } );
+				fixture.TestName.Name = testSettings.Name;
+				suite.Add(fixture);
+				AddStrategyTestCases(fixture, testSettings);
+				if( testSettings.Mode == AutoTestMode.RealTime) {
+					AddSymbolTestCases(fixture, testSettings);
+				}
 			}
 		}
 			
-		private void AddDynamicTestCases(TestSuite suite, AutoTestSettings testSettings) {
-			var userFixtureType = typeof(StrategyTest);
+		private void AddStrategyTestCases(NUnitTestFixture fixture, AutoTestSettings testSettings) {
 			var strategyTest = (StrategyTest) Reflect.Construct(userFixtureType, new object[] { testSettings } );
-			var fixture = new NUnitTestFixture(userFixtureType, new object[] { testSettings } );
-			fixture.TestName.Name = testSettings.Name;
 			foreach( var modelName in strategyTest.GetModelNames()) {
 				var paramaterizedTest = new ParameterizedMethodSuite(modelName);
 				fixture.Add(paramaterizedTest);
@@ -73,8 +77,8 @@ namespace Loaders
 					if( !method.IsSpecialName && method.IsPublic && parameters.Length == 1 && parameters[0].ParameterType == typeof(string)) {
 						var testCase = NUnitTestCaseBuilder.BuildSingleTestMethod(method,parms);
 						testCase.TestName.Name = method.Name;
-						testCase.TestName.FullName = suite.Parent.TestName.Name + "." +
-							suite.TestName.Name + "." + 
+						testCase.TestName.FullName = fixture.Parent.Parent.TestName.Name + "." +
+							fixture.Parent.TestName.Name + "." + 
 							fixture.TestName.Name + "." +
 							modelName + "." +
 							method.Name;
@@ -82,9 +86,32 @@ namespace Loaders
 					}
 				}
 			}
-			suite.Add(fixture);
 		}
 	
+		private void AddSymbolTestCases(NUnitTestFixture fixture, AutoTestSettings testSettings) {
+			var strategyTest = (StrategyTest) Reflect.Construct(userFixtureType, new object[] { testSettings } );
+			foreach( var symbol in strategyTest.GetSymbols()) {
+				var paramaterizedTest = new ParameterizedMethodSuite(symbol.Symbol);
+				fixture.Add(paramaterizedTest);
+				var parms = new ParameterSet();
+				parms.Arguments = new object[] { symbol };
+				var methods = strategyTest.GetType().GetMethods();
+				foreach( var method in methods ) {
+					var parameters = method.GetParameters();
+					if( !method.IsSpecialName && method.IsPublic && parameters.Length == 1 && parameters[0].ParameterType == typeof(SymbolInfo)) {
+						var testCase = NUnitTestCaseBuilder.BuildSingleTestMethod(method,parms);
+						testCase.TestName.Name = method.Name;
+						testCase.TestName.FullName = fixture.Parent.Parent.TestName.Name + "." +
+							fixture.Parent.TestName.Name + "." + 
+							fixture.TestName.Name + "." +
+							symbol + "." +
+							method.Name;
+						paramaterizedTest.Add( testCase);
+					}
+				}
+			}
+		}
+		
 		public bool CanBuildFrom(Type type)
 		{
 			var result = false;

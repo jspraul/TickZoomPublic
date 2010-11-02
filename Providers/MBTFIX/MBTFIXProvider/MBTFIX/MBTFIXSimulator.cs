@@ -48,7 +48,7 @@ namespace TickZoom.MBTFIX
 		private TimeStamp heartbeatTimer;
 		private bool firstHearbeat = true;
 		private long fixDelayTimer = 0;
-		private long fixDelayMilliseconds = 1;
+		private long fixDelayMilliseconds = 0;
 		
 		public MBTFIXSimulator() : base( 6489, 6488, new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes()) {
 			

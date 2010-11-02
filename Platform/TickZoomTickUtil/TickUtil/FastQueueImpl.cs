@@ -146,6 +146,34 @@ namespace TickZoom.TickUtil
 	    	return TryDequeueStruct(ref tick);
 	    }
 	    
+	    public bool PeekStruct(ref T tick) {
+	    	return TryPeekStruct(ref tick);
+	    }
+	    
+	    public bool TryPeekStruct(ref T tick)
+	    {
+            if( terminate) {
+	    		if( exception != null) {
+	    			throw new ApplicationException("Dequeue failed.",exception);
+	    		} else {
+	            	throw new QueueException(EventType.Terminate);
+	    		}
+            }
+	    	tick = default(T);
+	    	if( !isStarted) { 
+	    		if( !StartDequeue()) return false;
+	    	}
+	        if( queue == null || queue.Count==0) return false;
+	    	if( !SpinLockNB()) return false;
+	    	try {
+		        if( queue == null || queue.Count==0) return false;
+	            tick = queue.Peek();
+	    	} finally {
+	            SpinUnLock();
+	    	}
+            return true;
+	    }
+	    
 	    public bool TryDequeueStruct(ref T tick)
 	    {
             if( terminate) {

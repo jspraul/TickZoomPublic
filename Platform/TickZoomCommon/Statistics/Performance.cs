@@ -155,7 +155,7 @@ namespace TickZoom.Statistics
 			if( trace) {
 				log.Trace( "Enter trade: " + pair);
 			}
-			if( transactionDebug && !model.QuietMode) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
+			if( transactionDebug && !model.QuietMode && !(model is PortfolioInterface) ) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
 				strategy.OnEnterTrade();
@@ -166,7 +166,7 @@ namespace TickZoom.Statistics
 			TransactionPairBinary combo = comboTradesBinary.Tail;
 			combo.ChangeSize(fill.Position,fill.Price);
 			comboTradesBinary.Tail = combo;
-			if( transactionDebug && !model.QuietMode) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
+			if( transactionDebug && !model.QuietMode && !(model is PortfolioInterface) ) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
 				strategy.OnChangeTrade();
@@ -182,7 +182,9 @@ namespace TickZoom.Statistics
 			if( trace) {
 				log.Trace( "Exit Trade: " + comboTrade);
 			}
-			if( transactionDebug && !model.QuietMode) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
+			if( fill.Position == 0) {
+				if( transactionDebug && !model.QuietMode && !(model is PortfolioInterface) ) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
+			}
 			if( tradeDebug && !model.QuietMode) tradeLog.Debug( model.Name + "," + Equity.ClosedEquity + "," + pnl + "," + comboTrade);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
@@ -207,6 +209,10 @@ namespace TickZoom.Statistics
 				sb.Append(bars.Low[0]);
 				sb.Append(",");
 				sb.Append(bars.Close[0]);
+				sb.Append(",");
+				sb.Append(bars.Volume[0]);
+				sb.Append(",");
+				sb.Append(TimeStamp.UtcNow.Internal);
 				barDataLog.Debug( sb.ToString());
 			}
 			if( statsDebug && !model.QuietMode) {
@@ -222,6 +228,8 @@ namespace TickZoom.Statistics
 				sb.Append(equity.OpenEquity);
 				sb.Append(",");
 				sb.Append(equity.CurrentEquity);
+				sb.Append(",");
+				sb.Append(TimeStamp.UtcNow.Internal);
 				statsLog.Debug( sb.ToString());
 			}
 			return true;
