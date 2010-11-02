@@ -108,7 +108,7 @@ namespace TickZoom.Common
 				if( debug) log.Debug("Cancel Broker Order: " + physical);
 				sentPhysicalOrders++;
 				TryAddPhysicalOrder(physical);
-				physicalOrderHandler.OnCancelBrokerOrder(physical.BrokerOrder);
+				physicalOrderHandler.OnCancelBrokerOrder(symbol, physical.BrokerOrder);
 				result = true;	
 			}
 			return result;

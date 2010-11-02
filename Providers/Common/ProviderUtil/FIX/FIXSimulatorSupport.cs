@@ -216,7 +216,7 @@ namespace TickZoom.FIX
 		public void CancelOrder(SymbolInfo symbol, object origBrokerOrder)
 		{
 			var symbolHandler = symbolHandlers[symbol.BinaryIdentifier];
-			symbolHandler.CancelOrder(origBrokerOrder);
+			symbolHandler.CancelOrder( origBrokerOrder);
 		}
 		
 		public PhysicalOrder GetOrderById(SymbolInfo symbol, string clientOrderId) {

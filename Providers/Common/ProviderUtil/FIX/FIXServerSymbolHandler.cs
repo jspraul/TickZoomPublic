@@ -80,7 +80,7 @@ namespace TickZoom.FIX
 		}
 		
 		public void CancelOrder(object origBrokerOrder) {
-			fillSimulator.OnCancelBrokerOrder( origBrokerOrder);
+			fillSimulator.OnCancelBrokerOrder( symbol, origBrokerOrder);
 		}
 		
 		public PhysicalOrder GetOrderById(string clientOrderId) {

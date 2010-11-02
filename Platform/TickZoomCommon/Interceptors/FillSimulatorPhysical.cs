@@ -118,7 +118,7 @@ namespace TickZoom.Interceptors
 			if( SyncTicks.Enabled) tickSync.RemovePhysicalOrder(order);
 		}
 		
-		public void OnCancelBrokerOrder(object origBrokerOrder)
+		public void OnCancelBrokerOrder(SymbolInfo symbol, object origBrokerOrder)
 		{
 			if( debug) log.Debug("OnCancelBrokerOrder( " + origBrokerOrder + ")");
 			var order = CancelBrokerOrder(origBrokerOrder);

@@ -415,11 +415,18 @@ namespace TickZoom.MBTFIX
 			fixPacketQueue.Enqueue(writePacket);
 		}
 		
+		long fixMessageTimer = 0;
 		private Yield ProcessFIXPackets() {
 			if( fixPacketQueue.Count == 0) {
 				return Yield.NoWork.Repeat;
 			}
+			if( Factory.TickCount < fixMessageTimer) {
+				return Yield.NoWork.Repeat;
+			} else {
+				fixMessageTimer = Factory.TickCount + 10;
+			}
 			fixWritePacket = (Packet) fixPacketQueue.Dequeue();
+			
 			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 

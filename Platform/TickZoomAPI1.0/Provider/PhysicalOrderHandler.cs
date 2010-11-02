@@ -32,7 +32,7 @@ namespace TickZoom.Api
 	public interface PhysicalOrderHandler {
 		void OnChangeBrokerOrder(PhysicalOrder order, object origBrokerOrder);		
 		void OnCreateBrokerOrder(PhysicalOrder order);
-		void OnCancelBrokerOrder(object origBrokerOrder);
+		void OnCancelBrokerOrder(SymbolInfo symbol, object origBrokerOrder);
 		Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol);
 	}
 }

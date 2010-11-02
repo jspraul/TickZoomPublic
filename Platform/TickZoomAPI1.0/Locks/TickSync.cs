@@ -62,9 +62,6 @@ namespace TickZoom.Api
 			ForceClear();
 		}
 		public void ForceClear() {
-//			if( this.ticks < 0) {
-//				System.Diagnostics.Debugger.Break();
-//			}
 			var ticks = Interlocked.Exchange(ref this.ticks, 0);
 			var orders = Interlocked.Exchange(ref physicalOrders, 0);
 			var changes = Interlocked.Exchange(ref positionChanges, 0);
@@ -101,10 +98,13 @@ namespace TickZoom.Api
 			}
 		}
 		public void AddPhysicalOrder(PhysicalOrder order) {
+//			if( order.Price.ToLong() == 97.46.ToLong()) {
+//				int x = 0;
+//			}
 			var value = Interlocked.Increment( ref physicalOrders);
 			if( trace) log.Trace(symbol + ": AddPhysicalOrder("+value+","+order+")");
 		}
-		public void RemovePhysicalOrder(PhysicalOrder order) {
+		public void RemovePhysicalOrder(object order) {
 			var value = Interlocked.Decrement( ref physicalOrders);
 			if( trace) log.Trace(symbol + ": RemovePhysicalOrder("+value+","+order+")");
 			if( value < 0) {

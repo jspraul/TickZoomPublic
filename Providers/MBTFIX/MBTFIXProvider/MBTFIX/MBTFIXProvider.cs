@@ -371,7 +371,7 @@ namespace TickZoom.MBTFIX
 				log.Info("Recovery completed with pending orders. Canceling them now..");
 				foreach( var order in pending) {
 					log.Info("Canceling Pending Order: " + order);
-					OnCancelBrokerOrder(order);
+					OnCancelBrokerOrder(order.Symbol, order.BrokerOrder);
 				}
 			}
 			return isCancelingPendingOrders;
@@ -801,15 +801,21 @@ namespace TickZoom.MBTFIX
 			var algorithm = GetAlgorithm(symbol.BinaryIdentifier);
 			algorithm.SetDesiredPosition(desiredPosition);
 			algorithm.SetLogicalOrders(inputOrders);
+
+			CompareLogicalOrders(symbol);
 			
-			lock( orderHandlerLocker) {
-    			algorithm.PerformCompare();
-			}
 			var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			if( SyncTicks.Enabled ) {
 				if( trace) log.Trace("SyncTicks: RemovePositionChange");
 				tickSync.RemovePositionChange();
 			}				
+		}
+		
+		private void CompareLogicalOrders(SymbolInfo symbol) {
+			var algorithm = GetAlgorithm(symbol.BinaryIdentifier);
+			lock( orderHandlerLocker) {
+    			algorithm.PerformCompare();
+			}
 		}
 		
 	    protected override void Dispose(bool disposing)
@@ -944,13 +950,17 @@ namespace TickZoom.MBTFIX
 			return TimeStamp.UtcNow.Internal;
 		}
 		
-		public void OnCancelBrokerOrder(object origBrokerOrder)
+		public void OnCancelBrokerOrder(SymbolInfo symbol, object origBrokerOrder)
 		{
 			PhysicalOrder physicalOrder;
 			try {
 				physicalOrder = GetOrderById( origBrokerOrder);
 			} catch( ApplicationException ex) {
 				log.Warn("Order probably already canceled. " + ex.Message);
+				if( SyncTicks.Enabled) {
+					var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+					tickSync.RemovePhysicalOrder();
+				}
 				return;
 			}
 			if( debug) log.Debug( "OnCancelBrokerOrder " + physicalOrder);
