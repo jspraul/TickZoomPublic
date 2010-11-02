@@ -35,13 +35,14 @@ namespace Loaders
 	public class AutoTests : IAutoTestFixture {
 		public AutoTestSettings[] GetAutoTestSettings() {
 			var list = new System.Collections.Generic.List<AutoTestSettings>();
-			var storeKnownGood = false;			
+			var storeKnownGood = true;			
+			var primarySymbol = "USD/JPY";
 			try { 
 				list.Add( new AutoTestSettings {
 				    Mode = AutoTestMode.All,
 				    Name = "ApexStrategyTest",
 				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
-					Symbols = "USD/JPY",
+					Symbols = primarySymbol + ",EUR/USD,USD/CHF",
 					StoreKnownGood = storeKnownGood,
 					ShowCharts = false,
 					StartTime = new TimeStamp( 1800, 1, 1),
@@ -58,7 +59,7 @@ namespace Loaders
 			    Mode = AutoTestMode.All,
 			    Name = "DualStrategyLimitOrder",
 			    Loader = new TestDualStrategyLoader(),
-				Symbols = "USD/JPY,EUR/USD",
+				Symbols = primarySymbol + ",EUR/USD",
 				StoreKnownGood = storeKnownGood,
 				ShowCharts = false,
 				StartTime = new TimeStamp( 1800, 1, 1),
@@ -70,7 +71,7 @@ namespace Loaders
 			    Mode = AutoTestMode.All,
 			    Name = "LimitOrderTest",
 			    Loader = new TestLimitOrderLoader(),
-				Symbols = "USD/JPY",
+				Symbols = primarySymbol,
 				StoreKnownGood = storeKnownGood,
 				ShowCharts = false,
 				StartTime = new TimeStamp( 1800, 1, 1),
@@ -82,7 +83,7 @@ namespace Loaders
 			    Mode = AutoTestMode.All,
 			    Name = "MarketOrderTest",
 			    Loader = new MarketOrderLoader(),
-				Symbols = "USD/JPY",
+				Symbols = primarySymbol,
 				StoreKnownGood = storeKnownGood,
 				ShowCharts = false,
 				StartTime = new TimeStamp( 1800, 1, 1),
@@ -130,7 +131,7 @@ namespace Loaders
 			    Mode = AutoTestMode.All,
 			    Name = "ExampleMixedTest",
 			    Loader = new ExampleMixedLoader(),
-				Symbols = "USD/JPY,EUR/USD",
+				Symbols = primarySymbol + ",EUR/USD,USD/CHF",
 				StoreKnownGood = storeKnownGood,
 				ShowCharts = false,
 				StartTime = new TimeStamp( 1800, 1, 1),
@@ -142,7 +143,7 @@ namespace Loaders
 			    Mode = AutoTestMode.All,
 			    Name = "ExampleReversalTest",
 			    Loader = new ExampleReversalLoader(),
-				Symbols = "USD/JPY",
+				Symbols = primarySymbol,
 				StoreKnownGood = storeKnownGood,
 				ShowCharts = false,
 				StartTime = new TimeStamp( 1800, 1, 1),

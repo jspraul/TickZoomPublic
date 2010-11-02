@@ -71,6 +71,14 @@ namespace TickZoom.Examples
 			strategy.SymbolDefault = symbol;
 			strategy.Performance.Equity.GraphEquity = false;
 	    	AddDependency( "Portfolio", "ExampleReversal-"+symbol);
+	    	
+	    	for( int i=2; i<properties.Starter.SymbolProperties.Length; i++) {
+				symbol = properties.Starter.SymbolInfo[i].Symbol;
+				strategy = CreateStrategy("ExampleOrderStrategy","ExampleOrder-"+symbol) as Strategy;
+				strategy.SymbolDefault = symbol;
+				strategy.Performance.Equity.GraphEquity = false;
+		    	AddDependency( "Portfolio", "ExampleOrder-"+symbol);
+	    	}
 			
 			TopModel = GetPortfolio("Portfolio");
 		}
