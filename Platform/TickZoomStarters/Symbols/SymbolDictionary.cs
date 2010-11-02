@@ -342,9 +342,8 @@ namespace TickZoom.Symbols
     <property name=""TimeAndSales"" value=""Extrapolated"" />
     <property name=""QuoteType"" value=""Level1"" />
     <category name=""4 Pip"">
-    <property name=""MinimumTick"" value=""0.0001"" />
+    <property name=""MinimumTick"" value=""0.00001"" />
       <symbol name=""USD/CHF"" universal=""USDCHF"">
-        <property name=""QuoteType"" value=""Level2"" />
         <property name=""TimeAndSales"" value=""Extrapolated"" />
       </symbol>
       <symbol name=""USD/CAD"" universal=""USDCAD"" />

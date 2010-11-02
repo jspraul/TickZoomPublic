@@ -65,17 +65,25 @@ namespace TickZoom.Common
 			this.receiver = receiver;
 		}
 		
+		bool errorWrongLevel1Type = false;
 		public void SendQuote() {
 			if( isQuoteInitialized || VerifyQuote()) {
-				if( isRunning && symbol.QuoteType == QuoteType.Level1) {
-					tickIO.Initialize();
-					tickIO.SetSymbol(symbol.BinaryIdentifier);
-					tickIO.SetTime(Time);
-					tickIO.SetQuote(Bid,Ask,(short)BidSize,(short)AskSize);
-					var box = tickPool.Create();
-					box.TickBinary = tickIO.Extract();
-					receiver.OnEvent(symbol,(int)EventType.Tick,box);
-					if( trace) log.Trace("Sent tick for " + symbol + ": " + tickIO);
+				if( isRunning) {
+					if( symbol.QuoteType != QuoteType.Level1) {
+						if( !errorWrongLevel1Type) {
+							log.Error( "Received " + QuoteType.Level1 + " quote but " + symbol + " is configured for QuoteType = " + symbol.QuoteType + " in the symbol dictionary.");
+							errorWrongLevel1Type = true;
+						}
+					} else {
+						tickIO.Initialize();
+						tickIO.SetSymbol(symbol.BinaryIdentifier);
+						tickIO.SetTime(Time);
+						tickIO.SetQuote(Bid,Ask,(short)BidSize,(short)AskSize);
+						var box = tickPool.Create();
+						box.TickBinary = tickIO.Extract();
+						receiver.OnEvent(symbol,(int)EventType.Tick,box);
+						if( trace) log.Trace("Sent tick for " + symbol + ": " + tickIO);
+					}
 				}
 			}
 		}
@@ -106,8 +114,16 @@ namespace TickZoom.Common
 			return isTradeInitialized;
 		}
         
+		bool errorWrongTimeAndSalesType = false;
 		public void SendTimeAndSales() {
-			if( !isRunning || symbol.TimeAndSales != TimeAndSales.ActualTrades ) {
+			if( !isRunning ) {
+				return;
+			}
+			if( symbol.TimeAndSales != TimeAndSales.ActualTrades) {
+				if( !errorWrongLevel1Type) {
+					log.Error( "Received " + TimeAndSales.ActualTrades + " trade but " + symbol + " is configured for TimeAndSales = " + symbol.TimeAndSales + " in the symbol dictionary.");
+					errorWrongLevel1Type = true;
+				}
 				return;
 			}
 			if( !isTradeInitialized && !VerifyTrade()) {
