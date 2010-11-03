@@ -36,6 +36,7 @@ namespace TickZoom.Api
 	{
 		event Action<ModelInterface> OnActiveChange;
 		
+		
 		int Id {
 			get;
 		}
