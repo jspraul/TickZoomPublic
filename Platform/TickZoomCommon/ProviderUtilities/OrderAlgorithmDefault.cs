@@ -36,9 +36,10 @@ using TickZoom.Api;
 namespace TickZoom.Common
 {
 	public class OrderAlgorithmDefault : OrderAlgorithm {
-		private static readonly Log log = Factory.SysLog.GetLogger(typeof(OrderAlgorithmDefault));
-		private static readonly bool debug = log.IsDebugEnabled;
-		private static readonly bool trace = log.IsTraceEnabled;
+		private static readonly Log staticLog = Factory.SysLog.GetLogger("TickZoom.Common.OrderAlgorithm");
+		private static readonly bool debug = staticLog.IsDebugEnabled;
+		private static readonly bool trace = staticLog.IsTraceEnabled;
+		private Log log;
 		private SymbolInfo symbol;
 		private PhysicalOrderHandler physicalOrderHandler;
 		private LogicalOrderCache orderCache;
@@ -56,7 +57,8 @@ namespace TickZoom.Common
 		private object performCompareLocker = new object();
 		private Dictionary<long,long> filledOrders = new Dictionary<long,long>();
 		
-		public OrderAlgorithmDefault(SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
+		public OrderAlgorithmDefault(string name, SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
+			this.log = Factory.SysLog.GetLogger("TickZoom.Common.OrderAlgorithm." + name + "." + symbol);
 			this.symbol = symbol;
 			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			this.physicalOrderHandler = brokerOrders;

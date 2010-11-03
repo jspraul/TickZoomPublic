@@ -383,7 +383,11 @@ namespace TickZoom.Interceptors
 		
 		public int ActualPosition {
 			get { return actualPosition; }
-			set { actualPosition = value; }
+			set { actualPosition = value;
+				if( onPositionChange != null) {
+					onPositionChange( actualPosition);
+				}
+			}
 		}
 		
 		public Action<int> OnPositionChange {

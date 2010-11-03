@@ -79,7 +79,7 @@ namespace TickZoom.Api
 		
 		BinaryStore PageStore(string baseName);
 		
-        ProviderSimulator ProviderSimulator(SymbolInfo symbol, Action<SymbolInfo,LogicalFillBinary> processFill);
+        ProviderSimulator ProviderSimulator(string name, SymbolInfo symbol, Action<SymbolInfo,LogicalFillBinary> processFill);
         
 		LogicalOrderCache LogicalOrderCache( SymbolInfo symbol);
 	}

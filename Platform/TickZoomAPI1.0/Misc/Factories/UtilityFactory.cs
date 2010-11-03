@@ -34,7 +34,7 @@ namespace TickZoom.Api
 	public interface UtilityFactory {
 		ProviderService CommandLineProcess();
 		ProviderService WindowsService();
-		OrderAlgorithm OrderAlgorithm(SymbolInfo symbol, PhysicalOrderHandler handler);
+		OrderAlgorithm OrderAlgorithm(string name, SymbolInfo symbol, PhysicalOrderHandler handler);
 		PhysicalOrder PhysicalOrder( OrderState orderState, SymbolInfo symbol, OrderSide side, OrderType type, double price, int size, int logicalOrderId, long logicalSerialNumber, object brokerOrder, object tag);
 		SymbolHandler SymbolHandler(SymbolInfo symbol, Receiver receiver);
 		VerifyFeed VerifyFeed();

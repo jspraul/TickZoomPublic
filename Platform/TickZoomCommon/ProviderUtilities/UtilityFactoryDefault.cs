@@ -43,8 +43,8 @@ namespace TickZoom.Common
 		public ProviderService WindowsService() {
 			return new WindowsService();
 		}
-		public OrderAlgorithm OrderAlgorithm(SymbolInfo symbol, PhysicalOrderHandler handler) {
-			return new OrderAlgorithmDefault(symbol,handler);
+		public OrderAlgorithm OrderAlgorithm(string name, SymbolInfo symbol, PhysicalOrderHandler handler) {
+			return new OrderAlgorithmDefault(name,symbol,handler);
 		}
 		public SymbolHandler SymbolHandler(SymbolInfo symbol, Receiver receiver) {
 			return new SymbolHandlerDefault(symbol,receiver);
