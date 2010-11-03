@@ -690,12 +690,18 @@ namespace TickZoom.MBTFIX
 				log.Error("Error looking up " + packetFIX.Symbol + ": " + ex.Message);
 				return null;
 			}
+			PhysicalOrder oldOrder = null;
+			try {
+				oldOrder = GetOrderById( clientOrderId);
+			} catch( ApplicationException ex) {
+				log.Warn("Order ID# " + clientOrderId + " was not found for update or replace.");
+			}
 			int quantity = packetFIX.LeavesQuantity;
 			PhysicalOrder order;
 			var type = GetOrderType( packetFIX);
 			var side = GetOrderSide( packetFIX);
 			var logicalId = GetLogicalOrderId( packetFIX);
-			order = Factory.Utility.PhysicalOrder(orderState, symbolInfo, side, type, packetFIX.Price, packetFIX.LeavesQuantity, logicalId, 0, newClientOrderId, null);
+			order = Factory.Utility.PhysicalOrder(orderState, symbolInfo, side, type, packetFIX.Price, packetFIX.LeavesQuantity, logicalId, oldOrder.LogicalSerialNumber, newClientOrderId, null);
 			if( quantity > 0) {
 				if( info && (LogRecovery || !IsRecovery) ) {
 					if( debug) log.Debug("Updated order: " + order + ".  Executed: " + packetFIX.CumulativeQuantity + " Remaining: " + packetFIX.LeavesQuantity);
