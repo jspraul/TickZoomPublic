@@ -34,9 +34,9 @@ namespace TickZoom.Api
 		void ReprocessOrders();
 		void ProcessOrders(Tick tick);
 		PhysicalOrder GetOrderById( string orderId);
-		double ActualPosition { get; set; }
+		int ActualPosition { get; set; }
 		Action<PhysicalFill> OnPhysicalFill { get; set; }
-		Action<double> OnPositionChange { get; set; }
+		Action<int> OnPositionChange { get; set; }
 		PhysicalOrderHandler ConfirmOrders { get; set; }
 	}
 }

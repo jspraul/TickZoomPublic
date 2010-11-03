@@ -35,7 +35,7 @@ namespace Loaders
 	public class AutoTests : IAutoTestFixture {
 		public AutoTestSettings[] GetAutoTestSettings() {
 			var list = new System.Collections.Generic.List<AutoTestSettings>();
-			var storeKnownGood = true;			
+			var storeKnownGood = false;			
 			var primarySymbol = "USD/JPY";
 			try { 
 				list.Add( new AutoTestSettings {

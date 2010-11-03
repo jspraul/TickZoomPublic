@@ -31,15 +31,15 @@ namespace TickZoom.Api
 {
 	public class PositionChangeDetail {
 		private SymbolInfo symbol;
-		private double position;
+		private int position;
 		private Iterable<LogicalOrder> orders;
-		public PositionChangeDetail(SymbolInfo symbol, double position, Iterable<LogicalOrder> orders) {
+		public PositionChangeDetail(SymbolInfo symbol, int position, Iterable<LogicalOrder> orders) {
 			this.symbol = symbol;
 			this.position = position;
 			this.orders = orders;
 		}
 		
-		public double Position {
+		public int Position {
 			get { return position; }
 		}
 		

@@ -72,10 +72,10 @@ namespace TickZoom.Common
 				public TradingSignalTest( PerformanceInner test, ModelInterface formula ) : base(formula) {
 				 	this.test = test;
 				}
-				public override double Current  {
+				public override int Current  {
 					get { return base.Current; }
 				}
-				public override void Change( double position, double price, TimeStamp time) {
+				public override void Change( int position, double price, TimeStamp time) {
 					base.Change( position,price,time);
 					if( base.Current != test.prevSignal) {
 							test.signalChanges.Add(model.Data.Ticks[0]);

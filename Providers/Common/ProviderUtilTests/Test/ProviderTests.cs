@@ -79,10 +79,10 @@ namespace TickZoom.Test
 				VerifyConnected(verify);
 				ClearOrders(0);
 				ClearPosition(provider,verify,secondsDelay);
-	  			double desiredPosition = 2 * LotSize;
+	  			var desiredPosition = 2 * LotSize;
 	  			log.Notice("Sending 1");
 	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,0);
-	  			double actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
+	  			var actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 	
 	  			desiredPosition = 0;

@@ -59,7 +59,7 @@ namespace TickZoom.Api
 			get { return LogicalFillBinary.Price; }
 		}
 
-		public double Position {
+		public int Position {
 			get { return LogicalFillBinary.Position; }
 		}
 		

@@ -229,7 +229,7 @@ namespace TickZoom.Common
 			return count;
 		}
 		
-		public double VerifyPosition(double expectedPosition, SymbolInfo symbol, int timeout)
+		public int VerifyPosition(int expectedPosition, SymbolInfo symbol, int timeout)
 		{
 			if (debug)
 				log.Debug("VerifyFeed");
@@ -238,7 +238,7 @@ namespace TickZoom.Common
 			Thread.Sleep( pauseSeconds * 1000);
 			long startTime = Factory.TickCount;
 			count = 0;
-			double position;
+			int position;
 			TickBinary binary = new TickBinary();
 			while (Factory.TickCount - startTime < timeout * 1000) {
 				if( propagateException != null) {
@@ -397,7 +397,7 @@ namespace TickZoom.Common
 			return result;
 		}
 
-		Dictionary<long, double> actualPositions = new Dictionary<long, double>();
+		Dictionary<long, int> actualPositions = new Dictionary<long, int>();
 
 		public double GetPosition(SymbolInfo symbol)
 		{

@@ -32,13 +32,13 @@ namespace TickZoom.Interceptors
 {
 	public class PhysicalFillDefault : PhysicalFill
 	{
-		private double size;
+		private int size;
 		private double price;
 		private TimeStamp time;
 		private TimeStamp utcTime;
 		private PhysicalOrder order;
 		
-		public PhysicalFillDefault( double size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
+		public PhysicalFillDefault( int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			this.size = size;
 			this.price = price;
 			this.time = time;
@@ -72,7 +72,7 @@ namespace TickZoom.Interceptors
 			get { return price; }
 		}
 
-		public double Size {
+		public int Size {
 			get { return size; }
 		}
 

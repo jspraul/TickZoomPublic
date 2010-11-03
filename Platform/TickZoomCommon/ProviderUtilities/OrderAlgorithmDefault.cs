@@ -47,12 +47,13 @@ namespace TickZoom.Common
 		private ActiveList<LogicalOrder> logicalOrders;
 		private ActiveList<PhysicalOrder> physicalOrders;
 		private List<LogicalOrder> extraLogicals = new List<LogicalOrder>();
-		private double desiredPosition;
+		private int desiredPosition;
 		private Action<SymbolInfo,LogicalFillBinary> onProcessFill;
 		private bool handleSimulatedExits = false;
-		private double actualPosition = 0D;
+		private int actualPosition = 0;
 		private int sentPhysicalOrders = 0;
 		private TickSync tickSync;
+		private object performCompareLocker = new object();
 		private Dictionary<long,long> filledOrders = new Dictionary<long,long>();
 		
 		public OrderAlgorithmDefault(SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
@@ -170,7 +171,7 @@ namespace TickZoom.Common
 						}
 					}
 				}
-			} else if( logical.Price != physical.Price) {
+			} else if( logical.Price.ToLong() != physical.Price.ToLong()) {
 				var origBrokerOrder = physical.BrokerOrder;
 				physicalOrders.Remove(physical);
 				var side = GetOrderSide(logical.Type,strategyPosition);
@@ -209,7 +210,7 @@ namespace TickZoom.Common
 					physical = new PhysicalOrderDefault(OrderState.Active,symbol, logical, side, Math.Abs(delta));
 					TryCreateBrokerOrder(physical);
 				}
-			} else if( logical.Price != physical.Price) {
+			} else if( logical.Price.ToLong() != physical.Price.ToLong()) {
 				var origBrokerOrder = physical.BrokerOrder;
 				physicalOrders.Remove(physical);
 				var side = GetOrderSide(logical.Type,strategyPosition);
@@ -222,7 +223,7 @@ namespace TickZoom.Common
 			var strategyPosition = logical.StrategyPosition;
 			if( strategyPosition == 0) {
 				TryCancelBrokerOrder(physical);
-			} else if( Math.Abs(strategyPosition) != physical.Size || logical.Price != physical.Price) {
+			} else if( Math.Abs(strategyPosition) != physical.Size || logical.Price.ToLong() != physical.Price.ToLong()) {
 				var origBrokerOrder = physical.BrokerOrder;
 				physicalOrders.Remove(physical);
 				var side = GetOrderSide(logical.Type,strategyPosition);
@@ -235,7 +236,7 @@ namespace TickZoom.Common
 			var strategyPosition = logical.StrategyPosition;
 			if( strategyPosition == 0) {
 				TryCancelBrokerOrder(physical);
-			} else if( Math.Abs(strategyPosition) != physical.Size || logical.Price != physical.Price) {
+			} else if( Math.Abs(strategyPosition) != physical.Size || logical.Price.ToLong() != physical.Price.ToLong()) {
 				var origBrokerOrder = physical.BrokerOrder;
 				physicalOrders.Remove(physical);
 				var side = GetOrderSide(logical.Type,strategyPosition);
@@ -328,7 +329,7 @@ namespace TickZoom.Common
 			}
 		}
 		
-		private void ProcessMissingPhysical(LogicalOrder logical, double size) {
+		private void ProcessMissingPhysical(LogicalOrder logical, int size) {
 			if( logical.StrategyPosition > 0) {
 				if( logical.Type == OrderType.SellLimit ||
 				  logical.Type == OrderType.SellStop ||
@@ -374,9 +375,9 @@ namespace TickZoom.Common
 			return TryCancelBrokerOrder( physical);
 		}
 		
-		private double FindPendingAdjustments() {
-			double positionDelta = desiredPosition - actualPosition;
-			double pendingAdjustments = 0D;
+		private int FindPendingAdjustments() {
+			var positionDelta = desiredPosition - actualPosition;
+			var pendingAdjustments = 0;
 			var next = originalPhysicals.First;
 			for( var node = next; node != null; node = next) {
 				next = node.Next;
@@ -420,9 +421,9 @@ namespace TickZoom.Common
 			return pendingAdjustments;
 		}
 		
-		private bool TrySyncPosition(double pendingAdjustments) {
-			double positionDelta = desiredPosition - actualPosition;
-			double delta = positionDelta - pendingAdjustments;
+		private bool TrySyncPosition(int pendingAdjustments) {
+			var positionDelta = desiredPosition - actualPosition;
+			var delta = positionDelta - pendingAdjustments;
 			PhysicalOrder physical;
 			if( delta > 0) {
 				physical = new PhysicalOrderDefault(OrderState.Active, symbol,OrderSide.Buy,OrderType.BuyMarket,0,delta,0,0,null,null);
@@ -455,19 +456,21 @@ namespace TickZoom.Common
 			originalLogicals.AddLast(orderCache.ActiveOrders);
 		}
 		
-		public void SetDesiredPosition(	double position) {
+		public void SetDesiredPosition(	int position) {
 			this.desiredPosition = position;
 		}
 		
 		private bool CheckForPending() {
+			var result = false;
 			foreach( var order in originalPhysicals) {
 				if( order.OrderState == OrderState.Pending ||
 				    order.Type == OrderType.BuyMarket ||
 				    order.Type == OrderType.SellMarket) {
-					return true;	
+					if( debug) log.Debug("Pending order: " + order);
+					result = true;	
 				}
 			}
-			return false;
+			return result;
 		}
 		
 		private LogicalOrder FindLogicalOrder(int orderId) {
@@ -496,9 +499,9 @@ namespace TickZoom.Common
 			} catch( ApplicationException) {
 				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
 				if( debug) log.Debug("Skipping logical fill for an adjustment market order.");
+				if( debug) log.Debug("Performing extra compare.");
+				PerformCompareInternal();
 				TryRemovePhysicalFill(physical);
-//				if( debug) log.Debug("Performing extra compare.");
-//				PerformCompareInternal();
 				return;
 			}
 			if( debug) log.Debug("Fill price: " + fill);
@@ -598,10 +601,12 @@ namespace TickZoom.Common
 				onProcessFill( symbol, fill);
 			}
 			if( debug) log.Debug("Performing extra compare.");
-			PerformCompareInternal();
+			lock( performCompareLocker) {
+				PerformCompareInternal();
+			}
 		}
 		
-		private void UpdateOrderCache(double fillSize, LogicalOrder order) {
+		private void UpdateOrderCache(int fillSize, LogicalOrder order) {
 			var strategyPosition = orderCache.GetStrategyPosition(order.StrategyId);
 		
 			var position = strategyPosition.Position + fillSize;
@@ -612,7 +617,9 @@ namespace TickZoom.Common
 		
 		public int PerformCompare() {
 			sentPhysicalOrders = 0;
-			PerformCompareInternal();
+			lock( performCompareLocker) {
+				PerformCompareInternal();
+			}
 			return sentPhysicalOrders;
 		}
 
@@ -680,7 +687,7 @@ namespace TickZoom.Common
 			}
 
 			// Find any pending adjustments.
-			double pendingAdjustments = FindPendingAdjustments();
+			int pendingAdjustments = FindPendingAdjustments();
 			
 			if( debug) log.Debug("Found " + physicalOrders.Count + " extra physicals.");
 			int cancelCount = 0;
@@ -710,11 +717,11 @@ namespace TickZoom.Common
 			}
 		}
 	
-		public double ActualPosition {
+		public int ActualPosition {
 			get { return actualPosition; }
 		}
 
-		public void SetActualPosition( double position) {
+		public void SetActualPosition( int position) {
 //			log.Info("SetActualPosition(" + position +") for " + symbol);
 			actualPosition = position;
 		}
@@ -735,6 +742,9 @@ namespace TickZoom.Common
 		// This is a callback to confirm order was properly placed.
 		public void OnChangeBrokerOrder(PhysicalOrder order, object origBrokerOrder)
 		{
+			lock( performCompareLocker) {
+				PerformCompareInternal();
+			}
 			if( SyncTicks.Enabled) {
 				tickSync.RemovePhysicalOrder( order);
 			}
@@ -742,6 +752,9 @@ namespace TickZoom.Common
 		
 		public void OnCreateBrokerOrder(PhysicalOrder order)
 		{
+			lock( performCompareLocker) {
+				PerformCompareInternal();
+			}
 			if( SyncTicks.Enabled) {
 				tickSync.RemovePhysicalOrder( order);
 			}
@@ -749,6 +762,7 @@ namespace TickZoom.Common
 		
 		public void OnCancelBrokerOrder(SymbolInfo symbol, object origBrokerOrder)
 		{
+			PerformCompareInternal();
 			if( SyncTicks.Enabled) {
 				tickSync.RemovePhysicalOrder( origBrokerOrder);
 			}

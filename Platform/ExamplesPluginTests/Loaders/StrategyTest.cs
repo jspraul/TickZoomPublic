@@ -332,15 +332,17 @@ namespace Loaders
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
 			string knownGoodPath = fileDir + testFileName + "FinalStats.log";
 			string newPath = Factory.SysLog.LogFolder + @"\FinalStats.log";
-			if( !File.Exists(newPath)) return;
-			if( StoreKnownGood) {
-				File.Copy(newPath,knownGoodPath,true);
+			if( File.Exists(newPath)) {
+				if( StoreKnownGood) {
+					File.Copy(newPath,knownGoodPath,true);
+				}
+				testFinalStatsMap.Clear();
+				LoadFinalStats(newPath,testFinalStatsMap);
 			}
-			if( !File.Exists(knownGoodPath)) return;
-			goodFinalStatsMap.Clear();
-			LoadFinalStats(knownGoodPath,goodFinalStatsMap);
-			testFinalStatsMap.Clear();
-			LoadFinalStats(newPath,testFinalStatsMap);
+			if( File.Exists(knownGoodPath)) {
+				goodFinalStatsMap.Clear();
+				LoadFinalStats(knownGoodPath,goodFinalStatsMap);
+			}
 		}
 		
 		public void LoadFinalStats(string filePath, Dictionary<string,FinalStatsInfo> tempFinalStats) {
@@ -366,15 +368,17 @@ namespace Loaders
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
 			string knownGoodPath = fileDir + testFileName + "Trades.log";
 			string newPath = Factory.SysLog.LogFolder + @"\Trades.log";
-			if( !File.Exists(newPath)) return;
-			if( StoreKnownGood) {
-				File.Copy(newPath,knownGoodPath,true);
+			if( File.Exists(newPath)) {
+				if( StoreKnownGood) {
+					File.Copy(newPath,knownGoodPath,true);
+				}
+				testTradeMap.Clear();
+				LoadTrades(newPath,testTradeMap);
 			}
-			if( !File.Exists(knownGoodPath)) return;
-			goodTradeMap.Clear();
-			LoadTrades(knownGoodPath,goodTradeMap);
-			testTradeMap.Clear();
-			LoadTrades(newPath,testTradeMap);
+			if( File.Exists(knownGoodPath)) {
+				goodTradeMap.Clear();
+				LoadTrades(knownGoodPath,goodTradeMap);
+			}
 		}
 		
 		public void LoadTrades(string filePath, Dictionary<string,List<TradeInfo>> tempTrades) {
@@ -408,15 +412,17 @@ namespace Loaders
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
 			string knownGoodPath = fileDir + testFileName + "Transactions.log";
 			string newPath = Factory.SysLog.LogFolder + @"\Transactions.log";
-			if( !File.Exists(newPath)) return;
-			if( StoreKnownGood) {
-				File.Copy(newPath,knownGoodPath,true);
+			if( File.Exists(newPath)) { 
+				if( StoreKnownGood) {
+					File.Copy(newPath,knownGoodPath,true);
+				}
+				testTransactionMap.Clear();
+				LoadTransactions(newPath,testTransactionMap);
 			}
-			if( !File.Exists(knownGoodPath)) return;
-			goodTransactionMap.Clear();
-			LoadTransactions(knownGoodPath,goodTransactionMap);
-			testTransactionMap.Clear();
-			LoadTransactions(newPath,testTransactionMap);
+			if( File.Exists(knownGoodPath)) {
+				goodTransactionMap.Clear();
+				LoadTransactions(knownGoodPath,goodTransactionMap);
+			}
 		}
 		
 		public void LoadTransactions(string filePath, Dictionary<string,List<TransactionInfo>> tempTransactions) {
@@ -449,14 +455,16 @@ namespace Loaders
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
 			string knownGoodPath = fileDir + testFileName + "Transactions.log";
 			string newPath = Factory.SysLog.LogFolder + @"\MockProviderTransactions.log";
-			if( !File.Exists(newPath)) return;
-			// Never store known good. That will get stored by LoadTransactions
-			// and merely used for reconciliation.
-			if( !File.Exists(knownGoodPath)) return;
-			goodReconciliationMap.Clear();
-			LoadReconciliation(knownGoodPath,goodReconciliationMap);
-			testReconciliationMap.Clear();
-			LoadReconciliation(newPath,testReconciliationMap);
+			if( File.Exists(newPath)) {
+				// Never store known good. That will get stored by LoadTransactions
+				// and merely used for reconciliation.
+				testReconciliationMap.Clear();
+				LoadReconciliation(newPath,testReconciliationMap);
+			}
+			if( File.Exists(knownGoodPath)) {
+				goodReconciliationMap.Clear();
+				LoadReconciliation(knownGoodPath,goodReconciliationMap);
+			}
 		}
 		
 		public void LoadReconciliation(string filePath, Dictionary<string,List<TransactionInfo>> tempReconciliation) {
@@ -489,15 +497,17 @@ namespace Loaders
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
 			string newPath = Factory.SysLog.LogFolder + @"\BarData.log";
 			string knownGoodPath = fileDir + testFileName + "BarData.log";
-			if( !File.Exists(newPath)) return;
-			if( StoreKnownGood) {
-				File.Copy(newPath,knownGoodPath,true);
+			if( File.Exists(newPath)) {
+				if( StoreKnownGood) {
+					File.Copy(newPath,knownGoodPath,true);
+				}
+				testBarDataMap.Clear();
+				LoadBarData(newPath,testBarDataMap);
 			}
-			if( !File.Exists(knownGoodPath)) return;
-			goodBarDataMap.Clear();
-			LoadBarData(knownGoodPath,goodBarDataMap);
-			testBarDataMap.Clear();
-			LoadBarData(newPath,testBarDataMap);
+			if( File.Exists(knownGoodPath)) {
+				goodBarDataMap.Clear();
+				LoadBarData(knownGoodPath,goodBarDataMap);
+			}
 		}
 		
 		public void LoadBarData(string filePath, Dictionary<string,List<BarInfo>> tempBarData) {
@@ -532,15 +542,17 @@ namespace Loaders
 			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
 			string newPath = Factory.SysLog.LogFolder + @"\Stats.log";
 			string knownGoodPath = fileDir + testFileName + "Stats.log";
-			if( !File.Exists(newPath)) return;
-			if( StoreKnownGood) {
-				File.Copy(newPath,knownGoodPath,true);
+			if( File.Exists(newPath)) {
+				if( StoreKnownGood) {
+					File.Copy(newPath,knownGoodPath,true);
+				}
+				goodStatsMap.Clear();
+				LoadStats(knownGoodPath,goodStatsMap);
 			}
-			if( !File.Exists(knownGoodPath)) return;
-			testStatsMap.Clear();
-			LoadStats(newPath,testStatsMap);
-			goodStatsMap.Clear();
-			LoadStats(knownGoodPath,goodStatsMap);
+			if( File.Exists(knownGoodPath)) {
+				testStatsMap.Clear();
+				LoadStats(newPath,testStatsMap);
+			}
 		}
 		
 		public void LoadStats(string filePath, Dictionary<string,List<StatsInfo>> tempStats) {

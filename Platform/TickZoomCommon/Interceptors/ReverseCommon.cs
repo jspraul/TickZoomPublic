@@ -111,7 +111,7 @@ namespace TickZoom.Interceptors
 	        		throw new ApplicationException("Cannot sell when reversing from a short position.");
 	        	}
 	        	orders.sellMarket.Price = 0;
-	        	orders.sellMarket.Positions = lots;
+	        	orders.sellMarket.Positions = (int) lots;
 	        	if( isNextBar) {
 	        	orders.sellMarket.Status = OrderStatus.NextBar;
 	        	} else {
@@ -128,7 +128,7 @@ namespace TickZoom.Interceptors
 	        		throw new ApplicationException("Cannot buy when reversing from a long position.");
 	        	}
 	        	orders.buyMarket.Price = 0;
-	        	orders.buyMarket.Positions = lots;
+	        	orders.buyMarket.Positions = (int) lots;
 	        	if( isNextBar) {
 	        		orders.buyMarket.Status = OrderStatus.NextBar;
 	        	} else {
@@ -149,7 +149,7 @@ namespace TickZoom.Interceptors
 	
 	        public void BuyLimit( double price, double lots) {
 	        	orders.buyLimit.Price = price;
-	        	orders.buyLimit.Positions = lots;
+	        	orders.buyLimit.Positions = (int) lots;
 	        	if( isNextBar) {
 	        	orders.buyLimit.Status = OrderStatus.NextBar;
 	        	} else {
@@ -170,7 +170,7 @@ namespace TickZoom.Interceptors
 	
 	        public void SellLimit( double price, double lots) {
 	        	orders.sellLimit.Price = price;
-	        	orders.sellLimit.Positions = lots;
+	        	orders.sellLimit.Positions = (int) lots;
 	        	if( isNextBar) {
 	        	orders.sellLimit.Status = OrderStatus.NextBar;
 	        	} else {
@@ -191,7 +191,7 @@ namespace TickZoom.Interceptors
 	
 	        public void BuyStop( double price, double lots) {
 	        	orders.buyStop.Price = price;
-	        	orders.buyStop.Positions = lots;
+	        	orders.buyStop.Positions = (int) lots;
 	        	if( isNextBar) {
 	        	orders.buyStop.Status = OrderStatus.NextBar;
 	        	} else {
@@ -212,7 +212,7 @@ namespace TickZoom.Interceptors
 	        
 	        public void SellStop( double price, double lots) {
 	        	orders.sellStop.Price = price;
-	        	orders.sellStop.Positions = lots;
+	        	orders.sellStop.Positions = (int) lots;
 	        	if( isNextBar) {
 	        	orders.sellStop.Status = OrderStatus.NextBar;
 	        	} else {

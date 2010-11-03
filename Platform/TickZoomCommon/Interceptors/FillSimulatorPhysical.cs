@@ -50,12 +50,12 @@ namespace TickZoom.Interceptors
 		private bool openTick = false;
 
 		private Action<PhysicalFill> onPhysicalFill;
-		private Action<double> onPositionChange;
+		private Action<int> onPositionChange;
 		private bool useSyntheticMarkets = true;
 		private bool useSyntheticStops = true;
 		private bool useSyntheticLimits = true;
 		private SymbolInfo symbol;
-		private double actualPosition = 0D;
+		private int actualPosition = 0;
 		private TickSync tickSync;
 		private TickIO lastTick = Factory.TickUtil.TickIO();
 		private object processOrdersLocker = new object();
@@ -340,7 +340,7 @@ namespace TickZoom.Interceptors
 			return isFilled;
 		}
 		
-		private void CreateLogicalFillHelper(double size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
+		private void CreateLogicalFillHelper(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			this.actualPosition += size;
 			if( onPositionChange != null) {
 				onPositionChange( actualPosition);
@@ -377,16 +377,16 @@ namespace TickZoom.Interceptors
 			set { onPhysicalFill = value; }
 		}
 		
-		public double GetActualPosition(SymbolInfo symbol) {
+		public int GetActualPosition(SymbolInfo symbol) {
 			return actualPosition;
 		}
 		
-		public double ActualPosition {
+		public int ActualPosition {
 			get { return actualPosition; }
 			set { actualPosition = value; }
 		}
 		
-		public Action<double> OnPositionChange {
+		public Action<int> OnPositionChange {
 			get { return onPositionChange; }
 			set { onPositionChange = value; }
 		}

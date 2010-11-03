@@ -51,7 +51,7 @@ namespace TickZoom.Api
 			set;
 		}
 		
-		double StrategyPosition {
+		int StrategyPosition {
 			get;
 			set;
 		}
@@ -71,7 +71,7 @@ namespace TickZoom.Api
 			set;
 		}
 		
-		double Positions {
+		int Positions {
 			get;
 			set;
 		}

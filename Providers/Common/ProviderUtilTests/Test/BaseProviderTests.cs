@@ -137,15 +137,15 @@ namespace TickZoom.Test
   			Assert.AreEqual(expectedPosition, actualPosition, "Starting position.");
 		}
 		
-		public void CreateEntry( Provider provider, VerifyFeed verify, OrderType orderType, double desiredPositions, double actualPosition) {
+		public void CreateEntry( Provider provider, VerifyFeed verify, OrderType orderType, int desiredPositions, int actualPosition) {
 			CreateOrder(provider, verify, TradeDirection.Entry,orderType,desiredPositions,actualPosition,actualPosition);
 		}
-		public void CreateExit( Provider provider, VerifyFeed verify, OrderType orderType, double desiredPositions, double actualPosition) {
+		public void CreateExit( Provider provider, VerifyFeed verify, OrderType orderType, int desiredPositions, int actualPosition) {
 			CreateOrder(provider, verify, TradeDirection.Exit,orderType,desiredPositions,actualPosition,actualPosition);
 		}
 		
 		private long nextSerialNumber = 1000000L;
-		public void CreateOrder( Provider provider, VerifyFeed verify, TradeDirection tradeDirection, OrderType orderType, double desiredPositions, double actualPosition, double strategyPosition) {
+		public void CreateOrder( Provider provider, VerifyFeed verify, TradeDirection tradeDirection, OrderType orderType, int desiredPositions, int actualPosition, int strategyPosition) {
   			ActiveList<LogicalOrder> list = new ActiveList<LogicalOrder>();
   			LogicalOrder order = Factory.Engine.LogicalOrder(symbol,Interlocked.Increment(ref nextOrderId));
   			order.StrategyId = 1;
@@ -203,7 +203,7 @@ namespace TickZoom.Test
 		public LogicalOrder CreateEntry(OrderType type, double price, int size, int strategyId) {
 			var logical = Factory.Engine.LogicalOrder(symbol);
 			logical.StrategyId = strategyId;
-			logical.StrategyPosition = 0D;
+			logical.StrategyPosition = 0;
 	  		logical.Status = OrderStatus.Active;
 			logical.TradeDirection = TradeDirection.Entry;
 			logical.Type = type;

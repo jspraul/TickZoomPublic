@@ -127,7 +127,7 @@ namespace TickZoom.Interceptors
         	/// </summary>
         	/// <param name="allowReversal"></param>
         	orders.sellMarket.Price = 0;
-        	orders.sellMarket.Positions = lots;
+        	orders.sellMarket.Positions = (int) lots;
         	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.sellMarket.Status = OrderStatus.NextBar;
         	} else {
@@ -157,7 +157,7 @@ namespace TickZoom.Interceptors
         		throw new TickZoomException("Strategy cannot enter long market when position is short. Set AllowReversal to true to allow this.");
         	}
         	orders.buyMarket.Price = 0;
-        	orders.buyMarket.Positions = lots;
+        	orders.buyMarket.Positions = (int) lots;
         	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.buyMarket.Status = OrderStatus.NextBar;
         	} else {
@@ -189,7 +189,7 @@ namespace TickZoom.Interceptors
         		throw new TickZoomException("Strategy must be flat before setting a long limit entry.");
         	}
         	orders.buyLimit.Price = price;
-        	orders.buyLimit.Positions = lots;
+        	orders.buyLimit.Positions = (int) lots;
         	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.buyLimit.Status = OrderStatus.NextBar;
         	} else {
@@ -213,7 +213,7 @@ namespace TickZoom.Interceptors
         		throw new TickZoomException("Strategy must be flat before setting a short limit entry.");
         	}
         	orders.sellLimit.Price = price;
-        	orders.sellLimit.Positions = lots;
+        	orders.sellLimit.Positions = (int) lots;
         	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.sellLimit.Status = OrderStatus.NextBar;
         	} else {
@@ -237,7 +237,7 @@ namespace TickZoom.Interceptors
         		throw new TickZoomException("Strategy must be flat before setting a long stop entry.");
         	}
         	orders.buyStop.Price = price;
-        	orders.buyStop.Positions = lots;
+        	orders.buyStop.Positions = (int) lots;
         	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.buyStop.Status = OrderStatus.NextBar;
         	} else {
@@ -261,7 +261,7 @@ namespace TickZoom.Interceptors
         		throw new TickZoomException("Strategy must be flat before setting a short stop entry.");
         	}
         	orders.sellStop.Price = price;
-        	orders.sellStop.Positions = lots;
+        	orders.sellStop.Positions = (int) lots;
         	if( isNextBar && !orders.buyLimit.IsActive) {
 	        	orders.sellStop.Status = OrderStatus.NextBar;
         	} else {

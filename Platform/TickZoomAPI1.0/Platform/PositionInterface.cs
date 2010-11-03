@@ -38,7 +38,7 @@ namespace TickZoom.Api
 	
 	public interface PositionInterface {
 		[Obsolete("Please use Current instead.",true)]
-		double Signal {
+		int Signal {
 			get;
 			set;
 		}
@@ -47,7 +47,7 @@ namespace TickZoom.Api
 		/// What is the current position? Returns a positive size for a long 
 		/// and a negative size for a short position. Zero for a flat.
 		/// </summary>
-		double Current {
+		int Current {
 			get;
 		}
 		
@@ -58,11 +58,11 @@ namespace TickZoom.Api
 		/// <exception cref="TickZoomException">
 		/// if position parameter has the same value as the current position.
 		/// </exception>
-		void Change( double position);
+		void Change( int position);
 		
-		void Change( double position, double price, TimeStamp time);
+		void Change( int  position, double price, TimeStamp time);
 		
-		void Change( SymbolInfo symbol, double position, double price, TimeStamp time);
+		void Change( SymbolInfo symbol, int position, double price, TimeStamp time);
 		
 		void Change( SymbolInfo symbol, LogicalFill fill);
 		
@@ -127,7 +127,7 @@ namespace TickZoom.Api
 		/// <summary>
 		/// What is the size of the position? Returns the absolute value of the current position.
 		/// </summary>
-		double Size {
+		int Size {
 			get;
 		}
 

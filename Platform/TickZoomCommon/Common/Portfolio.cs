@@ -184,7 +184,7 @@ namespace TickZoom.Common
 		private void TryMergeSingleSymbolPositions()
 		{
 			if( portfolioType != PortfolioType.SingleSymbol) return;
-			double internalSignal = 0;
+			int internalSignal = 0;
 			double totalPrice = 0;
 			int changeCount = 0;
 			int count = activeWatchers.Count;

@@ -38,6 +38,6 @@ namespace TickZoom.Api
 		TimeStamp UtcTime { get; }
 		TimeStamp PostedTime { get; }
 		double Price { get; }
-		double Position { get; }
+		int Position { get; }
 	}
 }

@@ -446,7 +446,7 @@ namespace TickZoom.FIX
 			return false;
 		}
 		
-		public abstract void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, Iterable<LogicalOrder> orders);
+		public abstract void PositionChange(Receiver receiver, SymbolInfo symbol, int signal, Iterable<LogicalOrder> orders);
 		
 	 	protected volatile bool isDisposed = false;
 	    public void Dispose() 

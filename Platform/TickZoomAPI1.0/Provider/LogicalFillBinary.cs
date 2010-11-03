@@ -35,14 +35,14 @@ namespace TickZoom.Api
 	    
 	public struct LogicalFillBinary : LogicalFill
 	{
-		private double position;
+		private int position;
 		private double price;
 		private TimeStamp time;
 		private TimeStamp utcTime;
 		private TimeStamp postedTime;
 		private int orderId;
 		private long orderSerialNumber;
-		public LogicalFillBinary(double position, double price, TimeStamp time, TimeStamp utcTime, int orderId, long orderSerialNumber)
+		public LogicalFillBinary(int position, double price, TimeStamp time, TimeStamp utcTime, int orderId, long orderSerialNumber)
 		{
 			this.position = position;
 			this.price = price;
@@ -81,7 +81,7 @@ namespace TickZoom.Api
 			get { return price; }
 		}
 
-		public double Position {
+		public int Position {
 			get { return position; }
 		}
 		
@@ -112,7 +112,7 @@ namespace TickZoom.Api
 			var orderId = int.Parse(fields[field++]);
 			var orderSerialNumber = long.Parse(fields[field++]);
 			var price = double.Parse(fields[field++]);
-			var position = double.Parse(fields[field++]);
+			var position = int.Parse(fields[field++]);
 			var time = TimeStamp.Parse(fields[field++]);
 			var utcTime = TimeStamp.Parse(fields[field++]);
 			var postedTime = TimeStamp.Parse(fields[field++]);

@@ -56,7 +56,7 @@ namespace TickZoom.Api
 			get;
 		}
 		
-		double Size {
+		int Size {
 			get;
 			set;
 		}

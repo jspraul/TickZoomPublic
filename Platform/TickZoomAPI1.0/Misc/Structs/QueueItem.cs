@@ -50,7 +50,7 @@ namespace TickZoom.Api
     public struct PositionChange {
 	    public int Receiver;
         public long Symbol;
-	    public double Position;
+	    public int Position;
 	    public int OrdersCount;
 	    public int OrdersMemoryId;
     }

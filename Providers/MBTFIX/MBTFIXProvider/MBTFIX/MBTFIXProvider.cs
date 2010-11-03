@@ -400,7 +400,7 @@ namespace TickZoom.MBTFIX
 				if(debug) log.Debug("PositionUpdate Complete.");
 				TryEndRecovery();
 			} else {
-				double position = packetFIX.LongQuantity + packetFIX.ShortQuantity;
+				var position = packetFIX.LongQuantity + packetFIX.ShortQuantity;
 				SymbolInfo symbolInfo;
 				try {
 					symbolInfo = Factory.Symbol.LookupSymbol(packetFIX.Symbol);
@@ -509,7 +509,7 @@ namespace TickZoom.MBTFIX
 			if( GetSymbolStatus(symbolInfo)) {
 				var algorithm = GetAlgorithm(symbolInfo.BinaryIdentifier);
 				var order = GetPhysicalOrder( packetFIX.ClientOrderId);
-				var fillPosition = (double) packetFIX.LastQuantity * SideToSign(packetFIX.Side);
+				var fillPosition = packetFIX.LastQuantity * SideToSign(packetFIX.Side);
 				var executionTime = new TimeStamp(packetFIX.TransactionTime);
 				var configTime = executionTime;
 				configTime.AddSeconds( timeZone.UtcOffset(executionTime));
@@ -677,9 +677,6 @@ namespace TickZoom.MBTFIX
 			}
 			var order = UpdateOrReplaceOrder( packetFIX, packetFIX.OriginalClientOrderId, packetFIX.ClientOrderId, orderState, note);
 			if( order != null) {
-				lock( openOrdersLocker) {
-					openOrders[packetFIX.ClientOrderId] = order;
-				}
 				RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
 			}
 			return order;
@@ -693,23 +690,13 @@ namespace TickZoom.MBTFIX
 				log.Error("Error looking up " + packetFIX.Symbol + ": " + ex.Message);
 				return null;
 			}
-			PhysicalOrder order;
-			try {
-				order = GetOrderById(clientOrderId);
-			} catch( ApplicationException) {
-				var type = GetOrderType( packetFIX);
-				var side = GetOrderSide( packetFIX);
-				var logicalId = GetLogicalOrderId( packetFIX);
-				order = Factory.Utility.PhysicalOrder(orderState, symbolInfo, side, type, packetFIX.Price, packetFIX.LeavesQuantity, logicalId, 0, newClientOrderId, null);
-				lock( openOrdersLocker) {
-					openOrders[packetFIX.ClientOrderId] = order;
-				}
-			}
-			order.BrokerOrder = newClientOrderId;
-			order.OrderState = orderState;
 			int quantity = packetFIX.LeavesQuantity;
+			PhysicalOrder order;
+			var type = GetOrderType( packetFIX);
+			var side = GetOrderSide( packetFIX);
+			var logicalId = GetLogicalOrderId( packetFIX);
+			order = Factory.Utility.PhysicalOrder(orderState, symbolInfo, side, type, packetFIX.Price, packetFIX.LeavesQuantity, logicalId, 0, newClientOrderId, null);
 			if( quantity > 0) {
-				order.Size = quantity;
 				if( info && (LogRecovery || !IsRecovery) ) {
 					if( debug) log.Debug("Updated order: " + order + ".  Executed: " + packetFIX.CumulativeQuantity + " Remaining: " + packetFIX.LeavesQuantity);
 				}
@@ -718,7 +705,9 @@ namespace TickZoom.MBTFIX
 					if( debug) log.Debug("Order Completely Filled. Id: " + packetFIX.ClientOrderId + ".  Executed: " + packetFIX.CumulativeQuantity);
 				}
 			}
-			
+			lock( openOrdersLocker) {
+				openOrders[newClientOrderId] = order;
+			}
 			if( trace) {
 				log.Trace("Updated order list:");
 				lock( openOrdersLocker) {
@@ -796,7 +785,7 @@ namespace TickZoom.MBTFIX
 			}
 		}
 		
-		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double desiredPosition, Iterable<LogicalOrder> inputOrders)
+		public override void PositionChange(Receiver receiver, SymbolInfo symbol, int desiredPosition, Iterable<LogicalOrder> inputOrders)
 		{
 			if( !IsRecovered) {
 				throw new ApplicationException("PositionChange event received prior to completing FIX recovery. Current connection status is: " + ConnectionStatus);

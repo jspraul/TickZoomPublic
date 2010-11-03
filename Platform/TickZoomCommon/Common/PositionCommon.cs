@@ -41,7 +41,7 @@ namespace TickZoom.Common
 	public class PositionCommon : PositionInterface
 	{
 		protected Color signalColor = Color.Blue;
-		protected double current = 0;
+		protected int current = 0;
 		protected TimeStamp time;
 		protected double price = 0;
 		protected int orderId = 0;
@@ -54,16 +54,16 @@ namespace TickZoom.Common
 		}
 		
 		[Obsolete("Please use Current instead.",true)]
-		public virtual double Signal {
+		public virtual int Signal {
 			get { return current; }
 			set { }
 		}
 		
-		public virtual double Current {
+		public virtual int Current {
 			get { return current; }
 		}
 		
-		public void Change( double position) {
+		public void Change( int position) {
 			double price;
 			Tick tick = model.Data.Ticks[0];
 			if( position > current) {
@@ -76,7 +76,7 @@ namespace TickZoom.Common
 			Change( position, price, model.Data.Ticks[0].Time);
 		}
 		
-		public virtual void Change( SymbolInfo symbol, double position, double price, TimeStamp time) {
+		public virtual void Change( SymbolInfo symbol, int position, double price, TimeStamp time) {
 			Change(position,price,time);
 		}
 		
@@ -85,7 +85,7 @@ namespace TickZoom.Common
 			Change(fill.Position,fill.Price,fill.Time);
 		}
 		
-		public virtual void Change( double position, double price, TimeStamp time) {
+		public virtual void Change( int position, double price, TimeStamp time) {
 			if( current != position) {
 				this.time = time;
 				this.price = price;
@@ -148,7 +148,7 @@ namespace TickZoom.Common
 			get { return current < 0; }
 		}
 
-		public double Size {
+		public int Size {
 			get { return Math.Abs(current); }
 		}
 		
