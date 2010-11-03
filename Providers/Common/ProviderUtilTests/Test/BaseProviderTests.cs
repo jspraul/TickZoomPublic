@@ -144,12 +144,10 @@ namespace TickZoom.Test
 			CreateOrder(provider, verify, TradeDirection.Exit,orderType,desiredPositions,actualPosition,actualPosition);
 		}
 		
-		private long nextSerialNumber = 1000000L;
 		public void CreateOrder( Provider provider, VerifyFeed verify, TradeDirection tradeDirection, OrderType orderType, int desiredPositions, int actualPosition, int strategyPosition) {
   			ActiveList<LogicalOrder> list = new ActiveList<LogicalOrder>();
   			LogicalOrder order = Factory.Engine.LogicalOrder(symbol,Interlocked.Increment(ref nextOrderId));
   			order.StrategyId = 1;
-  			order.SerialNumber = Interlocked.Increment(ref nextSerialNumber);
   			order.StrategyPosition = strategyPosition;
   			order.TradeDirection = tradeDirection;
   			order.Type = orderType;

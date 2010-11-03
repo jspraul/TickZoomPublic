@@ -763,7 +763,9 @@ namespace TickZoom.Common
 		
 		public void OnCancelBrokerOrder(SymbolInfo symbol, object origBrokerOrder)
 		{
-			PerformCompareInternal();
+			lock( performCompareLocker) {
+				PerformCompareInternal();
+			}
 			if( SyncTicks.Enabled) {
 				tickSync.RemovePhysicalOrder( origBrokerOrder);
 			}

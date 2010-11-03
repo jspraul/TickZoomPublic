@@ -100,7 +100,6 @@ namespace TickZoom.Api
 		
 		long SerialNumber {
 			get;
-			set;
 		}
 		
 	}

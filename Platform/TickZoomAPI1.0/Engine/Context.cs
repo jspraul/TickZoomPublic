@@ -41,5 +41,6 @@ namespace TickZoom.Api
 		}
 		void AddOrder(LogicalOrder order);
 		int IncrementOrderId();
+		long IncrementOrderSerialNumber();
 	}
 }
