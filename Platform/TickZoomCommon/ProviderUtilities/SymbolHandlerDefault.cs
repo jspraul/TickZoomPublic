@@ -120,9 +120,9 @@ namespace TickZoom.Common
 				return;
 			}
 			if( symbol.TimeAndSales != TimeAndSales.ActualTrades) {
-				if( !errorWrongLevel1Type) {
+				if( !errorWrongTimeAndSalesType) {
 					log.Error( "Received " + TimeAndSales.ActualTrades + " trade but " + symbol + " is configured for TimeAndSales = " + symbol.TimeAndSales + " in the symbol dictionary.");
-					errorWrongLevel1Type = true;
+					errorWrongTimeAndSalesType = true;
 				}
 				return;
 			}

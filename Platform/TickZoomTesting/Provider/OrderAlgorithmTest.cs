@@ -37,6 +37,7 @@ using TickZoom.Interceptors;
 namespace Orders
 {
 	public class MockContext : Context {
+		int modelId = 0;
 		int logicalOrderId = 0;
 		long logicalOrderSerialNumber = 0;
 		public BinaryStore TradeData {
@@ -49,6 +50,9 @@ namespace Orders
 		}
 		public long IncrementOrderSerialNumber() {
 			return Interlocked.Increment(ref logicalOrderSerialNumber);
+		}
+		public int IncrementModelId() {
+			return Interlocked.Increment(ref modelId);
 		}
 	}
 	[TestFixture]

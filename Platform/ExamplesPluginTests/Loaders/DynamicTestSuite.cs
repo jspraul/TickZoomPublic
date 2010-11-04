@@ -54,7 +54,7 @@ namespace Loaders
 			foreach( var testSettings in autoTestFixture.GetAutoTestSettings() ) {
 				if( (testSettings.Mode & autoTestMode) != autoTestMode) continue;
 				testSettings.Mode = autoTestMode;
-				testSettings.StoreKnownGood = testSettings.StoreKnownGood && testSettings.Mode == AutoTestMode.Historical;
+//				testSettings.StoreKnownGood = testSettings.StoreKnownGood && testSettings.Mode == AutoTestMode.Historical;
 				var fixture = new NUnitTestFixture(userFixtureType, new object[] { testSettings } );
 				fixture.TestName.Name = testSettings.Name;
 				suite.Add(fixture);

@@ -34,6 +34,7 @@ namespace TickZoom.Api
 		Exit,
 		Reverse,
 		ExitStrategy,
+		MaxValue,
 	}
 	public enum OrderSide : byte {
 		Buy,

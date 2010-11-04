@@ -315,6 +315,9 @@ namespace TickZoom.Common
 		}
 		
 		ActiveList<LogicalOrder> allOrders = new ActiveList<LogicalOrder>();
+		public void AddOrder( LogicalOrder order) {
+			allOrders.AddLast(order);
+		}
 		public Iterable<LogicalOrder> AllOrders {
 			get {
 				return allOrders;

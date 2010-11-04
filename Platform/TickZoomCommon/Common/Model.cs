@@ -61,12 +61,10 @@ namespace TickZoom.Common
 		List<EventType> events = new List<EventType>();
 		private bool quietMode = false;
 		private int id;
-		private static int nextId = 0;
 		
 		public Model()
 		{
 			name = GetType().Name;
-			id = Interlocked.Increment(ref nextId);
 			fullName = name;
 			drawing = new DrawingCommon(this);
 			formula = new Formula(this);
@@ -301,7 +299,8 @@ namespace TickZoom.Common
 		[Browsable(false)]
 		public Context Context {
 			get { return context; }
-			set { context = value; }
+			set { context = value;
+				id = context.IncrementOrderId(); }
 		}
 		
 		public virtual void Save( string fileName) {

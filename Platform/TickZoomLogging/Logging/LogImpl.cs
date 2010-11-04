@@ -383,8 +383,6 @@ namespace TickZoom.Logging
 			builder.Append(")");
 			return builder.ToString();
 		}
-		
-		
 
 		private string GetTypeName(Type type) {
 			Type[] generics = type.GetGenericArguments();

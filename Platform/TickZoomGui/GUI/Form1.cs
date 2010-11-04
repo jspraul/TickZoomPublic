@@ -704,7 +704,7 @@ namespace TickZoom
    			try {
 	   			TickEngine engine = Factory.Engine.TickEngine;
 	   			isEngineLoaded = true;
-   			} catch( Exception ex) {
+   			} catch( Exception) {
    				string msg = "Sorry, cannot find an engine compatible with this version.";
    				log.Notice(msg);
    			}

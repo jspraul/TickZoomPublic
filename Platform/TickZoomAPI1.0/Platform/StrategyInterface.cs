@@ -61,5 +61,6 @@ namespace TickZoom.Api
 		bool IsActiveOrdersChanged { get; set; }
 		
 		bool TryGetOrderById( int id, out LogicalOrder order);
+		void AddOrder( LogicalOrder order);
 	}
 }
