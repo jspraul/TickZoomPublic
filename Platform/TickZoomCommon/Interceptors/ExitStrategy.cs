@@ -38,7 +38,10 @@ namespace TickZoom.Interceptors
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(ExitStrategy));
 		private bool controlStrategy = false;
 		private double strategySignal = 0;
-		private LogicalOrder stopLossOrder;
+		private LogicalOrder buyStopLossOrder;
+		private LogicalOrder sellStopLossOrder;
+		private LogicalOrder breakEvenBuyStopOrder;
+		private LogicalOrder breakEvenSellStopOrder;
 		private LogicalOrder marketOrder;
 		private double stopLoss = 0;
 		private double targetProfit = 0;
@@ -51,7 +54,6 @@ namespace TickZoom.Interceptors
 		private double weeklyMaxLoss = 0;
 		private double monthlyMaxProfit = 0;
 		private double monthlyMaxLoss = 0;
-		private LogicalOrder breakEvenStopOrder;
 		private double breakEvenStop = 0;
 		private double pnl = 0;
 		private double maxPnl = 0;
@@ -88,14 +90,26 @@ namespace TickZoom.Interceptors
 			marketOrder.TradeDirection = TradeDirection.ExitStrategy;
 			marketOrder.Tag = "ExitStrategy" ;
 			Strategy.AddOrder(marketOrder);
-			breakEvenStopOrder = Factory.Engine.LogicalOrder(Strategy.Data.SymbolInfo,Strategy);
-			breakEvenStopOrder.TradeDirection = TradeDirection.ExitStrategy;
-			breakEvenStopOrder.Tag = "ExitStrategy" ;
-			Strategy.AddOrder(breakEvenStopOrder);
-			stopLossOrder = Factory.Engine.LogicalOrder(Strategy.Data.SymbolInfo,Strategy);
-			stopLossOrder.TradeDirection = TradeDirection.ExitStrategy;
-			stopLossOrder.Tag = "ExitStrategy" ;
-			Strategy.AddOrder(stopLossOrder);
+			breakEvenBuyStopOrder = Factory.Engine.LogicalOrder(Strategy.Data.SymbolInfo,Strategy);
+			breakEvenBuyStopOrder.TradeDirection = TradeDirection.ExitStrategy;
+			breakEvenBuyStopOrder.Type = OrderType.BuyStop;
+			breakEvenBuyStopOrder.Tag = "ExitStrategy" ;
+			Strategy.AddOrder(breakEvenBuyStopOrder);
+			breakEvenSellStopOrder = Factory.Engine.LogicalOrder(Strategy.Data.SymbolInfo,Strategy);
+			breakEvenSellStopOrder.TradeDirection = TradeDirection.ExitStrategy;
+			breakEvenSellStopOrder.Type = OrderType.SellStop;
+			breakEvenSellStopOrder.Tag = "ExitStrategy" ;
+			Strategy.AddOrder(breakEvenSellStopOrder);
+			buyStopLossOrder = Factory.Engine.LogicalOrder(Strategy.Data.SymbolInfo,Strategy);
+			buyStopLossOrder.TradeDirection = TradeDirection.ExitStrategy;
+			buyStopLossOrder.Type = OrderType.BuyStop;
+			buyStopLossOrder.Tag = "ExitStrategy" ;
+			Strategy.AddOrder(buyStopLossOrder);
+			sellStopLossOrder = Factory.Engine.LogicalOrder(Strategy.Data.SymbolInfo,Strategy);
+			sellStopLossOrder.TradeDirection = TradeDirection.ExitStrategy;
+			sellStopLossOrder.Type = OrderType.SellStop;
+			sellStopLossOrder.Tag = "ExitStrategy" ;
+			Strategy.AddOrder(sellStopLossOrder);
 //			log.WriteFile( LogName + " chain = " + Chain.ToChainString());
 			if( IsTrace) Log.Trace(Strategy.FullName+".Initialize()");
 			Strategy.Drawing.Color = Color.Black;
@@ -195,8 +209,10 @@ namespace TickZoom.Interceptors
 		
 		private void CancelOrders() {
 			marketOrder.Status = OrderStatus.Inactive;
-			breakEvenStopOrder.Status = OrderStatus.Inactive;
-			stopLossOrder.Status = OrderStatus.Inactive;
+			breakEvenBuyStopOrder.Status = OrderStatus.Inactive;
+			breakEvenSellStopOrder.Status = OrderStatus.Inactive;
+			buyStopLossOrder.Status = OrderStatus.Inactive;
+			sellStopLossOrder.Status = OrderStatus.Inactive;
 		}
 		
 		private void flattenSignal(Tick tick, string tag) {
@@ -235,15 +251,18 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void processStopLoss(Tick tick) {
-			if( position.IsLong) {
-				stopLossOrder.Type = OrderType.SellStop;
-				stopLossOrder.Price = entryPrice - stopLoss;
-			}
 			if( position.IsShort) {
-				stopLossOrder.Type = OrderType.BuyStop;
-				stopLossOrder.Price = entryPrice + stopLoss;
+				buyStopLossOrder.Price = entryPrice + stopLoss;
+				buyStopLossOrder.Status = OrderStatus.Active;
+			} else {
+				buyStopLossOrder.Status = OrderStatus.Inactive;
 			}
-			stopLossOrder.Status = OrderStatus.Active;
+			if( position.IsLong) {
+				sellStopLossOrder.Price = entryPrice - stopLoss;
+				sellStopLossOrder.Status = OrderStatus.Active;
+			} else {
+				sellStopLossOrder.Status = OrderStatus.Inactive;
+			}
 		}
 		
 		private void processTrailStop(Tick tick) {
@@ -268,23 +287,31 @@ namespace TickZoom.Interceptors
 	
 		private void processBreakEven(Tick tick) {
 			if( pnl >= breakEven) {
-				breakEvenStopOrder.Tag = "Break Even";
-				if( !breakEvenStopOrder.IsActive) {
-					breakEvenStopOrder.Status = OrderStatus.Active;
-					if( position.IsLong ) {
-						breakEvenStopOrder.Type = OrderType.SellStop;
-						breakEvenStopOrder.Price = entryPrice + breakEvenStop;
+				if( position.IsLong ) {
+					if( !breakEvenSellStopOrder.IsActive) {
+						breakEvenSellStopOrder.Price = entryPrice + breakEvenStop;
+						breakEvenSellStopOrder.Status = OrderStatus.Active;
 					}
+				} else {
+					breakEvenSellStopOrder.Status = OrderStatus.Inactive;
+				}
 					
-					if( position.IsShort ) {
-						breakEvenStopOrder.Type = OrderType.BuyStop;
-						breakEvenStopOrder.Price = entryPrice - breakEvenStop;
+				if( position.IsShort ) {
+					if( !breakEvenBuyStopOrder.IsActive) {
+						breakEvenBuyStopOrder.Price = entryPrice - breakEvenStop;
+						breakEvenBuyStopOrder.Status = OrderStatus.Active;
 					}
+				} else {
+					breakEvenBuyStopOrder.Status = OrderStatus.Inactive;
 				}
 			}
-			if( breakEvenStopOrder.IsActive && pnl <= breakEvenStop) {
+			if( breakEvenBuyStopOrder.IsActive && pnl <= breakEvenStop) {
 				LogExit("Break Even Exit at " + breakEvenStop);
-				flattenSignal(breakEvenStopOrder,tick);
+				flattenSignal(breakEvenBuyStopOrder,tick);
+			}
+			if( breakEvenSellStopOrder.IsActive && pnl <= breakEvenStop) {
+				LogExit("Break Even Exit at " + breakEvenStop);
+				flattenSignal(breakEvenSellStopOrder,tick);
 			}
 		}
 		
