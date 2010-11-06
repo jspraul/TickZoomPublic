@@ -807,7 +807,7 @@ namespace TickZoom.MBTFIX
 			
 			var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			if( SyncTicks.Enabled ) {
-				if( trace) log.Trace("SyncTicks: RemovePositionChange");
+				tickSync.AddProcessPhysicalOrders();
 				tickSync.RemovePositionChange();
 			}				
 		}

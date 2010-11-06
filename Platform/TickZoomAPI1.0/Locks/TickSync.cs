@@ -34,7 +34,8 @@ namespace TickZoom.Api
 		private static readonly bool debug = log.IsDebugEnabled;		
 		private static readonly bool trace = log.IsTraceEnabled;		
 		private int ticks = 0;
-		private int positionChanges = 0;
+		private int positionChange = 0;
+		private int processPhysical = 0;
 		private int physicalFills = 0;
 		private int physicalOrders = 0;
 		private SymbolInfo symbol;
@@ -49,7 +50,8 @@ namespace TickZoom.Api
 			}
 		}		
 		private bool CompletedInternal {
-			get { var value = ticks == 0 && positionChanges == 0 &&
+			get { var value = ticks == 0 && positionChange == 0 &&
+					processPhysical == 0 &&
 					physicalOrders == 0 && physicalFills == 0;
 					return value;
 			}
@@ -64,7 +66,8 @@ namespace TickZoom.Api
 		public void ForceClear() {
 			var ticks = Interlocked.Exchange(ref this.ticks, 0);
 			var orders = Interlocked.Exchange(ref physicalOrders, 0);
-			var changes = Interlocked.Exchange(ref positionChanges, 0);
+			var process = Interlocked.Exchange(ref processPhysical, 0);
+			var changes = Interlocked.Exchange(ref positionChange, 0);
 			var fills = Interlocked.Exchange(ref physicalFills, 0);
 			Unlock();
 			if( trace) log.Trace(symbol + ": Clear() " + this);
@@ -72,7 +75,7 @@ namespace TickZoom.Api
 		
 		public override string ToString()
 		{
-			return "TickSync("+ticks+","+physicalOrders+","+positionChanges+","+physicalFills+")";
+			return "TickSync("+ticks+","+physicalOrders+","+positionChange+","+processPhysical+","+physicalFills+")";
 		}
 		
 		public void AddTick() {
@@ -119,14 +122,29 @@ namespace TickZoom.Api
 			}
 		}
 		public void AddPositionChange() {
-			var value = Interlocked.Increment( ref positionChanges);
+			var value = Interlocked.Increment( ref positionChange);
 			if( trace) log.Trace(symbol + ": AddPositionChange("+value+")");
 		}
 		public void RemovePositionChange() {
-			var value = Interlocked.Decrement( ref positionChanges);
+			var value = Interlocked.Decrement( ref positionChange);
 			if( trace) log.Trace(symbol + ": RemovePositionChange("+value+")");
 			if( value < 0) {
-				log.Warn(symbol + ": Completed: value below zero: " + positionChanges);
+				log.Warn(symbol + ": Completed: value below zero: " + positionChange);
+			}
+			if( value < 0) {
+				System.Diagnostics.Debugger.Break();
+			}
+		}
+		
+		public void AddProcessPhysicalOrders() {
+			var value = Interlocked.Increment( ref processPhysical);
+			if( trace) log.Trace(symbol + ": AddProcessPhysicalOrders("+value+")");
+		}
+		public void RemoveProcessPhysicalOrders() {
+			var value = Interlocked.Decrement( ref processPhysical);
+			if( trace) log.Trace(symbol + ": RemoveProcessPhysicalOrders("+value+")");
+			if( value < 0) {
+				log.Warn(symbol + ": Completed: value below zero: " + processPhysical);
 			}
 			if( value < 0) {
 				System.Diagnostics.Debugger.Break();
@@ -139,6 +157,14 @@ namespace TickZoom.Api
 		
 		public bool SentPhysicalFills {
 			get { return physicalFills > 0; }
+		}
+		
+		public bool SentPositionChange {
+			get { return positionChange > 0; }
+		}
+		
+		public bool SentProcessPhysicalOrders {
+			get { return processPhysical > 0; }
 		}
 	}
 }

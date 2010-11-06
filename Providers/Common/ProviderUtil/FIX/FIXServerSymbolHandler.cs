@@ -62,7 +62,10 @@ namespace TickZoom.FIX
 	    	if( tickSync.Completed) {
 		    	if( trace) log.Trace("TryCompleteTick()");
 		    	UnLockTickSync();
-	    	}
+			} else if( tickSync.SentProcessPhysicalOrders) {
+				fillSimulator.ReprocessOrders();
+				tickSync.RemoveProcessPhysicalOrders();
+			}
 	    }
 		
 		public int ActualPosition {
