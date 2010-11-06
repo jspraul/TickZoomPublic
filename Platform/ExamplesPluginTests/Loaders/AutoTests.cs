@@ -68,6 +68,18 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.Historical,
+			    Name = "ExampleDualStrategyTest",
+			    Loader = new ExampleDualStrategyLoader(),
+				Symbols = "Daily4Sim",
+				StoreKnownGood = storeKnownGood,
+				ShowCharts = false,
+				StartTime = new TimeStamp( 1800, 1, 1),
+				EndTime = new TimeStamp( 1990, 1, 1),
+				IntervalDefault = Intervals.Day1,
+			});
+			
+			list.Add( new AutoTestSettings {
 			    Mode = AutoTestMode.All,
 			    Name = "LimitOrderTest",
 			    Loader = new TestLimitOrderLoader(),

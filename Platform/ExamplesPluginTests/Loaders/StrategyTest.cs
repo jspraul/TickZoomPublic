@@ -546,12 +546,12 @@ namespace Loaders
 				if( StoreKnownGood) {
 					File.Copy(newPath,knownGoodPath,true);
 				}
-				goodStatsMap.Clear();
-				LoadStats(knownGoodPath,goodStatsMap);
-			}
-			if( File.Exists(knownGoodPath)) {
 				testStatsMap.Clear();
 				LoadStats(newPath,testStatsMap);
+			}
+			if( File.Exists(knownGoodPath)) {
+				goodStatsMap.Clear();
+				LoadStats(knownGoodPath,goodStatsMap);
 			}
 		}
 		
