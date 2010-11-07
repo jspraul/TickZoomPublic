@@ -43,6 +43,12 @@ namespace TickZoom.Common
 			this.position = strategy.Result.Position;
 		}
 		
+		public string Name {
+			get {
+				return strategy.Name;
+			}
+		}
+		
 		public bool IsActive {
 			get { return this.strategy.IsActive; }
 		}

@@ -85,16 +85,6 @@ namespace TickZoom.Api
 			set;
 		}
 		
-		[Obsolete("Use OnGetFitness() instead.")]
-		FitnessAware FitnessCallback {
-			get;
-			set;
-		}
-		
-		double Fitness {
-			get;
-		}
-		
 		string OptimizeHeader {
 			get;
 		}

@@ -128,6 +128,10 @@
       <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
       <Name>Charting</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ExamplesPlugin\Examples.csproj">
+      <Project>{B1A8F8F4-F7C9-46DC-B4BE-F08394778EF4}</Project>
+      <Name>Examples</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>

@@ -341,6 +341,7 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void CreateLogicalFillHelper(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
+			if( debug) log.Debug("Changing actual position from " + this.actualPosition + " to " + (actualPosition+size) + ". Fill size is " + size);
 			this.actualPosition += size;
 			if( onPositionChange != null) {
 				onPositionChange( actualPosition);
@@ -383,9 +384,12 @@ namespace TickZoom.Interceptors
 		
 		public int ActualPosition {
 			get { return actualPosition; }
-			set { actualPosition = value;
-				if( onPositionChange != null) {
-					onPositionChange( actualPosition);
+			set { if( actualPosition != value) {
+					if( debug) log.Debug("Setter: ActualPosition changed from " + actualPosition + " to " + value);
+					actualPosition = value;
+					if( onPositionChange != null) {
+						onPositionChange( actualPosition);
+					}
 				}
 			}
 		}

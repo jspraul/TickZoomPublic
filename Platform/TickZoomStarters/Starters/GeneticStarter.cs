@@ -341,7 +341,6 @@ namespace TickZoom.Starters
 			for( int i=0; i<engineIterations.Count; i++) {
 				TickEngine engine = engineIterations[i];
 				engine.WaitTask();
-				generation[i].Fitness = engine.Fitness;
 				#if CLRPROFILER
 		        CLRProfilerControl.LogWriteLine(tasksRemaining + " tasks remaining"); 
 		        #endif
