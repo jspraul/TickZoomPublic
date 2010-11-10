@@ -130,21 +130,27 @@ namespace TickZoom.Common
 				}
 			} while( portfolioType == PortfolioType.None);
 			
+			if( debug) log.Debug("Configuring Portfolio " + Name + " for sub strategies/portfolios..");
+			
 			// Create strategy watchers
 			foreach( var strategy in strategies) {
-				strategy.OnActiveChange += HandleActiveChange;
-				if( portfolioType == PortfolioType.SingleSymbol) {
-					strategy.AddEventListener(EventType.LogicalFill,this);
-				}
-				StrategyWatcher watcher = new StrategyWatcher(strategy);
-				watchers.Add( strategy, watcher);
-				if( strategy.IsActive) {
-					activeWatchers.Add( watcher);
-				}
+				SetupWatcher( strategy);
 			}
 			
 			foreach( var portfolio in portfolios) {
-				activeWatchers.Add( new StrategyWatcher(portfolio));
+				SetupWatcher( portfolio);
+			}
+		}
+		
+		private void SetupWatcher( StrategyInterface strategy) {
+			if( portfolioType == PortfolioType.SingleSymbol) {
+				strategy.OnActiveChange += HandleActiveChange;
+				strategy.AddEventListener(EventType.LogicalFill,this);
+			}
+			var watcher = new StrategyWatcher(strategy);
+			watchers.Add( strategy, watcher);
+			if( strategy.IsActive) {
+				activeWatchers.Add( watcher);
 			}
 		}
 		
@@ -176,7 +182,8 @@ namespace TickZoom.Common
 		}
 
 		public void ProcessFill() {
-			if( trace) log.Trace("LogicalFill event found.");
+			if( trace) log.Trace("LogicalFill event found for " + Name);
+			log.Trace("LogicalFill event found for " + Name);
 			TryMergeSingleSymbolPositions();
 			TryMergeMultiSymbolEquity();
 		}
@@ -191,6 +198,7 @@ namespace TickZoom.Common
 			for(int i=0; i<count; i++) {
 				var watcher = activeWatchers[i];
 				if( !watcher.IsActive) continue;
+				if( debug) log.Debug("Watcher " + watcher.Name + " position="+watcher.Position.Current);
 				internalSignal += watcher.Position.Current;
 				if (watcher.PositionChanged) {
 					totalPrice += watcher.Position.Price;
@@ -201,6 +209,7 @@ namespace TickZoom.Common
 			if (changeCount > 0) {
 				double averagePrice = (totalPrice / changeCount).Round();
 				Position.Change(internalSignal, averagePrice, Ticks[0].Time);
+				if( debug) log.Debug( "Resulting position=" + Position.Current);
 				Result.Position.Copy(Position);
 			}
 		}
