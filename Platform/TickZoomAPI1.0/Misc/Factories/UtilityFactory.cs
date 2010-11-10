@@ -40,7 +40,7 @@ namespace TickZoom.Api
 		VerifyFeed VerifyFeed();
 		FillHandler FillHandler();
 		FillHandler FillHandler(StrategyInterface strategy);
-		FillSimulator FillSimulator(SymbolInfo symbol);
+		FillSimulator FillSimulator(string name, SymbolInfo symbol);
 		BreakPointInterface BreakPoint();
 		PositionInterface Position(ModelInterface model);
 		PhysicalFill PhysicalFill(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order);

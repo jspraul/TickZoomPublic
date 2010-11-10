@@ -62,11 +62,11 @@ namespace TickZoom.Interceptors
 		private PhysicalOrderHandler confirmOrders;
 		private bool isBarData = false;
 		
-		public FillSimulatorPhysical(SymbolInfo symbol)
+		public FillSimulatorPhysical(string name, SymbolInfo symbol)
 		{
 			this.symbol = symbol;
 			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
-			this.log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical).FullName + "." + symbol.Symbol);
+			this.log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical).FullName + "." + name + "." + symbol.Symbol);
 		}
 		
 		public void OnOpen(TimeStamp time) {
