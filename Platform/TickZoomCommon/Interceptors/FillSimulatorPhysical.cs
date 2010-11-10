@@ -33,21 +33,21 @@ using TickZoom.Common;
 
 namespace TickZoom.Interceptors
 {
-
 	public class FillSimulatorPhysical : FillSimulator
 	{
-		private static readonly Log log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical));
-		private static readonly bool trace = log.IsTraceEnabled;
-		private static readonly bool debug = log.IsDebugEnabled;
-		private static readonly bool notice = log.IsNoticeEnabled;
+		private static readonly Log staticLog = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical));
+		private static readonly bool trace = staticLog.IsTraceEnabled;
+		private static readonly bool debug = staticLog.IsDebugEnabled;
+		private static readonly bool notice = staticLog.IsNoticeEnabled;
+		private Log log;
 
 		private Dictionary<string,PhysicalOrder> orderMap = new Dictionary<string, PhysicalOrder>();
-//		private object listLocker = new object();
 		private ActiveList<PhysicalOrder> increaseOrders = new ActiveList<PhysicalOrder>();
 		private ActiveList<PhysicalOrder> decreaseOrders = new ActiveList<PhysicalOrder>();
 		private ActiveList<PhysicalOrder> marketOrders = new ActiveList<PhysicalOrder>();
 		private NodePool<PhysicalOrder> nodePool = new NodePool<PhysicalOrder>();
-		private bool openTick = false;
+		private bool isOpenTick = false;
+		private TimeStamp openTime;
 
 		private Action<PhysicalFill> onPhysicalFill;
 		private Action<int> onPositionChange;
@@ -57,18 +57,21 @@ namespace TickZoom.Interceptors
 		private SymbolInfo symbol;
 		private int actualPosition = 0;
 		private TickSync tickSync;
-		private TickIO lastTick = Factory.TickUtil.TickIO();
+		private TickIO currentTick = Factory.TickUtil.TickIO();
 		private object processOrdersLocker = new object();
 		private PhysicalOrderHandler confirmOrders;
+		private bool isBarData = false;
 		
 		public FillSimulatorPhysical(SymbolInfo symbol)
 		{
 			this.symbol = symbol;
 			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+			this.log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical).FullName + "." + symbol.Symbol);
 		}
 		
-		public void OnOpen() {
-			openTick = true;
+		public void OnOpen(TimeStamp time) {
+			isOpenTick = true;
+			openTime = time;
 		}
 		
 		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol) {
@@ -127,19 +130,22 @@ namespace TickZoom.Interceptors
 		}
 		
 		public void ReprocessOrders() {
-			ProcessOrdersInternal( lastTick);
+			ProcessOrdersInternal( currentTick);
 		}
 		
 		public void ProcessOrders(Tick tick)
 		{
-			lastTick.Inject( ((TickIO) tick).Extract());
+			currentTick.Inject( ((TickIO) tick).Extract());
 			ProcessOrdersInternal( tick);
 		}
 
 		private void ProcessOrdersInternal(Tick tick) {
+			if( isOpenTick && tick.Time > openTime) {
+				isOpenTick = false;
+			}
 			lock( processOrdersLocker) {
 				if( trace) {
-					if( openTick) {
+					if( isOpenTick) {
 						log.Trace( "ProcessOrders( " + symbol + ", " + tick + " ) [OpenTick]") ;
 					} else {
 						log.Trace( "ProcessOrders( " + symbol + ", " + tick + " )") ;
@@ -163,7 +169,6 @@ namespace TickZoom.Interceptors
 					var order = node.Value;
 					OnProcessOrder(order, tick);
 				}
-				openTick = false;
 			}
 		}
 		
@@ -269,13 +274,12 @@ namespace TickZoom.Interceptors
 					break;
 			}
 		}
-		
 		private bool ProcessBuyStop(PhysicalOrder order, Tick tick)
 		{
 			bool retVal = false;
 			long price = tick.IsTrade ? tick.lPrice : tick.lAsk;
 			if (price >= order.Price.ToLong()) {
-				CreateLogicalFillHelper(order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
+				CreatePhysicalFillHelper(order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
 				retVal = true;
 			}
 			return retVal;
@@ -286,7 +290,7 @@ namespace TickZoom.Interceptors
 			bool retVal = false;
 			long price = tick.IsQuote ? tick.lBid : tick.lPrice;
 			if (price <= order.Price.ToLong()) {
-				CreateLogicalFillHelper(-order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
+				CreatePhysicalFillHelper(-order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
 				retVal = true;
 			}
 			return retVal;
@@ -295,7 +299,7 @@ namespace TickZoom.Interceptors
 		private bool ProcessBuyMarket(PhysicalOrder order, Tick tick)
 		{
 			double price = tick.IsQuote ? tick.Ask : tick.Price;
-			CreateLogicalFillHelper(order.Size, price, tick.Time, tick.UtcTime, order);
+			CreatePhysicalFillHelper(order.Size, price, tick.Time, tick.UtcTime, order);
 			return true;
 		}
 
@@ -311,7 +315,7 @@ namespace TickZoom.Interceptors
 				isFilled = true;
 			}
 			if (isFilled) {
-				CreateLogicalFillHelper(order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
+				CreatePhysicalFillHelper(order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
 			}
 			return isFilled;
 		}
@@ -319,7 +323,7 @@ namespace TickZoom.Interceptors
 		private bool ProcessSellMarket(PhysicalOrder order, Tick tick)
 		{
 			double price = tick.IsQuote ? tick.Bid : tick.Price;
-			CreateLogicalFillHelper(-order.Size, price, tick.Time, tick.UtcTime, order);
+			CreatePhysicalFillHelper(-order.Size, price, tick.Time, tick.UtcTime, order);
 			return true;
 		}
 
@@ -335,12 +339,12 @@ namespace TickZoom.Interceptors
 				isFilled = true;
 			}
 			if (isFilled) {
-				CreateLogicalFillHelper(-order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
+				CreatePhysicalFillHelper(-order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
 			}
 			return isFilled;
 		}
 		
-		private void CreateLogicalFillHelper(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
+		private void CreatePhysicalFillHelper(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			if( debug) log.Debug("Changing actual position from " + this.actualPosition + " to " + (actualPosition+size) + ". Fill size is " + size);
 			this.actualPosition += size;
 			if( onPositionChange != null) {
@@ -402,6 +406,11 @@ namespace TickZoom.Interceptors
 		public PhysicalOrderHandler ConfirmOrders {
 			get { return confirmOrders; }
 			set { confirmOrders = value; }
+		}
+		
+		public bool IsBarData {
+			get { return isBarData; }
+			set { isBarData = value; }
 		}
 	}
 }

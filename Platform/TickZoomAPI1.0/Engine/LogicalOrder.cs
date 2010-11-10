@@ -30,9 +30,9 @@ namespace TickZoom.Api
 {
 	public enum OrderStatus {
 		Inactive,
+		AutoCancel,
 		NextBar,
 		Active,
-//		Simulate,
 	}
 	
 	/// <summary>

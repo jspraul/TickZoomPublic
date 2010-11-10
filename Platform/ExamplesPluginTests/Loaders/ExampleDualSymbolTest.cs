@@ -43,7 +43,7 @@ namespace Loaders
 		ExampleOrderStrategy fullTicksStrategy;
 		Portfolio portfolio;
 		public ExampleDualSymbolTest() {
-			StoreKnownGood = false;
+			StoreKnownGood = true;
 			Symbols = "FullTick,Daily4Sim";
 		}
 		
@@ -126,6 +126,7 @@ namespace Loaders
 		[Test]
 		public void CompareAllRoundTurns() {
 			try {
+				var result = true;
 				TransactionPairs fourTicksRTs = fourTicksStrategy.Performance.ComboTrades;
 				TransactionPairs fullTicksRTs = fullTicksStrategy.Performance.ComboTrades;
 				for( int i=0; i<fourTicksRTs.Count && i<fullTicksRTs.Count; i++) {
@@ -133,9 +134,12 @@ namespace Loaders
 					TransactionPair fullRT = fullTicksRTs[i];
 					double fourEntryPrice = Math.Round(fourRT.EntryPrice,2).Round();
 					double fullEntryPrice = Math.Round(fullRT.EntryPrice,2).Round();
-					Assert.AreEqual(fourEntryPrice,fullEntryPrice,"Entry Price for Trade #" + i);
-					Assert.AreEqual(fourRT.ExitPrice,fullRT.ExitPrice,"Exit Price for Trade #" + i);
+					if( fourEntryPrice != fullEntryPrice || fourRT.ExitPrice != fullRT.ExitPrice) {
+						log.Error("Expected " + fullRT + " but was " + fourRT);
+						result = false;
+					}
 				}
+				Assert.IsTrue(result,"trade mismatches. See log file.");
 			} catch {
 				testFailed = true;
 				throw;

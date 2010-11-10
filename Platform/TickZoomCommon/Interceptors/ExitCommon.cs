@@ -95,10 +95,10 @@ namespace TickZoom.Interceptors
 		}
 	
 		public void CancelOrders() {
-			orders.buyStop.Status = OrderStatus.Inactive;
-			orders.sellStop.Status = OrderStatus.Inactive;
-			orders.buyLimit.Status = OrderStatus.Inactive;
-			orders.sellLimit.Status = OrderStatus.Inactive;
+			orders.buyStop.Status = OrderStatus.AutoCancel;
+			orders.sellStop.Status = OrderStatus.AutoCancel;
+			orders.buyLimit.Status = OrderStatus.AutoCancel;
+			orders.sellLimit.Status = OrderStatus.AutoCancel;
 		}
 		
         #region Orders

@@ -75,7 +75,6 @@
     <Compile Include="Loaders\AutoTests.cs" />
     <Compile Include="Loaders\AutoTestSettings.cs" />
     <Compile Include="Loaders\ChartThread.cs" />
-    <Compile Include="Loaders\CompareSimulatedTest.cs" />
     <Compile Include="Loaders\DynamicTestSuite.cs" />
     <Compile Include="Loaders\ExampleBreakoutReversalTest.cs" />
     <Compile Include="Loaders\ExampleBreakoutStopsTest.cs" />

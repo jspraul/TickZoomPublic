@@ -208,11 +208,11 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void CancelOrders() {
-			marketOrder.Status = OrderStatus.Inactive;
-			breakEvenBuyStopOrder.Status = OrderStatus.Inactive;
-			breakEvenSellStopOrder.Status = OrderStatus.Inactive;
-			buyStopLossOrder.Status = OrderStatus.Inactive;
-			sellStopLossOrder.Status = OrderStatus.Inactive;
+			marketOrder.Status = OrderStatus.AutoCancel;
+			breakEvenBuyStopOrder.Status = OrderStatus.AutoCancel;
+			breakEvenSellStopOrder.Status = OrderStatus.AutoCancel;
+			buyStopLossOrder.Status = OrderStatus.AutoCancel;
+			sellStopLossOrder.Status = OrderStatus.AutoCancel;
 		}
 		
 		private void flattenSignal(Tick tick, string tag) {

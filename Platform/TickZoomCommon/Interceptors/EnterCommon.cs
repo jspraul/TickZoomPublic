@@ -82,19 +82,19 @@ namespace TickZoom.Interceptors
 		
         public void CancelOrders()
         {
-        	orders.buyMarket.Status = OrderStatus.Inactive;
-            orders.sellMarket.Status = OrderStatus.Inactive;
-        	orders.buyStop.Status = OrderStatus.Inactive;
-            orders.sellStop.Status = OrderStatus.Inactive;
-            orders.buyLimit.Status = OrderStatus.Inactive;
-            orders.sellLimit.Status = OrderStatus.Inactive;
+        	orders.buyMarket.Status = OrderStatus.AutoCancel;
+            orders.sellMarket.Status = OrderStatus.AutoCancel;
+        	orders.buyStop.Status = OrderStatus.AutoCancel;
+            orders.sellStop.Status = OrderStatus.AutoCancel;
+            orders.buyLimit.Status = OrderStatus.AutoCancel;
+            orders.sellLimit.Status = OrderStatus.AutoCancel;
             
-        	orders.buyMarket.Status = OrderStatus.Inactive;
-            orders.sellMarket.Status = OrderStatus.Inactive;
-        	orders.buyStop.Status = OrderStatus.Inactive;
-            orders.sellStop.Status = OrderStatus.Inactive;
-            orders.buyLimit.Status = OrderStatus.Inactive;
-            orders.sellLimit.Status = OrderStatus.Inactive;
+        	orders.buyMarket.Status = OrderStatus.AutoCancel;
+            orders.sellMarket.Status = OrderStatus.AutoCancel;
+        	orders.buyStop.Status = OrderStatus.AutoCancel;
+            orders.sellStop.Status = OrderStatus.AutoCancel;
+            orders.buyLimit.Status = OrderStatus.AutoCancel;
+            orders.sellLimit.Status = OrderStatus.AutoCancel;
         }
 		
 		private void LogEntry(string description) {
