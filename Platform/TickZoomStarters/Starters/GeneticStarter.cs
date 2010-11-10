@@ -226,7 +226,7 @@ namespace TickZoom.Starters
 					Chromosome chromosome = generation[i];
 					if( !chromosome.FitnessAssigned ) {
 						ModifyVariables( chromosome);
-						var model = ProcessLoader(loader);
+						var model = ProcessLoader(loader,i);
 						topModels.Add(model);
 					} else {
 						tasksRemaining--;
@@ -239,7 +239,7 @@ namespace TickZoom.Starters
 				ModelInterface topModel = new Portfolio();
 				int passCount = 0;
 				foreach( var model in topModels) {
-					topModel.Chain.Dependencies.Add(model.Chain);
+						topModel.Chain.Dependencies.Add(model.Chain);
 					passCount++;
 					if (passCount % tasksPerEngine == 0)
 					{
@@ -322,11 +322,15 @@ namespace TickZoom.Starters
 			log.Notice("Genetic Algorithm Finished.");
 		}
 		
+		private void OnSetFitness(int index, double fitness) {
+			generation[index].Fitness = fitness;
+		}
+		
 		public void ProcessIteration() {
 
 			GetEngineResults();
 			
-			WriteEngineResults(loader,engineIterations);
+			WriteEngineResults(loader,engineIterations,OnSetFitness);
 
 			engineIterations.Clear();
 
@@ -372,7 +376,6 @@ namespace TickZoom.Starters
 		}
 		
 		void ModifyVariables( Chromosome chromosome) {
-			// Convert chromosome to values to run a test.
 			for( int i=0; i<optimizeVariables.Count; i++) {
 				double val = GetValue( optimizeVariables[i], chromosome.Genome[i]);
 				optimizeVariables[i].Value = val.ToString();

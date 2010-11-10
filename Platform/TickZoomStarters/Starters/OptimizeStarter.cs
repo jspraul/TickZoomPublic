@@ -98,7 +98,7 @@ namespace TickZoom.Starters
 			passCount = 0;
 			foreach (var num in RecursiveOptimize(0))
 			{
-				ModelInterface model = ProcessLoader(loader);
+				ModelInterface model = ProcessLoader(loader,passCount);
 				topModel.Chain.Dependencies.Add(model.Chain);
 				passCount++;
 				if (passCount % tasksPerEngine == 0)

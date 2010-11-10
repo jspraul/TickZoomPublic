@@ -33,6 +33,7 @@ using System.Threading;
 using NUnit.Framework;
 using TickZoom.Api;
 using TickZoom.Common;
+using TickZoom.Examples;
 using TickZoom.Starters;
 using TickZoom.Statistics;
 
@@ -188,6 +189,19 @@ namespace TickZoom.StarterTest
     		Assert.IsTrue(FileCompare(storageFolder+@"\Statistics\optimizeResults.csv",@"..\..\Platform\TickZoomTesting\Startup\geneticResults.csv"));
 		}
 	    
+		[Test]
+		public void TestOneGeneticPass()
+		{
+			var starter = new HistoricalStarter();
+    		starter.ProjectProperties.Starter.StartTime = (TimeStamp) new DateTime(2005,1,1);
+    		starter.ProjectProperties.Starter.EndTime = (TimeStamp) new DateTime(2006,2,1);
+			starter.ProjectProperties.Starter.IntervalDefault = Intervals.Hour1;
+     		starter.DataFolder = "Test\\DataCache";
+     		starter.ProjectProperties.Starter.SetSymbols("USD_JPY");
+    		starter.Run(new GeneticLoader());
+//    		Assert.IsTrue(FileCompare(storageFolder+@"\Statistics\optimizeResults.csv",@"..\..\Platform\TickZoomTesting\Startup\geneticResults.csv"));
+		}
+		
 		public class OptimizeLoader : ModelLoaderCommon {
 			public OptimizeLoader() {
 				category = "Test";
@@ -202,13 +216,14 @@ namespace TickZoom.StarterTest
 			
 			public override void OnLoad(ProjectProperties projectProperties)
 			{
-				var strategy = (Strategy) CreateStrategy("ExampleReversalStrategy");
+				var strategy = new ExampleReversalStrategy();
 				strategy.Performance.Equity.EnableYearlyStats = true;
 				strategy.Performance.Equity.EnableMonthlyStats = true;
 				strategy.Performance.Equity.EnableWeeklyStats = true;
 				strategy.Performance.Equity.EnableDailyStats = true;
-		    	AddDependency( "Portfolio", "ExampleReversalStrategy");
-		    	TopModel = GetPortfolio( "Portfolio");
+				var portfolio = new Portfolio();
+		    	portfolio.AddDependency(strategy);
+		    	TopModel = portfolio;
 			}
 		}
 		
@@ -226,14 +241,14 @@ namespace TickZoom.StarterTest
 			
 			public override void OnLoad(ProjectProperties projectProperties)
 			{
-				ModelInterface model = CreateStrategy("ExampleReversalStrategy");
-				Strategy strategy = model as Strategy;
+				var strategy = new ExampleReversalStrategy();
 				strategy.Performance.Equity.EnableYearlyStats = true;
 				strategy.Performance.Equity.EnableMonthlyStats = true;
 				strategy.Performance.Equity.EnableWeeklyStats = true;
 				strategy.Performance.Equity.EnableDailyStats = true;
-		    	AddDependency( "Portfolio", "ExampleReversalStrategy");
-		    	TopModel = GetPortfolio( "Portfolio");
+				var portfolio = new Portfolio();
+				portfolio.AddDependency( strategy);
+		    	TopModel = portfolio;
 			}
 		}
 		
@@ -249,10 +264,10 @@ namespace TickZoom.StarterTest
 			
 			public override void OnLoad(ProjectProperties projectProperties)
 			{
-				ModelInterface model = CreateStrategy("ExampleReversalStrategy");
-				Strategy strategy = model as Strategy;
-		    	AddDependency( "Portfolio", "ExampleReversalStrategy");
-		    	TopModel = GetPortfolio( "Portfolio");
+				var strategy = new ExampleReversalStrategy();
+				var portfolio = new Portfolio();
+				portfolio.AddDependency( strategy);
+		    	TopModel = portfolio;
 			}
 			
 		}

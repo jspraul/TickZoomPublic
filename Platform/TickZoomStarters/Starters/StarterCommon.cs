@@ -58,7 +58,6 @@ namespace TickZoom.Starters
 	    string fileName;
 	    string storageFolder;
 		Dictionary<ModelInterface,Dictionary<string,object>> optimizeValueMap = new Dictionary<ModelInterface, Dictionary<string, object>>();
-		int taskCount=0;
 		Progress progress = new Progress();
 		private string address = "InProcess";
 		private int port = 6490;
@@ -286,6 +285,9 @@ namespace TickZoom.Starters
    				yield return currentStrategy;
    			}
    			foreach( Chain tempChain in chain.Dependencies) {
+   				if( tempChain == chain) {
+   					throw new ApplicationException("Found recursive loop. " + tempChain.Model.Name + " cannot be a dependency of itself.");
+   				}
    				foreach( StrategyInterface strategy in GetStrategyList(tempChain.Tail)) {
    					yield return strategy;
    				}
@@ -298,19 +300,29 @@ namespace TickZoom.Starters
    		}
 		
 		public void WriteEngineResults(ModelLoaderInterface loader, List<TickEngine> engines) {
+			WriteEngineResults(loader, engines, null);
+		}
+		
+		public void WriteEngineResults(ModelLoaderInterface loader, List<TickEngine> engines,Action<int,double> fitnessCallback) {
 			for( int i=0; i<engines.Count; i++) {
-				WriteEngineResult(loader,engines[i]);
+				WriteEngineResult(loader,engines[i],fitnessCallback);
 			}
 		}
 
 		bool headerWritten = false;
-		public void WriteEngineResult(ModelLoaderInterface loader, TickEngine engine) {
+		public void WriteEngineResult(ModelLoaderInterface loader, TickEngine engine,Action<int,double> fitnessCallback) {
     		try {
 				loader.OptimizeOutput = new FileStream(fileName,FileMode.Append);
 				using( StreamWriter fwriter = new StreamWriter(loader.OptimizeOutput)) {
 					ModelInterface topModel = engine.Model;
 					foreach( var chain in topModel.Chain.Dependencies) {
-						StrategyInterface passModel = chain.Model as StrategyInterface;
+						var passModel = chain.Model as StrategyInterface;
+						var strings = passModel.Name.Split( new char[] { '-' } );
+						var passNumber = int.Parse(strings[2]);
+						if( fitnessCallback != null) {
+							fitnessCallback( passNumber, passModel.OnGetFitness());
+						}
+						
 						if( passModel == null) {
 							log.Error("Model " + passModel + " must implement the StrategyInterface or PortfolioInterface for the optimizer statistics results to get recorded.");
 						} else {
@@ -340,15 +352,14 @@ namespace TickZoom.Starters
 			}
 		}
 
-		public ModelInterface ProcessLoader(ModelLoaderInterface loader) {
-			taskCount++;
+		public ModelInterface ProcessLoader(ModelLoaderInterface loader, int passNumber) {
 	    	loader.OnClear();
 			loader.OnLoad(ProjectProperties);
 			ModelInterface topModel = loader.TopModel;
 			if( !SetOptimizeValues(loader)) {
 				throw new ApplicationException("Error, setting optimize variables.");
 			}
-			topModel.Name += "-Pass-" + taskCount;
+			topModel.Name += "-Pass-" + passNumber;
 	    	return topModel;
 		}
 		

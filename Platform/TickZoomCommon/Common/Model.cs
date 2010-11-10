@@ -338,6 +338,9 @@ namespace TickZoom.Common
 		}
 		
 		public void AddDependency( ModelInterface model) {
+			if( model == this) {
+				throw new ApplicationException("Sorry, cannot add " + model.Name + " as a dependency on itself. This creates a circular dependency.");
+			}
 			chain.Dependencies.Add(model.Chain);
 		}
 	
