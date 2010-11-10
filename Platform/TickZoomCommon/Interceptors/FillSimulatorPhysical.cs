@@ -69,9 +69,9 @@ namespace TickZoom.Interceptors
 			this.log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical).FullName + "." + name + "." + symbol.Symbol);
 		}
 		
-		public void OnOpen(TimeStamp time) {
+		public void OnOpen(Tick tick) {
 			isOpenTick = true;
-			openTime = time;
+			openTime = tick.Time;
 		}
 		
 		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol) {

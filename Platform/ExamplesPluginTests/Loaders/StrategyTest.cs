@@ -299,6 +299,7 @@ namespace Loaders
 		}
 		
 		private Starter CreateStarter() {
+			SyncTicks.Enabled = false;
 			return new HistoricalStarter();			
 		}
 		
