@@ -43,7 +43,7 @@ namespace Loaders
 		ExampleOrderStrategy fullTicksStrategy;
 		Portfolio portfolio;
 		public ExampleDualSymbolTest() {
-			StoreKnownGood = true;
+			StoreKnownGood = false;
 			Symbols = "FullTick,Daily4Sim";
 		}
 		
@@ -91,7 +91,7 @@ namespace Loaders
 			expected -= fullTicksStrategy.Performance.Equity.StartingEquity;
 			double portfolioTotal = portfolio.Performance.Equity.CurrentEquity;
 			portfolioTotal -= portfolio.Performance.Equity.StartingEquity;
-			Assert.AreEqual(Math.Round(-9.54,2), Math.Round(portfolioTotal,2));
+			Assert.AreEqual(Math.Round(-9.66,2), Math.Round(portfolioTotal,2));
 			Assert.AreEqual(expected, portfolioTotal);
 		}
 		
@@ -104,7 +104,7 @@ namespace Loaders
 			double portfolioTotal = portfolio.Performance.Equity.ClosedEquity;
 			portfolioTotal -= portfolio.Performance.Equity.StartingEquity;
 			Assert.AreEqual(expected, portfolioTotal);
-			Assert.AreEqual(Math.Round(-9.5,2), Math.Round(portfolioTotal,2));
+			Assert.AreEqual(Math.Round(-9.62,2), Math.Round(portfolioTotal,2));
 		}
 		
 		[Test]
@@ -120,7 +120,7 @@ namespace Loaders
 			TransactionPairs fourTicksRTs = fourTicksStrategy.Performance.ComboTrades;
 			TransactionPairs fullTicksRTs = fullTicksStrategy.Performance.ComboTrades;
 			Assert.AreEqual(fourTicksRTs.Count,fullTicksRTs.Count, "trade count");
-			Assert.AreEqual(472,fullTicksRTs.Count, "trade count");
+			Assert.AreEqual(471,fullTicksRTs.Count, "trade count");
 		}
 			
 		[Test]
