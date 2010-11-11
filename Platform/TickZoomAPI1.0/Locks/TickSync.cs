@@ -45,19 +45,21 @@ namespace TickZoom.Api
 			if( trace) log.Trace(symbol + ": created with binary symbol id = " + symbolId);
 		}
 		public bool Completed {
-			get { var value = CompletedInternal;
+			get { var value = CheckCompletedInternal();
 					return value;
 			}
 		}		
-		private bool CompletedInternal {
-			get { var value = ticks == 0 && positionChange == 0 &&
-					processPhysical == 0 &&
-					physicalOrders == 0 && physicalFills == 0;
-					return value;
-			}
+		private bool CheckCompletedInternal() {
+			return ticks == 0 && positionChange == 0 &&
+					physicalOrders == 0 && physicalFills == 0 &&
+					processPhysical == 0;
+		}		
+		private bool CheckOnlyPhysicalFills() {
+			return positionChange == 0 && physicalOrders == 0 &&
+				physicalFills == 0 && processPhysical > 0;
 		}		
 		public void Clear() {
-			if( !CompletedInternal) {
+			if( !CheckCompletedInternal()) {
 				System.Diagnostics.Debugger.Break();
 				throw new ApplicationException(symbol + ": Tick, position changes, physical orders, and physical fills, must all complete before clearing the tick sync.");
 			}
@@ -161,6 +163,10 @@ namespace TickZoom.Api
 		
 		public bool SentPositionChange {
 			get { return positionChange > 0; }
+		}
+		
+		public bool OnlyProcessPhysicalOrders {
+			get { return CheckOnlyPhysicalFills(); }
 		}
 		
 		public bool SentProcessPhysicalOrders {
