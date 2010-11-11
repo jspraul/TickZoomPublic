@@ -55,26 +55,90 @@ namespace TickZoom.Logging
 		
 		private class LogImplWrapper : log4net.Core.LogImpl {
 			private Level m_levelTrace;
+			private Level m_levelDebug;
+			private Level m_levelInfo;
 			private Level m_levelNotice;
-			private readonly static Level s_defaultLevelNotice = Level.Notice;
-			private readonly static Level s_defaultLevelTrace = Level.Trace;
-			public LogImplWrapper(ILogger logger) : base(logger)
-			{
+			private Level m_levelWarn;
+			private Level m_levelError;
+			private Level m_levelFatal;
+			private bool trace;
+			private bool debug;
+			private bool info;
+			private bool notice;
+			private bool warn;
+			private bool error;
+			private bool fatal;
+			private bool isInitialized = false;
+			
+			public LogImplWrapper(ILogger logger) : base( logger) {
+			
 			}
+			
 			protected override void ReloadLevels(log4net.Repository.ILoggerRepository repository)
 			{
 				base.ReloadLevels(repository);
-				m_levelNotice = repository.LevelMap.LookupWithDefault(s_defaultLevelNotice);
-				m_levelTrace = repository.LevelMap.LookupWithDefault(s_defaultLevelTrace);
+				m_levelTrace = repository.LevelMap.LookupWithDefault(Level.Trace);
+				m_levelDebug = repository.LevelMap.LookupWithDefault(Level.Debug);
+				m_levelInfo = repository.LevelMap.LookupWithDefault(Level.Info);
+				m_levelNotice = repository.LevelMap.LookupWithDefault(Level.Notice);
+				m_levelWarn = repository.LevelMap.LookupWithDefault(Level.Warn);
+				m_levelError = repository.LevelMap.LookupWithDefault(Level.Error);
+				m_levelFatal = repository.LevelMap.LookupWithDefault(Level.Fatal);
+				trace = IsAnyEnabledFor(m_levelTrace);
+				debug = IsAnyEnabledFor(m_levelDebug);
+				info = IsAnyEnabledFor(m_levelInfo);
+				notice = IsAnyEnabledFor(m_levelNotice);
+				warn = IsAnyEnabledFor(m_levelWarn);
+				error = IsAnyEnabledFor(m_levelError);
+				fatal = IsAnyEnabledFor(m_levelFatal);
 			}
 			
-			public bool IsNoticeEnabled {
-				get { return Logger.IsEnabledFor(m_levelNotice); }
+			private void TryReloadLevels() {
+				if( !isInitialized) {
+					ReloadLevels(Logger.Repository);
+					isInitialized = true;
+				}
 			}
 			
 			public bool IsTraceEnabled {
-				get { return Logger.IsEnabledFor(m_levelTrace); }
+				get { TryReloadLevels(); return trace; }
 			}
+			
+			public override bool IsDebugEnabled {
+				get { TryReloadLevels(); return debug; }
+			}
+			
+			public override bool IsInfoEnabled {
+				get { TryReloadLevels(); return info; }
+			}
+			
+			public bool IsNoticeEnabled {
+				get { TryReloadLevels(); return notice; }
+			}
+			
+			public override bool IsWarnEnabled {
+				get { TryReloadLevels(); return warn; }
+			}
+			
+			public override bool IsErrorEnabled {
+				get { TryReloadLevels(); return error; }
+			}
+			
+			public override bool IsFatalEnabled {
+				get { TryReloadLevels(); return fatal; }
+			}
+			
+			private bool IsAnyEnabledFor(Level level) {
+				foreach ( var child in Logger.Repository.GetCurrentLoggers()) {					
+					if( child.Name.StartsWith(Logger.Name) ) {
+						if( child.IsEnabledFor(level)) {
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+			
 		}
 		
 #region OldStuff
@@ -298,7 +362,7 @@ namespace TickZoom.Logging
 		
 		public void Notice(object message, Exception t)
 		{
-			if (IsNoticeEnabled && CheckFilters())
+			if (IsNoticeEnabled)
 			{
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Notice, message, t);
 				if( t!=null) {
@@ -312,19 +376,19 @@ namespace TickZoom.Logging
 		
 		public void Trace(object message, Exception t)
 		{
-			if (IsTraceEnabled && CheckFilters())
-			{
+//			if (IsTraceEnabled)
+//			{
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Trace, message, t);
 				if( t!=null) {
 					System.Diagnostics.Debug.WriteLine(message + "\n" + t);
 				}
 				SetProperties(loggingEvent);
 				log.Logger.Log(loggingEvent);
-			}
+//			}
 		}
 		
 		public void Call() {
-			if (IsDebugEnabled && CheckFilters())
+			if (IsDebugEnabled)
 			{
 				StackTrace trace = new StackTrace();
 				MethodBase callee = trace.GetFrame(1).GetMethod();
@@ -340,7 +404,7 @@ namespace TickZoom.Logging
 		}
 		
 		public void Async(Action action) {
-			if (IsDebugEnabled && CheckFilters())
+			if (IsDebugEnabled)
 			{
 				StackTrace trace = new StackTrace();
 				MethodBase caller = trace.GetFrame(1).GetMethod();
@@ -354,7 +418,7 @@ namespace TickZoom.Logging
 		}
 		
 		public void Return() {
-			if (IsDebugEnabled && CheckFilters())
+			if (IsDebugEnabled)
 			{
 				StackTrace trace = new StackTrace();
 				MethodBase callee = trace.GetFrame(1).GetMethod();
@@ -403,20 +467,20 @@ namespace TickZoom.Logging
 		}
 		public void Debug(object message, Exception t)
 		{
-			if (IsDebugEnabled && CheckFilters())
-			{
+//			if (IsDebugEnabled)
+//			{
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Debug, message, t);
 				if( t!=null) {
 					System.Diagnostics.Debug.WriteLine(message + "\n" + t);
 				}
 				SetProperties(loggingEvent);
 				log.Logger.Log(loggingEvent);
-			}
+//			}
 		}
 		
 		public void Info(object message, Exception t)
 		{
-			if (IsInfoEnabled && CheckFilters())
+			if (IsInfoEnabled)
 			{
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Info, message, t);
 				if( t!=null) {
@@ -429,7 +493,7 @@ namespace TickZoom.Logging
 		
 		public void Warn(object message, Exception t)
 		{
-			if (IsWarnEnabled && CheckFilters())
+			if (IsWarnEnabled)
 			{
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Warn, message, t);
 				if( t!=null) {
@@ -443,7 +507,7 @@ namespace TickZoom.Logging
 		
 		public void Error(object message, Exception t)
 		{
-			if (IsErrorEnabled && CheckFilters())
+			if (IsErrorEnabled)
 			{
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Error, message, t);
 				if( t!=null) {
@@ -452,22 +516,6 @@ namespace TickZoom.Logging
 				SetProperties(loggingEvent);
 	        	WriteScreen(loggingEvent);
 				log.Logger.Log(loggingEvent);
-			}
-		}
-		
-		private bool CheckFilters() {
-			FilterDecision decision = SymbolDecide();
-			if( decision == FilterDecision.Accept) {
-				return true;
-			} else if( decision == FilterDecision.Deny) {
-				return false;
-			} else {
-				decision = TimeStampDecide();
-				if( decision == FilterDecision.Deny) {
-					return false;
-				} else {
-					return true;
-				}
 			}
 		}
 		
@@ -520,7 +568,7 @@ namespace TickZoom.Logging
 		
 		public void Fatal(object message, Exception t)
 		{
-			if (IsFatalEnabled && CheckFilters())
+			if (IsFatalEnabled)
 			{
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Fatal, message, t);
 				SetProperties(loggingEvent);
