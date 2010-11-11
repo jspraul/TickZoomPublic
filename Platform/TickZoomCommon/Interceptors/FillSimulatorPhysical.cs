@@ -72,6 +72,7 @@ namespace TickZoom.Interceptors
 		public void OnOpen(Tick tick) {
 			isOpenTick = true;
 			openTime = tick.Time;
+			currentTick.Inject( tick.Extract());
 		}
 		
 		public Iterable<PhysicalOrder> GetActiveOrders(SymbolInfo symbol) {
@@ -133,12 +134,11 @@ namespace TickZoom.Interceptors
 			ProcessOrdersInternal( currentTick);
 		}
 		
-		public void StartTick(Tick tick)
+		public void StartTick(Tick lastTick)
 		{
-			currentTick.Inject( tick.Extract());
-			ProcessOrdersInternal( tick);
+			currentTick.Inject( lastTick.Extract());
 		}
-
+		
 		private void ProcessOrdersInternal(Tick tick) {
 			if( isOpenTick && tick.Time > openTime) {
 				isOpenTick = false;
@@ -252,7 +252,6 @@ namespace TickZoom.Interceptors
 		
 		private void OnProcessOrder(PhysicalOrder order, Tick tick)
 		{
-			if (trace) log.Trace("OnProcessOrder()");
 			switch (order.Type) {
 				case OrderType.SellMarket:
 					ProcessSellMarket(order, tick);
