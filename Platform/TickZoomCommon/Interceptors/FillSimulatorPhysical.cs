@@ -87,7 +87,7 @@ namespace TickZoom.Interceptors
 			if( debug) log.Debug("OnChangeBrokerOrder( " + order + ")");
 			CancelBrokerOrder( origBrokerOrder);
 			CreateBrokerOrder( order);
-			ReprocessOrders();
+			ProcessOrders();
 			if( confirmOrders != null) confirmOrders.OnChangeBrokerOrder(order, origBrokerOrder);
 		}
 		
@@ -118,7 +118,7 @@ namespace TickZoom.Interceptors
 		{
 			if( debug) log.Debug("OnCreateBrokerOrder( " + order + ")");
 			CreateBrokerOrder(order);
-			ReprocessOrders();
+			ProcessOrders();
 			if( confirmOrders != null) confirmOrders.OnCreateBrokerOrder(order);
 		}
 		
@@ -129,13 +129,13 @@ namespace TickZoom.Interceptors
 			if( confirmOrders != null) confirmOrders.OnCancelBrokerOrder(symbol, origBrokerOrder);
 		}
 		
-		public void ReprocessOrders() {
+		public void ProcessOrders() {
 			ProcessOrdersInternal( currentTick);
 		}
 		
-		public void ProcessOrders(Tick tick)
+		public void StartTick(Tick tick)
 		{
-			currentTick.Inject( ((TickIO) tick).Extract());
+			currentTick.Inject( tick.Extract());
 			ProcessOrdersInternal( tick);
 		}
 

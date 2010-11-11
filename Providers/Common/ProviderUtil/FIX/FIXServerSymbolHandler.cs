@@ -63,7 +63,7 @@ namespace TickZoom.FIX
 		    	if( trace) log.Trace("TryCompleteTick()");
 		    	UnLockTickSync();
 			} else if( tickSync.SentProcessPhysicalOrders) {
-				fillSimulator.ReprocessOrders();
+				fillSimulator.ProcessOrders();
 				tickSync.RemoveProcessPhysicalOrders();
 			}
 	    }
@@ -91,7 +91,7 @@ namespace TickZoom.FIX
 		}
 		
 		public void ReprocessOrders() {
-			fillSimulator.ReprocessOrders();
+			fillSimulator.ProcessOrders();
 		}
 	    
 		private Yield ProcessQueue() {
@@ -110,7 +110,7 @@ namespace TickZoom.FIX
 				if( reader.ReadQueue.TryDequeue( ref binary)) {
 				   	nextTick.Inject( binary);
 				   	tickSync.AddTick();
-				   	fillSimulator.ProcessOrders( nextTick);
+				   	fillSimulator.StartTick( nextTick);
 				   	result = Yield.DidWork.Invoke(ProcessTick);
 				}
 			} catch( QueueException ex) {

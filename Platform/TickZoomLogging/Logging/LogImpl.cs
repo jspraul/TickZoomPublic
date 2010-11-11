@@ -129,6 +129,15 @@ namespace TickZoom.Logging
 			}
 			
 			private bool IsAnyEnabledFor(Level level) {
+				while( true) {
+					try {
+						return CheckAnyEnabled(level);
+					} catch( InvalidOperationException) {
+					}
+				}
+			}
+			
+			private bool CheckAnyEnabled( Level level) {
 				foreach ( var child in Logger.Repository.GetCurrentLoggers()) {					
 					if( child.Name.StartsWith(Logger.Name) ) {
 						if( child.IsEnabledFor(level)) {
@@ -138,7 +147,6 @@ namespace TickZoom.Logging
 				}
 				return false;
 			}
-			
 		}
 		
 #region OldStuff
