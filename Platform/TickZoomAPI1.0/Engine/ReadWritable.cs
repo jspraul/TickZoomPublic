@@ -38,7 +38,6 @@ namespace TickZoom.Api
 		/// </summary>
 		/// <param name="utcTime">Must be the UTC time.</param>
 		void SetTime(TimeStamp utcTime);
-		T Extract();
 		int FromReader(byte version, BinaryReader reader);
 		object ToPosition();
 		byte DataVersion {

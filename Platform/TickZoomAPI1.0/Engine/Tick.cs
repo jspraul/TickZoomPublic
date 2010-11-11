@@ -116,5 +116,7 @@ namespace TickZoom.Api
 		bool IsQuote {
 			get;
 		}
+		
+		TickBinary Extract();
 	}
 }
