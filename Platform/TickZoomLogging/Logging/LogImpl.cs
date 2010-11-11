@@ -384,15 +384,15 @@ namespace TickZoom.Logging
 		
 		public void Trace(object message, Exception t)
 		{
-//			if (IsTraceEnabled)
-//			{
+			if (IsTraceEnabled)
+			{
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Trace, message, t);
 				if( t!=null) {
 					System.Diagnostics.Debug.WriteLine(message + "\n" + t);
 				}
 				SetProperties(loggingEvent);
 				log.Logger.Log(loggingEvent);
-//			}
+			}
 		}
 		
 		public void Call() {
@@ -475,15 +475,15 @@ namespace TickZoom.Logging
 		}
 		public void Debug(object message, Exception t)
 		{
-//			if (IsDebugEnabled)
-//			{
+			if (IsDebugEnabled)
+			{
 				LoggingEvent loggingEvent = new LoggingEvent(callingType, log.Logger.Repository, log.Logger.Name, Level.Debug, message, t);
 				if( t!=null) {
 					System.Diagnostics.Debug.WriteLine(message + "\n" + t);
 				}
 				SetProperties(loggingEvent);
 				log.Logger.Log(loggingEvent);
-//			}
+			}
 		}
 		
 		public void Info(object message, Exception t)

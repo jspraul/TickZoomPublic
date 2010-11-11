@@ -637,11 +637,13 @@ namespace TickZoom.Common
 		}
 		
 		private void PerformCompareInternal() {
-			if( debug) log.Debug( "PerformCompare for " + symbol + " with " +
+			if( debug) {
+				log.Debug( "PerformCompare for " + symbol + " with " +
 			                     actualPosition + " actual " + 
 			                     desiredPosition + " desired and " +
 			                     originalLogicals.Count + " logical, " +
 			                     originalPhysicals.Count + " physical.");
+			}
 			originalPhysicals.Clear();
 			originalPhysicals.AddLast( physicalOrderHandler.GetActiveOrders(symbol));
 			if( debug) {
@@ -691,7 +693,7 @@ namespace TickZoom.Common
 			// Find any pending adjustments.
 			int pendingAdjustments = FindPendingAdjustments();
 			
-			if( debug) log.Debug("Found " + physicalOrders.Count + " extra physicals.");
+			if( trace) log.Trace("Found " + physicalOrders.Count + " extra physicals.");
 			int cancelCount = 0;
 			while( physicalOrders.Count > 0) {
 				physical = physicalOrders.First.Value;
@@ -711,7 +713,7 @@ namespace TickZoom.Common
 				return;
 			}
 			
-			if( debug) log.Debug("Found " + extraLogicals.Count + " extra logicals.");
+			if( trace) log.Trace("Found " + extraLogicals.Count + " extra logicals.");
 			while( extraLogicals.Count > 0) {
 				var logical = extraLogicals[0];
 				ProcessExtraLogical(logical);
