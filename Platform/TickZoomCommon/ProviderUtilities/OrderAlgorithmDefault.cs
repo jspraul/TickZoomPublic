@@ -427,6 +427,9 @@ namespace TickZoom.Common
 			var positionDelta = desiredPosition - actualPosition;
 			var delta = positionDelta - pendingAdjustments;
 			PhysicalOrder physical;
+//			if( delta != 0) {
+//				throw new ApplicationException("Position delta was " + delta + ", desired="+desiredPosition+", actual="+actualPosition +", pending="+pendingAdjustments);
+//			}
 			if( delta > 0) {
 				physical = new PhysicalOrderDefault(OrderState.Active, symbol,OrderSide.Buy,OrderType.BuyMarket,0,delta,0,0,null,null);
 				TryCreateBrokerOrder(physical);
@@ -590,7 +593,7 @@ namespace TickZoom.Common
 									if( cancelAllReverse) originalLogicals.Remove(order);
 									break;
 								default:
-									throw new ApplicationException("Unknowc trade direction: " + filledOrder.TradeDirection);
+									throw new ApplicationException("Unknown trade direction: " + filledOrder.TradeDirection);
 							}
 						}
 					}

@@ -33,9 +33,7 @@ using TickZoom.Api;
 using TickZoom.Statistics;
 
 namespace TickZoom.Common
-{
-
-		
+{		
 	public class Portfolio : Model, PortfolioInterface
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Portfolio));
@@ -239,23 +237,6 @@ namespace TickZoom.Common
 			}
 			Performance.Equity.OnUpdateOpenEquity(tempOpenEquity);
 		}
-		
-//		public double GetOpenEquity() {
-//			if( portfolioType == PortfolioType.SingleSymbol) {
-//				return performance.Equity.OpenEquity;
-//			} else if( portfolioType == PortfolioType.MultiSymbol) {
-//				double tempOpenEquity = 0;
-//				foreach( var strategy in strategies) {
-//					tempOpenEquity += strategy.Performance.Equity.OpenEquity;
-//				}
-//				foreach( var portfolio in portfolios) {
-//					tempOpenEquity += portfolio.GetOpenEquity();
-//				}
-//				return tempOpenEquity;
-//			} else {
-//				throw new ApplicationException("PortfolioType was never set.");
-//			}
-//		}		
 		
 		/// <summary>
 		/// Shortcut to look at the data of and control any dependant strategies.

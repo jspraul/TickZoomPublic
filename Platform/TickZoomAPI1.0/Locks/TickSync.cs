@@ -177,5 +177,9 @@ namespace TickZoom.Api
 		public bool SentProcessPhysicalOrders {
 			get { return processPhysical > 0; }
 		}
+		
+		public int PhysicalFills {
+			get { return physicalFills; }
+		}
 	}
 }
