@@ -58,6 +58,10 @@ namespace TickZoom.Api
 			return positionChange == 0 && physicalOrders == 0 &&
 				physicalFills == 0 && processPhysical > 0;
 		}		
+		private bool CheckProcessingOrders() {
+			return positionChange > 0 || physicalOrders > 0 || physicalFills > 0;
+		}		
+		
 		public void Clear() {
 			if( !CheckCompletedInternal()) {
 				System.Diagnostics.Debugger.Break();
@@ -103,9 +107,6 @@ namespace TickZoom.Api
 			}
 		}
 		public void AddPhysicalOrder(PhysicalOrder order) {
-//			if( order.Price.ToLong() == 97.46.ToLong()) {
-//				int x = 0;
-//			}
 			var value = Interlocked.Increment( ref physicalOrders);
 			if( trace) log.Trace(symbol + ": AddPhysicalOrder("+value+","+order+")");
 		}
@@ -167,6 +168,10 @@ namespace TickZoom.Api
 		
 		public bool OnlyProcessPhysicalOrders {
 			get { return CheckOnlyPhysicalFills(); }
+		}
+		
+		public bool IsProcessingOrders {
+			get { return CheckProcessingOrders(); }
 		}
 		
 		public bool SentProcessPhysicalOrders {

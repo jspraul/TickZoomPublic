@@ -216,12 +216,12 @@ namespace TickZoom.TickUtil
 		}
 		
 		public override string ToString() {
-			string output = Time.ToString(TIMEFORMAT) + " " +
-				(IsTrade ? (Side != TradeSide.Unknown ? Side.ToString() + "," : "") + Price.ToString(",0.000") + "," + binary.Size + ", " : "") +
-				Bid.ToString(",0.000") + "/" + Ask.ToString(",0.000") + " ";
 //			string output = Time.ToString(TIMEFORMAT) + " " +
-//				(IsTrade ? (Side != TradeSide.Unknown ? Side.ToString() + "," : "") + Price.ToString(",0.#########") + "," + binary.Size + ", " : "") +
-//				Bid.ToString(",0.#########") + "/" + Ask.ToString(",0.#########") + " ";
+//				(IsTrade ? (Side != TradeSide.Unknown ? Side.ToString() + "," : "") + Price.ToString(",0.000") + "," + binary.Size + ", " : "") +
+//				Bid.ToString(",0.000") + "/" + Ask.ToString(",0.000") + " ";
+			string output = Time.ToString(TIMEFORMAT) + " " +
+				(IsTrade ? (Side != TradeSide.Unknown ? Side.ToString() + "," : "") + Price.ToString(",0.#########") + "," + binary.Size + ", " : "") +
+				Bid.ToString(",0.#########") + "/" + Ask.ToString(",0.#########") + " ";
 			fixed( ushort *p = binary.DepthBidLevels) {
 				for(int i=TickBinary.DomLevels-1; i>=0; i--) {
 					if( i!=TickBinary.DomLevels-1) { output += ","; }
