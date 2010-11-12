@@ -53,20 +53,17 @@ namespace TickZoom.FIX
 			queueTask = Factory.Parallel.Loop("FIXServerSymbol-"+symbolString, OnException, ProcessQueue);
 		}
 		
-	    private void UnLockTickSync() {
-	    	if( trace) log.Trace("Unlocking TickSync.");
-	    	tickSync.Clear();
-	    }
-	    
 	    private void TryCompleteTick() {
 	    	if( tickSync.Completed) {
 		    	if( trace) log.Trace("TryCompleteTick()");
-		    	UnLockTickSync();
-			}
-//			else if( tickSync.SentProcessPhysicalOrders) {
-//				fillSimulator.ProcessOrders();
-//			}
-	    }
+//				fillSimulator.FinishTick(lastTick);
+		    	tickSync.Clear();
+	    	} else if( tickSync.OnlyProcessPhysicalOrders) {
+				fillSimulator.StartTick(nextTick);
+				fillSimulator.ProcessOrders();
+				tickSync.RemoveProcessPhysicalOrders();
+	    	}
+		}
 		
 		public int ActualPosition {
 			get {
@@ -90,10 +87,6 @@ namespace TickZoom.FIX
 			return fillSimulator.GetOrderById( clientOrderId);
 		}
 		
-		public void ReprocessOrders() {
-			fillSimulator.ProcessOrders();
-		}
-	    
 		private Yield ProcessQueue() {
 			if( SyncTicks.Enabled && !tickSync.TryLock()) {
 				TryCompleteTick();
@@ -102,7 +95,8 @@ namespace TickZoom.FIX
 			if( trace) log.Trace("Locked tickSync for " + symbol);
 			return Yield.DidWork.Invoke(DequeueTick);
 		}
-		
+
+		private bool isFirstTick = true;
 		private Yield DequeueTick() {
 			var result = Yield.NoWork.Repeat;
 			var binary = new TickBinary();
@@ -110,7 +104,12 @@ namespace TickZoom.FIX
 				if( reader.ReadQueue.TryDequeue( ref binary)) {
 				   	nextTick.Inject( binary);
 				   	tickSync.AddTick();
-				   	fillSimulator.StartTick( nextTick);
+				   	if( isFirstTick) {
+					   	fillSimulator.StartTick( nextTick);
+				   	} else { 
+				   		fillSimulator.ProcessOrders();
+				   		isFirstTick = false;
+				   	}
 				   	result = Yield.DidWork.Invoke(ProcessTick);
 				}
 			} catch( QueueException ex) {

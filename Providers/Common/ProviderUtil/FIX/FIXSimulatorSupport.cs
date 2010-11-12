@@ -224,12 +224,6 @@ namespace TickZoom.FIX
 			return symbolHandler.GetOrderById(clientOrderId);
 		}
 
-		public void ProcessOrders(SymbolInfo symbol)
-		{
-			var symbolHandler = symbolHandlers[symbol.BinaryIdentifier];
-			symbolHandler.ReprocessOrders();
-		}
-
 		private Yield QuotesReadLoop()
 		{
 			var result = Yield.NoWork.Repeat;

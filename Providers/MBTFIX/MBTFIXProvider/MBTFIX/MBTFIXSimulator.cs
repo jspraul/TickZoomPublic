@@ -186,7 +186,6 @@ namespace TickZoom.MBTFIX
 			SendExecutionReport( order, "5", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			ChangeOrder(order, packet.OriginalClientOrderId);
-			ProcessOrders( order.Symbol);
 			return Yield.DidWork.Repeat;
 		}
 		
@@ -210,7 +209,6 @@ namespace TickZoom.MBTFIX
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			SendExecutionReport( order, "4", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			ProcessOrders( order.Symbol);
 			return Yield.DidWork.Repeat;
 		}
 		
@@ -226,7 +224,6 @@ namespace TickZoom.MBTFIX
 			SendExecutionReport( order, "0", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			CreateOrder( order);
-			ProcessOrders( order.Symbol);
 			return Yield.DidWork.Repeat;
 		}
 		
