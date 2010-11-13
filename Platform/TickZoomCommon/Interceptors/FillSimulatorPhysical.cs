@@ -46,6 +46,7 @@ namespace TickZoom.Interceptors
 		private ActiveList<PhysicalOrder> decreaseOrders = new ActiveList<PhysicalOrder>();
 		private ActiveList<PhysicalOrder> marketOrders = new ActiveList<PhysicalOrder>();
 		private NodePool<PhysicalOrder> nodePool = new NodePool<PhysicalOrder>();
+		private object orderMapLocker = new object();
 		private bool isOpenTick = false;
 		private TimeStamp openTime;
 
@@ -58,7 +59,6 @@ namespace TickZoom.Interceptors
 		private int actualPosition = 0;
 		private TickSync tickSync;
 		private TickIO currentTick = Factory.TickUtil.TickIO();
-		private object processOrdersLocker = new object();
 		private PhysicalOrderHandler confirmOrders;
 		private bool isBarData = false;
 		
@@ -95,8 +95,10 @@ namespace TickZoom.Interceptors
 		public PhysicalOrder GetOrderById( string orderId) {
 			LogOpenOrders();
 			PhysicalOrder order;
-			if( !orderMap.TryGetValue( orderId, out order)) {
-				throw new ApplicationException( symbol + ": Cannot find physical order by id: " + orderId);
+			lock( orderMapLocker) {
+				if( !orderMap.TryGetValue( orderId, out order)) {
+					throw new ApplicationException( symbol + ": Cannot find physical order by id: " + orderId);
+				}
 			}
 			return order;
 		}
@@ -105,13 +107,17 @@ namespace TickZoom.Interceptors
 			var oldOrderId = (string) origBrokerOrder;
 			var oldOrder = GetOrderById(oldOrderId);
 			RemoveActive( oldOrder);
-			orderMap.Remove( oldOrderId);
+			lock( orderMapLocker) {
+				orderMap.Remove( oldOrderId);
+			}
 			LogOpenOrders();
 			return oldOrder;
 		}
 		
 		private void CreateBrokerOrder(PhysicalOrder order) {
-			orderMap.Add((string)order.BrokerOrder,order);
+			lock( orderMapLocker) {
+				orderMap.Add((string)order.BrokerOrder,order);
+			}
 			SortAdjust(order);
 		}
 		
@@ -141,9 +147,6 @@ namespace TickZoom.Interceptors
 		
 		private void ProcessOrdersInternal(Tick tick) {
 			if( isOpenTick && tick.Time > openTime) {
-				isOpenTick = false;
-			}
-			lock( processOrdersLocker) {
 				if( trace) {
 					if( isOpenTick) {
 						log.Trace( "ProcessOrders( " + symbol + ", " + tick + " ) [OpenTick]") ;
@@ -151,33 +154,36 @@ namespace TickZoom.Interceptors
 						log.Trace( "ProcessOrders( " + symbol + ", " + tick + " )") ;
 					}
 				}
-				if( symbol == null) {
-					throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
-				}
-				var next = marketOrders.First;
-				for( var node = next; node != null; node = node.Next) {
-					var order = node.Value;
-					OnProcessOrder(order, tick);
-				}
-				next = increaseOrders.First;
-				for( var node = next; node != null; node = node.Next) {
-					var order = node.Value;
-					OnProcessOrder(order, tick);
-				}
-				next = decreaseOrders.First;
-				for( var node = next; node != null; node = node.Next) {
-					var order = node.Value;
-					OnProcessOrder(order, tick);
-				}
+				isOpenTick = false;
+			}
+			if( symbol == null) {
+				throw new ApplicationException("Please set the Symbol property for the " + GetType().Name + ".");
+			}
+			var next = marketOrders.First;
+			for( var node = next; node != null; node = node.Next) {
+				var order = node.Value;
+				OnProcessOrder(order, tick);
+			}
+			next = increaseOrders.First;
+			for( var node = next; node != null; node = node.Next) {
+				var order = node.Value;
+				OnProcessOrder(order, tick);
+			}
+			next = decreaseOrders.First;
+			for( var node = next; node != null; node = node.Next) {
+				var order = node.Value;
+				OnProcessOrder(order, tick);
 			}
 		}
 		
 		private void LogOpenOrders() {
 			if( trace) {
 				log.Trace( "Found " + orderMap.Count + " open orders for " + symbol + ":");
-				foreach( var kvp in orderMap) {
-					var order = kvp.Value;
-					log.Trace( order.ToString());
+				lock( orderMapLocker) {
+					foreach( var kvp in orderMap) {
+						var order = kvp.Value;
+						log.Trace( order.ToString());
+					}
 				}
 			}
 		}

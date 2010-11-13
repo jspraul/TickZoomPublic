@@ -505,7 +505,9 @@ namespace TickZoom.Common
 				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
 				if( debug) log.Debug("Skipping logical fill for an adjustment market order.");
 				if( debug) log.Debug("Performing extra compare.");
-				PerformCompareInternal();
+				lock( performCompareLocker) {
+					PerformCompareInternal();
+				}
 				TryRemovePhysicalFill(physical);
 				return;
 			}
@@ -650,11 +652,17 @@ namespace TickZoom.Common
 			originalPhysicals.Clear();
 			originalPhysicals.AddLast( physicalOrderHandler.GetActiveOrders(symbol));
 			if( debug) {
-				foreach( var order in originalLogicals) {
+				var next = originalLogicals.First;
+				for( var node = next; node != null; node = node.Next) {
+					var order = node.Value;
 					log.Debug("Logical Order: " + order);
 				}
+			}
 				
-				foreach( var order in originalPhysicals) {
+			if( debug) {
+				var next = originalPhysicals.First;
+				for( var node = next; node != null; node = node.Next) {
+					var order = node.Value;
 					log.Debug("Physical Order: " + order);
 				}
 			}
