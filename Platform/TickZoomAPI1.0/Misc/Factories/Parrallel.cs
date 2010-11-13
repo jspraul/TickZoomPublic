@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 
 namespace TickZoom.Api
 {
@@ -96,9 +97,9 @@ namespace TickZoom.Api
 		
 		public static Yield NoWork {
 			get {
-				Yield yield = new Yield();
-				yield.IsIdle = true;
-				return yield;
+				return new Yield {
+					IsIdle = true,
+				};
 			}
 		}
 	}
