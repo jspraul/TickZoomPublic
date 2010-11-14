@@ -66,6 +66,7 @@
     <Compile Include="Logging\LogManagerImpl.cs" />
     <Compile Include="Logging\SymbolFilter.cs" />
     <Compile Include="Logging\TimeStampFilter.cs" />
+    <Compile Include="Logging\Wildcard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Lib\log4net.dll" />
   </ItemGroup>

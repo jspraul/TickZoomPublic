@@ -43,6 +43,7 @@ namespace Loaders
 		
 		public ExampleSimulatedTest() {
 			StoreKnownGood = false;
+			SyncTicks.Enabled = false;
 		}
 			
 		[TestFixtureSetUp]

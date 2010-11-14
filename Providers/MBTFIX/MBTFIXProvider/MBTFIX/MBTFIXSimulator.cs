@@ -41,14 +41,8 @@ namespace TickZoom.MBTFIX
 		private static bool debug = log.IsDebugEnabled;
 		private ServerState fixState = ServerState.Startup;
 		private ServerState quoteState = ServerState.Startup;
-		private Queue fixPacketQueue = Queue.Synchronized(new Queue());
-		private Queue quotePacketQueue = Queue.Synchronized(new Queue());
-		private Task fixPacketTask;
-		private Task quotePacketTask;
 		private TimeStamp heartbeatTimer;
 		private bool firstHearbeat = true;
-		private long fixDelayTimer = 0;
-		private long fixDelayMilliseconds = 0;
 		
 		public MBTFIXSimulator() : base( 6489, 6488, new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes()) {
 			
@@ -59,26 +53,12 @@ namespace TickZoom.MBTFIX
 			fixState = ServerState.Startup;
 			quoteState = ServerState.Startup;
 			base.OnConnectFIX(socket);
-			fixPacketTask = Factory.Parallel.Loop( "FIXServerMock", OnException, ProcessFIXPackets);			
-			quotePacketTask = Factory.Parallel.Loop( "MBTQuotesMock", OnException, ProcessQuotePackets);			
 			firstHearbeat = true;
 		}
 		
 		protected override void CloseSockets()
 		{
 			base.CloseSockets();
-			if( fixPacketTask != null) {
-				fixPacketTask.Stop();
-			}
-			if( fixPacketQueue != null) {
-				fixPacketQueue.Clear();
-			}
-			if( quotePacketTask != null) {
-				quotePacketTask.Stop();
-			}
-			if( quotePacketQueue != null) {
-				quotePacketQueue.Clear();
-			}
 		}
 			
 		public override void StartFIXSimulation()
@@ -91,82 +71,75 @@ namespace TickZoom.MBTFIX
 			base.StartQuoteSimulation();
 		}
 		
-		public override Yield ParseFIXMessage(Packet packet)
+		public override void ParseFIXMessage(Packet packet)
 		{
 			var packetFIX = (PacketFIX4_4) packet;
-			var result = Yield.NoWork.Repeat;
 			switch( packetFIX.MessageType) {
 				case "A": // Login
-					result = FIXLogin( packetFIX);
+					FIXLogin( packetFIX);
 					break;
 				case "AF": // Request Orders
-					result = FIXOrderList( packetFIX);
+					FIXOrderList( packetFIX);
 					break;
 				case "AN": // Request Positions
-					result = FIXPositionList( packetFIX);
+					FIXPositionList( packetFIX);
 					break;
 				case "G":
-					result = FIXChangeOrder( packetFIX);
+					FIXChangeOrder( packetFIX);
 					break;
 				case "D":
-					result = FIXCreateOrder( packetFIX);
+					FIXCreateOrder( packetFIX);
 					break;
 				case "F":
-					result = FIXCancelOrder( packetFIX);
+					FIXCancelOrder( packetFIX);
 					break;
 				case "0":
 					// Ignore heartbeat.
-					result = Yield.DidWork.Repeat;
 					break;
 				default: 
 					throw new ApplicationException("Unknown FIX message type '" + packetFIX.MessageType + "'\n" + packetFIX);
 			}			
-			return result;
 		}
 		
-		public override Yield ParseQuotesMessage(Packet packet)
+		public override void ParseQuotesMessage(Packet packet)
 		{
 			var packetQuotes = (PacketMBTQuotes) packet;
-			var result = Yield.NoWork.Repeat;
 			char firstChar = (char) packetQuotes.Data.GetBuffer()[packetQuotes.Data.Position];
 			switch( firstChar) {
 				case 'L': // Login
-					result = QuotesLogin( packetQuotes);
+					QuotesLogin( packetQuotes);
 					break;
 				case 'S':
-					result = SymbolRequest( packetQuotes);
+					SymbolRequest( packetQuotes);
 					break;
 			}			
-			return result;
 		}
 		
-		private Yield FIXOrderList(PacketFIX4_4 packet) {
-			fixWritePacket = fixSocket.CreatePacket();			
+		private void FIXOrderList(PacketFIX4_4 packet) {
+			var writePacket = fixSocket.CreatePacket();			
 			var mbtMsg = new FIXMessage4_4(packet.Target,packet.Sender);
 			mbtMsg.SetText("END");
 			mbtMsg.AddHeader("8");
 			string message = mbtMsg.ToString();
-			fixWritePacket.DataOut.Write(message.ToCharArray());
+			writePacket.DataOut.Write(message.ToCharArray());
+			fixPacketQueue.Enqueue(writePacket);
 			
 			if(debug) log.Debug("Sending end of order list: " + message);
-	
-			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 		
-		private Yield FIXPositionList(PacketFIX4_4 packet) {
-			fixWritePacket = fixSocket.CreatePacket();			
+		private void FIXPositionList(PacketFIX4_4 packet) {
+			var writePacket = fixSocket.CreatePacket();			
 			var mbtMsg = new FIXMessage4_4(packet.Target,packet.Sender);
 			mbtMsg.SetText("DONE");
 			mbtMsg.AddHeader("AO");
 			string message = mbtMsg.ToString();
-			fixWritePacket.DataOut.Write(message.ToCharArray());
+			writePacket.DataOut.Write(message.ToCharArray());
+			fixPacketQueue.Enqueue(writePacket);
 			
 			if(debug) log.Debug("Sending end of position list: " + message);
-	
-			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 		
-		private Yield FIXChangeOrder(PacketFIX4_4 packet) {
+		private void FIXChangeOrder(PacketFIX4_4 packet) {
 			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
 			PhysicalOrder order = null;
 			if( debug) log.Debug( "FIXChangeOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId + ". Original client id: " + packet.OriginalClientOrderId);
@@ -178,7 +151,7 @@ namespace TickZoom.MBTFIX
 					var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 					tickSync.RemovePhysicalOrder();
 				}
-				return Yield.DidWork.Return;
+				return;
 			}
 			order = ConstructOrder( packet, packet.ClientOrderId);
 			SendExecutionReport( order, "E", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
@@ -186,7 +159,6 @@ namespace TickZoom.MBTFIX
 			SendExecutionReport( order, "5", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			ChangeOrder(order, packet.OriginalClientOrderId);
-			return Yield.DidWork.Repeat;
 		}
 		
 		private Yield FIXCancelOrder(PacketFIX4_4 packet) {
@@ -276,12 +248,12 @@ namespace TickZoom.MBTFIX
 		
 		private string target;
 		private string sender;
-		private Yield FIXLogin(PacketFIX4_4 packet) {
+		private void FIXLogin(PacketFIX4_4 packet) {
 			if( fixState != ServerState.Startup) {
-				return CloseWithFixError(packet, "Invalid login request. Already logged in.");
+				CloseWithFixError(packet, "Invalid login request. Already logged in.");
 			}
 			fixState = ServerState.LoggedIn;
-			fixWritePacket = fixSocket.CreatePacket();
+			var writePacket = fixSocket.CreatePacket();
 			target = packet.Target;
 			sender = packet.Sender;
 			var mbtMsg = new FIXMessage4_4(packet.Target,packet.Sender);
@@ -289,11 +261,10 @@ namespace TickZoom.MBTFIX
 			mbtMsg.SetHeartBeatInterval(30);
 			mbtMsg.AddHeader("A");
 			string login = mbtMsg.ToString();
-			fixWritePacket.DataOut.Write(login.ToCharArray());
+			writePacket.DataOut.Write(login.ToCharArray());
+			fixPacketQueue.Enqueue(writePacket);
 			
 			if(debug) log.Debug("Sending login response: " + login);
-	
-			return Yield.DidWork.Invoke(WriteToFIX);
 		}
 		
 		private void IncreaseHeartbeat(Tick tick) {
@@ -319,9 +290,9 @@ namespace TickZoom.MBTFIX
 			}
 		}
 		
-		private Yield QuotesLogin(PacketMBTQuotes packet) {
+		private void QuotesLogin(PacketMBTQuotes packet) {
 			if( quoteState != ServerState.Startup) {
-				return CloseWithQuotesError(packet, "Invalid login request. Already logged in.");
+				CloseWithQuotesError(packet, "Invalid login request. Already logged in.");
 			}
 			quoteState = ServerState.LoggedIn;
 			var writePacket = quoteSocket.CreatePacket();
@@ -329,7 +300,6 @@ namespace TickZoom.MBTFIX
 			if( debug) log.Debug("Login response: " + message);
 			writePacket.DataOut.Write(message.ToCharArray());
 			quotePacketQueue.Enqueue(writePacket);
-			return Yield.DidWork.Return;
 		}
 		
 		private void OnPhysicalFill( PhysicalFill fill) {
@@ -412,28 +382,6 @@ namespace TickZoom.MBTFIX
 			writePacket.DataOut.Write(message.ToCharArray());
 			if(debug) log.Debug("Sending execution report: " + message);
 			fixPacketQueue.Enqueue(writePacket);
-		}
-		
-		private Yield ProcessFIXPackets() {
-			if( fixPacketQueue.Count == 0) {
-				return Yield.NoWork.Repeat;
-			}
-			if( Factory.TickCount < fixDelayTimer) {
-				return Yield.NoWork.Repeat;
-			} else {
-				fixDelayTimer = Factory.TickCount + fixDelayMilliseconds;
-			}
-			fixWritePacket = (Packet) fixPacketQueue.Dequeue();
-			
-			return Yield.DidWork.Invoke(WriteToFIX);
-		}
-
-		private Yield ProcessQuotePackets() {
-			if( quotePacketQueue.Count == 0) {
-				return Yield.NoWork.Repeat;
-			}
-			quoteWritePacket = (Packet) quotePacketQueue.Dequeue();
-			return Yield.DidWork.Invoke(WriteToQuotes);
 		}
 		
 		private unsafe Yield SymbolRequest(PacketMBTQuotes packet) {
@@ -558,20 +506,19 @@ namespace TickZoom.MBTFIX
 			return Yield.DidWork.Return;
 		}
 		
-		private Yield CloseWithQuotesError(PacketMBTQuotes packet, string message) {
-			return Yield.DidWork.Repeat;
+		private void CloseWithQuotesError(PacketMBTQuotes packet, string message) {
 		}
 		
-		private Yield CloseWithFixError(PacketFIX4_4 packet, string message) {
-			fixWritePacket = fixSocket.CreatePacket();
+		private void CloseWithFixError(PacketFIX4_4 packet, string message) {
+			var writePacket = fixSocket.CreatePacket();
 			var fixMsg = new FIXMessage4_4(packet.Target,packet.Sender);
 			TimeStamp timeStamp = TimeStamp.UtcNow;
 			fixMsg.SetAccount(packet.Account);
 			fixMsg.SetText( message);
 			fixMsg.AddHeader("j");
 			string errorMessage = fixMsg.ToString();
-			fixWritePacket.DataOut.Write(errorMessage.ToCharArray());
-			return Yield.DidWork.Invoke(WriteToFIX);
+			writePacket.DataOut.Write(errorMessage.ToCharArray());
+			fixPacketQueue.Enqueue(writePacket);
 		}
 		
 		protected override void Dispose(bool disposing)
@@ -579,18 +526,6 @@ namespace TickZoom.MBTFIX
 			if( !isDisposed) {
 				if( disposing) {
 					base.Dispose(disposing);
-					if( fixPacketTask != null) {
-						fixPacketTask.Stop();
-					}
-					if( quotePacketTask != null) {
-						quotePacketTask.Stop();
-					}
-					if( fixPacketQueue != null) {
-						fixPacketQueue.Clear();
-					}
-					if( quotePacketQueue != null) {
-						quotePacketQueue.Clear();
-					}
 				}
 			}
 		}

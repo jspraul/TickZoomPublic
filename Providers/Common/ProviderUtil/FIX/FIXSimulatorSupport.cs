@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TickZoom.Api;
 
@@ -43,9 +44,8 @@ namespace TickZoom.FIX
 		private Selector fixSelector;
 		protected Socket fixSocket;
 		private Packet fixReadPacket;
-		protected Packet fixWritePacket;
-		private YieldMethod WriteToFixMethod;
-		private Task fixTask;
+		private Packet fixWritePacket;
+		private Task task;
 		private bool isFIXSimulationStarted = false;
 		private PacketFactory fixPacketFactory;
 
@@ -54,18 +54,16 @@ namespace TickZoom.FIX
 		private Selector quoteSelector;
 		protected Socket quoteSocket;
 		private Packet quoteReadPacket;
-		protected Packet quoteWritePacket;
-		private YieldMethod WriteToQuotesMethod;
-		private Task quoteTask;
+		private Packet quoteWritePacket;
 		private bool isQuoteSimulationStarted = false;
 		private PacketFactory quotePacketFactory;
+		protected Queue fixPacketQueue = Queue.Synchronized(new Queue());
+		protected Queue quotePacketQueue = Queue.Synchronized(new Queue());
 
 		private Dictionary<long, FIXServerSymbolHandler> symbolHandlers = new Dictionary<long, FIXServerSymbolHandler>();
 
 		public FIXSimulatorSupport(ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory)
 		{
-			WriteToFixMethod = WriteToFIX;
-			WriteToQuotesMethod = WriteToQuotes;
 			this.fixPacketFactory = fixPacketFactory;
 			this.quotePacketFactory = quotePacketFactory;
 			ListenToFIX(fixPort);
@@ -102,7 +100,9 @@ namespace TickZoom.FIX
 			fixSelector.AddWriter(socket);
 			log.Info("Received FIX connection: " + socket);
 			StartFIXSimulation();
-			fixTask = Factory.Parallel.Loop("FIXServerReader", OnException, FIXReadLoop);
+			if( task == null) {
+				task = Factory.Parallel.Loop("FIXSimulator", OnException, MainLoop);
+			}
 		}
 
 		protected virtual void OnConnectQuotes(Socket socket)
@@ -113,7 +113,9 @@ namespace TickZoom.FIX
 			quoteSelector.AddWriter(socket);
 			log.Info("Received quotes connection: " + socket);
 			StartQuoteSimulation();
-			quoteTask = Factory.Parallel.Loop("QuotesServerReader", OnException, QuotesReadLoop);
+			if( task == null) {
+				task = Factory.Parallel.Loop("FIXSimulator", OnException, MainLoop);
+			}
 		}
 
 		private void OnDisconnectFIX(Socket socket)
@@ -147,16 +149,16 @@ namespace TickZoom.FIX
 					}
 				}
 			}
-			if (fixTask != null) {
-				fixTask.Stop();
-				fixTask.Join();
+			if (task != null) {
+				task.Stop();
+				task.Join();
 			}
 			if (fixSocket != null) {
 				fixSocket.Dispose();
 			}
-			if (quoteTask != null) {
-				quoteTask.Stop();
-				quoteTask.Join();
+			if (task != null) {
+				task.Stop();
+				task.Join();
 			}
 			if (quoteSocket != null) {
 				quoteSocket.Dispose();
@@ -172,18 +174,91 @@ namespace TickZoom.FIX
 		{
 			isQuoteSimulationStarted = true;
 		}
+		
+		private enum State { Start, ProcessFIX, WriteFIX, ProcessQuotes, WriteQuotes, Return };
+		private State state = State.Start;
+		private Yield MainLoop() {
+			var result = false;
+			switch( state) {
+				case State.Start:
+					if( FIXReadLoop()) {
+						result = true;
+					}
+				ProcessFIX:
+					if( ProcessFIXPackets()) {
+						result = true;
+					}
+				WriteFIX:
+					if( !WriteToFIX()) {
+						state = State.WriteFIX;
+						return Yield.NoWork.Repeat;
+					}
+					if( fixPacketQueue.Count > 0) {
+						state = State.ProcessFIX;
+						return Yield.DidWork.Repeat;
+					}
+					if( QuotesReadLoop()) {
+						result = true;
+					}
+				ProcessQuotes: 
+					if( ProcessQuotePackets()) {
+						result = true;
+					}
+				WriteQuotes:
+					if( !WriteToQuotes()) {
+						state = State.WriteQuotes;
+						return Yield.NoWork.Repeat;
+					}
+					if( quotePacketQueue.Count > 0) {
+						state = State.ProcessQuotes;
+						return Yield.DidWork.Repeat;
+					}
+					break;
+				case State.ProcessFIX:
+					goto ProcessFIX;
+				case State.WriteFIX:
+					goto WriteFIX;
+				case State.WriteQuotes:
+					goto WriteQuotes;
+				case State.ProcessQuotes:
+					goto ProcessQuotes;
+			}
+			state = State.Start;
+			if( result) {
+				return Yield.DidWork.Repeat;
+			} else {
+				return Yield.NoWork.Repeat;
+			}
+		}
 
-		private Yield FIXReadLoop()
+		private bool ProcessFIXPackets() {
+			if( trace) log.Trace("ProcessFIXPackets( " + fixPacketQueue.Count + " packets in queue.");
+			if( fixWritePacket == null && fixPacketQueue.Count == 0) {
+				return false;
+			}
+			fixWritePacket = (Packet) fixPacketQueue.Dequeue();
+			return true;
+		}
+		
+		private bool ProcessQuotePackets() {
+			if( trace) log.Trace("ProcessQuotePackets( " + quotePacketQueue.Count + " packets in queue.");
+			if( quoteWritePacket == null && quotePacketQueue.Count == 0) {
+				return false;
+			}
+			quoteWritePacket = (Packet) quotePacketQueue.Dequeue();
+			return true;
+		}
+		
+		private bool FIXReadLoop()
 		{
-			var result = Yield.NoWork.Repeat;
 			if (isFIXSimulationStarted) {
 				if (fixSocket.TryGetPacket(out fixReadPacket)) {
-					if (trace)
-						log.Trace("Local Read: " + fixReadPacket);
-					result = ParseFIXMessage(fixReadPacket);
+					if (trace) log.Trace("Local Read: " + fixReadPacket);
+					ParseFIXMessage(fixReadPacket);
+					return true;
 				}
 			}
-			return result;
+			return false;
 		}
 
 		public void AddSymbol(string symbol, Func<SymbolInfo, Tick, Yield> onTick, Action<PhysicalFill> onPhysicalFill)
@@ -224,50 +299,49 @@ namespace TickZoom.FIX
 			return symbolHandler.GetOrderById(clientOrderId);
 		}
 
-		private Yield QuotesReadLoop()
+		private bool QuotesReadLoop()
 		{
-			var result = Yield.NoWork.Repeat;
 			if (isQuoteSimulationStarted) {
 				if (quoteSocket.TryGetPacket(out quoteReadPacket)) {
-					if (trace)
-						log.Trace("Local Read: " + quoteReadPacket);
-					result = ParseQuotesMessage(quoteReadPacket);
+					if (trace)	log.Trace("Local Read: " + quoteReadPacket);
+					ParseQuotesMessage(quoteReadPacket);
+					return true;
 				}
 			}
-			return result;
+			return false;
 		}
 
-		public virtual Yield ParseFIXMessage(Packet packet)
+		public virtual void ParseFIXMessage(Packet packet)
 		{
-			if (debug)
-				log.Debug("Received FIX message: " + packet);
-			return Yield.DidWork.Repeat;
+			if (debug) log.Debug("Received FIX message: " + packet);
 		}
 
-		public virtual Yield ParseQuotesMessage(Packet packet)
+		public virtual void ParseQuotesMessage(Packet packet)
 		{
-			if (debug)
-				log.Debug("Received Quotes message: " + packet);
-			return Yield.DidWork.Repeat;
+			if (debug) log.Debug("Received Quotes message: " + packet);
 		}
 
-		public Yield WriteToFIX()
+		public bool WriteToFIX()
 		{
-			if (fixSocket.TrySendPacket(fixWritePacket)) {
+			if (!isFIXSimulationStarted || fixWritePacket == null) return true;
+			if( fixSocket.TrySendPacket(fixWritePacket)) {
 				if (trace) log.Trace("Local Write: " + fixWritePacket);
-				return Yield.DidWork.Return;
+				fixWritePacket = null;
+				return true;
 			} else {
-				return Yield.NoWork.Repeat;
+				return false;
 			}
 		}
 
-		public Yield WriteToQuotes()
+		public bool WriteToQuotes()
 		{
-			if (quoteSocket.TrySendPacket(quoteWritePacket)) {
+			if (!isQuoteSimulationStarted || quoteWritePacket == null) return true;
+			if( quoteSocket.TrySendPacket(quoteWritePacket)) {
 				if (trace) log.Trace("Local Write: " + quoteWritePacket);
-				return Yield.DidWork.Return;
+				quoteWritePacket = null;
+				return true;
 			} else {
-				return Yield.NoWork.Repeat;
+				return false;
 			}
 		}
 
@@ -303,8 +377,8 @@ namespace TickZoom.FIX
 							}
 						}
 					}
-					if (fixTask != null) {
-						fixTask.Stop();
+					if (task != null) {
+						task.Stop();
 					}
 					if (fixSelector != null) {
 						fixSelector.Dispose();
@@ -312,8 +386,11 @@ namespace TickZoom.FIX
 					if (fixSocket != null) {
 						fixSocket.Dispose();
 					}
-					if (quoteTask != null) {
-						quoteTask.Stop();
+					if( fixPacketQueue != null) {
+						fixPacketQueue.Clear();
+					}
+					if( quotePacketQueue != null) {
+						quotePacketQueue.Clear();
 					}
 					if (quoteSelector != null) {
 						quoteSelector.Dispose();

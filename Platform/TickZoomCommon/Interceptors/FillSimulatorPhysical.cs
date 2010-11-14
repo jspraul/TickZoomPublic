@@ -66,10 +66,11 @@ namespace TickZoom.Interceptors
 		{
 			this.symbol = symbol;
 			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
-			this.log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical).FullName + "." + name + "." + symbol.Symbol);
+			this.log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical).FullName + "." + symbol.Symbol.StripInvalidPathChars() + "." + name);
 		}
 		
 		public void OnOpen(Tick tick) {
+			if( trace) log.Trace("OnOpen("+tick+")");
 			isOpenTick = true;
 			openTime = tick.Time;
 			currentTick.Inject( tick.Extract());
@@ -142,6 +143,7 @@ namespace TickZoom.Interceptors
 		
 		public void StartTick(Tick lastTick)
 		{
+			if( trace) log.Trace("StartTick("+lastTick+")");
 			currentTick.Inject( lastTick.Extract());
 		}
 		

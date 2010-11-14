@@ -106,9 +106,9 @@ namespace TickZoom.FIX
 				   	tickSync.AddTick();
 				   	if( isFirstTick) {
 					   	fillSimulator.StartTick( nextTick);
+				   		isFirstTick = false;
 				   	} else { 
 				   		fillSimulator.ProcessOrders();
-				   		isFirstTick = false;
 				   	}
 				   	result = Yield.DidWork.Invoke(ProcessTick);
 				}

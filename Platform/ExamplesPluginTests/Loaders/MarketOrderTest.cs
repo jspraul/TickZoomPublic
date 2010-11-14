@@ -42,6 +42,7 @@ namespace Loaders
 		public MarketOrderTest() {
 			Symbols = "USD/JPY";
 			StoreKnownGood = false;
+			SyncTicks.Enabled = false;
 			ShowCharts = false;
 		}
 			

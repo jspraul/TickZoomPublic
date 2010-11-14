@@ -30,18 +30,22 @@ using System.Threading;
 namespace TickZoom.Api
 {
 	public class TickSync : SimpleLock {
-		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TickSync));
-		private static readonly bool debug = log.IsDebugEnabled;		
-		private static readonly bool trace = log.IsTraceEnabled;		
+		private static readonly Log staticLog = Factory.SysLog.GetLogger(typeof(TickSync));
+		private static readonly bool debug = staticLog.IsDebugEnabled;		
+		private static readonly bool trace = staticLog.IsTraceEnabled;		
+		private Log log;
 		private int ticks = 0;
 		private int positionChange = 0;
 		private int processPhysical = 0;
 		private int physicalFills = 0;
 		private int physicalOrders = 0;
-		private SymbolInfo symbol;
+		private SymbolInfo symbolInfo;
+		private string symbol;
 		
 		internal TickSync( long symbolId) {
-			this.symbol = Factory.Symbol.LookupSymbol(symbolId);
+			this.symbolInfo = Factory.Symbol.LookupSymbol(symbolId);
+			this.symbol = symbolInfo.Symbol.StripInvalidPathChars();
+			this.log = Factory.SysLog.GetLogger(typeof(TickSync).FullName + "." + symbol);
 			if( trace) log.Trace(symbol + ": created with binary symbol id = " + symbolId);
 		}
 		public bool Completed {

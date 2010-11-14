@@ -47,6 +47,8 @@ namespace Loaders
 		
 		[TestFixtureSetUp]
 		public override void RunStrategy() {
+    		Assert.Ignore();
+
 			CleanupFiles();
 			try {
 				Starter starter = CreateStarterCallback();
@@ -65,7 +67,7 @@ namespace Loaders
 	    		// Run the loader.
 				ExampleReversalLoader loader = new ExampleReversalLoader();
 	    		starter.Run(loader);
-	
+	    		
 	    		// Get the stategy
 	    		strategy = loader.TopModel as ExampleReversalStrategy;
 			} catch( Exception ex) {

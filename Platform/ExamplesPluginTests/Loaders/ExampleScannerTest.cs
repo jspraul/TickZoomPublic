@@ -46,6 +46,7 @@ namespace Loaders
 			
 		[TestFixtureSetUp]
 		public void RunStrategy() {
+    		Assert.Ignore();
 			Starter starter = new HistoricalStarter();
 			
 			// Set run properties as in the GUI.

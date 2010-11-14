@@ -47,6 +47,7 @@ namespace MockProvider
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			ShowCharts = false;
 			StoreKnownGood = false;
+			SyncTicks.Enabled = false;
 			CreateStarterCallback = CreateStarter;
 			DeleteFiles();
 			Symbols = "USD/JPY";

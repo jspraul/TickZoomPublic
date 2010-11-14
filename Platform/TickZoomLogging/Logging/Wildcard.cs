@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -25,15 +25,20 @@
 #endregion
 
 using System;
+using System.Text.RegularExpressions;
 
-namespace TickZoom.Api
+namespace TickZoom.Logging
 {
-	public interface ProviderSimulator
+	public class Wildcard : Regex
 	{
-		void StartTick(Tick tick);
-		void FinishTick(Tick tick);
-		int PositionChange(int signal, ActiveList<LogicalOrder> inputOrders);
-		void ProcessOrders();
-		int ActualPosition { get; }
+		 public Wildcard(string pattern) : base(WildcardToRegex(pattern)) {
+		 }
+		 
+		 public Wildcard(string pattern, RegexOptions options) : base(WildcardToRegex(pattern), options) {
+		 }
+		 
+		 public static string WildcardToRegex(string pattern) {
+		 	return "^" + Regex.Escape(pattern).Replace("\\*", ".*").Replace("\\?", ".") + ".*$";
+		 }
 	}
 }

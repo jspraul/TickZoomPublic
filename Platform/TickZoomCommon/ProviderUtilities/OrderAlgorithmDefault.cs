@@ -58,7 +58,7 @@ namespace TickZoom.Common
 		private Dictionary<long,long> filledOrders = new Dictionary<long,long>();
 		
 		public OrderAlgorithmDefault(string name, SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
-			this.log = Factory.SysLog.GetLogger("TickZoom.Common.OrderAlgorithm." + name + "." + symbol);
+			this.log = Factory.SysLog.GetLogger("TickZoom.Common.OrderAlgorithm." + symbol.Symbol.StripInvalidPathChars() + "." + name );
 			this.symbol = symbol;
 			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			this.physicalOrderHandler = brokerOrders;

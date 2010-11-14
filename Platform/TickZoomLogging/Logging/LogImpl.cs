@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 using log4net.Core;
@@ -138,11 +139,23 @@ namespace TickZoom.Logging
 			}
 			
 			private bool CheckAnyEnabled( Level level) {
-				foreach ( var child in Logger.Repository.GetCurrentLoggers()) {					
-					if( child.Name.StartsWith(Logger.Name) ) {
+				if( Logger.Name.Contains("OrderAlgorithm")) {
+					int x = 0;
+				}
+				foreach ( var child in Logger.Repository.GetCurrentLoggers()) {
+					if( child.Name.Contains("OrderAlgorithm")) {
+						int x = 0;
+					}
+					if( child.Name.StartsWith(Logger.Name)) {
 						if( child.IsEnabledFor(level)) {
 							return true;
 						}
+					}
+					var wildcard = new Wildcard(child.Name, RegexOptions.IgnoreCase);
+					if( wildcard.IsMatch(Logger.Name)) {
+					   	if( child.IsEnabledFor(level)) {
+					   		return true;
+					   	}
 					}
 				}
 				return false;

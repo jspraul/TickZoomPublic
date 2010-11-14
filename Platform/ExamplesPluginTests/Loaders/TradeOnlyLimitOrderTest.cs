@@ -42,6 +42,7 @@ namespace Loaders
 		public TradeOnlyLimitOrderTest() {
 			Symbols = "/ESH0TradeBar";
 			StoreKnownGood = false;
+			SyncTicks.Enabled = false;
 			ShowCharts = false;
 		}
 			

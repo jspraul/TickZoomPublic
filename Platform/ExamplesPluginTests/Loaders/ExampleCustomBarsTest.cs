@@ -44,6 +44,7 @@ namespace Loaders
 		public ExampleCustomBarsTest() {
 			StoreKnownGood = false;
 			ShowCharts = false;
+			SyncTicks.Enabled = false;
 		}
 			
 		[TestFixtureSetUp]

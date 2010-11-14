@@ -47,6 +47,7 @@ namespace Loaders
 		public ExampleBreakoutReversalTest() {
 			ShowCharts = false;
 			StoreKnownGood = false;
+			SyncTicks.Enabled = false;
 		}
 			
 		[TestFixtureSetUp]

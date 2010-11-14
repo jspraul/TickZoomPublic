@@ -45,6 +45,7 @@ namespace Loaders
 		public ExampleBreakoutStopsTest() {
 			ShowCharts = false;
 			StoreKnownGood = false;
+			SyncTicks.Enabled = false;
 		}
 			
 		[TestFixtureSetUp]

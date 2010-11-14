@@ -44,6 +44,7 @@ namespace Loaders
 		Portfolio portfolio;
 		public ExampleDualSymbolTest() {
 			StoreKnownGood = false;
+			SyncTicks.Enabled = false;
 			Symbols = "FullTick,Daily4Sim";
 		}
 		
