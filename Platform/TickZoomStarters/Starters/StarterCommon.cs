@@ -399,6 +399,9 @@ namespace TickZoom.Starters
 			log.Notice("Processing " + totalTasks + " total optimization passes.");
 			log.Notice("Found " + Environment.ProcessorCount + " processors.");
 			int tasksPerEngine = Math.Max(totalTasks / Environment.ProcessorCount, 1);
+			if( totalTasks % Environment.ProcessorCount > 0) {
+				tasksPerEngine++;
+			}
 			string maxParallelPassesStr = null;
 			maxParallelPassesStr = Factory.Settings["MaxParallelPasses"];
 			log.Notice("Starting " + Environment.ProcessorCount + " engines per iteration.");

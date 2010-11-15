@@ -172,35 +172,35 @@ namespace TickZoom.Starters
 			// Indexes for going through randomList
 			int[] indexes = new int[optimizeVariables.Count];
 
-			for( int repeat=0; repeat < Math.Min(optimizeVariables.Count,2); repeat++) {
-				
-				//Get random values for each.
-				List<List<int>> randomLists = new List<List<int>>();
-				for( int i=0; i< optimizeVariables.Count; i++) {
-					randomLists.Add( GetRandomIndexes(optimizeVariables[i]));
+//			for( int repeat=0; repeat < Math.Min(optimizeVariables.Count,2); repeat++) {
+//				
+			//Get random values for each.
+			List<List<int>> randomLists = new List<List<int>>();
+			for( int i=0; i< optimizeVariables.Count; i++) {
+				randomLists.Add( GetRandomIndexes(optimizeVariables[i]));
+			}
+			
+			// Create initial population
+			for(int loop=0; loop<populationCount; loop++) {
+			
+				// Set the genome from the randomLists using the indexes.
+				for( int i=0; i<optimizeVariables.Count; i++) {
+					genome[i] = randomLists[i][indexes[i]];
 				}
 				
-				// Create initial population
-				for(int loop=0; loop<populationCount; loop++) {
-				
-					// Set the genome from the randomLists using the indexes.
-					for( int i=0; i<optimizeVariables.Count; i++) {
-						genome[i] = randomLists[i][indexes[i]];
-					}
-					
-					Chromosome chromosome = new Chromosome( genome);
-					log.Debug( chromosome.ToString() );
-					generation.Add( chromosome);
-					alreadyTried.Add( chromosome);
-					for(int i = 0; i<indexes.Length; i++) {
-						indexes[i]++;
-						ModelProperty var = optimizeVariables[i];
-						if( indexes[i] >= populationCount) {
-							indexes[i] = 0;
-						}
+				Chromosome chromosome = new Chromosome( genome);
+				log.Debug( chromosome.ToString() );
+				generation.Add( chromosome);
+				alreadyTried.Add( chromosome);
+				for(int i = 0; i<indexes.Length; i++) {
+					indexes[i]++;
+					ModelProperty var = optimizeVariables[i];
+					if( indexes[i] >= populationCount) {
+						indexes[i] = 0;
 					}
 				}
 			}
+//			}
 
 			#if CLRPROFILER
 	        CLRProfilerControl.LogWriteLine("Entering Genetic Loop"); 
@@ -239,7 +239,7 @@ namespace TickZoom.Starters
 				ModelInterface topModel = new Portfolio();
 				int passCount = 0;
 				foreach( var model in topModels) {
-						topModel.Chain.Dependencies.Add(model.Chain);
+					topModel.Chain.Dependencies.Add(model.Chain);
 					passCount++;
 					if (passCount % tasksPerEngine == 0)
 					{
@@ -279,7 +279,7 @@ namespace TickZoom.Starters
 				
 				List<Chromosome> newGeneration = new List<Chromosome>();
 				log.Notice("Crossover starting...");
-				while( newGeneration.Count < populationCount) {
+				while( newGeneration.Count < populationCount-1) {
 
 					Chromosome chromo1 = Roulette();
 					Chromosome chromo2;
