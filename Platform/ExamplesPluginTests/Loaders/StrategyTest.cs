@@ -704,9 +704,9 @@ namespace Loaders
 					AssertEqual(goodInfo.Symbol,testInfo.Symbol,symbol + " transaction symbol at " + i);
 				}
 				Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
-			} catch { 
+			} catch( Exception ex) {
 				testFailed = true;
-				throw;
+				throw new ApplicationException( ex.ToString(), ex);
 			}
 		}
 		

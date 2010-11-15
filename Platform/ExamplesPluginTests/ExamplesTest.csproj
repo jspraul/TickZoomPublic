@@ -13,8 +13,6 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <StartWorkingDirectory>..\..\bin\Debug</StartWorkingDirectory>
-    <StartArguments>ExamplesTest.exe</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\bin\Debug\</OutputPath>
@@ -23,8 +21,8 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <StartAction>Program</StartAction>
-    <StartProgram>..\..\..\Tools\1.0\NUnit\bin\net-2.0\nunit.exe</StartProgram>
+    <StartArguments>ExamplesTest.exe</StartArguments>
+    <StartWorkingDirectory>..\..\bin\Debug</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\..\bin\Release</OutputPath>
@@ -33,6 +31,8 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <StartArguments>ExamplesTest.exe</StartArguments>
+    <StartWorkingDirectory>..\..\bin\Release</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -40,6 +40,14 @@
     <BaseAddress>4194304</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\Tools\1.0\NUnit\bin\net-2.0\nunit.exe</StartProgram>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\Tools\1.0\NUnit\bin\net-2.0\nunit.exe</StartProgram>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="..\..\TickZoom.CSharp.Targets" />

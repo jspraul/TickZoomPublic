@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 
@@ -40,9 +41,14 @@ namespace TickZoom.Api
 		private string _cfgFile;
 		
 		public ConfigFile() {
-  			string appDataPath = Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData);
-  			appDataPath = Path.Combine(appDataPath,"TickZoom1.1");
-			UseFile( Path.Combine(appDataPath, "TickZoom.config"));
+			var configFile = FindInPath();
+			if( configFile == null) {
+	  			string appDataPath = Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData);
+  				appDataPath = Path.Combine(appDataPath,"TickZoom1.1");
+				UseFile( Path.Combine(appDataPath, "TickZoom.config"));
+			} else {
+				UseFile( configFile);
+			}
 		}
 			
 		public ConfigFile(string name) {
@@ -61,11 +67,30 @@ namespace TickZoom.Api
 			}
 		}
 		
+		public string FindInPath() {
+			var path = GetExecutablePath();
+			do {
+				var file = path + Path.DirectorySeparatorChar + "TickZoom.config";
+				if( File.Exists( file)) {
+					return file;
+				}
+				path = Path.GetDirectoryName(path);
+			} while( path != null);
+			return null;
+		}
+		
 		public bool Exists {
 			get {
 				return File.Exists(_cfgFile);
 			}
 		}
+
+		private string GetExecutablePath()
+		{
+			return Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\", "");
+		}
+
+
 		
 		public string GetValue( string property, string defaultValue) {
 			var result = GetValue(property);

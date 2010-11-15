@@ -162,7 +162,6 @@ namespace TickZoom.Api
 		
 		public static long TickCount {
 			get {
-//				return Stopwatch.GetTimestamp() / Frequency;
 				return Parallel.TickCount;
 			}
 		}
