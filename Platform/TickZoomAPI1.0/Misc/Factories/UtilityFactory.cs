@@ -44,5 +44,6 @@ namespace TickZoom.Api
 		BreakPointInterface BreakPoint();
 		PositionInterface Position(ModelInterface model);
 		PhysicalFill PhysicalFill(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order);
+		StrategyInterface Strategy();
 	}
 }

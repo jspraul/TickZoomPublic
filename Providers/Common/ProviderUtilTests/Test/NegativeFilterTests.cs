@@ -53,12 +53,13 @@ namespace TickZoom.Test
 				ClearPosition(provider,verify,secondsDelay);
 	  			long count = verify.Verify(2,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			int strategyId = 1;
 	  			int actualPosition = 0;
+	  			int strategyPosition = 0;
 	  			while( true) {
 					ClearOrders(0);
-					CreateEntry(OrderType.BuyMarket,0.0,(int)sizeIncrease,strategyId++);
-		  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,orders));
+		  			var strategy = Factory.Utility.Strategy();
+					CreateEntry(strategy,OrderType.BuyMarket,0.0,(int)sizeIncrease,strategyPosition);
+					SendOrders(provider,verify,actualPosition,30);
 		  			expectedPosition += sizeIncrease;
 		  			actualPosition += verify.VerifyPosition(sizeIncrease,symbol,secondsDelay);
 		  			Assert.AreEqual(expectedPosition, actualPosition, "Increasing position.");
@@ -83,12 +84,12 @@ namespace TickZoom.Test
 				ClearPosition(provider,verify,secondsDelay);
 	  			long count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
-	  			int strategyId = 1;
 	  			var actualPosition = 0;
 	  			while( true) {
 					ClearOrders(0);
-					CreateEntry(OrderType.SellMarket,0.0,(int)sizeIncrease, strategyId++);
-		  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,orders));
+	  				var strategy = Factory.Utility.Strategy();
+					CreateEntry(strategy,OrderType.SellMarket,0.0,sizeIncrease,actualPosition);
+					SendOrders(provider,verify,actualPosition,30);
 		  			expectedPosition-=sizeIncrease;
 		  			actualPosition += verify.VerifyPosition(sizeIncrease,symbol,secondsDelay);
 		  			Assert.AreEqual(expectedPosition, actualPosition, "Increasing position.");
@@ -111,8 +112,9 @@ namespace TickZoom.Test
 	  			long count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			expectedPosition = 10;
-	  			CreateLogicalEntry(OrderType.BuyMarket,0.0,(int)expectedPosition);
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			var strategy = Factory.Utility.Strategy();
+	  			CreateEntry(strategy,OrderType.BuyMarket,0.0,(int)expectedPosition,0);
+	  			SendOrders(provider,verify,0,30);
 	  			var position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(expectedPosition, position, "Increasing position.");
 	  			Thread.Sleep(2000);
@@ -134,8 +136,9 @@ namespace TickZoom.Test
 	  			long count = verify.Verify(2,assertTick,symbol,25);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			expectedPosition = -10;
-	  			CreateLogicalEntry(OrderType.SellMarket,0.0,(int)Math.Abs(expectedPosition));
-	  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+	  			var strategy = Factory.Utility.Strategy();
+	  			CreateEntry(strategy,OrderType.SellMarket,0.0,(int)Math.Abs(expectedPosition),0);
+	  			SendOrders(provider,verify,0,30);
 	  			var position = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(expectedPosition, position, "Increasing position.");
 	  			Thread.Sleep(2000);

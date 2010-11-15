@@ -72,5 +72,9 @@ namespace TickZoom.Common
 		public PhysicalFill PhysicalFill(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			return new PhysicalFillDefault(size,price,time,utcTime,order);
 		}
+		
+		public StrategyInterface Strategy() {
+			return new Strategy();
+		}
 	}
 }

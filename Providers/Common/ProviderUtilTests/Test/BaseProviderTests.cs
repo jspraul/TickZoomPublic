@@ -46,6 +46,7 @@ namespace TickZoom.Test
 		private string assemblyName;
 		private int lotSize = 1;
 		private TickSync tickSync;
+		protected StrategyInterface strategy;
 		
 		public BaseProviderTests() {
 			string providerAssembly = Factory.Settings["ProviderAssembly"];
@@ -59,6 +60,8 @@ namespace TickZoom.Test
 		[TestFixtureSetUp]
 		public virtual void Init()
 		{
+			this.strategy = Factory.Utility.Strategy();
+			this.strategy.Context = new MockContext();
 			string appData = Factory.Settings["AppDataFolder"];
 //			File.Delete( Factory.SysLog.LogFolder + @"\" + assemblyName+"Tests.log");
 //			File.Delete( Factory.SysLog.LogFolder + @"\" + assemblyName+".log");			
@@ -137,25 +140,25 @@ namespace TickZoom.Test
   			Assert.AreEqual(expectedPosition, actualPosition, "Starting position.");
 		}
 		
-		public void CreateEntry( Provider provider, VerifyFeed verify, OrderType orderType, int desiredPositions, int actualPosition) {
-			CreateOrder(provider, verify, TradeDirection.Entry,orderType,desiredPositions,actualPosition,actualPosition);
+		public LogicalOrder CreateEntry( StrategyInterface strategy, OrderType orderType, double price, int position, int strategyPosition) {
+			return CreateOrder(strategy, TradeDirection.Entry, orderType,price,position,strategyPosition);
 		}
-		public void CreateExit( Provider provider, VerifyFeed verify, OrderType orderType, int desiredPositions, int actualPosition) {
-			CreateOrder(provider, verify, TradeDirection.Exit,orderType,desiredPositions,actualPosition,actualPosition);
+		public LogicalOrder CreateExit( StrategyInterface strategy, OrderType orderType, double price, int strategyPosition) {
+			return CreateOrder(strategy, TradeDirection.Exit,orderType,price,0,strategyPosition);
 		}
 		
-		public void CreateOrder( Provider provider, VerifyFeed verify, TradeDirection tradeDirection, OrderType orderType, int desiredPositions, int actualPosition, int strategyPosition) {
-  			ActiveList<LogicalOrder> list = new ActiveList<LogicalOrder>();
-  			LogicalOrder order = Factory.Engine.LogicalOrder(symbol,Interlocked.Increment(ref nextOrderId));
+		public LogicalOrder CreateOrder( StrategyInterface strategy, TradeDirection tradeDirection, OrderType orderType, double price, int position, int strategyPosition) {
+  			LogicalOrder order = Factory.Engine.LogicalOrder(symbol,strategy);
   			order.StrategyId = 1;
   			order.StrategyPosition = strategyPosition;
   			order.TradeDirection = tradeDirection;
   			order.Type = orderType;
-  			order.Positions = desiredPositions;
+  			order.Price = price;
+  			order.Positions = position * lotSize;
   			order.Status = OrderStatus.Active;
-  			list.AddLast(order);
-  			if( SyncTicks.Enabled) tickSync.AddPositionChange();
-  			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,actualPosition,list));
+  			orders.AddLast(order);
+  			strategy.Position.Change(strategyPosition,100.00,TimeStamp.UtcNow);
+  			return order;
 		}
 		
 		public void AssertLevel1( TickIO tick, TickIO lastTick, long symbol) {
@@ -198,47 +201,46 @@ namespace TickZoom.Test
 			}
 		}
 		
-		public LogicalOrder CreateEntry(OrderType type, double price, int size, int strategyId) {
-			var logical = Factory.Engine.LogicalOrder(symbol);
-			logical.StrategyId = strategyId;
-			logical.StrategyPosition = 0;
-	  		logical.Status = OrderStatus.Active;
-			logical.TradeDirection = TradeDirection.Entry;
-			logical.Type = type;
-			logical.Price = price;
-			logical.Positions = size * lotSize;
-			orders.AddLast(logical);
-			return logical;
-		}
+//		public LogicalOrder CreateEntry(OrderType type, double price, int size, int strategyId) {
+//			var logical = Factory.Engine.LogicalOrder(symbol,strategy);
+//			logical.StrategyId = strategyId;
+//			logical.StrategyPosition = 0;
+//	  		logical.Status = OrderStatus.Active;
+//			logical.TradeDirection = TradeDirection.Entry;
+//			logical.Type = type;
+//			logical.Price = price;
+//			logical.Positions = size * lotSize;
+//			orders.AddLast(logical);
+//			return logical;
+//		}
 		
-		private int nextOrderId = 1;
-		public LogicalOrder CreateLogicalEntry(OrderType type, double price, int size) {
-			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,Interlocked.Increment(ref nextOrderId));
-	  			logical.Status = OrderStatus.Active;
-			logical.TradeDirection = TradeDirection.Entry;
-			logical.Type = type;
-			logical.Price = price;
-			logical.Positions = size * lotSize;
-			orders.AddLast(logical);
-			return logical;
-		}
+//		public LogicalOrder CreateLogicalEntry(OrderType type, double price, int size) {
+//			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,strategy);
+//	  			logical.Status = OrderStatus.Active;
+//			logical.TradeDirection = TradeDirection.Entry;
+//			logical.Type = type;
+//			logical.Price = price;
+//			logical.Positions = size * lotSize;
+//			orders.AddLast(logical);
+//			return logical;
+//		}
 		
-		public LogicalOrder CreateLogicalExit(OrderType type, double price) {
-			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,Interlocked.Increment(ref nextOrderId));
-	  			logical.Status = OrderStatus.Active;
-			logical.TradeDirection = TradeDirection.Exit;
-			logical.Type = type;
-			logical.Price = price;
-			orders.AddLast(logical);
-			return logical;
-		}
+//		public LogicalOrder CreateLogicalExit(OrderType type, double price) {
+//			LogicalOrder logical = Factory.Engine.LogicalOrder(symbol,strategy);
+//	  		logical.Status = OrderStatus.Active;
+//			logical.TradeDirection = TradeDirection.Exit;
+//			logical.Type = type;
+//			logical.Price = price;
+//			orders.AddLast(logical);
+//			return logical;
+//		}
 		
-		public void SendOrders(Provider provider, VerifyFeed verify, int secondsDelay) {
+		public void SendOrders(Provider provider, VerifyFeed verify, int desiredPosition, int secondsDelay) {
 			var expectedTicks = 1;
   			var count = verify.Wait(symbol,expectedTicks,secondsDelay);
   			Assert.GreaterOrEqual(count,expectedTicks,"at least one tick");
   			if( SyncTicks.Enabled) tickSync.AddPositionChange();
-			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,0,orders));
+			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,desiredPosition,orders));
 		}
 		
 		public string ProviderAssembly {
@@ -252,6 +254,25 @@ namespace TickZoom.Test
 		public int LotSize {
 			get { return lotSize; }
 			set { lotSize = value; }
+		}
+	}	
+	public class MockContext : Context {
+		int modelId = 0;
+		int logicalOrderId = 0;
+		long logicalOrderSerialNumber = 1000000000;
+		public BinaryStore TradeData {
+			get { throw new NotImplementedException(); }
+		}
+		public void AddOrder(LogicalOrder order)
+		{ throw new NotImplementedException(); }
+		public int IncrementOrderId() {
+			return Interlocked.Increment(ref logicalOrderId);
+		}
+		public long IncrementOrderSerialNumber() {
+			return Interlocked.Increment(ref logicalOrderSerialNumber);
+		}
+		public int IncrementModelId() {
+			return Interlocked.Increment(ref modelId);
 		}
 	}
 }

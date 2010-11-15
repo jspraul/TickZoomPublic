@@ -81,31 +81,40 @@ namespace TickZoom.Test
 				ClearPosition(provider,verify,secondsDelay);
 	  			var desiredPosition = 2 * LotSize;
 	  			log.Notice("Sending 1");
-	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,0);
+	  			CreateEntry(strategy,OrderType.BuyMarket,0.0,desiredPosition,0);
+	  			SendOrders(provider,verify,0,30);
 	  			var actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 	
 	  			desiredPosition = 0;
 	  			log.Warn("Sending 2");
-	  			CreateExit(provider,verify,OrderType.SellMarket,desiredPosition,actualPosition);
+				ClearOrders(0);
+	  			CreateExit(strategy,OrderType.SellMarket,0.0,actualPosition);
+	  			SendOrders(provider,verify,actualPosition,30);
 	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 	
 	  			desiredPosition = 2 * LotSize;
 	  			log.Warn("Sending 3");
-	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,actualPosition);
+				ClearOrders(0);
+	  			CreateEntry(strategy,OrderType.BuyMarket,0.0,desiredPosition,actualPosition);
+	  			SendOrders(provider,verify,actualPosition,30);
 	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 	
 	  			desiredPosition = 2 * LotSize;
 	  			log.Warn("Sending 4");
-	  			CreateEntry(provider,verify,OrderType.BuyMarket,desiredPosition,actualPosition);
+				ClearOrders(0);
+	  			CreateEntry(strategy,OrderType.BuyMarket,0.0,desiredPosition,actualPosition);
+	  			SendOrders(provider,verify,actualPosition,30);
 	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 	  			
 	  			desiredPosition = 0;
 	  			log.Warn("Sending 5");
-	  			CreateExit(provider,verify,OrderType.SellMarket,desiredPosition,actualPosition);
+				ClearOrders(0);
+	  			CreateExit(strategy,OrderType.SellMarket,0.0,actualPosition);
+	  			SendOrders(provider,verify,actualPosition,30);
 	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 			}
@@ -128,12 +137,12 @@ namespace TickZoom.Test
 //	  			var count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
 //	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
 	  			
-				CreateLogicalEntry(OrderType.BuyLimit,503.72,2);
+				CreateEntry(strategy,OrderType.BuyLimit,503.72,0,0);
 				
 	  			var count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
 
-	  			SendOrders(provider,verify,secondsDelay);
+	  			SendOrders(provider,verify,0,secondsDelay);
 				
 	  			count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
@@ -154,14 +163,14 @@ namespace TickZoom.Test
 	  			TickIO lastTick = verify.LastTick;
 	  			double bid = lastTick.IsTrade ? lastTick.Price : lastTick.Bid;
 	  			double ask = lastTick.IsTrade ? lastTick.Price : lastTick.Ask;
-	  			
-				LogicalOrder enterBuyLimit = CreateLogicalEntry(OrderType.BuyLimit,bid-280*symbol.MinimumTick,2);
-				LogicalOrder enterSellLimit = CreateLogicalEntry(OrderType.SellLimit,ask+340*symbol.MinimumTick,2);
-				LogicalOrder exitSellLimit = CreateLogicalExit(OrderType.SellLimit,ask+380*symbol.MinimumTick);
-				CreateLogicalExit(OrderType.SellLimit,ask+400*symbol.MinimumTick);
-				CreateLogicalExit(OrderType.BuyLimit,bid-150*symbol.MinimumTick);
-				LogicalOrder exitBuyStop = CreateLogicalExit(OrderType.BuyStop,ask+540*symbol.MinimumTick);
-				SendOrders(provider,verify,secondsDelay);
+	  			int strategyPosition = 0;
+				LogicalOrder enterBuyLimit = CreateEntry(strategy,OrderType.BuyLimit,bid-280*symbol.MinimumTick,2,strategyPosition);
+				LogicalOrder enterSellLimit = CreateEntry(strategy,OrderType.SellLimit,ask+340*symbol.MinimumTick,2,strategyPosition);
+				LogicalOrder exitSellLimit = CreateExit(strategy,OrderType.SellLimit,ask+380*symbol.MinimumTick,strategyPosition);
+				CreateExit(strategy,OrderType.SellLimit,ask+400*symbol.MinimumTick,strategyPosition);
+				CreateExit(strategy,OrderType.BuyLimit,bid-150*symbol.MinimumTick,strategyPosition);
+				LogicalOrder exitBuyStop = CreateExit(strategy,OrderType.BuyStop,ask+540*symbol.MinimumTick,strategyPosition);
+				SendOrders(provider,verify,0,secondsDelay);
 	  			var count = verify.Verify(2,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 
@@ -171,7 +180,7 @@ namespace TickZoom.Test
 				orders.AddLast(enterBuyLimit);
 				orders.AddLast(enterSellLimit);
 				orders.AddLast(exitSellLimit);
-				SendOrders(provider,verify,secondsDelay);
+				SendOrders(provider,verify,0,secondsDelay);
 	  			count = verify.Verify(2,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			
@@ -283,11 +292,12 @@ namespace TickZoom.Test
 	  			double bid = lastTick.IsTrade ? lastTick.Price : lastTick.Bid;
 	  			double ask = lastTick.IsTrade ? lastTick.Price : lastTick.Ask;
 	  			
-				LogicalOrder enterBuyStop = CreateLogicalEntry(OrderType.BuyStop,bid+420*symbol.MinimumTick,2);
-				LogicalOrder enterSellStop = CreateLogicalEntry(OrderType.SellStop,bid-400*symbol.MinimumTick,2);
-				CreateLogicalExit(OrderType.SellStop,bid-180*symbol.MinimumTick);
-				LogicalOrder exitBuyStop = CreateLogicalExit(OrderType.BuyStop,ask+540*symbol.MinimumTick);
-				SendOrders(provider,verify,secondsDelay);
+	  			int strategyPosition = 0;
+				LogicalOrder enterBuyStop = CreateEntry(strategy,OrderType.BuyStop,bid+420*symbol.MinimumTick,2,strategyPosition);
+				LogicalOrder enterSellStop = CreateEntry(strategy,OrderType.SellStop,bid-400*symbol.MinimumTick,2,strategyPosition);
+				CreateExit(strategy,OrderType.SellStop,bid-180*symbol.MinimumTick,strategyPosition);
+				LogicalOrder exitBuyStop = CreateExit(strategy,OrderType.BuyStop,ask+540*symbol.MinimumTick,strategyPosition);
+				SendOrders(provider,verify,0,secondsDelay);
 	  			var count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			
@@ -297,7 +307,7 @@ namespace TickZoom.Test
 				orders.AddLast(enterBuyStop);
 				orders.AddLast(enterSellStop);
 				orders.AddLast(exitBuyStop);
-				SendOrders(provider,verify,secondsDelay);
+				SendOrders(provider,verify,0,secondsDelay);
 	  			count = verify.Verify(2,assertTick,symbol,5);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			
@@ -341,9 +351,10 @@ namespace TickZoom.Test
 	  			double bid = lastTick.IsTrade ? lastTick.Price : lastTick.Bid;
 	  			double ask = lastTick.IsTrade ? lastTick.Price : lastTick.Ask;
 	  			
-				CreateLogicalExit(OrderType.SellStop,bid-180*symbol.MinimumTick);
-				LogicalOrder exitBuyStop = CreateLogicalExit(OrderType.BuyStop,ask+540*symbol.MinimumTick);
-				SendOrders( provider, verify, secondsDelay);
+	  			int strategyPosition = 0;
+				CreateExit(strategy,OrderType.SellStop,bid-180*symbol.MinimumTick,strategyPosition);
+				LogicalOrder exitBuyStop = CreateExit(strategy,OrderType.BuyStop,ask+540*symbol.MinimumTick,strategyPosition);
+				SendOrders( provider, verify, 0, secondsDelay);
 	  			var count = verify.Verify(2,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			
