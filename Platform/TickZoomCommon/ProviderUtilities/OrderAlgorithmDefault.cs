@@ -500,7 +500,7 @@ namespace TickZoom.Common
 				var position = logical.StrategyPosition;
 				if( debug) log.Debug("Creating logical fill with position " + position + " from strategy position " + logical.StrategyPosition);
 				fill = new LogicalFillBinary(
-					position, physical.Price, physical.Time, physical.UtcTime, physical.Order.LogicalOrderId, physical.Order.LogicalSerialNumber);
+					position, physical.Price, physical.Time, physical.UtcTime, physical.Order.LogicalOrderId, physical.Order.LogicalSerialNumber,physical.IsSimulated);
 			} catch( ApplicationException) {
 				if( debug) log.Debug("Leaving symbol position at desired " + desiredPosition + ", since this was an adjustment market order.");
 				if( debug) log.Debug("Skipping logical fill for an adjustment market order.");
@@ -543,7 +543,8 @@ namespace TickZoom.Common
 			}
 			var filledOrder = FindLogicalOrder( orderId);
 			if( debug) log.Debug( "Matched fill with order: " + filledOrder);
-			if( filledOrder.Position == Math.Abs(fill.Position)) {
+			var isCompleteFill = filledOrder.Position == Math.Abs(fill.Position);
+			if( isCompleteFill) {
 				try { 
 					filledOrders.Add(filledOrder.SerialNumber,TimeStamp.UtcNow.Internal);
 					originalLogicals.Remove(filledOrder);
@@ -556,9 +557,11 @@ namespace TickZoom.Common
 				if( debug) log.Debug("Sending logical fill for " + symbol + ": " + fill);
 				onProcessFill( symbol, fill);
 			}
-			if( debug) log.Debug("Performing extra compare.");
-			lock( performCompareLocker) {
-				PerformCompareInternal();
+			if( isCompleteFill) {
+				if( debug) log.Debug("Performing extra compare.");
+				lock( performCompareLocker) {
+					PerformCompareInternal();
+				}
 			}
 		}
 

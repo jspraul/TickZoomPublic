@@ -35,5 +35,6 @@ namespace TickZoom.Api
 		double Price { get; }
 		int Size { get; }
 		PhysicalOrder Order { get; }
+		bool IsSimulated { get; }
 	}
 }

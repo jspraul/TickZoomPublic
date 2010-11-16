@@ -52,8 +52,8 @@ namespace TickZoom.Common
 		public VerifyFeed VerifyFeed() {
 			return new VerifyFeedDefault();
 		}
-		public FillSimulator FillSimulator(string name, SymbolInfo symbol) {
-			return new FillSimulatorPhysical(name, symbol);
+		public FillSimulator FillSimulator(string name, SymbolInfo symbol, bool createSimulateFills) {
+			return new FillSimulatorPhysical(name, symbol, createSimulateFills);
 		}
 		public FillHandler FillHandler() {
 			return new FillHandlerDefault();
@@ -69,8 +69,8 @@ namespace TickZoom.Common
 			return new PositionCommon(model);
 		}
 		
-		public PhysicalFill PhysicalFill(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
-			return new PhysicalFillDefault(size,price,time,utcTime,order);
+		public PhysicalFill PhysicalFill(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order, bool isSimulated) {
+			return new PhysicalFillDefault(size,price,time,utcTime,order,isSimulated);
 		}
 		
 		public StrategyInterface Strategy() {

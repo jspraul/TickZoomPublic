@@ -37,13 +37,15 @@ namespace TickZoom.Interceptors
 		private TimeStamp time;
 		private TimeStamp utcTime;
 		private PhysicalOrder order;
+		private bool isSimulated = false;
 		
-		public PhysicalFillDefault( int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
+		public PhysicalFillDefault( int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order, bool isSimulated) {
 			this.size = size;
 			this.price = price;
 			this.time = time;
 			this.utcTime = utcTime;
 			this.order = order;
+			this.isSimulated = isSimulated;
 		}
 		
 		public override string ToString()
@@ -79,6 +81,9 @@ namespace TickZoom.Interceptors
 		public PhysicalOrder Order {
 			get { return order; }
 		}
-		
+				
+		public bool IsSimulated {
+			get { return isSimulated; }
+		}
 	}
 }

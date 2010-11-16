@@ -42,7 +42,8 @@ namespace TickZoom.Api
 		private TimeStamp postedTime;
 		private int orderId;
 		private long orderSerialNumber;
-		public LogicalFillBinary(int position, double price, TimeStamp time, TimeStamp utcTime, int orderId, long orderSerialNumber)
+		private bool isSimulated;
+		public LogicalFillBinary(int position, double price, TimeStamp time, TimeStamp utcTime, int orderId, long orderSerialNumber, bool isSimulated)
 		{
 			this.position = position;
 			this.price = price;
@@ -51,9 +52,7 @@ namespace TickZoom.Api
 			this.orderId = orderId;
 			this.orderSerialNumber = orderSerialNumber;
 			this.postedTime = new TimeStamp(1800,1,1);
-//			if( orderId == 0) {
-//				System.Diagnostics.Debugger.Break();
-//			}
+			this.isSimulated = isSimulated;
 		}
 
 		public int OrderId {
@@ -116,9 +115,13 @@ namespace TickZoom.Api
 			var time = TimeStamp.Parse(fields[field++]);
 			var utcTime = TimeStamp.Parse(fields[field++]);
 			var postedTime = TimeStamp.Parse(fields[field++]);
-			var fill = new LogicalFillBinary(position,price,time,utcTime,orderId,orderSerialNumber);
+			var fill = new LogicalFillBinary(position,price,time,utcTime,orderId,orderSerialNumber,false);
 			fill.postedTime = postedTime;
 			return fill;
 		}		
+		
+		public bool IsSimulated {
+			get { return isSimulated; }
+		}
 	}
 }

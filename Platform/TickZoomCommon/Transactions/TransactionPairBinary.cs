@@ -212,8 +212,9 @@ namespace TickZoom.Transactions
 				return false;
 			}
 			TransactionPairBinary trade = (TransactionPairBinary) obj;
-			return this.direction == trade.direction &&
-				this.entryPrice == trade.entryPrice &&
+			var entryPriceMatch = this.direction == trade.direction ? this.entryPrice == trade.entryPrice : true;
+			return this.volume == trade.volume &&
+				entryPriceMatch &&
 				this.EntryTime == trade.EntryTime &&
 				this.exitPrice == trade.exitPrice &&
 				this.ExitTime == trade.ExitTime;

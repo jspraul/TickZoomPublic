@@ -63,6 +63,10 @@ namespace TickZoom.Api
 			get { return LogicalFillBinary.Position; }
 		}
 		
+		public bool IsSimulated {
+			get { return LogicalFillBinary.IsSimulated; }
+		}
+		
 		public override string ToString()
 		{
 			return LogicalFillBinary.ToString();

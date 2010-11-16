@@ -61,11 +61,14 @@ namespace TickZoom.Interceptors
 		private TickIO currentTick = Factory.TickUtil.TickIO();
 		private PhysicalOrderHandler confirmOrders;
 		private bool isBarData = false;
+		private bool createSimulatedFills = false;
 		
-		public FillSimulatorPhysical(string name, SymbolInfo symbol)
+		
+		public FillSimulatorPhysical(string name, SymbolInfo symbol, bool createSimulatedFills)
 		{
 			this.symbol = symbol;
 			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
+			this.createSimulatedFills = createSimulatedFills;
 			this.log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical).FullName + "." + symbol.Symbol.StripInvalidPathChars() + "." + name);
 		}
 		
@@ -358,7 +361,7 @@ namespace TickZoom.Interceptors
 				CancelBrokerOrder(order.BrokerOrder);
 				CreateSingleFill( size, price, time, utcTime, order);
 //			} else {
-//				order.Size -= partial;
+//				order.Size -= Math.Abs(partial);
 //				CreateSingleFill( partial, price, time, utcTime, order);
 //				CancelBrokerOrder(order.BrokerOrder);
 //				CreateSingleFill( size-partial, price, time, utcTime, order);
@@ -371,7 +374,7 @@ namespace TickZoom.Interceptors
 			if( onPositionChange != null) {
 				onPositionChange( actualPosition);
 			}
-			var fill = new PhysicalFillDefault(size,price,time,utcTime,order);
+			var fill = new PhysicalFillDefault(size,price,time,utcTime,order,createSimulatedFills);
 			if( debug) log.Debug("Fill: " + fill );
 			if( onPhysicalFill == null) {
 				throw new ApplicationException("Please set the OnPhysicalFill property.");

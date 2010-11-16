@@ -107,15 +107,17 @@ namespace TickZoom.Statistics
 			profitLoss.Symbol = model.Data.SymbolInfo;
 
 		}
-		
 		public bool OnProcessFill(LogicalFill fill)
 		{
 			if( debug) log.Debug(model + ": OnProcessFill: " + fill);
-			
+			if( fill.IsSimulated) {
+				if( debug) log.Debug("Ignoring fill since it's a simulated fill meaning that the strategy already exited via a money management exit like stop loss or target profit, etc.");
+				return true;
+			}
 			if( model is Portfolio) {
 				var portfolio = (Portfolio) model;
 				var portfolioPosition = portfolio.Result.Position;
-				fill = new LogicalFillBinary( portfolioPosition.Current, portfolioPosition.Price, fill.Time, fill.UtcTime, fill.OrderId, fill.OrderSerialNumber);
+				fill = new LogicalFillBinary( portfolioPosition.Current, portfolioPosition.Price, fill.Time, fill.UtcTime, fill.OrderId, fill.OrderSerialNumber,false);
 				if( debug) log.Debug("For portfolio, converted to fill: " + fill);
 			}
 			

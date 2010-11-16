@@ -515,7 +515,7 @@ namespace TickZoom.MBTFIX
 				var executionTime = new TimeStamp(packetFIX.TransactionTime);
 				var configTime = executionTime;
 				configTime.AddSeconds( timeZone.UtcOffset(executionTime));
-				var fill = Factory.Utility.PhysicalFill(fillPosition,packetFIX.LastPrice,configTime,executionTime,order);
+				var fill = Factory.Utility.PhysicalFill(fillPosition,packetFIX.LastPrice,configTime,executionTime,order,false);
 				if( debug) log.Debug( "Sending physical fill: " + fill);
 				lock( openOrdersLocker) {
             		openOrders.Remove(packetFIX.ClientOrderId);
