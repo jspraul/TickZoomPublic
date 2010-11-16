@@ -51,7 +51,7 @@ namespace TickZoom.Examples
 		
 		public override void OnInitialize()
 		{
-			tradeSize = Data.SymbolInfo.Level2LotSize;
+			tradeSize = Data.SymbolInfo.Level2LotSize * 10;
 			minimumTick = multiplier * Data.SymbolInfo.MinimumTick;
 			ExitStrategy.BreakEven = 30 * minimumTick;
 			ExitStrategy.StopLoss = 45 * minimumTick;
