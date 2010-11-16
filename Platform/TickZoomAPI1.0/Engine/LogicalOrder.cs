@@ -71,7 +71,7 @@ namespace TickZoom.Api
 			set;
 		}
 		
-		int Positions {
+		int Position {
 			get;
 			set;
 		}

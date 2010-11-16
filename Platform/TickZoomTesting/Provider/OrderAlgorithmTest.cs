@@ -79,7 +79,7 @@ namespace Orders
 			logical.TradeDirection = TradeDirection.Entry;
 			logical.Type = type;
 			logical.Price = price;
-			logical.Positions = size;
+			logical.Position = size;
 			orders.AddLast(logical);
 			return logical.Id;
 		}

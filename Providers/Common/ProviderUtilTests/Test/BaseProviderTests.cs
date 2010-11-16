@@ -154,7 +154,7 @@ namespace TickZoom.Test
   			order.TradeDirection = tradeDirection;
   			order.Type = orderType;
   			order.Price = price;
-  			order.Positions = position * lotSize;
+  			order.Position = position * lotSize;
   			order.Status = OrderStatus.Active;
   			orders.AddLast(order);
   			strategy.Position.Change(strategyPosition,100.00,TimeStamp.UtcNow);

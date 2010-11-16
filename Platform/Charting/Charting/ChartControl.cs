@@ -419,7 +419,7 @@ namespace TickZoom
 				sb.AppendLine(order.Price.ToString());
 			}
 			sb.Append("size ");
-			sb.AppendLine(order.Positions.ToString());
+			sb.AppendLine(order.Position.ToString());
 			sb.Append("filled ");
 			sb.AppendLine(fillPrice.ToString());
 			sb.Append("new positions ");
