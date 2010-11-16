@@ -62,10 +62,7 @@ namespace TickZoom.Interceptors
 	
 		public void ProcessFill(StrategyInterface strategyInterface, LogicalFill fill) {
 			if( debug) Log.Debug( "ProcessFill: " + fill + " for strategy " + strategyInterface);
-			Strategy strategy = (Strategy) strategyInterface;
-			bool cancelAllEntries = false;
-			bool cancelAllExits = false;
-			bool cancelAllExitStrategies = false;
+			var strategy = (Strategy) strategyInterface;
 			int orderId = fill.OrderId;
 			LogicalOrder filledOrder = null;
 			if( strategyInterface.TryGetOrderById( fill.OrderId, out filledOrder)) {
@@ -79,44 +76,13 @@ namespace TickZoom.Interceptors
 					return;
 				}
 				TryDrawTrade(filledOrder, fill.Price, fill.Position);
-				if( debug) Log.Debug( "Changing position because of fill: " + fill);
+				if( debug) Log.Debug( "Changed strategy position because of fill.");
 				changePosition(strategy.Data.SymbolInfo,fill);
-	
-				bool clean = false;
-				if( filledOrder.TradeDirection == TradeDirection.Entry && doStrategyOrders ) {
-					cancelAllEntries = true;
-					clean = true;
-				}
-				if( filledOrder.TradeDirection == TradeDirection.Exit && doStrategyOrders ) {
-					cancelAllExits = true;
-					clean = true;
-				}
-				if( filledOrder.TradeDirection == TradeDirection.ExitStrategy &&
-				   doExitStrategyOrders ) {
-					cancelAllExitStrategies = true;
-					clean = true;
-				}
-				if( clean) {
-					var next = strategy.ActiveOrders.First;
-					for( var node = next; node != null; node = next) {
-						next = node.Next;
-						LogicalOrder order = node.Value;
-						if( order.TradeDirection == TradeDirection.Entry && cancelAllEntries) {
-							order.Status = OrderStatus.Inactive;
-						}
-						if( order.TradeDirection == TradeDirection.Exit && cancelAllExits) {
-							order.Status = OrderStatus.Inactive;
-						}
-						if( order.TradeDirection == TradeDirection.ExitStrategy && cancelAllExitStrategies) {
-							order.Status = OrderStatus.Inactive;
-						}
-					}
-				}
 			} else {
 				throw new ApplicationException("A fill for order id: " + orderId + " was incorrectly routed to: " + strategyInterface.Name);
 			}
 		}
-		
+
 		public Func<LogicalOrder, double, double, int> DrawTrade {
 			get { return drawTrade; }
 			set { drawTrade = value; }

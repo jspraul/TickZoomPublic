@@ -106,7 +106,7 @@ namespace TickZoom.Interceptors
         public void GoFlat() {
         	if( Strategy.Position.IsLong) {
 	        	orders.sellMarket.Price = 0;
-	        	orders.sellMarket.Position = Strategy.Position.Size;
+	        	orders.sellMarket.Position = 0;
 	        	if( isNextBar) {
 	    	    	orders.sellMarket.Status = OrderStatus.NextBar;
 		       	} else {
@@ -115,7 +115,7 @@ namespace TickZoom.Interceptors
         	}
         	if( Strategy.Position.IsShort) {
 	        	orders.buyMarket.Price = 0;
-	        	orders.buyMarket.Position = Strategy.Position.Size;
+	        	orders.buyMarket.Position = 0;
 	        	if( isNextBar) {
 	    	    	orders.buyMarket.Status = OrderStatus.NextBar;
 		       	} else {

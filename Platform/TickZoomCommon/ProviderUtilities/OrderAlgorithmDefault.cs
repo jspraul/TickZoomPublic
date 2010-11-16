@@ -530,10 +530,6 @@ namespace TickZoom.Common
 		
 		private void ProcessFill( LogicalFillBinary fill) {
 			if( debug) log.Debug( "ProcessFill() logical: " + fill );
-			bool cancelAllEntries = false;
-			bool cancelAllExits = false;
-			bool cancelAllExitStrategies = false;
-			bool cancelAllReverse = false;
 			int orderId = fill.OrderId;
 			if( orderId == 0) {
 				// This is an adjust-to-position market order.
@@ -545,63 +541,16 @@ namespace TickZoom.Common
 			if( originalLogicals != null) {
 				logicalOrders.AddLast(originalLogicals);
 			}
-			try { 
-				var filledOrder = FindLogicalOrder( orderId);
-				if( debug) log.Debug( "Matched fill with order: " + filledOrder);
-				filledOrders.Add(filledOrder.SerialNumber,TimeStamp.UtcNow.Internal);
-				originalLogicals.Remove(filledOrder);
-				
-			
-				bool clean = false;
-				switch( filledOrder.TradeDirection) {
-					case TradeDirection.Change:
-						cancelAllEntries = true;
-						clean = true;
-						break;
-					case TradeDirection.Entry:
-						cancelAllEntries = true;
-						clean = true;
-						break;
-					case TradeDirection.Exit:
-					case TradeDirection.ExitStrategy:
-						cancelAllExits = true;
-						cancelAllExitStrategies = true;
-						clean = true;
-						break;
-					case TradeDirection.Reverse:
-						cancelAllReverse = true;
-						clean = true;
-						break;
-					default:
-						throw new ApplicationException("Unknown trade direction: " + filledOrder.TradeDirection);
+			var filledOrder = FindLogicalOrder( orderId);
+			if( debug) log.Debug( "Matched fill with order: " + filledOrder);
+			if( filledOrder.Position == Math.Abs(fill.Position)) {
+				try { 
+					filledOrders.Add(filledOrder.SerialNumber,TimeStamp.UtcNow.Internal);
+					originalLogicals.Remove(filledOrder);
+					CleanupAfterFill(filledOrder);
+				} catch( ApplicationException) {
+					
 				}
-				if( clean) {
-					foreach( var order in logicalOrders) {
-						if( order.StrategyId == filledOrder.StrategyId) {
-							switch( order.TradeDirection) {
-								case TradeDirection.Entry:
-									if( cancelAllEntries) originalLogicals.Remove(order);
-									break;
-								case TradeDirection.Change:
-									if( cancelAllEntries) originalLogicals.Remove(order);
-									break;
-								case TradeDirection.Exit:
-									if( cancelAllExits) originalLogicals.Remove(order);
-									break;
-								case TradeDirection.ExitStrategy:
-									if( cancelAllExitStrategies) originalLogicals.Remove(order);
-									break;
-								case TradeDirection.Reverse:
-									if( cancelAllReverse) originalLogicals.Remove(order);
-									break;
-								default:
-									throw new ApplicationException("Unknown trade direction: " + filledOrder.TradeDirection);
-							}
-						}
-					}
-				}
-			} catch( ApplicationException) {
-				
 			}
 			if( onProcessFill != null) {
 				if( debug) log.Debug("Sending logical fill for " + symbol + ": " + fill);
@@ -612,7 +561,62 @@ namespace TickZoom.Common
 				PerformCompareInternal();
 			}
 		}
-		
+
+		private void CleanupAfterFill(LogicalOrder filledOrder) {
+			bool clean = false;
+			bool cancelAllEntries = false;
+			bool cancelAllExits = false;
+			bool cancelAllExitStrategies = false;
+			bool cancelAllReverse = false;
+			switch( filledOrder.TradeDirection) {
+				case TradeDirection.Change:
+					cancelAllEntries = true;
+					clean = true;
+					break;
+				case TradeDirection.Entry:
+					cancelAllEntries = true;
+					clean = true;
+					break;
+				case TradeDirection.Exit:
+				case TradeDirection.ExitStrategy:
+					cancelAllExits = true;
+					cancelAllExitStrategies = true;
+					clean = true;
+					break;
+				case TradeDirection.Reverse:
+					cancelAllReverse = true;
+					clean = true;
+					break;
+				default:
+					throw new ApplicationException("Unknown trade direction: " + filledOrder.TradeDirection);
+			}
+			if( clean) {
+				foreach( var order in logicalOrders) {
+					if( order.StrategyId == filledOrder.StrategyId) {
+						switch( order.TradeDirection) {
+							case TradeDirection.Entry:
+								if( cancelAllEntries) originalLogicals.Remove(order);
+								break;
+							case TradeDirection.Change:
+								if( cancelAllEntries) originalLogicals.Remove(order);
+								break;
+							case TradeDirection.Exit:
+								if( cancelAllExits) originalLogicals.Remove(order);
+								break;
+							case TradeDirection.ExitStrategy:
+								if( cancelAllExitStrategies) originalLogicals.Remove(order);
+								break;
+							case TradeDirection.Reverse:
+								if( cancelAllReverse) originalLogicals.Remove(order);
+								break;
+							default:
+								throw new ApplicationException("Unknown trade direction: " + filledOrder.TradeDirection);
+						}
+					}
+				}
+			}
+		}
+	
 		private void UpdateOrderCache(int fillSize, LogicalOrder order) {
 			var strategyPosition = orderCache.GetStrategyPosition(order.StrategyId);
 		

@@ -352,13 +352,25 @@ namespace TickZoom.Interceptors
 		}
 		
 		private void CreatePhysicalFillHelper(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
+			if( debug) log.Debug("Filling order: " + order );
+			var partial = size / 2;
+//			if( partial == 0) {
+				CancelBrokerOrder(order.BrokerOrder);
+				CreateSingleFill( size, price, time, utcTime, order);
+//			} else {
+//				order.Size -= partial;
+//				CreateSingleFill( partial, price, time, utcTime, order);
+//				CancelBrokerOrder(order.BrokerOrder);
+//				CreateSingleFill( size-partial, price, time, utcTime, order);
+//			}
+		}
+	
+		private void CreateSingleFill(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			if( debug) log.Debug("Changing actual position from " + this.actualPosition + " to " + (actualPosition+size) + ". Fill size is " + size);
 			this.actualPosition += size;
 			if( onPositionChange != null) {
 				onPositionChange( actualPosition);
 			}
-			if( debug) log.Debug("Filled order: " + order );
-			CancelBrokerOrder(order.BrokerOrder);
 			var fill = new PhysicalFillDefault(size,price,time,utcTime,order);
 			if( debug) log.Debug("Fill: " + fill );
 			if( onPhysicalFill == null) {
@@ -368,7 +380,7 @@ namespace TickZoom.Interceptors
 				onPhysicalFill(fill);
 			}
 		}
-	
+		
 		public bool UseSyntheticLimits {
 			get { return useSyntheticLimits; }
 			set { useSyntheticLimits = value; }
