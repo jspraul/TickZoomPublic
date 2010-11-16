@@ -37,23 +37,24 @@ namespace Loaders
 			var list = new System.Collections.Generic.List<AutoTestSettings>();
 			var storeKnownGood = false;			
 			var primarySymbol = "USD/JPY";
-//			try { 
-//				list.Add( new AutoTestSettings {
-//				    Mode = AutoTestMode.All,
-//				    Name = "ApexStrategyTest",
-//				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
-//					Symbols = primarySymbol + ",EUR/USD,USD/CHF",
-//					StoreKnownGood = storeKnownGood,
-//					ShowCharts = false,
-//					StartTime = new TimeStamp( 1800, 1, 1),
-//					EndTime = new TimeStamp( 2009, 6, 10),
-//					IntervalDefault = Intervals.Minute1,
-//				});
-//			} catch( ApplicationException ex) {
-//				if( !ex.Message.Contains("not found")) {
-//					throw;
-//				}
-//			}
+			try { 
+				list.Add( new AutoTestSettings {
+				    IgnoreTests = TestType.BarData | TestType.Stats,
+				    Mode = AutoTestMode.All,
+				    Name = "ApexStrategyTest",
+				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
+					Symbols = primarySymbol + ",EUR/USD,USD/CHF",
+					StoreKnownGood = storeKnownGood,
+					ShowCharts = false,
+					StartTime = new TimeStamp( 1800, 1, 1),
+					EndTime = new TimeStamp( 2009, 6, 10),
+					IntervalDefault = Intervals.Minute1,
+				});
+			} catch( ApplicationException ex) {
+				if( !ex.Message.Contains("not found")) {
+					throw;
+				}
+			}
 			
 			list.Add( new AutoTestSettings {
 			    Mode = AutoTestMode.All,

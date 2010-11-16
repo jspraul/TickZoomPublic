@@ -465,7 +465,11 @@ namespace TickZoom.Common
 		public bool IsActive {
 			get { return isActive; }
 			set { if( isActive != value) {
-					if( trace) log.Trace( Name + " going to sleep.");
+					if( value) {
+						if( trace) log.Trace( Name + " waking up.");
+					} else {
+						if( trace) log.Trace( Name + " going to sleep.");
+					}
 					isActive = value;
 					IsActiveChanged();
 				}

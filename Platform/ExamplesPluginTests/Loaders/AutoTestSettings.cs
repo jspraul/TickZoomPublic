@@ -30,7 +30,14 @@ using TickZoom.Api;
 
 namespace Loaders
 {
+	[Flags]
+	public enum TestType {
+		None = 0x00,
+		Stats = 0x01,
+		BarData = 0x02,
+	}
 	public class AutoTestSettings {
+		public TestType IgnoreTests;
 		public AutoTestMode Mode;
 		public string Name;
 		public ModelLoaderInterface Loader;

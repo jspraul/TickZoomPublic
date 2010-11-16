@@ -76,6 +76,9 @@ namespace Loaders
 				foreach( var method in methods ) {
 					var parameters = method.GetParameters();
 					if( !method.IsSpecialName && method.IsPublic && parameters.Length == 1 && parameters[0].ParameterType == typeof(string)) {
+						if( CheckIgnoreMethod(testSettings.IgnoreTests, method.Name)) {
+							continue;
+						}
 						var testCase = NUnitTestCaseBuilder.BuildSingleTestMethod(method,parms);
 						testCase.TestName.Name = method.Name;
 						testCase.TestName.FullName = fixture.Parent.Parent.TestName.Name + "." +
@@ -89,6 +92,20 @@ namespace Loaders
 			}
 		}
 	
+		private bool CheckIgnoreMethod(TestType ignoreTests, string methodName) {
+        	var testTypeValues = Enum.GetValues(typeof(TestType));
+	        foreach (TestType testType in testTypeValues)
+	        {
+	        	if ((ignoreTests & testType) == testType)
+	            {
+	        		if( methodName.Contains( testType.ToString())) {
+	            	   	return true;
+	            	}
+	            }
+	        }
+	        return false;
+		}
+				           
 		private void AddSymbolTestCases(NUnitTestFixture fixture, AutoTestSettings testSettings) {
 			var strategyTest = (StrategyTest) Reflect.Construct(userFixtureType, new object[] { testSettings } );
 			foreach( var symbol in strategyTest.GetSymbols()) {
