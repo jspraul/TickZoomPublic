@@ -647,6 +647,8 @@ namespace Loaders
 					AssertEqual(goodTrade,testTrade,strategyName + " Trade at " + i);
 					AssertEqual(goodInfo.ProfitLoss,testInfo.ProfitLoss,"ProfitLoss at " + i);
 					AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,"ClosedEquity at " + i);
+//					AssertEqual(Math.Round(goodInfo.ProfitLoss,2),Math.Round(testInfo.ProfitLoss,2),"ProfitLoss at " + i);
+//					AssertEqual(Math.Round(goodInfo.ClosedEquity,2),Math.Round(testInfo.ClosedEquity,2),"ClosedEquity at " + i);
 				}
 				Assert.IsFalse(assertFlag,"Checking for trade errors.");
 			} catch {

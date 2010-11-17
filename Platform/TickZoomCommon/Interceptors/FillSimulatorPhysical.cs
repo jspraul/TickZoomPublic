@@ -62,7 +62,9 @@ namespace TickZoom.Interceptors
 		private PhysicalOrderHandler confirmOrders;
 		private bool isBarData = false;
 		private bool createSimulatedFills = false;
-		
+		// Randomly rotate the partial fills but using a fixed
+		// seed so that test results are reproducable.
+		private Random random = new Random(1234);
 		
 		public FillSimulatorPhysical(string name, SymbolInfo symbol, bool createSimulatedFills)
 		{
@@ -356,16 +358,19 @@ namespace TickZoom.Interceptors
 		
 		private void CreatePhysicalFillHelper(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			if( debug) log.Debug("Filling order: " + order );
-			var partial = size / 2;
-//			if( partial == 0) {
-				CancelBrokerOrder(order.BrokerOrder);
-				CreateSingleFill( size, price, time, utcTime, order);
-//			} else {
-//				order.Size -= Math.Abs(partial);
-//				CreateSingleFill( partial, price, time, utcTime, order);
-//				CancelBrokerOrder(order.BrokerOrder);
-//				CreateSingleFill( size-partial, price, time, utcTime, order);
-//			}
+			var split = random.Next(3)+1;
+			var partial = size / split;
+			while( order.Size > 0) {
+				order.Size -= Math.Abs(partial);
+				if( order.Size < Math.Abs(partial)) {
+					partial += Math.Sign(partial) * order.Size;
+					order.Size = 0;
+				}
+				if( order.Size == 0) {
+					CancelBrokerOrder(order.BrokerOrder);
+				}
+				CreateSingleFill( partial, price, time, utcTime, order);
+			}
 		}
 	
 		private void CreateSingleFill(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {

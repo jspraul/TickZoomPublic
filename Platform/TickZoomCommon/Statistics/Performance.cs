@@ -107,9 +107,13 @@ namespace TickZoom.Statistics
 			profitLoss.Symbol = model.Data.SymbolInfo;
 
 		}
+		TimeStamp debugTime = new TimeStamp("1983-06-01 09:00:00.001");
 		public bool OnProcessFill(LogicalFill fill)
 		{
 			if( debug) log.Debug(model + ": OnProcessFill: " + fill);
+			if( debugTime == fill.Time) {
+				int x = 0;
+			}
 			if( fill.IsSimulated) {
 				if( debug) log.Debug("Ignoring fill since it's a simulated fill meaning that the strategy already exited via a money management exit like stop loss or target profit, etc.");
 				return true;
