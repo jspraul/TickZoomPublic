@@ -44,8 +44,8 @@ namespace TickZoom.Transactions
 		private long postedEntryTime;
 		private long exitTime;
 		private long postedExitTime;
-		private double direction;
-		private double volume;
+		private int direction;
+		private int volume;
 		private double entryPrice;
 		private double exitPrice;
 		private double maxPrice;
@@ -58,7 +58,7 @@ namespace TickZoom.Transactions
 			TransactionPairBinary pair = new TransactionPairBinary();
 			string[] fields = value.Split(',');
 			int field = 0;
-			pair.direction = double.Parse(fields[field++]);
+			pair.direction = int.Parse(fields[field++]);
 			pair.entryOrderId = int.Parse(fields[field++]);
 			pair.entrySerialNumber = long.Parse(fields[field++]);
 			pair.entryBar = int.Parse(fields[field++]);
@@ -143,7 +143,7 @@ namespace TickZoom.Transactions
 			exitPrice = price;
 		}
 		
-		public void Enter( double direction, double price, TimeStamp time, TimeStamp postedTime, int bar, int entryOrderId, long entrySerialNumber) {
+		public void Enter( int direction, double price, TimeStamp time, TimeStamp postedTime, int bar, int entryOrderId, long entrySerialNumber) {
 			this.direction = direction;
 			this.volume = Math.Abs(direction);
 			this.entryPrice = price;
@@ -172,17 +172,26 @@ namespace TickZoom.Transactions
 			this.exitBar = bar;
 		}
 		
-		public void ChangeSize( double newSize, double price) {
-			double sum = entryPrice * Direction;
-			double sizeChange = newSize - Direction;
-			volume += Math.Abs(sizeChange);
-			double sum2 = sizeChange * price;
-			double newPrice = (sum + sum2) / newSize;
-			entryPrice = newPrice;
-			direction = newSize;
+		public void ChangeSize( int newSize, double price) {
+			{
+				var sum = entryPrice.ToLong() * Direction; // 1951840000000000
+				var sizeChange = newSize - Direction;      // -6666
+				var sum2 = sizeChange * price.ToLong();    // -650394954000000
+				var newPrice = ((sum + sum2) / newSize).ToDouble();     // 97603498275
+//			}
+//			    //  97.603498275
+//			{   //  97.6207448252587
+//				double sum = entryPrice * Direction;
+//				double sizeChange = newSize - Direction;
+//				double sum2 = sizeChange * price;
+//				double newPrice = (sum + sum2) / newSize;
+				volume += (int) Math.Abs(sizeChange);
+				entryPrice = newPrice;
+				direction = newSize;
+			}
 		}
 		
-		public double Direction {
+		public int Direction {
 			get { return direction; }
 		}
 		
