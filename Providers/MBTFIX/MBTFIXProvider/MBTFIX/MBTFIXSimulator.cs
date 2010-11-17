@@ -305,7 +305,7 @@ namespace TickZoom.MBTFIX
 		private void OnPhysicalFill( PhysicalFill fill, int totalSize, int cumulativeSize, int remainingSize) {
 			if( debug) log.Debug("Converting physical fill to FIX: " + fill);
 			SendPositionUpdate(fill.Order.Symbol, GetPosition(fill.Order.Symbol));
-			var orderStatus = fill.Size == cumulativeSize ? "2" : "1";
+			var orderStatus = cumulativeSize == totalSize ? "2" : "1";
 			SendExecutionReport( fill.Order, orderStatus, fill.Price, totalSize, cumulativeSize, fill.Size, remainingSize, fill.UtcTime, null);
 		}
 		

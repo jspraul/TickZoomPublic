@@ -517,9 +517,9 @@ namespace TickZoom.MBTFIX
 				configTime.AddSeconds( timeZone.UtcOffset(executionTime));
 				var fill = Factory.Utility.PhysicalFill(fillPosition,packetFIX.LastPrice,configTime,executionTime,order,false);
 				if( debug) log.Debug( "Sending physical fill: " + fill);
-				lock( openOrdersLocker) {
-            		openOrders.Remove(packetFIX.ClientOrderId);
-				}
+//				lock( openOrdersLocker) {
+//            		openOrders.Remove(packetFIX.ClientOrderId);
+//				}
 	            algorithm.ProcessFill( fill,packetFIX.OrderQuantity,packetFIX.CumulativeQuantity,packetFIX.LeavesQuantity);
 			}
 		}
