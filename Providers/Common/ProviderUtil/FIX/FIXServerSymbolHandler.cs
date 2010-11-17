@@ -41,7 +41,7 @@ namespace TickZoom.FIX
 		private SymbolInfo symbol;
 		private TickIO nextTick = Factory.TickUtil.TickIO();
 		
-		public FIXServerSymbolHandler( string symbolString, Func<SymbolInfo,Tick,Yield> onTick, Action<PhysicalFill> onPhysicalFill) {
+		public FIXServerSymbolHandler( string symbolString, Func<SymbolInfo,Tick,Yield> onTick, Action<PhysicalFill,int,int,int> onPhysicalFill) {
 			this.onTick = onTick;
 			this.symbol = Factory.Symbol.LookupSymbol(symbolString);
 			reader = Factory.TickUtil.TickReader();

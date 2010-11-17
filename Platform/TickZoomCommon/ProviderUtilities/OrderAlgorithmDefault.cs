@@ -487,7 +487,7 @@ namespace TickZoom.Common
 			throw new ApplicationException("LogicalOrder was not found for order id: " + orderId);
 		}
 		
-		public void ProcessFill( PhysicalFill physical) {
+		public void ProcessFill( PhysicalFill physical, int totalSize, int cumulativeSize, int remainingSize) {
 			if( debug) log.Debug( "ProcessFill() physical: " + physical);
 //			log.Warn( "ProcessFill() physical: " + physical);
 			physicalOrders.Remove(physical.Order);
@@ -516,11 +516,12 @@ namespace TickZoom.Common
 		}		
 		
 		private long nextOrderId = 1000000000;
+		private bool useTimeStampId = true;
 		private long GetUniqueOrderId() {
-			if( false) {
-				return Interlocked.Increment(ref nextOrderId);
-			} else {
+			if( useTimeStampId) {
 				return TimeStamp.UtcNow.Internal;
+			} else {
+				return Interlocked.Increment(ref nextOrderId);
 			}
 		}
 		

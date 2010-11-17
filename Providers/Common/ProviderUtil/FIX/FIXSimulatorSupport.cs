@@ -261,7 +261,7 @@ namespace TickZoom.FIX
 			return false;
 		}
 
-		public void AddSymbol(string symbol, Func<SymbolInfo, Tick, Yield> onTick, Action<PhysicalFill> onPhysicalFill)
+		public void AddSymbol(string symbol, Func<SymbolInfo, Tick, Yield> onTick, Action<PhysicalFill,int,int,int> onPhysicalFill)
 		{
 			var symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 			if (!symbolHandlers.ContainsKey(symbolInfo.BinaryIdentifier)) {

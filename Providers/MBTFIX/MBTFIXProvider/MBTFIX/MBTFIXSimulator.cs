@@ -154,9 +154,9 @@ namespace TickZoom.MBTFIX
 				return;
 			}
 			order = ConstructOrder( packet, packet.ClientOrderId);
-			SendExecutionReport( order, "E", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
+			SendExecutionReport( order, "E", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			SendExecutionReport( order, "5", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
+			SendExecutionReport( order, "5", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			ChangeOrder(order, packet.OriginalClientOrderId);
 		}
@@ -177,9 +177,9 @@ namespace TickZoom.MBTFIX
 			}
 //			log.Info( packet.Symbol + ": Canceling order for client id: " + packet.OriginalClientOrderId);
 			CancelOrder( symbol, order.BrokerOrder);
-			SendExecutionReport( order, "6", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
+			SendExecutionReport( order, "6", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			SendExecutionReport( order, "4", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
+			SendExecutionReport( order, "4", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			return Yield.DidWork.Repeat;
 		}
@@ -191,9 +191,9 @@ namespace TickZoom.MBTFIX
 			if( string.IsNullOrEmpty(packet.ClientOrderId)) {
 				System.Diagnostics.Debugger.Break();
 			}
-			SendExecutionReport( order, "A", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
+			SendExecutionReport( order, "A", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			SendExecutionReport( order, "0", 0.0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
+			SendExecutionReport( order, "0", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			CreateOrder( order);
 			return Yield.DidWork.Repeat;
@@ -302,10 +302,11 @@ namespace TickZoom.MBTFIX
 			quotePacketQueue.Enqueue(writePacket);
 		}
 		
-		private void OnPhysicalFill( PhysicalFill fill) {
+		private void OnPhysicalFill( PhysicalFill fill, int totalSize, int cumulativeSize, int remainingSize) {
 			if( debug) log.Debug("Converting physical fill to FIX: " + fill);
 			SendPositionUpdate(fill.Order.Symbol, GetPosition(fill.Order.Symbol));
-			SendExecutionReport( fill.Order, "2", fill.Price, (int) fill.Size, (int) fill.Size, (int) (fill.Order.Size - fill.Size), fill.UtcTime, null);
+			var orderStatus = fill.Size == cumulativeSize ? "2" : "1";
+			SendExecutionReport( fill.Order, orderStatus, fill.Price, totalSize, cumulativeSize, fill.Size, remainingSize, fill.UtcTime, null);
 		}
 		
 		private void SendPositionUpdate(SymbolInfo symbol, int position) {
@@ -325,7 +326,7 @@ namespace TickZoom.MBTFIX
 			fixPacketQueue.Enqueue(writePacket);
 		}	
 		
-		private void SendExecutionReport(PhysicalOrder order, string status, double price, int cumQty, int lastQty, int leavesQty, TimeStamp time, string origClientOrderId) {
+		private void SendExecutionReport(PhysicalOrder order, string status, double price, int orderQty, int cumQty, int lastQty, int leavesQty, TimeStamp time, string origClientOrderId) {
 			int orderType = 0;
 			switch( order.Type) {
 				case OrderType.BuyMarket:
@@ -357,12 +358,12 @@ namespace TickZoom.MBTFIX
 			var mbtMsg = new FIXMessage4_4(target,sender);
 			mbtMsg.SetAccount( "33006566");
 			mbtMsg.SetDestination("MBTX");
-			mbtMsg.SetOrderQuantity( (int) order.Size);
+			mbtMsg.SetOrderQuantity( orderQty);
 			mbtMsg.SetLastQuantity( Math.Abs(lastQty));
 			if( lastQty != 0) {
 				mbtMsg.SetLastPrice( price);
 			}
-			mbtMsg.SetCumulativeQuantity( cumQty);
+			mbtMsg.SetCumulativeQuantity( Math.Abs(cumQty));
 			mbtMsg.SetOrderStatus(status);
 			mbtMsg.SetPositionEffect( "O");
 			mbtMsg.SetOrderType( orderType);
@@ -376,7 +377,7 @@ namespace TickZoom.MBTFIX
 			mbtMsg.SetTimeInForce( 0);
 			mbtMsg.SetExecutionType( status);
 			mbtMsg.SetTransactTime( time);
-			mbtMsg.SetLeavesQuantity( leavesQty);
+			mbtMsg.SetLeavesQuantity( Math.Abs(leavesQty));
 			mbtMsg.AddHeader("8");
 			string message = mbtMsg.ToString();
 			writePacket.DataOut.Write(message.ToCharArray());

@@ -139,13 +139,7 @@ namespace TickZoom.Logging
 			}
 			
 			private bool CheckAnyEnabled( Level level) {
-				if( Logger.Name.Contains("OrderAlgorithm")) {
-					int x = 0;
-				}
 				foreach ( var child in Logger.Repository.GetCurrentLoggers()) {
-					if( child.Name.Contains("OrderAlgorithm")) {
-						int x = 0;
-					}
 					if( child.Name.StartsWith(Logger.Name)) {
 						if( child.IsEnabledFor(level)) {
 							return true;

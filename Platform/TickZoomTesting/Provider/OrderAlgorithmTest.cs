@@ -1387,9 +1387,9 @@ namespace Orders
 				get { return orderAlgorithm.ActualPosition; }
 			}
 			
-			public void ProcessFill(PhysicalFill fill)
+			public void ProcessFill(PhysicalFill fill,int totalSize, int cumulativeSize, int remainingSize)
 			{
-				orderAlgorithm.ProcessFill(fill);
+				orderAlgorithm.ProcessFill(fill,totalSize,cumulativeSize,remainingSize);
 			}
 			
 			public MockPhysicalOrderHandler Orders {

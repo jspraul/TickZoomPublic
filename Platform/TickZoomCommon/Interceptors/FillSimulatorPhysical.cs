@@ -50,7 +50,7 @@ namespace TickZoom.Interceptors
 		private bool isOpenTick = false;
 		private TimeStamp openTime;
 
-		private Action<PhysicalFill> onPhysicalFill;
+		private Action<PhysicalFill,int,int,int> onPhysicalFill;
 		private Action<int> onPositionChange;
 		private bool useSyntheticMarkets = true;
 		private bool useSyntheticStops = true;
@@ -356,24 +356,27 @@ namespace TickZoom.Interceptors
 			return isFilled;
 		}
 		
-		private void CreatePhysicalFillHelper(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
+		private void CreatePhysicalFillHelper(int totalSize, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			if( debug) log.Debug("Filling order: " + order );
-			var split = random.Next(3)+1;
-			var partial = size / split;
+			var split = 1; // random.Next(3)+1;
+			var lastSize = totalSize / split;
+			var cumulativeQuantity = 0;
+			if( lastSize == 0) lastSize = totalSize;
 			while( order.Size > 0) {
-				order.Size -= Math.Abs(partial);
-				if( order.Size < Math.Abs(partial)) {
-					partial += Math.Sign(partial) * order.Size;
+				order.Size -= Math.Abs(lastSize);
+				if( order.Size < Math.Abs(lastSize)) {
+					lastSize += Math.Sign(lastSize) * order.Size;
 					order.Size = 0;
 				}
+				cumulativeQuantity += lastSize;
 				if( order.Size == 0) {
 					CancelBrokerOrder(order.BrokerOrder);
 				}
-				CreateSingleFill( partial, price, time, utcTime, order);
+				CreateSingleFill( lastSize, totalSize, cumulativeQuantity, order.Size, price, time, utcTime, order);
 			}
 		}
 	
-		private void CreateSingleFill(int size, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
+		private void CreateSingleFill(int size, int totalSize, int cumulativeSize, int remainingSize, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			if( debug) log.Debug("Changing actual position from " + this.actualPosition + " to " + (actualPosition+size) + ". Fill size is " + size);
 			this.actualPosition += size;
 			if( onPositionChange != null) {
@@ -385,7 +388,7 @@ namespace TickZoom.Interceptors
 				throw new ApplicationException("Please set the OnPhysicalFill property.");
 			} else {
 				if( SyncTicks.Enabled) tickSync.AddPhysicalFill(fill);
-				onPhysicalFill(fill);
+				onPhysicalFill(fill,totalSize,cumulativeSize,remainingSize);
 			}
 		}
 		
@@ -404,7 +407,7 @@ namespace TickZoom.Interceptors
 			set { useSyntheticMarkets = value; }
 		}
 		
-		public Action<PhysicalFill> OnPhysicalFill {
+		public Action<PhysicalFill,int,int,int> OnPhysicalFill {
 			get { return onPhysicalFill; }
 			set { onPhysicalFill = value; }
 		}

@@ -39,6 +39,7 @@ namespace TickZoom.Update
 	/// <summary>
 	/// Submits post data to a url.
 	/// </summary>
+	[CLSCompliant(false)]
 	public class PostSubmitter
 	{
 		string downloadDirectory = Factory.Settings["AppDataFolder"];

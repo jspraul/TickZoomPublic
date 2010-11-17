@@ -63,7 +63,7 @@ namespace TickZoom.MBTFIX
 			}
   			ConfigSection = name;
   			HeartbeatDelay = 3500;
-			int WARNING_Fix_Heartbeat_Delay = 0;
+			int TIP_Increase_Heartbeat_Delay_For_Debugging = 0;
   			FIXFilter = new MBTFIXFilter();
 		}
 		
@@ -520,7 +520,7 @@ namespace TickZoom.MBTFIX
 				lock( openOrdersLocker) {
             		openOrders.Remove(packetFIX.ClientOrderId);
 				}
-	            algorithm.ProcessFill( fill);
+	            algorithm.ProcessFill( fill,packetFIX.OrderQuantity,packetFIX.CumulativeQuantity,packetFIX.LeavesQuantity);
 			}
 		}
 		
