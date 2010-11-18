@@ -509,7 +509,7 @@ namespace TickZoom.TickUtil
 			}
 			
 			if( (byte) (testchecksum ^ lastChecksum) != checksum) {
-				System.Diagnostics.Debugger.Break();
+				 System.Diagnostics.Debugger.Break();
 				throw new ApplicationException("Checksum mismatch " + checksum + " vs. " + (byte) (testchecksum ^ lastChecksum) + ". This means integrity checking of tick compression failed.");
 			}
 			lastChecksum = testchecksum;

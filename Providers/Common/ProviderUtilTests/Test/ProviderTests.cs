@@ -68,6 +68,54 @@ namespace TickZoom.Test
 		}		
 #endif
 			
+		[Test]		
+		public void DemoConnectionTest() {
+			using( var verify = Factory.Utility.VerifyFeed())
+			using( var provider = CreateProvider(true)) {
+				provider.SendEvent(verify,null,(int)EventType.Connect,null);
+				if(debug) log.Debug("===DemoConnectionTest===");
+				if(debug) log.Debug("===StartSymbol===");
+				var secondsDelay = 3;
+				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
+				VerifyConnected(verify);
+				if(debug) log.Debug("===VerifyState===");
+				ClearOrders(0);
+				ClearPosition(provider,verify,secondsDelay);
+				if(debug) log.Debug("===VerifyFeed===");
+		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
+		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
+			}
+		}
+		
+#if !OTHERS
+
+		[Test]
+		public void TestSpecificLogicalOrder() {
+			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
+			using( Provider provider = ProviderFactory()) {
+				provider.SendEvent(verify,null,(int)EventType.Connect,null);
+				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
+				var secondsDelay = 3;
+				VerifyConnected(verify);
+				ClearOrders(0);
+				ClearPosition(provider,verify,secondsDelay);
+				
+				var expectedTicks = 2;
+//	  			var count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
+//	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
+	  			
+				CreateEntry(strategy,OrderType.BuyLimit,503.72,1,0);
+				
+	  			var count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
+	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
+
+	  			SendOrders(provider,verify,0,secondsDelay);
+				
+	  			count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
+	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
+			}
+		}
+
 		[Test]
 		public void TestMarketOrder() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
@@ -120,35 +168,6 @@ namespace TickZoom.Test
 			}
 		}		
 		
-#if !OTHERS
-
-		[Test]
-		public void TestSpecificLogicalOrder() {
-			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
-			using( Provider provider = ProviderFactory()) {
-				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				var secondsDelay = 3;
-				VerifyConnected(verify);
-				ClearOrders(0);
-				ClearPosition(provider,verify,secondsDelay);
-				
-				var expectedTicks = 2;
-//	  			var count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
-//	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
-	  			
-				CreateEntry(strategy,OrderType.BuyLimit,503.72,0,0);
-				
-	  			var count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
-	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
-
-	  			SendOrders(provider,verify,0,secondsDelay);
-				
-	  			count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
-	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
-			}
-		}
-
 		[Test]
 		public void TestLogicalLimitOrders() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
@@ -220,25 +239,6 @@ namespace TickZoom.Test
 			}
 		}
 
-		[Test]		
-		public void DemoConnectionTest() {
-			using( var verify = Factory.Utility.VerifyFeed())
-			using( var provider = CreateProvider(true)) {
-				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				if(debug) log.Debug("===DemoConnectionTest===");
-				if(debug) log.Debug("===StartSymbol===");
-				var secondsDelay = 3;
-				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				VerifyConnected(verify);
-				if(debug) log.Debug("===VerifyState===");
-				ClearOrders(0);
-				ClearPosition(provider,verify,secondsDelay);
-				if(debug) log.Debug("===VerifyFeed===");
-		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
-		  		provider.SendEvent(verify,null,(int)EventType.Terminate,null);		
-			}
-		}
-		
 		[Test]	
 		public void DemoStopSymbolTest() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())

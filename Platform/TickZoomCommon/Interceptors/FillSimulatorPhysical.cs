@@ -130,6 +130,9 @@ namespace TickZoom.Interceptors
 		public void OnCreateBrokerOrder(PhysicalOrder order)
 		{
 			if( debug) log.Debug("OnCreateBrokerOrder( " + order + ")");
+			if( order.Size <= 0) {
+				throw new ApplicationException("Sorry, Size of order must be greater than zero: " + order);
+			}
 			CreateBrokerOrder(order);
 			ProcessOrders();
 			if( confirmOrders != null) confirmOrders.OnCreateBrokerOrder(order);
@@ -435,7 +438,11 @@ namespace TickZoom.Interceptors
 		
 		public PhysicalOrderHandler ConfirmOrders {
 			get { return confirmOrders; }
-			set { confirmOrders = value; }
+			set { confirmOrders = value;
+				if( confirmOrders == this) {
+					throw new ApplicationException("Please set ConfirmOrders to an object other than itself to avoid circular loops.");
+				}
+			}
 		}
 		
 		public bool IsBarData {

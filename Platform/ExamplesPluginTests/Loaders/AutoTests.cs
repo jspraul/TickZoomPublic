@@ -39,7 +39,7 @@ namespace Loaders
 			var primarySymbol = "USD/JPY";
 			try { 
 				list.Add( new AutoTestSettings {
-				    IgnoreTests = TestType.BarData | TestType.Stats,
+//				    IgnoreTests = TestType.BarData | TestType.Stats,
 				    Mode = AutoTestMode.All,
 				    Name = "ApexStrategyTest",
 				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
