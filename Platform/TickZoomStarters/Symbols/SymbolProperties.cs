@@ -233,5 +233,10 @@ namespace TickZoom.Symbols
 			get { return maxValidPrice; }
 			set { maxValidPrice = value; }
 		}
+		
+		public bool Equals(SymbolInfo other)
+		{
+			return this.binaryIdentifier == other.BinaryIdentifier;
+		}
 	}
 }

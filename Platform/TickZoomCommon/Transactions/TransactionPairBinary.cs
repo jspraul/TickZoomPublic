@@ -78,7 +78,7 @@ namespace TickZoom.Transactions
 	
 		public override string ToString() {
 			return direction + "," + entryOrderId + "," + entrySerialNumber + "," + entryBar + "," + entryPrice + "," + new TimeStamp(entryTime) + "," + new TimeStamp(postedEntryTime) + "," +
-				exitOrderId + "," + exitSerialNumber + "," + exitBar + "," + exitPrice + "," + new TimeStamp(exitTime) + "," + new TimeStamp(postedExitTime) + "," + maxPrice + "," + minPrice;
+				exitOrderId + "," + exitSerialNumber + "," + exitBar + "," + exitPrice + "," + new TimeStamp(exitTime) + "," + new TimeStamp(postedExitTime) + "," + maxPrice + "," + minPrice + "," + volume;
 		}
 		
 		

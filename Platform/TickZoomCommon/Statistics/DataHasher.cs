@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -25,14 +25,38 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+
 using TickZoom.Api;
+using TickZoom.Common;
+using TickZoom.Interceptors;
+using TickZoom.Reports;
+using TickZoom.Transactions;
 
-namespace TickZoom.Transactions
+namespace TickZoom.Statistics
 {
-	[Obsolete("Please use TransactionPair interface instead.")]
-	public interface RoundTurn : TransactionPair {
-		
+	public class DataHasher {
+		public BinaryWriter Writer;
+		private MemoryStream memory = new MemoryStream();
+		private SHA1 sha1 = SHA1.Create();
+		public DataHasher() {
+			Writer = new BinaryWriter(memory);
+			sha1.Initialize();
+		}
+		public void Clear() {
+			memory.SetLength(0);
+			memory.Position = 0;
+		}
+		public void Update() {
+			sha1.TransformBlock(memory.GetBuffer(),0,(int)memory.Length,memory.GetBuffer(),0);
+			Clear();
+		}
+		public string GetHash() {
+			sha1.TransformFinalBlock(memory.GetBuffer(),0,0);
+			return Convert.ToBase64String( sha1.Hash);
+		}
 	}
-	
-
 }

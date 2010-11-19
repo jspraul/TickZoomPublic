@@ -95,8 +95,6 @@ namespace TickZoom.Common
         public void SetPosition( double position) {
         	if( this.position != position) {
 	        	this.position = position;
-//	        	LogicalFillBinary fill = new LogicalFillBinary(position,tickIO.Bid,tickIO.Time,0);
-//	        	receiver.OnEvent(symbol,(int)EventType.LogicalFill,fill);
         	}
         }
         
@@ -115,6 +113,7 @@ namespace TickZoom.Common
 		}
         
 		bool errorWrongTimeAndSalesType = false;
+		bool errorNeverAnyLevel1Tick = false;
 		public void SendTimeAndSales() {
 			if( !isRunning ) {
 				return;
@@ -129,15 +128,23 @@ namespace TickZoom.Common
 			if( !isTradeInitialized && !VerifyTrade()) {
 				return;
 			}
-			if( symbol.QuoteType == QuoteType.Level1 && !isQuoteInitialized && !VerifyQuote()) {
-				return;
+			if( symbol.QuoteType == QuoteType.Level1) {
+				if( !isQuoteInitialized && !VerifyQuote()) {
+					if( !errorNeverAnyLevel1Tick) {
+						log.Warn( "Found a Trade tick w/o any " + QuoteType.Level1 + " quote yet but " + symbol + " is configured for QuoteType = " + symbol.QuoteType + " in the symbol dictionary.");
+						errorNeverAnyLevel1Tick = true;
+					}
+				} else if( errorNeverAnyLevel1Tick) {
+					log.Notice( "Okay. Found a Level 1 quote tick that resolves the earlier warning message.");
+					errorNeverAnyLevel1Tick = true;
+				}
 			}
 			if( symbol.TimeAndSales == TimeAndSales.ActualTrades) {
 				tickIO.Initialize();
 				tickIO.SetSymbol(symbol.BinaryIdentifier);
 				tickIO.SetTime(Time);
 				tickIO.SetTrade(Last,LastSize);
-				if( symbol.QuoteType == QuoteType.Level1) {
+				if( symbol.QuoteType == QuoteType.Level1 && isQuoteInitialized && VerifyQuote()) {
 					tickIO.SetQuote(Bid,Ask,(short)BidSize,(short)AskSize);
 				}
 				var box = tickPool.Create();

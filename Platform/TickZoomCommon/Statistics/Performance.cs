@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
 using TickZoom.Api;
@@ -50,13 +51,15 @@ namespace TickZoom.Statistics
 		private static readonly bool transactionDebug = transactionLog.IsDebugEnabled;
 		private static readonly Log statsLog = Factory.SysLog.GetLogger("StatsLog");
 		private static readonly bool statsDebug = statsLog.IsDebugEnabled;
-		TransactionPairs comboTrades;
-		TransactionPairsBinary comboTradesBinary;
-		bool graphTrades = true;
-		Equity equity;
-		ProfitLoss profitLoss;
-		PositionCommon position;
-		Model model;
+		private TransactionPairs comboTrades;
+		private TransactionPairsBinary comboTradesBinary;
+		private bool graphTrades = true;
+		private Equity equity;
+		private ProfitLoss profitLoss;
+		private PositionCommon position;
+		private Model model;
+		private DataHasher barHasher = new DataHasher();
+		private DataHasher statsHasher = new DataHasher();
 		
 		public Performance(Model model)
 		{
@@ -107,13 +110,9 @@ namespace TickZoom.Statistics
 			profitLoss.Symbol = model.Data.SymbolInfo;
 
 		}
-		TimeStamp debugTime = new TimeStamp("1983-06-01 09:00:00.001");
 		public bool OnProcessFill(LogicalFill fill)
 		{
 			if( debug) log.Debug(model + ": OnProcessFill: " + fill);
-			if( debugTime == fill.Time) {
-				int x = 0;
-			}
 			if( fill.IsSimulated) {
 				if( debug) log.Debug("Ignoring fill since it's a simulated fill meaning that the strategy already exited via a money management exit like stop loss or target profit, etc.");
 				return true;
@@ -203,6 +202,14 @@ namespace TickZoom.Statistics
 			if( barDataDebug && !model.QuietMode) {
 				Bars bars = model.Bars;
 				TimeStamp time = bars.Time[0];
+				barHasher.Writer.Write(time.Internal);
+				barHasher.Writer.Write(bars.Open[0]);
+				barHasher.Writer.Write(bars.High[0]);
+				barHasher.Writer.Write(bars.Low[0]);
+				barHasher.Writer.Write(bars.Close[0]);
+				barHasher.Writer.Write(bars.Volume[0]);
+				barHasher.Update();
+				
 				StringBuilder sb = new StringBuilder();
 				sb.Append(model.Name);
 				sb.Append(",");
@@ -217,14 +224,17 @@ namespace TickZoom.Statistics
 				sb.Append(bars.Close[0]);
 				sb.Append(",");
 				sb.Append(bars.Volume[0]);
-				sb.Append(",");
-				sb.Append(TimeStamp.UtcNow.Internal);
 				barDataLog.Debug( sb.ToString());
 			}
 			if( statsDebug && !model.QuietMode) {
 				Bars bars = model.Bars;
 				TimeStamp time = bars.Time[0];
 				StringBuilder sb = new StringBuilder();
+				statsHasher.Writer.Write(time.Internal);
+				statsHasher.Writer.Write(equity.ClosedEquity);
+				statsHasher.Writer.Write(equity.OpenEquity);
+				statsHasher.Writer.Write(equity.CurrentEquity);
+				statsHasher.Update();
 				sb.Append(model.Name);
 				sb.Append(",");
 				sb.Append(time);
@@ -234,11 +244,17 @@ namespace TickZoom.Statistics
 				sb.Append(equity.OpenEquity);
 				sb.Append(",");
 				sb.Append(equity.CurrentEquity);
-				sb.Append(",");
-				sb.Append(TimeStamp.UtcNow.Internal);
 				statsLog.Debug( sb.ToString());
 			}
 			return true;
+		}
+		
+		public string GetBarsHash() {
+			return barHasher.GetHash();
+		}
+		
+		public string GetStatsHash() {
+			return statsHasher.GetHash();
 		}
 		
 		public Equity Equity {

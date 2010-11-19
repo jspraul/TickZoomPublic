@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -29,10 +29,46 @@ using TickZoom.Api;
 
 namespace TickZoom.Transactions
 {
-	[Obsolete("Please use TransactionPair interface instead.")]
-	public interface RoundTurn : TransactionPair {
-		
+	public interface TransactionPair
+	{
+		string ToStringHeader();
+		string ToString();
+		double Direction {
+			get;
+		}
+		double Volume {
+			get;
+		}
+		double EntryPrice {
+			get;
+		}
+		double ExitPrice {
+			get;
+		}
+		[Obsolete("Please use TransactionPairs.CalcProfitLoss() instead.",true)]
+		double ProfitLoss {
+			get;
+		}
+		double MaxFavorable {
+			get;
+		}
+		double MaxAdverse {
+			get;
+		}
+		int EntryBar {
+			get;
+		}
+		int ExitBar {
+			get;
+		}
+		TimeStamp EntryTime {
+			get;
+		}
+		TimeStamp ExitTime {
+			get;
+		}
+		bool Completed {
+			get;
+		}
 	}
-	
-
 }

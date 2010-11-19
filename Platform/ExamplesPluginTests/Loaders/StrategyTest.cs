@@ -167,6 +167,7 @@ namespace Loaders
 						fixServer.Dispose();
 					}
 				}
+				WriteHashes();
 				WriteFinalStats();
 	
 	    		// Get the stategy
@@ -301,6 +302,21 @@ namespace Loaders
 		private Starter CreateStarter() {
 			SyncTicks.Enabled = false;
 			return new HistoricalStarter();			
+		}
+		
+		public void WriteHashes() {
+			foreach( var model in GetAllModels(topModel)) {
+				Performance performance;
+				if( model is Strategy) {
+					performance = ((Strategy) model).Performance;
+				} else if( model is Portfolio) {
+					performance = ((Portfolio) model).Performance;
+				} else {
+					continue;
+				}
+				log.Info( model.Name + " bar hash: " + performance.GetBarsHash());
+				log.Info( model.Name + " stats hash: " + performance.GetStatsHash());
+			}
 		}
 		
 		public void WriteFinalStats() {

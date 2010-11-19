@@ -41,7 +41,7 @@ namespace Loaders
 		ExampleOrderStrategy strategy;
 		public TradeOnlyLimitOrderTest() {
 			Symbols = "/ESH0TradeBar";
-			StoreKnownGood = true;
+			StoreKnownGood = false;
 			SyncTicks.Enabled = false;
 			ShowCharts = false;
 		}

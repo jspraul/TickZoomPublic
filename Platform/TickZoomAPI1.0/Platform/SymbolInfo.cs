@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace TickZoom.Api
 {
-	public interface SymbolInfo
+	public interface SymbolInfo : IEquatable<SymbolInfo>
 	{
 		/// <summary>
 		/// The actual text value of the symbol.

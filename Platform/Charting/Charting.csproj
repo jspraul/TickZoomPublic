@@ -66,11 +66,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Charting\ChartControl.resx">
       <DependentUpon>ChartControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <Content Include="ProfilingSessions\Session20100803_204211.sdps" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Charting" />
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>

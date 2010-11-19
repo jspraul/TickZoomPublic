@@ -232,19 +232,19 @@ namespace TickZoom.FIX
 		}
 
 		private bool ProcessFIXPackets() {
-			if( trace) log.Trace("ProcessFIXPackets( " + fixPacketQueue.Count + " packets in queue.");
 			if( fixWritePacket == null && fixPacketQueue.Count == 0) {
 				return false;
 			}
+			if( trace) log.Trace("ProcessFIXPackets( " + fixPacketQueue.Count + " packets in queue.)");
 			fixWritePacket = (Packet) fixPacketQueue.Dequeue();
 			return true;
 		}
 		
 		private bool ProcessQuotePackets() {
-			if( trace) log.Trace("ProcessQuotePackets( " + quotePacketQueue.Count + " packets in queue.");
 			if( quoteWritePacket == null && quotePacketQueue.Count == 0) {
 				return false;
 			}
+			if( trace) log.Trace("ProcessQuotePackets( " + quotePacketQueue.Count + " packets in queue.)");
 			quoteWritePacket = (Packet) quotePacketQueue.Dequeue();
 			return true;
 		}

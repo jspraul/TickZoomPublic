@@ -122,6 +122,7 @@
     <Compile Include="Optimization\OptimizeRange.cs" />
     <Compile Include="Optimization\OptimizerVar.cs" />
     <Compile Include="Statistics\BaseStats.cs" />
+    <Compile Include="Statistics\DataHasher.cs" />
     <Compile Include="Statistics\Equity.cs" />
     <Compile Include="Statistics\ProfitLossEquity.cs" />
     <Compile Include="Statistics\EquityStats.cs" />
@@ -136,16 +137,21 @@
     <Compile Include="ProviderUtilities\AssemblyAttributes.cs" />
     <Compile Include="ProviderUtilities\CommandLine.cs" />
     <Compile Include="ProviderUtilities\PhysicalOrderDefault.cs" />
-    <Compile Include="ProviderUtilities\ProjectInstaller.cs" />
+    <Compile Include="ProviderUtilities\ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ProviderUtilities\BreakPoint.cs" />
     <Compile Include="ProviderUtilities\SymbolHandlerDefault.cs" />
     <Compile Include="ProviderUtilities\UtilityFactoryDefault.cs" />
     <Compile Include="ProviderUtilities\VerifyFeedDefault.cs" />
-    <Compile Include="ProviderUtilities\WindowsService.cs" />
+    <Compile Include="ProviderUtilities\WindowsService.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Transactions\BinaryPage.cs" />
     <Compile Include="Transactions\PagePool.cs" />
     <Compile Include="Transactions\RoundTurn.cs" />
     <Compile Include="Transactions\RoundTurnBinary.cs" />
+    <Compile Include="Transactions\TransactionPair.cs" />
     <Compile Include="Transactions\TransactionPairImpl.cs" />
     <Compile Include="Transactions\RoundTurnsBinary.cs" />
     <Compile Include="Transactions\Transaction.cs" />
@@ -156,15 +162,6 @@
     <Compile Include="Transactions\TransactionPairsPages.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Common" />
-    <Folder Include="Indicators" />
-    <Folder Include="Enums" />
-    <Folder Include="Interceptors" />
-    <Folder Include="Reports" />
-    <Folder Include="Transactions" />
-    <Folder Include="Statistics" />
-    <Folder Include="Optimization" />
-    <Folder Include="ProviderUtilities" />
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
