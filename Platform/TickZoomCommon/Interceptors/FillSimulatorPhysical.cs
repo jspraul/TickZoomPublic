@@ -359,9 +359,10 @@ namespace TickZoom.Interceptors
 			return isFilled;
 		}
 		
+		private int maxPartialFillsPerOrder = 10;
 		private void CreatePhysicalFillHelper(int totalSize, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			if( debug) log.Debug("Filling order: " + order );
-			var split = random.Next(3)+1;
+			var split = random.Next(maxPartialFillsPerOrder)+1;
 			var lastSize = totalSize / split;
 			var cumulativeQuantity = 0;
 			if( lastSize == 0) lastSize = totalSize;

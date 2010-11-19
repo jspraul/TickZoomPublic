@@ -184,6 +184,7 @@ namespace TickZoom.Statistics
 			comboTrade.Exit( fill.Price, fill.Time, fill.PostedTime, model.Chart.ChartBars.BarCount, fill.OrderId, fill.OrderSerialNumber);
 			comboTradesBinary.Tail = comboTrade;
 			double pnl = profitLoss.CalculateProfit(comboTrade.Direction,comboTrade.EntryPrice,comboTrade.ExitPrice);
+			pnl = Math.Round(pnl,2);
 			Equity.OnChangeClosedEquity( pnl);
 			if( trace) {
 				log.Trace( "Exit Trade: " + comboTrade);
