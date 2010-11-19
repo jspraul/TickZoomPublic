@@ -79,6 +79,7 @@
     <Compile Include="TickUtil\TickReaderDefault.cs" />
     <Compile Include="TickUtil\TickUtilFactoryImpl.cs" />
     <Compile Include="TickUtil\TickWriterDefault.cs" />
+    <Content Include="ProfilingSessions\Session20101119_180618.sdps" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">

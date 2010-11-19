@@ -455,14 +455,19 @@ namespace TickZoom.TickUtil
 		}
 		
 		private unsafe int FromFileVersion9(byte *fptr, int length) {
+			// Backwards compatibility. The first iteration of version
+			// 9 never stored the price precision in the file.
+			if( pricePrecision == 0L) {
+				SetPricePrecision();
+			}
 			length --;
 			byte *ptr = fptr;
 			var checksum = *ptr; ptr++;
-			var end = fptr + length;
-			byte testchecksum = 0;
-			for( var p = fptr+1; p<end; p++) {
-				testchecksum ^= *p;	
-			}
+//			var end = fptr + length;
+//			byte testchecksum = 0;
+//			for( var p = fptr+1; p<end; p++) {
+//				testchecksum ^= *p;	
+//			}
 			
 			while( (ptr - fptr) < length) {
 				var field = (BinaryField) (*ptr >> 3);
@@ -509,11 +514,11 @@ namespace TickZoom.TickUtil
 				}
 			}
 			
-			if( (byte) (testchecksum ^ lastChecksum) != checksum) {
-				 System.Diagnostics.Debugger.Break();
-				throw new ApplicationException("Checksum mismatch " + checksum + " vs. " + (byte) (testchecksum ^ lastChecksum) + ". This means integrity checking of tick compression failed.");
-			}
-			lastChecksum = testchecksum;
+//			if( (byte) (testchecksum ^ lastChecksum) != checksum) {
+//				 System.Diagnostics.Debugger.Break();
+//				throw new ApplicationException("Checksum mismatch " + checksum + " vs. " + (byte) (testchecksum ^ lastChecksum) + ". This means integrity checking of tick compression failed.");
+//			}
+//			lastChecksum = testchecksum;
 
 			int len = (int) (ptr - fptr);
 			return len;
