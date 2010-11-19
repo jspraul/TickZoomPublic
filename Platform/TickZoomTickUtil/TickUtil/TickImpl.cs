@@ -53,6 +53,7 @@ namespace TickZoom.TickUtil
 		private static readonly bool debug = log.IsDebugEnabled;
 		private bool isCompressStarted;
 		private long pricePrecision;
+		private int priceDecimals;
 
 		byte dataVersion;
 		TickBinary binary;
@@ -306,13 +307,13 @@ namespace TickZoom.TickUtil
 		private void SetPricePrecision() {
 			var symbol = Factory.Symbol.LookupSymbol(binary.Symbol);
 			var minimumTick = symbol.MinimumTick;
-			var decimals=0;
-			while ((int)minimumTick % 10 == 0)
+			priceDecimals=0;
+			while ((long)minimumTick != minimumTick)
 			{
 				minimumTick*=10;
-				decimals++;
+				priceDecimals++;
 			}
-			var temp = Math.Pow( 0.1, decimals);
+			var temp = Math.Pow( 0.1, priceDecimals);
 			pricePrecision = temp.ToLong();
 		}
 		
@@ -519,17 +520,23 @@ namespace TickZoom.TickUtil
 		}
 		
 		private unsafe int FromFileVersion8(byte *fptr) {
+			if( pricePrecision == 0L) {
+				SetPricePrecision();
+			}
 			byte *ptr = fptr;
 	    	binary.UtcTime = *(long*)ptr; ptr+=sizeof(long);
 	    	binary.UtcTime *= 1000;
 			binary.ContentMask = *ptr; ptr++;
 			if( IsQuote ) {
 				binary.Bid = * (long*) ptr; ptr+=sizeof(long);
+				binary.Bid = Math.Round(binary.Bid.ToDouble(),priceDecimals).ToLong();
 				binary.Ask = * (long*) ptr; ptr+=sizeof(long);
+				binary.Ask = Math.Round(binary.Ask.ToDouble(),priceDecimals).ToLong();
 			}
 			if( IsTrade) {
 				binary.Side = *ptr; ptr++;
 				binary.Price = * (long*) ptr; ptr+=sizeof(long);
+				binary.Price = Math.Round(binary.Price.ToDouble(),priceDecimals).ToLong();
 				binary.Size = * (int*) ptr; ptr+=sizeof(int);
 			}
 			if( HasDepthOfMarket) {

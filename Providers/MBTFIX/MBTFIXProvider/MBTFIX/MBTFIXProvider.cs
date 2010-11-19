@@ -148,7 +148,7 @@ namespace TickZoom.MBTFIX
 					FailLogin(packetString);
 				}
 			}
-			
+
 			if( !VerifyLogin(packet)) {
 				RegenerateSocket();
 				return Yield.DidWork.Repeat;
@@ -158,6 +158,16 @@ namespace TickZoom.MBTFIX
 			
             return Yield.DidWork.Repeat;
         }
+		
+		private void Logout() {
+			var mbtMsg = new FIXMessage4_4(UserName,fixDestination);
+			mbtMsg.AddHeader("5");
+			var logout = mbtMsg.ToString();
+			var packet = Socket.CreatePacket();
+			packet.DataOut.Write(logout.ToCharArray());
+			var packetString = packet.ToString();
+			log.Info("Logout message = " + packetString);
+		}
 		
 		protected override void OnStartRecovery()
 		{

@@ -710,6 +710,9 @@ namespace Loaders
 				List<TransactionInfo> testTransactions = null;
 				testReconciliationMap.TryGetValue(symbol,out testTransactions);
 				Assert.IsNotNull(goodTransactions, "front-end trades");
+				if( testTransactions == null) {
+					log.Error("Transactions null for " + symbolInfo);
+				}
 				Assert.IsNotNull(testTransactions, "back-end trades");
 				for( int i=0; i<testTransactions.Count && i<goodTransactions.Count; i++) {
 					var testInfo = testTransactions[i];
