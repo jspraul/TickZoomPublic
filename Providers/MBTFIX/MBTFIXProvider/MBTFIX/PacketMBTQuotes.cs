@@ -155,13 +155,15 @@ namespace TickZoom.MBTQuotes
 		        ++ptr;
 		        int divisor = 10;
 		        int fract = *ptr - 48;
+		        int decimals = 1;
 		        while (*(++ptr) != EndOfField && *ptr != EndOfMessage) {
 		        	fract = fract * 10 + *ptr - 48;
 		        	divisor *= 10;
+		        	decimals++;
 		        }
 		        ++ptr;
 		        Position += (int) (ptr - bptr);
-		        double result = val + (double)fract/divisor;
+		        double result = val + Math.Round((double)fract/divisor,decimals);
 		        return result;
 	        }
 		}
