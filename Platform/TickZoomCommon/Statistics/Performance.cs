@@ -123,6 +123,9 @@ namespace TickZoom.Statistics
 				fill = new LogicalFillBinary( portfolioPosition.Current, portfolioPosition.Price, fill.Time, fill.UtcTime, fill.OrderId, fill.OrderSerialNumber,false);
 				if( debug) log.Debug("For portfolio, converted to fill: " + fill);
 			}
+			if( transactionDebug && !model.QuietMode && !(model is PortfolioInterface) ) {
+				transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
+			}
 			
 			if( fill.Position != position.Current) {
 				if( position.IsFlat) {
@@ -160,7 +163,6 @@ namespace TickZoom.Statistics
 			if( trace) {
 				log.Trace( "Enter trade: " + pair);
 			}
-			if( transactionDebug && !model.QuietMode && !(model is PortfolioInterface) ) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
 				strategy.OnEnterTrade();
@@ -171,7 +173,6 @@ namespace TickZoom.Statistics
 			TransactionPairBinary combo = comboTradesBinary.Tail;
 			combo.ChangeSize(fill.Position,fill.Price);
 			comboTradesBinary.Tail = combo;
-			if( transactionDebug && !model.QuietMode && !(model is PortfolioInterface) ) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
 				strategy.OnChangeTrade();
@@ -186,9 +187,6 @@ namespace TickZoom.Statistics
 			Equity.OnChangeClosedEquity( pnl);
 			if( trace) {
 				log.Trace( "Exit Trade: " + comboTrade);
-			}
-			if( fill.Position == 0) {
-				if( transactionDebug && !model.QuietMode && !(model is PortfolioInterface) ) transactionLog.Debug( model.Name + "," + model.Data.SymbolInfo + "," + fill);
 			}
 			if( tradeDebug && !model.QuietMode) tradeLog.Debug( model.Name + "," + Equity.ClosedEquity + "," + pnl + "," + comboTrade);
 			if( model is Strategy) {
