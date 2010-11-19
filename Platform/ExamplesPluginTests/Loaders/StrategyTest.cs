@@ -747,8 +747,8 @@ namespace Loaders
 				throw new ApplicationException("Expected type " + a.GetType() + " but was " + b.GetType() + ": " + message);
 			}
 			if( a is double && b is double) {
-				a = Math.Round((double)a ,4);
-				b = Math.Round((double)b ,4);
+				a = Math.Round((double)a ,2);
+				b = Math.Round((double)b ,2);
 			}
 			if( !a.Equals(b)) {
 				assertFlag = true;
