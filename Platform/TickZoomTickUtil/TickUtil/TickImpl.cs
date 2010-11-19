@@ -419,19 +419,14 @@ namespace TickZoom.TickUtil
 			long result = 0L;
 			var size = (FieldSize) (**ptr & 0x07);
 			(*ptr)++;
-			switch( size) {
-				case FieldSize.Byte:
-					result = (**ptr); (*ptr)++;
-					break;
-				case FieldSize.Short:
-					result = (*(short*)(*ptr)); (*ptr)+= sizeof(short);
-					break;
-				case FieldSize.Int:
-					result = (*(int*)(*ptr)); (*ptr)+= sizeof(int);
-					break;
-				case FieldSize.Long:
-					result = (*(long*)(*ptr)); (*ptr)+= sizeof(long);
-					break;
+			if( size == FieldSize.Byte) {
+				result = (**ptr); (*ptr)++;
+			} else if( size == FieldSize.Short) {
+				result = (*(short*)(*ptr)); (*ptr)+= sizeof(short);
+			} else if( size == FieldSize.Int) {
+				result = (*(int*)(*ptr)); (*ptr)+= sizeof(int);
+			} else if( size == FieldSize.Long) {
+				result = (*(long*)(*ptr)); (*ptr)+= sizeof(long);
 			}
 			return result;
 		}
