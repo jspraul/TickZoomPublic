@@ -57,7 +57,24 @@ namespace Loaders
 			
 			try { 
 				list.Add( new AutoTestSettings {
-//				    IgnoreTests = TestType.BarData | TestType.Stats,
+				    Mode = AutoTestMode.All,
+				    Name = "Apex_NQ_MeltdownTest",
+				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
+				    Symbols = "/NQU0",
+					StoreKnownGood = storeKnownGood,
+					ShowCharts = false,
+					StartTime = new TimeStamp( 1800, 1, 1),
+					EndTime = new TimeStamp( "2010-08-25 15:00:00"),
+					IntervalDefault = Intervals.Second10,
+				});
+			} catch( ApplicationException ex) {
+				if( !ex.Message.Contains("not found")) {
+					throw;
+				}
+			}
+			
+			try { 
+				list.Add( new AutoTestSettings {
 				    Mode = AutoTestMode.All,
 				    Name = "ApexMeltdownTest",
 				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),

@@ -58,7 +58,8 @@ namespace TickZoom.TickUtil
 		private static List<Reader> readerList = new List<Reader>();
 		private object taskLocker = new object();
 		private volatile bool isDisposed = false;
-		string storageFolder;
+		string priceDataFolder;
+		string appDataFolder;
 		MemoryStream memory;
 		byte[] buffer;
 		Progress progress = new Progress();
@@ -68,9 +69,15 @@ namespace TickZoom.TickUtil
 		public Reader()
 		{
 			tickBoxPool = Factory.TickUtil.TickPool();
-			storageFolder = Factory.Settings["AppDataFolder"];
-			if (storageFolder == null) {
-				throw new ApplicationException("Must set AppDataFolder property in app.config");
+			var property = "PriceDataFolder";
+			priceDataFolder = Factory.Settings[property];
+			if (priceDataFolder == null) {
+				throw new ApplicationException("Must set " + property + " property in app.config");
+			}
+			property = "AppDataFolder";
+			appDataFolder = Factory.Settings[property];
+			if (appDataFolder == null) {
+				throw new ApplicationException("Must set " + property + " property in app.config");
 			}
 			lock(readerListLocker) {
 				readerList.Add(this);
@@ -99,9 +106,10 @@ namespace TickZoom.TickUtil
 			string _symbol = symbolParts[0];
 			symbol = Factory.Symbol.LookupSymbol(_symbol);
 			lSymbol = symbol.BinaryIdentifier;
-			string filePath = storageFolder + "\\" + folderOrfile;
+			var dataFolder = folderOrfile.Contains(@"Test\") ? appDataFolder : priceDataFolder;
+			var filePath = dataFolder + "\\" + folderOrfile;
 			if (Directory.Exists(filePath)) {
-				fileName = storageFolder + "\\" + folderOrfile + "\\" + symbolFile.StripInvalidPathChars() + ".tck";
+				fileName = filePath + "\\" + symbolFile.StripInvalidPathChars() + ".tck";
 			} else if (File.Exists(folderOrfile)) {
 				fileName = folderOrfile;
 			} else {

@@ -32,6 +32,8 @@ using System.IO;
 namespace TickZoom.Api
 {
 	public class Settings {
+		private const string defaultDataFolder = "TickZoomHome";
+		
 		Dictionary<string,string> obsoleteSettings = new Dictionary<string,string>();
 		public Settings() {
 			obsoleteSettings.Add("ServiceAddress",null);
@@ -40,7 +42,8 @@ namespace TickZoom.Api
 		public string this[string name]
 		{
 			get { 
-				if( name == "AppDataFolder") { return GetAppDataFolder(); }
+				if( name == "AppDataFolder") { return GetInstallationProperty(name); }
+				if( name == "PriceDataFolder") { return GetInstallationProperty(name); }
 				if( obsoleteSettings.ContainsKey(name)) {
 					throw new ApplicationException("Used obsolete setting: " + name);
 				}
@@ -49,9 +52,12 @@ namespace TickZoom.Api
 			}
 		}
 		
-		private string GetAppDataFolder() {
+		private string GetInstallationProperty(string property) {
+			// ConfigFile gets either global config or a local
+			// installation config if found anywhere in the ancestry
+			// of the working directore.
 			ConfigFile config = new ConfigFile();
-			string retVal = config.GetValue("AppDataFolder");
+			string retVal = config.GetValue(property);
 			if( retVal != null) {
 				if( Directory.Exists(retVal)) {
 					return retVal;
@@ -71,14 +77,14 @@ namespace TickZoom.Api
 				throw new ApplicationException("Failed to find a drive to put TickZoomData");
 			}
 			if( setValue) {
-				config.SetValue("AppDataFolder",retVal);
+				config.SetValue(property,retVal);
 			}
 			return retVal;
 		}
 		
 		private string ScanForFolder() {
 			foreach( DriveInfo drive in DriveInfo.GetDrives()) {
-				string path = drive.Name + defaultDataFolder;
+				var path = drive.Name + defaultDataFolder;
 				if( Directory.Exists(path)) {
 					return path;
 				}
@@ -105,8 +111,6 @@ namespace TickZoom.Api
 				return null;
 			}
 		}
-		
-		private const string defaultDataFolder = "TickZoomHome";
 		
 		public string DefaultDataFolder {
 			get { return defaultDataFolder; }
