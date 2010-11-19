@@ -35,11 +35,10 @@ namespace Loaders
 	public class AutoTests : IAutoTestFixture {
 		public AutoTestSettings[] GetAutoTestSettings() {
 			var list = new System.Collections.Generic.List<AutoTestSettings>();
-			var storeKnownGood = false;			
+			var storeKnownGood = false;
 			var primarySymbol = "USD/JPY";
 			try { 
 				list.Add( new AutoTestSettings {
-//				    IgnoreTests = TestType.BarData | TestType.Stats,
 				    Mode = AutoTestMode.All,
 				    Name = "ApexStrategyTest",
 				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
@@ -49,6 +48,25 @@ namespace Loaders
 					StartTime = new TimeStamp( 1800, 1, 1),
 					EndTime = new TimeStamp( 2009, 6, 10),
 					IntervalDefault = Intervals.Minute1,
+				});
+			} catch( ApplicationException ex) {
+				if( !ex.Message.Contains("not found")) {
+					throw;
+				}
+			}
+			
+			try { 
+				list.Add( new AutoTestSettings {
+//				    IgnoreTests = TestType.BarData | TestType.Stats,
+				    Mode = AutoTestMode.All,
+				    Name = "ApexMeltdownTest",
+				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
+				    Symbols = "GE,INTC",
+					StoreKnownGood = storeKnownGood,
+					ShowCharts = false,
+					StartTime = new TimeStamp( 1800, 1, 1),
+					EndTime = new TimeStamp( "2010-09-22 15:00:00"),
+					IntervalDefault = Intervals.Second10,
 				});
 			} catch( ApplicationException ex) {
 				if( !ex.Message.Contains("not found")) {

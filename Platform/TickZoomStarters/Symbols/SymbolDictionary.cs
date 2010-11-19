@@ -317,6 +317,8 @@ namespace TickZoom.Symbols
         <property name=""TimeAndSales"" value=""None"" />
         <property name=""QuoteType"" value=""Level1"" />
       </symbol>
+      <symbol name=""GE""/>
+      <symbol name=""INTC""/>
       <symbol name=""Design"" />
       <symbol name=""FullTick"" />
       <symbol name=""Daily4Ticks"" />
