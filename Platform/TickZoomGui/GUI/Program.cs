@@ -30,7 +30,9 @@ using System.Configuration;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+
 using TickZoom.Api;
+using TickZoom.GUI.Framework;
 
 namespace TickZoom
 {
@@ -49,9 +51,11 @@ namespace TickZoom
 	            Application.SetCompatibleTextRenderingDefault(false);
 	            var vm = new ViewModel();
 	            var form = new Form1(vm);
+	            ViewModelBinder.Bind( vm, form);
 	            form.Visible = true;
 	            while( true) {
 	            	Application.DoEvents();
+	            	Execute.MessageLoop();
 	            	form.ProcessMessages();
 	            }
         	} catch( Exception ex) {

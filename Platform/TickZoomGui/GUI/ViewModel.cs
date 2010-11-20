@@ -29,12 +29,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Media;
 using System.Threading;
 using System.Windows.Forms;
 
 using TickZoom.Api;
+using TickZoom.GUI.Framework;
 
 namespace TickZoom
 {
@@ -194,14 +194,22 @@ namespace TickZoom
 	        string endTimeStr = projectConfig.GetValue("EndTime");
 	        
 	   		if( startTimeStr != null) {
-	   			startDateTime = new TimeStamp(startTimeStr);
+	        	try {
+		   			startDateTime = new TimeStamp(startTimeStr);
+	        	} catch {
+	        		startDateTime = minDateTime;
+	        	}
 	   		}
 	        
 	   		if( endTimeStr != null) {
-	   			var time = new TimeStamp(endTimeStr);
-	   			time.AddDays(1);
-	   			time.AddSeconds(-1);
-	   			EndDateTime = time;
+	        	try {
+		   			var time = new TimeStamp(endTimeStr);
+		   			time.AddDays(1);
+	   				time.AddSeconds(-1);
+		   			EndDateTime = time;
+	        	} catch {
+	        		endDateTime = maxDateTime;
+	        	}
 	   			if( endDateTime > maxDateTime) {
 	   				endDateTime = maxDateTime;
 	   			}
@@ -366,59 +374,6 @@ namespace TickZoom
 			set { flushCharts = value; }
 		}
 
-	    public interface Task {
-	    	void Execute();
-	    	object Result { get; }
-	    }
-	    
-	    public class SyncTask : Task {
-	    	private object result;
-	    	private Delegate execute;
-	    	private Action complete;
-	    	public SyncTask( Delegate execute, Action complete) {
-	    		this.execute = execute;
-	    		this.complete = complete;	    		
-	    	}
-	    	public void Execute() {
-	    		result = execute.DynamicInvoke();
-	    		complete();
-	    	}
-	    	
-			public object Result {
-				get { return result; }
-			}
-	    }
-	    
-	    private object tasksLocker = new object();
-	    private List<Task> tasks = new List<Task>();
-	    public void MessageLoop() {
-	    	while( tasks.Count > 0) {
-		    	lock( tasksLocker) {
-		    		var task = tasks[0];
-		    		task.Execute();
-		    		tasks.Remove(task);
-		    	}
-	    	}
-	    }
-	    
-	    private void BeginInvoke(Delegate action) {
-	    	lock( tasksLocker) {	    		
-	    		tasks.Add( new SyncTask( action, () => { } ));
-	    	}
-	    }
-	    
-	    private T Invoke<T>(Delegate action) {
-	    	var isComplete = false;
-	    	var task = new SyncTask( action, () => isComplete = true );
-	    	lock( tasksLocker) {	    		
-	    		tasks.Add( task);
-	    	}
-	    	while( !isComplete) {
-	    		Thread.Sleep(1);
-	    	}
-	    	return (T) task.Result;
-	    }
-	    
 	    private Action showChart;
 	    
 		public Action ShowChart {
@@ -429,7 +384,7 @@ namespace TickZoom
         public void ShowChartInvoke()
         {
         	try {
-	        	BeginInvoke(ShowChart);
+	        	Execute.OnUIThread(ShowChart);
         	} catch( Exception ex) {
         		log.Error(ex.Message, ex);
         	}
@@ -473,7 +428,7 @@ namespace TickZoom
 
         public Chart CreateChartInvoke()
         {
-			return Invoke<Chart>(CreateChart);
+			return Execute.OnUIThread<Chart>(CreateChart);
         }
 	    
 		public void RealTime(BackgroundWorker bw)

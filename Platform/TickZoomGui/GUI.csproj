@@ -69,6 +69,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Framework\Bootstrapper.cs" />
+    <Compile Include="Framework\BusyResult.cs" />
+    <Compile Include="Framework\Execute.cs" />
+    <Compile Include="Framework\IResult.cs" />
+    <Compile Include="Framework\IScreen.cs" />
+    <Compile Include="Framework\IShell.cs" />
+    <Compile Include="Framework\ReflectiveCommand.cs" />
+    <Compile Include="Framework\ResultEnumerator.cs" />
+    <Compile Include="Framework\ScreenConductor.cs" />
+    <Compile Include="Framework\ViewModelBase.cs" />
+    <Compile Include="Framework\ViewModelBinder.cs" />
     <Compile Include="GUI\Command.cs" />
     <Compile Include="GUI\ServiceInstaller.cs" />
     <Compile Include="GUI\Form1.cs">
@@ -122,6 +133,7 @@
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
     </ProjectReference>
+    <Folder Include="Framework" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
