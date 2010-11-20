@@ -25,13 +25,22 @@
 #endregion
 
 using System;
+using System.Configuration;
 using TickZoom.Api;
+using TickZoom.Common;
 
 namespace TickZoom.Starters
 {
-	/// <summary>
-	/// Description of Test.
-	/// </summary>
+	public class TestRealTimeStarter : RealTimeStarter {
+		public TestRealTimeStarter() {
+			SyncTicks.Enabled = true;
+			PhysicalOrderDefault.ResetOrderId();
+			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
+			ProjectProperties.Engine.SimulateRealTime = true;
+//			ProjectProperties.Engine.RealtimeOutput = false;
+			Config = "WarehouseTest.config";
+		}
+	}
 	public class RealTimeStarter : HistoricalStarter
 	{
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

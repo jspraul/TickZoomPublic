@@ -62,6 +62,7 @@ namespace TickZoom.Starters
    		
 		public HistoricalStarter() 
 		{
+			SyncTicks.Enabled = false;
 		} 
 		
 		public HistoricalStarter(bool releaseEngineCache) : base(releaseEngineCache)

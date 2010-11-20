@@ -95,15 +95,13 @@ namespace Loaders
 			createStarterCallback = CreateStarter;
 		}
 		
+		private Starter CreateStarter() {
+			return new HistoricalStarter();			
+		}
+		
 		public Starter CreateRealtimeStarter(ushort servicePort)
 		{
-			PhysicalOrderDefault.ResetOrderId();
-			SyncTicks.Enabled = true;
-			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
-			Starter starter = new RealTimeStarter();
-			starter.ProjectProperties.Engine.SimulateRealTime = true;
-//			starter.ProjectProperties.Engine.RealtimeOutput = false;
-			starter.Config = "WarehouseTest.config";
+			var starter = new TestRealTimeStarter();
 			starter.Port = servicePort;
 			return starter;
 		}
@@ -297,11 +295,6 @@ namespace Loaders
 			public double ClosedEquity;
 			public double OpenEquity;
 			public double CurrentEquity;
-		}
-		
-		private Starter CreateStarter() {
-			SyncTicks.Enabled = false;
-			return new HistoricalStarter();			
 		}
 		
 		public void WriteHashes() {

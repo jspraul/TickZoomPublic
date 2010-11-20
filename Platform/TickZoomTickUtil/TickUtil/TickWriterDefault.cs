@@ -54,7 +54,8 @@ namespace TickZoom.TickUtil
 		FileStream fs = null;
 		MemoryStream memory = null;
 		bool isInitialized = false;
-		string storageFolder;
+		string priceDataFolder;
+		string appDataFolder;
 		Progress progress = new Progress();
 		
 		public TickWriterDefault(bool eraseFileToStart)
@@ -62,10 +63,16 @@ namespace TickZoom.TickUtil
 			this.eraseFileToStart = eraseFileToStart;
 			writeQueue = Factory.TickUtil.TickQueue(typeof(TickWriter));
 			writeQueue.StartEnqueue = Start;
-       		storageFolder = Factory.Settings["AppDataFolder"];
-       		if( storageFolder == null) {
-       			throw new ApplicationException( "Must set AppDataFolder property in app.config");
-       		}
+			var property = "PriceDataFolder";
+			priceDataFolder = Factory.Settings[property];
+			if (priceDataFolder == null) {
+				throw new ApplicationException("Must set " + property + " property in app.config");
+			}
+			property = "AppDataFolder";
+			appDataFolder = Factory.Settings[property];
+			if (appDataFolder == null) {
+				throw new ApplicationException("Must set " + property + " property in app.config");
+			}
 		}
 		
 		public void Start() {
@@ -88,9 +95,11 @@ namespace TickZoom.TickUtil
 		public void Initialize(string folderOrfile, string _symbol) {
 			SymbolInfo symbolInfo = Factory.Symbol.LookupSymbol(_symbol);
 			
+			var dataFolder = folderOrfile.Contains(@"Test\") ? appDataFolder : priceDataFolder;
+			
 			symbol = Factory.Symbol.LookupSymbol(_symbol);
 			if( string.IsNullOrEmpty(Path.GetExtension(folderOrfile))) {
-				fileName = storageFolder + Path.DirectorySeparatorChar + folderOrfile + Path.DirectorySeparatorChar + symbol.Symbol.StripInvalidPathChars() + ".tck";
+				fileName = dataFolder + Path.DirectorySeparatorChar + folderOrfile + Path.DirectorySeparatorChar + symbol.Symbol.StripInvalidPathChars() + ".tck";
 			} else {
     			fileName = folderOrfile;
 			}
@@ -120,7 +129,7 @@ namespace TickZoom.TickUtil
 			isInitialized = false;
 		}
 		
-		[Obsolete("Please call Initialize( folderOrfile, symbo) instead.",true)]
+		[Obsolete("Please call Initialize( folderOrfile, symbol) instead.",true)]
 		public void Initialize(string filePath) {
 			isInitialized = false;
 		}
