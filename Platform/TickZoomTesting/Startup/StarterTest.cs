@@ -82,7 +82,7 @@ namespace TickZoom.StarterTest
 			ModelLoaderInterface loader = new OptimizeLoader();
     		starter.Run(loader);
     		Portfolio strategy = loader.TopModel as Portfolio;
-    		Assert.AreEqual(33,strategy.Performance.ComboTrades.Count);
+    		Assert.AreEqual(39,strategy.Performance.ComboTrades.Count);
     		
 		}
 		
