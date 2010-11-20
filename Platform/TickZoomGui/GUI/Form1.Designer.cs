@@ -16,7 +16,6 @@ namespace TickZoom
             if (disposing && (components != null))
             {
                 components.Dispose();
-                commandWorker.CancelAsync();
                 Terminate();
             }
             base.Dispose(disposing);
@@ -42,7 +41,6 @@ namespace TickZoom
         	this.endTimePicker = new System.Windows.Forms.DateTimePicker();
         	this.startLabel = new System.Windows.Forms.Label();
         	this.endLabel = new System.Windows.Forms.Label();
-        	this.commandWorker = new System.ComponentModel.BackgroundWorker();
         	this.liveButton = new System.Windows.Forms.Button();
         	this.logOutput = new System.Windows.Forms.TextBox();
         	this.breakAtBarText = new System.Windows.Forms.TextBox();
@@ -179,14 +177,6 @@ namespace TickZoom
         	this.endLabel.Size = new System.Drawing.Size(60, 16);
         	this.endLabel.TabIndex = 15;
         	this.endLabel.Text = "End Date";
-        	// 
-        	// commandWorker
-        	// 
-        	this.commandWorker.WorkerReportsProgress = true;
-        	this.commandWorker.WorkerSupportsCancellation = true;
-        	this.commandWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ProcessWorkerDoWork);
-        	this.commandWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ProcessWorkerRunWorkerCompleted);
-        	this.commandWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.ProcessWorkerProgressChanged);
         	// 
         	// liveButton
         	// 
@@ -631,7 +621,6 @@ namespace TickZoom
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox logOutput;
         private System.Windows.Forms.Button liveButton;
-        private System.ComponentModel.BackgroundWorker commandWorker;
         private System.Windows.Forms.Label endLabel;
         private System.Windows.Forms.Label startLabel;
         private System.Windows.Forms.DateTimePicker startTimePicker;
@@ -669,10 +658,6 @@ namespace TickZoom
         	UpdateCheckBoxes();
         }
         
-		public System.ComponentModel.BackgroundWorker ProcessWorker {
-			get { return commandWorker; }
-		}
-
 		public System.Windows.Forms.TextBox TxtSymbol {
 			get { return txtSymbol; }
 		}

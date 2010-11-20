@@ -50,10 +50,14 @@ namespace TickZoom
 	    private SynchronizationContext context;
 	    public delegate void UpdateProgressDelegate(string fileName, Int64 BytesRead, Int64 TotalBytes);
 	    public delegate Chart CreateChartDelegate();
-		DateTime startTime = new DateTime(2003,1,1); 
-		DateTime endTime = DateTime.Now;
 		Dictionary<int,Progress> progressChildren = new Dictionary<int,Progress>();
 		bool enableAlarmSounds = false;
+		private string alarmFile;
+		
+		public string AlarmFile {
+			get { return alarmFile; }
+			set { alarmFile = value; }
+		}
 		
 		public bool EnableAlarmSounds {
 			get { return enableAlarmSounds; }
@@ -67,14 +71,13 @@ namespace TickZoom
 		string tickZoomEngine;
 	    bool isInitialized = false;
 			
-		public DateTime EndTime {
-			get { return endTime; }
-			set { endTime = value; }
+		public TimeStamp EndDateTime {
+			get { return endDateTime; }
+			set { endDateTime = value; }
 		}
 		ConfigFile projectConfig;
 			
 		public ViewModel() : this("project") {
-				
 		}
 			
 		public void SetupForm( Form1 form) {
@@ -118,10 +121,30 @@ namespace TickZoom
 		
 		private string progressText;
         private System.ComponentModel.BackgroundWorker commandWorker;
+        
+		public BackgroundWorker CommandWorker {
+			get { return commandWorker; }
+		}
 		private TimeStamp startDateTime;
+		
+		public TimeStamp StartDateTime {
+			get { return startDateTime; }
+			set { startDateTime = value; }
+		}
 		private TimeStamp endDateTime;
 		private TimeStamp maxDateTime;
+		
+		public TimeStamp MaxDateTime {
+			get { return maxDateTime; }
+			set { maxDateTime = value; }
+		}
+		
 		private TimeStamp minDateTime;
+		
+		public TimeStamp MinDateTime {
+			get { return minDateTime; }
+			set { minDateTime = value; }
+		}
 		private bool disableCharting;
 		
 	    public ViewModel(string projectName)
@@ -147,6 +170,10 @@ namespace TickZoom
 	        intervalDefault = initialInterval;
 			intervalEngine = initialInterval;
 			intervalChartBar = initialInterval;
+       		alarmFile = projectConfig.GetValue("AlarmSound");
+    		if( string.IsNullOrEmpty(alarmFile)) {
+		   		alarmFile = @"..\..\Media\59642_AlternatingToneAlarm.wav";
+    		}
 	        IntervalDefaults();
 	        LoadIntervals();
 	        IntervalDefaults();
@@ -164,14 +191,17 @@ namespace TickZoom
 	        disableCharting = !string.IsNullOrEmpty(disableChartingString) && "true".Equals(disableChartingString.ToLower());
 	        
 	        string startTimeStr = projectConfig.GetValue("StartTime");
-	        string EndTimeStr = projectConfig.GetValue("EndTime");
+	        string endTimeStr = projectConfig.GetValue("EndTime");
 	        
 	   		if( startTimeStr != null) {
-	   			startTime = DateTime.Parse(startTimeStr);
+	   			startDateTime = new TimeStamp(startTimeStr);
 	   		}
 	        
-	   		if( EndTimeStr != null) {
-	   			EndTime = DateTime.Parse(EndTimeStr).AddDays(1).AddSeconds(-1);
+	   		if( endTimeStr != null) {
+	   			var time = new TimeStamp(endTimeStr);
+	   			time.AddDays(1);
+	   			time.AddSeconds(-1);
+	   			EndDateTime = time;
 	   			if( endDateTime > maxDateTime) {
 	   				endDateTime = maxDateTime;
 	   			}
@@ -225,10 +255,11 @@ namespace TickZoom
 			get { return symbolList; }
 			set { symbolList = value; }
 		}
+	    
 	    public void Save() {
 				
-			projectConfig.SetValue("StartTime",startTime.ToLongDateString());
-			projectConfig.SetValue("EndTime",EndTime.ToLongDateString());
+	    	projectConfig.SetValue("StartTime",startDateTime.ToString());
+			projectConfig.SetValue("EndTime",endDateTime.ToString());
 			projectConfig.SetValue("Symbol",symbolList);
 			projectConfig.SetValue("ModelLoader",ModelLoaderSelected);
 			projectConfig.SetValue("AutoUpdate",projectConfig.GetValue("AutoUpdate"));
@@ -302,14 +333,14 @@ namespace TickZoom
 	    public void Optimize(BackgroundWorker bw)
 	    {
 	    	Starter starter = Factory.Starter.OptimizeStarter();
-	    	starter.ProjectProperties.Starter.EndTime = (TimeStamp) endTime;
+	    	starter.ProjectProperties.Starter.EndTime = (TimeStamp) endDateTime;
 				SetupStarter(starter,bw);
 	    }
 	    
 	    public void GeneticOptimize(BackgroundWorker bw)
 	    {
 	    	Starter starter = Factory.Starter.GeneticStarter();
-	    	starter.ProjectProperties.Starter.EndTime = (TimeStamp) endTime;
+	    	starter.ProjectProperties.Starter.EndTime = (TimeStamp) endDateTime;
 				SetupStarter(starter,bw);
 	    }
 	    
@@ -321,7 +352,7 @@ namespace TickZoom
 			Starter starter = Factory.Starter.HistoricalStarter();
 			starter.ProjectProperties.Engine.TickReplaySpeed = replaySpeed;
 			starter.ProjectProperties.Engine.BreakAtBar = breakAtBar;
-	    	starter.ProjectProperties.Starter.EndTime = (TimeStamp) endTime;
+	    	starter.ProjectProperties.Starter.EndTime = (TimeStamp) endDateTime;
 			SetupStarter(starter,bw);
 	    }
 	    private void SetupStarter( Starter starter, BackgroundWorker bw) {
@@ -406,7 +437,7 @@ namespace TickZoom
         
 	    private void SetupStarter( Starter starter, BackgroundWorker bw, bool isRealTime) {
 	    	flushCharts();
-			starter.ProjectProperties.Starter.StartTime = (TimeStamp) startTime;
+			starter.ProjectProperties.Starter.StartTime = (TimeStamp) startDateTime;
 			starter.BackgroundWorker = bw;
 			if( !disableCharting) {
 				starter.CreateChartCallback = CreateChartInvoke;
@@ -479,6 +510,11 @@ namespace TickZoom
 	    }
 		
 		private Exception taskException;
+		
+		public Exception TaskException {
+			get { return taskException; }
+			set { taskException = value; }
+		}
 			
 		public void Catch() {
 			if( taskException != null) {
@@ -500,19 +536,29 @@ namespace TickZoom
 			}
 	    }
 	    
-	    void StopProcess() {
+	    public void StopProcess() {
 	    	commandWorker.CancelAsync();
 	    }
 	
-	    void Terminate() {
+	    public void Terminate() {
 	    	StopProcess();
-	        commandWorker.CancelAsync();
 	        Factory.Engine.Dispose();
 	        Factory.Provider.Release();
 	        Factory.TickUtil.TickReader().CloseAll();
 	    }
 	    
-		private void IntervalsUpdate() {
+        public void TryAutoUpdate()
+        {
+        	var autoUpdateFlag = projectConfig.GetValue("AutoUpdate");
+   			if( "true".Equals(autoUpdateFlag) ) {
+	           	commandWorker.RunWorkerAsync(4);
+   		    } else {
+				log.Notice("To enable AutoUpdate, set AutoUpdate 'true' in " + projectConfig);
+				CheckForEngine();
+   			}
+        }
+        
+		public void IntervalsUpdate() {
 			intervalDefault = Factory.Engine.DefineInterval(defaultBarUnit, defaultPeriod);
 			intervalEngine = Factory.Engine.DefineInterval(engineBarUnit, enginePeriod);
 			intervalChartBar = Factory.Engine.DefineInterval(chartBarUnit, chartPeriod);
@@ -578,6 +624,11 @@ namespace TickZoom
 	    private bool defaultOnly = true;
 
 	    private ChartType chartType = ChartType.Bar;
+	    
+		public ChartType ChartType {
+			get { return chartType; }
+			set { chartType = value; }
+		}
 	    
 	    public bool BarChartEnabled {
 	    	get {

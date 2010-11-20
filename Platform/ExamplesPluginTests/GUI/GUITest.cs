@@ -45,6 +45,7 @@ namespace Other
 		private static bool debug = log.IsDebugEnabled;
 		private ushort servicePort = 6490;
 		private Form1 form;
+		private ViewModel viewModel;
 		[SetUp]
 		public void Setup() {
 			DeleteFiles();
@@ -58,12 +59,13 @@ namespace Other
 			string storageFolder = Factory.Settings["AppDataFolder"];
 			string workspaceFolder = Path.Combine(storageFolder,"Workspace");
 			string projectFile = Path.Combine(workspaceFolder,"test.tzproj");
-			ConfigFile projectConfig = new ConfigFile(projectFile,Form1.DefaultConfig);
+			ConfigFile projectConfig = new ConfigFile(projectFile,ViewModel.DefaultConfig);
 			projectConfig.SetValue("ProviderAssembly","TickZoomCombinedMock");
 			projectConfig.SetValue("ServicePort",servicePort.ToString());
 			projectConfig.SetValue("ServiceConfig","WarehouseTest.config");
 			SetupWarehouseConfig();
-			Form1 form = new Form1("test");
+			viewModel = new ViewModel("test");
+			Form1 form = new Form1(viewModel);
 			form.Show();
 			WaitForEngine(form);
 			return form;
@@ -137,8 +139,8 @@ namespace Other
 				Assert.IsTrue(form.PortfolioDocs[0].Visible &&
 				             		form.PortfolioDocs[1].Visible,"Charts Visible");
 				form.btnStop_Click(null,null);
-				WaitComplete(120, () => { return !form.ProcessWorker.IsBusy; } );
-				Assert.IsFalse(form.ProcessWorker.IsBusy,"ProcessWorker.Busy");
+				WaitComplete(120, () => { return !viewModel.CommandWorker.IsBusy; } );
+				Assert.IsFalse(viewModel.CommandWorker.IsBusy,"ProcessWorker.Busy");
 			}
 		}
 		
@@ -190,15 +192,15 @@ namespace Other
 				form.TxtSymbol.Text = "/ESZ9";
 				form.DefaultBox.Text = "1";
 				form.DefaultCombo.Text = "Minute";
-				form.EndTime = DateTime.Now;
+				viewModel.EndDateTime = TimeStamp.UtcNow;
 				form.RealTimeButtonClick(null,null);
 				WaitComplete(120, () => { return form.PortfolioDocs.Count == 1 &&
 				             		form.PortfolioDocs[0].Visible; } );
 				Assert.AreEqual(1,form.PortfolioDocs.Count,"Charts");
 				Pause(2);
 				form.btnStop_Click(null,null);
-				WaitComplete(120, () => { return !form.ProcessWorker.IsBusy; } );
-				Assert.IsFalse(form.ProcessWorker.IsBusy,"ProcessWorker.Busy");
+				WaitComplete(120, () => { return !viewModel.CommandWorker.IsBusy; } );
+				Assert.IsFalse(viewModel.CommandWorker.IsBusy,"ProcessWorker.Busy");
 				Assert.Greater(form.LogOutput.Lines.Length,2,"number of log lines");
 				string appData = Factory.Settings["AppDataFolder"];
 				string compareFile1 = appData + @"\Test\MockProviderData\ESZ9.tck";
