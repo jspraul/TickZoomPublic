@@ -47,7 +47,12 @@ namespace TickZoom
 	        	System.Console.SetOut(d);
 	            Application.EnableVisualStyles();
 	            Application.SetCompatibleTextRenderingDefault(false);
-	            Application.Run(new Form1());
+	            var form = new Form1();
+	            form.Visible = true;
+	            while( true) {
+	            	Application.DoEvents();
+	            	form.ProcessMessages();
+	            }
         	} catch( Exception ex) {
         		Console.WriteLine(ex.GetType() + ": " + ex.Message + Environment.NewLine + ex.StackTrace);
         		System.Diagnostics.Debug.WriteLine(ex.GetType() + ": " + ex.Message + Environment.NewLine + ex.StackTrace);

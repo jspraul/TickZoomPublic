@@ -65,7 +65,6 @@ namespace TickZoom
 			get { return endTime; }
 			set { endTime = value; }
 		}
-        Thread thread_ProcessMessages;
    		ConfigFile projectConfig;
    		
    		public Form1() : this("project") {
@@ -130,11 +129,6 @@ namespace TickZoom
        		} else {
        			EndTime = DateTime.Now;
        		}
-            thread_ProcessMessages = new Thread(new ThreadStart(ProcessMessages));
-            thread_ProcessMessages.Name = "ProcessMessages";
-            thread_ProcessMessages.Priority = ThreadPriority.Lowest;
-            thread_ProcessMessages.IsBackground = true;
-            thread_ProcessMessages.Start();
             UpdateCheckBoxes();
             isInitialized = true;
         }
@@ -162,56 +156,43 @@ namespace TickZoom
         	CheckForEngineInvoke();
 		}
 		
-   		delegate void SetTextCallback(string msg);
-   		
         private void Echo(string msg)
         {
-       		context.Send(new SendOrPostCallback(
-       		delegate(object state)
-       	    {
-                logOutput.Text += msg + "\r\n";
-			    int maxLines = 30; 
-			    var lines = logOutput.Lines;
-			    int skipLines = lines.Length - maxLines;
-			    if( skipLines > 0) {
-	    			var newLines = lines.Skip(skipLines);
-	    			logOutput.Lines = newLines.ToArray();
-			    }
-                logOutput.SelectionStart = logOutput.Text.Length;
-                logOutput.ScrollToCaret();
-       		}), null);
+            logOutput.Text += msg + "\r\n";
+		    int maxLines = 30; 
+		    var lines = logOutput.Lines;
+		    int skipLines = lines.Length - maxLines;
+		    if( skipLines > 0) {
+    			var newLines = lines.Skip(skipLines);
+    			logOutput.Lines = newLines.ToArray();
+		    }
+            logOutput.SelectionStart = logOutput.Text.Length;
+            logOutput.ScrollToCaret();
         }
 
         private void StartAlarm()
         {
-       		context.Send(new SendOrPostCallback((state) =>
-       	    {
-        		stopAlarmButton.Visible = true;
-        		stopAlarmLabel.Visible = true;
-				alarmTimer.Enabled = true;
-				testTheAlarm.Visible = false;
-				PlayAlarmSound();
-       		}), null);
+    		stopAlarmButton.Visible = true;
+    		stopAlarmLabel.Visible = true;
+			alarmTimer.Enabled = true;
+			testTheAlarm.Visible = false;
+			PlayAlarmSound();
         }
         
-        private void ProcessMessages()
+        public void ProcessMessages()
         {
         	try {
-	            while (!stopMessages)
-	            {
-	            	while(  !stopMessages && log.HasLine) {
-		            	try {
-	            			var message = log.ReadLine();
-	            			if( enableAlarmSounds && message.IsAudioAlarm) {
-	            				StartAlarm();
-	            			}
-	            			Echo(message.MessageObject.ToString());
-			   			} catch( CollectionTerminatedException) {
-			   				break;
-		            	}
+            	if(  !stopMessages && log.HasLine) {
+	            	try {
+            			var message = log.ReadLine();
+            			if( enableAlarmSounds && message.IsAudioAlarm) {
+            				StartAlarm();
+            			}
+            			Echo(message.MessageObject.ToString());
+		   			} catch( CollectionTerminatedException) {
+        				stopMessages = true;
 	            	}
-	            	Thread.Sleep(1);
-	            }
+            	}
 			} catch( Exception ex) {
 				log.Error("ERROR: Thread had an exception:",ex);
 			}
@@ -555,9 +536,6 @@ namespace TickZoom
 
         void Terminate() {
             stopMessages = true;
-            while( thread_ProcessMessages.IsAlive) {
-            	Application.DoEvents();
-            }
         	StopProcess();
         	CloseCharts();
             commandWorker.CancelAsync();
