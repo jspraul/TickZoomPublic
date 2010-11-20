@@ -26,21 +26,13 @@
 
 using System;
 using System.Configuration;
+using System.IO;
+
 using TickZoom.Api;
 using TickZoom.Common;
 
 namespace TickZoom.Starters
 {
-	public class TestRealTimeStarter : RealTimeStarter {
-		public TestRealTimeStarter() {
-			SyncTicks.Enabled = true;
-			PhysicalOrderDefault.ResetOrderId();
-			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
-			ProjectProperties.Engine.SimulateRealTime = true;
-//			ProjectProperties.Engine.RealtimeOutput = false;
-			Config = "WarehouseTest.config";
-		}
-	}
 	public class RealTimeStarter : HistoricalStarter
 	{
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -82,6 +74,24 @@ namespace TickZoom.Starters
 				if( service != null) {
 					service.OnStop();
 				}
+			}
+		}
+		public void SetupWarehouseConfig(string providerAssembly, ushort servicePort)
+		{
+			try { 
+				string storageFolder = Factory.Settings["AppDataFolder"];
+				var providersPath = Path.Combine(storageFolder,"Providers");
+				string configPath = Path.Combine(providersPath,"ProviderCommon");
+				string configFile = Path.Combine(configPath,"WarehouseTest.config");
+				ConfigFile warehouseConfig = new ConfigFile(configFile);
+				warehouseConfig.SetValue("ServerCacheFolder","Test\\ServerCache");
+				warehouseConfig.SetValue("ServiceAddress","0.0.0.0");
+				warehouseConfig.SetValue("ServicePort",servicePort.ToString());
+				warehouseConfig.SetValue("ProviderAssembly",providerAssembly);
+	 			// Clear the history files
+			} catch( Exception ex) {
+				log.Error("Setup error.",ex);
+				throw ex;
 			}
 		}
 	}

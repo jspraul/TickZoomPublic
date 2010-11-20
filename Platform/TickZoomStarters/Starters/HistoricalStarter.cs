@@ -77,14 +77,6 @@ namespace TickZoom.Starters
 				}
 			}
 		}
-#if NEW
-		public override void Run(ModelInterface model)
-		{
-			engine = ProcessHistorical(model,true);
-			engine.QueueTask();			
-			engine.WaitTask();
-		}
-#else
 
 		public override void Run(ModelInterface model)
 		{
@@ -117,7 +109,7 @@ namespace TickZoom.Starters
 
 			if(CancelPending) return;
 		}
-#endif
+
 		public override void Wait() {
 			// finishes during Run()
 		}

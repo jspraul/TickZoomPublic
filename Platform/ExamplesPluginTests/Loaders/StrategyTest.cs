@@ -75,7 +75,6 @@ namespace Loaders
 		private Interval intervalDefault = Intervals.Minute1;
 		private ModelInterface topModel = null;
 		private AutoTestMode autoTestMode = AutoTestMode.Historical;
-		private FIXSimulator fixServer;
 
 		public StrategyTest( AutoTestSettings testSettings ) {
 			this.autoTestMode = testSettings.Mode;
@@ -99,12 +98,6 @@ namespace Loaders
 			return new HistoricalStarter();			
 		}
 		
-		public Starter CreateRealtimeStarter(ushort servicePort)
-		{
-			var starter = new TestRealTimeStarter();
-			starter.Port = servicePort;
-			return starter;
-		}
 		
 		public Starter SetupStarter(AutoTestMode autoTestMode) {
 			Starter starter;
@@ -114,13 +107,10 @@ namespace Loaders
 					starter = CreateStarterCallback();
 					break;
 				case AutoTestMode.RealTime:
-					SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
-					starter = CreateRealtimeStarter(servicePort);
+					starter = new TestRealTimeStarter(servicePort);
 					break;
 				case AutoTestMode.SimulateFIX:
-					fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
-					SetupWarehouseConfig("MBTFIXProvider/Simulate",servicePort);
-					starter = CreateRealtimeStarter(servicePort);
+					starter = new FIXSimulatorStarter(servicePort);
 					break;			
 				default:
 					throw new ApplicationException("AutoTestMode " + autoTestMode + " is unknown.");
@@ -159,10 +149,6 @@ namespace Loaders
 						return;
 					} else {
 						throw;
-					}
-				} finally {
-					if( fixServer != null) {
-						fixServer.Dispose();
 					}
 				}
 				WriteHashes();
@@ -233,25 +219,6 @@ namespace Loaders
 //				log.Error("Shutting down due to test failure.");
 //				Environment.Exit(1);
 //			}
-		}
-		
-		public void SetupWarehouseConfig(string providerAssembly, ushort servicePort)
-		{
-			try { 
-				string storageFolder = Factory.Settings["AppDataFolder"];
-				var providersPath = Path.Combine(storageFolder,"Providers");
-				string configPath = Path.Combine(providersPath,"ProviderCommon");
-				string configFile = Path.Combine(configPath,"WarehouseTest.config");
-				ConfigFile warehouseConfig = new ConfigFile(configFile);
-				warehouseConfig.SetValue("ServerCacheFolder","Test\\ServerCache");
-				warehouseConfig.SetValue("ServiceAddress","0.0.0.0");
-				warehouseConfig.SetValue("ServicePort",servicePort.ToString());
-				warehouseConfig.SetValue("ProviderAssembly",providerAssembly);
-	 			// Clear the history files
-			} catch( Exception ex) {
-				log.Error("Setup error.",ex);
-				throw ex;
-			}
 		}
 		
 		public class TransactionInfo {

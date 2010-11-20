@@ -89,7 +89,7 @@ namespace Other
     		double mq1Net = mq1.Performance.Equity.CurrentEquity-mq1.Performance.Equity.StartingEquity;
     		double mq2Net = mq2.Performance.Equity.CurrentEquity-mq2.Performance.Equity.StartingEquity;
     		double total = mq0Net + mq1Net + mq2Net;
-    		Assert.AreEqual(26.00,mq0.Performance.ComboTrades.CalcProfitLoss(0));
+    		Assert.AreEqual(26.00,Math.Round(mq0.Performance.ComboTrades.CalcProfitLoss(0),2));
     		Assert.AreEqual(-27.5,Math.Round(mq1.Performance.ComboTrades.CalcProfitLoss(0),2));
     		Assert.AreEqual(-14.5,Math.Round(mq2.Performance.ComboTrades.CalcProfitLoss(0),2));
     		Assert.AreEqual(-9.00,Math.Round(portfolio.Performance.ComboTrades.CalcProfitLoss(0),2));
