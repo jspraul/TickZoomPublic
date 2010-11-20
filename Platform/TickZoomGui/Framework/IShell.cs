@@ -2,8 +2,21 @@
 {
     public interface IShell
     {
-        bool IsBusy { get; set; }
-        void OpenScreen(IScreen screen);
+        #region Properties
+
+        bool IsBusy
+        {
+            get; set;
+        }
+
+        #endregion Properties
+
+        #region Methods
+
         bool CanClose();
+
+        void OpenScreen(IScreen screen);
+
+        #endregion Methods
     }
 }

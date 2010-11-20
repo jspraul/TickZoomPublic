@@ -59,7 +59,7 @@ namespace Other
 			string storageFolder = Factory.Settings["AppDataFolder"];
 			string workspaceFolder = Path.Combine(storageFolder,"Workspace");
 			string projectFile = Path.Combine(workspaceFolder,"test.tzproj");
-			ConfigFile projectConfig = new ConfigFile(projectFile,ViewModel.DefaultConfig);
+			ConfigFile projectConfig = new ConfigFile(projectFile,ViewModel.GetDefaultConfig());
 			projectConfig.SetValue("ProviderAssembly","TickZoomCombinedMock");
 			projectConfig.SetValue("ServicePort",servicePort.ToString());
 			projectConfig.SetValue("ServiceConfig","WarehouseTest.config");
@@ -103,7 +103,7 @@ namespace Other
 		public void TestStartRun()
 		{
 			using( form = CreateForm()) {
-				form.TxtSymbol.Text = "USD/JPY";
+				form.SymbolList.Text = "USD/JPY";
 				form.DefaultBox.Text = "1";
 				form.DefaultCombo.Text = "Hour";
 				for( int i=0; i<3; i++) {
@@ -128,7 +128,7 @@ namespace Other
 		public void TestRealTimeNoHistorical()
 		{
 			using( form = CreateForm()) {
-				form.TxtSymbol.Text = "IBM,GBP/USD";
+				form.SymbolList.Text = "IBM,GBP/USD";
 				form.DefaultBox.Text = "10";
 				form.DefaultCombo.Text = "Tick";
 				form.RealTimeButtonClick(null,null);
@@ -189,7 +189,7 @@ namespace Other
 		public void TestCapturedDataMatchesProvider()
 		{
 			using( form = CreateForm()) {
-				form.TxtSymbol.Text = "/ESZ9";
+				form.SymbolList.Text = "/ESZ9";
 				form.DefaultBox.Text = "1";
 				form.DefaultCombo.Text = "Minute";
 				viewModel.EndDateTime = TimeStamp.UtcNow;
@@ -206,7 +206,7 @@ namespace Other
 				string compareFile1 = appData + @"\Test\MockProviderData\ESZ9.tck";
 				string compareFile2 = appData + @"\Test\ServerCache\ESZ9.tck";
 				using ( TickReader reader1 = Factory.TickUtil.TickReader()) {
-					reader1.Initialize(compareFile1,form.TxtSymbol.Text);
+					reader1.Initialize(compareFile1,form.SymbolList.Text);
 					TickBinary tick1 = new TickBinary();
 					try {
 						int count = 0;
@@ -221,8 +221,8 @@ namespace Other
 				}
 				using ( TickReader reader1 = Factory.TickUtil.TickReader())
 				using ( TickReader reader2 = Factory.TickUtil.TickReader()) {
-					reader1.Initialize(compareFile1,form.TxtSymbol.Text);
-					reader2.Initialize(compareFile2,form.TxtSymbol.Text);
+					reader1.Initialize(compareFile1,form.SymbolList.Text);
+					reader2.Initialize(compareFile2,form.SymbolList.Text);
 					TickBinary tick1 = new TickBinary();
 					TickBinary tick2 = new TickBinary();
 					bool result = true;

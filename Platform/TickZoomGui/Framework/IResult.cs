@@ -4,7 +4,16 @@
 
     public interface IResult
     {
-        void Execute();
+        #region Events
+
         event EventHandler Completed;
+
+        #endregion Events
+
+        #region Methods
+
+        void Execute();
+
+        #endregion Methods
     }
 }

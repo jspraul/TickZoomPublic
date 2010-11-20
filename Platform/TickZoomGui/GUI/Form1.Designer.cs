@@ -30,9 +30,9 @@ namespace TickZoom
         private void InitializeComponent()
         {
         	this.components = new System.ComponentModel.Container();
-        	this.lblSymbol = new System.Windows.Forms.Label();
-        	this.txtSymbol = new System.Windows.Forms.TextBox();
-        	this.btnOptimize = new System.Windows.Forms.Button();
+        	this.symbolLabel = new System.Windows.Forms.Label();
+        	this.symbolList = new System.Windows.Forms.TextBox();
+        	this.optimize = new System.Windows.Forms.Button();
         	this.prgExecute = new System.Windows.Forms.ProgressBar();
         	this.btnStop = new System.Windows.Forms.Button();
         	this.lblProgress = new System.Windows.Forms.Label();
@@ -82,30 +82,30 @@ namespace TickZoom
         	// 
         	// lblSymbol
         	// 
-        	this.lblSymbol.AutoSize = true;
-        	this.lblSymbol.Location = new System.Drawing.Point(13, 16);
-        	this.lblSymbol.Name = "lblSymbol";
-        	this.lblSymbol.Size = new System.Drawing.Size(41, 13);
-        	this.lblSymbol.TabIndex = 0;
-        	this.lblSymbol.Text = "Symbol";
+        	this.symbolLabel.AutoSize = true;
+        	this.symbolLabel.Location = new System.Drawing.Point(13, 16);
+        	this.symbolLabel.Name = "lblSymbol";
+        	this.symbolLabel.Size = new System.Drawing.Size(41, 13);
+        	this.symbolLabel.TabIndex = 0;
+        	this.symbolLabel.Text = "Symbol";
         	// 
         	// txtSymbol
         	// 
-        	this.txtSymbol.Location = new System.Drawing.Point(78, 13);
-        	this.txtSymbol.Name = "txtSymbol";
-        	this.txtSymbol.Size = new System.Drawing.Size(110, 20);
-        	this.txtSymbol.TabIndex = 4;
-        	this.txtSymbol.Text = "USD/JPY";
+        	this.symbolList.Location = new System.Drawing.Point(78, 13);
+        	this.symbolList.Name = "txtSymbol";
+        	this.symbolList.Size = new System.Drawing.Size(110, 20);
+        	this.symbolList.TabIndex = 4;
+        	this.symbolList.Text = "USD/JPY";
         	// 
         	// btnOptimize
         	// 
-        	this.btnOptimize.Location = new System.Drawing.Point(110, 118);
-        	this.btnOptimize.Name = "btnOptimize";
-        	this.btnOptimize.Size = new System.Drawing.Size(78, 23);
-        	this.btnOptimize.TabIndex = 6;
-        	this.btnOptimize.Text = "Optimize";
-        	this.btnOptimize.UseVisualStyleBackColor = true;
-        	this.btnOptimize.Click += new System.EventHandler(this.btnOptimize_Click);
+        	this.optimize.Location = new System.Drawing.Point(110, 118);
+        	this.optimize.Name = "btnOptimize";
+        	this.optimize.Size = new System.Drawing.Size(78, 23);
+        	this.optimize.TabIndex = 6;
+        	this.optimize.Text = "Optimize";
+        	this.optimize.UseVisualStyleBackColor = true;
+        	this.optimize.Click += new System.EventHandler(this.btnOptimize_Click);
         	// 
         	// prgExecute
         	// 
@@ -542,9 +542,9 @@ namespace TickZoom
         	this.Controls.Add(this.lblProgress);
         	this.Controls.Add(this.btnStop);
         	this.Controls.Add(this.prgExecute);
-        	this.Controls.Add(this.btnOptimize);
-        	this.Controls.Add(this.txtSymbol);
-        	this.Controls.Add(this.lblSymbol);
+        	this.Controls.Add(this.optimize);
+        	this.Controls.Add(this.symbolList);
+        	this.Controls.Add(this.symbolLabel);
         	this.Controls.Add(this.intervals);
         	this.Controls.Add(this.groupBox1);
         	this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -571,8 +571,12 @@ namespace TickZoom
 		public System.Windows.Forms.ComboBox ModelLoaderBox {
 			get { return modelLoaderBox; }
 		}
-        private System.Windows.Forms.Label lblSymbol;
-        private System.Windows.Forms.TextBox txtSymbol;
+        private System.Windows.Forms.Label symbolLabel;
+        
+		public System.Windows.Forms.Label SymbolLabel {
+			get { return symbolLabel; }
+		}
+        private System.Windows.Forms.TextBox symbolList;
         private System.Windows.Forms.Button btnGenetic;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         
@@ -633,7 +637,11 @@ namespace TickZoom
 		public System.Windows.Forms.DateTimePicker EndTimePicker {
 			get { return endTimePicker; }
 		}
-        private System.Windows.Forms.Button btnOptimize;
+        private System.Windows.Forms.Button optimize;
+        
+		public System.Windows.Forms.Button Optimize {
+			get { return optimize; }
+		}
         private System.Windows.Forms.Button btnRun;
 
         #endregion
@@ -658,8 +666,8 @@ namespace TickZoom
         	UpdateCheckBoxes();
         }
         
-		public System.Windows.Forms.TextBox TxtSymbol {
-			get { return txtSymbol; }
+		public System.Windows.Forms.TextBox SymbolList {
+			get { return symbolList; }
 		}
         
 		public System.Windows.Forms.ComboBox DefaultCombo {

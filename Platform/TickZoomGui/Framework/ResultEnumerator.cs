@@ -5,12 +5,22 @@
 
     public class ResultEnumerator
     {
+        #region Fields
+
         private readonly IEnumerator<IResult> _enumerator;
+
+        #endregion Fields
+
+        #region Constructors
 
         public ResultEnumerator(IEnumerable<IResult> children)
         {
             _enumerator = children.GetEnumerator();
         }
+
+        #endregion Constructors
+
+        #region Methods
 
         public void Enumerate()
         {
@@ -31,5 +41,7 @@
             next.Completed += ChildCompleted;
             next.Execute();
         }
+
+        #endregion Methods
     }
 }
