@@ -577,22 +577,47 @@ namespace TickZoom
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ComboBox modelLoaderBox;
+        
+		public System.Windows.Forms.ComboBox ModelLoaderBox {
+			get { return modelLoaderBox; }
+		}
         private System.Windows.Forms.Label lblSymbol;
         private System.Windows.Forms.TextBox txtSymbol;
         private System.Windows.Forms.Button btnGenetic;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        
+		public System.Windows.Forms.ComboBox EngineBarsCombo {
+			get { return engineBarsCombo; }
+		}
         private System.Windows.Forms.RadioButton timeChartRadio;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.RadioButton barChartRadio;
+        
+		public System.Windows.Forms.RadioButton BarChartRadio {
+			get { return barChartRadio; }
+		}
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox copyDebugCheckBox;
         private System.Windows.Forms.TextBox defaultBox;
         private System.Windows.Forms.TextBox engineBarsBox;
+        
+		public System.Windows.Forms.TextBox EngineBarsBox {
+			get { return engineBarsBox; }
+		}
         private System.Windows.Forms.TextBox chartBarsBox;
+        
+		public System.Windows.Forms.TextBox ChartBarsBox {
+			get { return chartBarsBox; }
+		}
+        
         private System.Windows.Forms.ComboBox engineBarsCombo;
         private System.Windows.Forms.CheckBox defaultOnly;
         private System.Windows.Forms.ComboBox chartBarsCombo;
+        
+		public System.Windows.Forms.ComboBox ChartBarsCombo {
+			get { return chartBarsCombo; }
+		}
         private System.Windows.Forms.ComboBox defaultCombo;
         private System.Windows.Forms.Label defaultTxt;
         private System.Windows.Forms.Label chartBarsTxt;
@@ -610,16 +635,32 @@ namespace TickZoom
         private System.Windows.Forms.Label endLabel;
         private System.Windows.Forms.Label startLabel;
         private System.Windows.Forms.DateTimePicker startTimePicker;
+        
+		public System.Windows.Forms.DateTimePicker StartTimePicker {
+			get { return startTimePicker; }
+		}
         private System.Windows.Forms.DateTimePicker endTimePicker;
+        
+		public System.Windows.Forms.DateTimePicker EndTimePicker {
+			get { return endTimePicker; }
+		}
         private System.Windows.Forms.Button btnOptimize;
         private System.Windows.Forms.Button btnRun;
 
         #endregion
 
         private System.Windows.Forms.ProgressBar prgExecute;
+        
+		public System.Windows.Forms.ProgressBar PrgExecute {
+			get { return prgExecute; }
+		}
         private System.Windows.Forms.Button btnStop;
         private object progressLocker = new object();
         private System.Windows.Forms.Label lblProgress;
+        
+		public System.Windows.Forms.Label LblProgress {
+			get { return lblProgress; }
+		}
         
 
         
@@ -644,5 +685,6 @@ namespace TickZoom
 			get { return defaultBox; }
 		}
     }
+    
 }
 

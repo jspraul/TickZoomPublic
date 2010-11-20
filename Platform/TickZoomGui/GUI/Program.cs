@@ -47,7 +47,8 @@ namespace TickZoom
 	        	System.Console.SetOut(d);
 	            Application.EnableVisualStyles();
 	            Application.SetCompatibleTextRenderingDefault(false);
-	            var form = new Form1();
+	            var vm = new ViewModel();
+	            var form = new Form1(vm);
 	            form.Visible = true;
 	            while( true) {
 	            	Application.DoEvents();
