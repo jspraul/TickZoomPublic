@@ -1,4 +1,4 @@
-﻿namespace TickZoom.GUI.Framework
+﻿namespace TickZoom.Presentation.Framework
 {
     using System;
     using System.Collections.Generic;
@@ -6,39 +6,20 @@
     using System.Linq;
     using System.Linq.Expressions;
 
-    public class ViewModelBase : INotifyPropertyChanged //, IDataErrorInfo
+    public class AutoBindable : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
-
-        public bool IsValid
-        {
-            get { return string.IsNullOrEmpty(Error); }
-        }
-
-        public string Error
-        {
-            get
-            {
-                return "";
-            }
-        }
-
-        public object this[string propertyName]
-        {
-            get
-            {
-                return GetType().GetProperty(propertyName).GetValue(this, null);
-//                if( result != null) {
-//                	return result.ToString();
-//                } else {
-//                	return null;
-//                }
-            }
-        }
+        
+        private Action<Action> callbackAction = (action) => {action();};
+        
+		public Action<Action> CallbackAction {
+			get { return callbackAction; }
+			set { callbackAction = value; }
+		}
 
         public void NotifyOfPropertyChange(string propertyName)
         {
-        	Execute.OnUIThread(() => PropertyChanged(this, new PropertyChangedEventArgs(propertyName)));
+        	CallbackAction(() => PropertyChanged(this, new PropertyChangedEventArgs(propertyName)));
         }
 
         public void NotifyOfPropertyChange<TProperty>(Expression<Func<TProperty>> property)

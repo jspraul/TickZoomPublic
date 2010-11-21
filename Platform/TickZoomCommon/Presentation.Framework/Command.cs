@@ -1,11 +1,11 @@
-﻿namespace TickZoom.GUI.Framework
+﻿namespace TickZoom.Presentation.Framework
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Reflection;
 
-    public abstract class Command : ViewModelBase, CommandInterface
+    public abstract class Command : AutoBindable, CommandInterface
     {
         #region Properties
 

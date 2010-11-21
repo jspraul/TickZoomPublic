@@ -1,6 +1,6 @@
-﻿namespace TickZoom.GUI.Framework
+﻿namespace TickZoom.Presentation.Framework
 {
-    public class ScreenConductor : ViewModelBase
+    public class ScreenConductor : AutoBindable
     {
         #region Fields
 

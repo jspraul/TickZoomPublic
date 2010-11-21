@@ -1,3 +1,4 @@
+using TickZoom.Presentation;
 #region Header
 
 /*
@@ -26,7 +27,7 @@
 
 #endregion Header
 
-namespace TickZoom
+namespace TickZoom.GUI
 {
     using System;
     using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace TickZoom
     using System.Windows.Forms;
 
     using TickZoom.Api;
-    using TickZoom.GUI.Framework;
+    using TickZoom.Presentation.Framework;
 
     static class Program
     {
@@ -53,9 +54,10 @@ namespace TickZoom
                 System.Console.SetOut(d);
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                var vm = new ViewModel();
-                var form = new Form1(vm);
-                ViewModelBinder.Bind( vm, form);
+                var vm = new StarterConfig();
+                var form = new StarterConfigView(vm);
+                AutoModelBinder.Bind( vm, form);
+                Execute.Initialize();
                 Application.Idle += Execute.MessageLoop;
                 Application.Run(form);
             } catch( Exception ex) {

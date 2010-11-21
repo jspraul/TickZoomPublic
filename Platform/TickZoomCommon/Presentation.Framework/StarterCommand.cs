@@ -26,12 +26,10 @@
 
 #endregion Header
 
-namespace TickZoom
+namespace TickZoom.Presentation.Framework
 {
     using System;
-
     using TickZoom.Api;
-    using TickZoom.GUI.Framework;
 
     public class StarterCommand : Command
     {

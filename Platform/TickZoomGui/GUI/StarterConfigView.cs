@@ -1,4 +1,6 @@
-using TickZoom.GUI.Framework;
+using TickZoom.Presentation;
+using TickZoom.Presentation.Framework;
+
 #region Header
 
 /*
@@ -27,7 +29,7 @@ using TickZoom.GUI.Framework;
 
 #endregion Header
 
-namespace TickZoom
+namespace TickZoom.GUI
 {
     using System;
     using System.Collections.Generic;
@@ -41,7 +43,7 @@ namespace TickZoom
 
     using TickZoom.Api;
 
-    public partial class Form1 : Form
+    public partial class StarterConfigView : Form
     {
         #region Fields
 
@@ -49,30 +51,23 @@ namespace TickZoom
         bool failedAlarmSound = false;
         private bool isEngineLoaded = false;
         private Log log;
-        string modelLoaderText = null;
         private List<PortfolioDoc> portfolioDocs = new List<PortfolioDoc>();
         private bool stopMessages = false;
-        private ViewModel vm;
+        private StarterConfig vm;
 
         #endregion Fields
 
         #region Constructors
 
-        public Form1(ViewModel vm)
+        public StarterConfigView(StarterConfig vm)
         {
-            log = Factory.SysLog.GetLogger(typeof(ViewModel));
+            log = Factory.SysLog.GetLogger(typeof(StarterConfig));
                			this.vm = vm;
             InitializeComponent();
             Execute.OnUIThread( (Func<bool>) ProcessMessages);
         }
 
         #endregion Constructors
-
-        #region Delegates
-
-        public delegate Chart CreateChartDelegate();
-
-        #endregion Delegates
 
         #region Properties
 
@@ -113,8 +108,12 @@ namespace TickZoom
                 log.Error(ex.Message, ex);
             }
         }
+        
+        public Chart CreateChart() {
+        	return Execute.OnUIThread<Chart>((Func<Chart>)CreateChartWork);
+        }
 
-        public Chart CreateChart()
+        private Chart CreateChartWork()
         {
             Chart chart = null;
             try {
@@ -126,8 +125,16 @@ namespace TickZoom
             }
             return chart;
         }
+        
+        public void CallbackAction(Action action) {
+        	Execute.OnUIThread(action);
+        }
 
-        public void FlushCharts()
+        public void FlushCharts() {
+        	Execute.OnUIThread((Action)FlushChartsWork);
+        }
+
+        private void FlushChartsWork()
         {
             try {
                 for( int i=portfolioDocs.Count-1; i>=0; i--) {
@@ -161,8 +168,12 @@ namespace TickZoom
         	}
         	return result;
         }
+        
+        public void ShowChart() {
+        	Execute.OnUIThread((Action)ShowChartWork);
+        }
 
-        public void ShowChart()
+        private void ShowChartWork()
         {
             try {
                 for( int i=portfolioDocs.Count-1; i>=0; i--) {
@@ -249,7 +260,6 @@ namespace TickZoom
 
         void Form1Shown(object sender, EventArgs e)
         {
-        	vm.TryAutoUpdate();
             defaultPeriod.DataBindings.Add( "Enabled", vm, "UseDefaultInterval");
             defaultBarUnit.DataBindings.Add( "Enabled", vm, "UseDefaultInterval");
             enginePeriod.DataBindings.Add( "Enabled", vm, "UseOtherIntervals");
@@ -309,7 +319,7 @@ namespace TickZoom
         {
             stopMessages = true;
             CloseCharts();
-            vm.Terminate();
+            vm.Dispose();
         }
 
         void TestTheAlarmClick(object sender, EventArgs e)

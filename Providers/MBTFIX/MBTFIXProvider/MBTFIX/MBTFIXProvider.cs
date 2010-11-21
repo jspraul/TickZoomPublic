@@ -454,9 +454,9 @@ namespace TickZoom.MBTFIX
 						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						break;
 					case "4": // Canceled
-						RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						algorithm = GetAlgorithm( symbol.BinaryIdentifier);
-						algorithm.OnCancelBrokerOrder( symbol, packetFIX.OriginalClientOrderId);
+						algorithm.OnCancelBrokerOrder( symbol, packetFIX.ClientOrderId);
 						break;
 					case "5": // Replaced
 						order = ReplaceOrder( packetFIX, OrderState.Active, null);

@@ -33,8 +33,8 @@ using System.Threading;
 using System.Windows.Forms;
 
 using NUnit.Framework;
-using TickZoom;
 using TickZoom.Api;
+using TickZoom.Presentation;
 
 namespace Other
 {
@@ -44,8 +44,7 @@ namespace Other
 		private static Log log = Factory.SysLog.GetLogger(typeof(GUITest));
 		private static bool debug = log.IsDebugEnabled;
 		private ushort servicePort = 6490;
-		private Form1 form;
-		private ViewModel viewModel;
+		private StarterConfig config;
 		[SetUp]
 		public void Setup() {
 			DeleteFiles();
@@ -55,20 +54,19 @@ namespace Other
     		}
 		}
 		
-		private Form1 CreateForm() {
+		private StarterConfig CreateConfig() {
 			string storageFolder = Factory.Settings["AppDataFolder"];
 			string workspaceFolder = Path.Combine(storageFolder,"Workspace");
 			string projectFile = Path.Combine(workspaceFolder,"test.tzproj");
-			ConfigFile projectConfig = new ConfigFile(projectFile,ViewModel.GetDefaultConfig());
+			ConfigFile projectConfig = new ConfigFile(projectFile,StarterConfig.GetDefaultConfig());
 			projectConfig.SetValue("ProviderAssembly","TickZoomCombinedMock");
 			projectConfig.SetValue("ServicePort",servicePort.ToString());
 			projectConfig.SetValue("ServiceConfig","WarehouseTest.config");
 			SetupWarehouseConfig();
-			viewModel = new ViewModel("test");
-			Form1 form = new Form1(viewModel);
-			form.Show();
-			WaitForEngine(form);
-			return form;
+			config = new StarterConfig("test");
+			
+			WaitForEngine(config);
+			return config;
 		}
 
 		private void WaitComplete(int seconds) {
@@ -77,16 +75,14 @@ namespace Other
 		
 		private void WaitComplete(int seconds, Func<bool> onCompleteCallback) {
 			long end = Factory.TickCount + (seconds * 1000);
-			long current;
-			while( (current = Factory.TickCount) < end) {
-				Application.DoEvents();
-				form.Catch();
+			while( Factory.TickCount < end) {
+				config.Catch();
 				if( onCompleteCallback != null && onCompleteCallback()) {
 					return;
 				}
 				Thread.Sleep(1);
 			}
-			throw new ApplicationException(seconds + " seconds timeout expired waiting on application to complete.");
+//			throw new ApplicationException(seconds + " seconds timeout expired waiting on application to complete.");
 		}
 		
 		private void Pause(int seconds) {
@@ -94,7 +90,7 @@ namespace Other
 			long current;
 			while( (current = Factory.TickCount) < end) {
 				Application.DoEvents();
-				form.Catch();
+				config.Catch();
 				Thread.Sleep(1);
 			}
 		}
@@ -102,23 +98,23 @@ namespace Other
 		[Test]
 		public void TestStartRun()
 		{
-			using( form = CreateForm()) {
-				form.SymbolList.Text = "USD/JPY";
-				form.DefaultBox.Text = "1";
-				form.DefaultCombo.Text = "Hour";
+			using( config = CreateConfig()) {
+				config.SymbolList.Text = "USD/JPY";
+				config.DefaultBox.Text = "1";
+				config.DefaultCombo.Text = "Hour";
 				for( int i=0; i<3; i++) {
 					log.Notice("Processing #" + (i+1));
-					form.HistoricalButtonClick(null,null);
-					WaitComplete(120, () => { return !form.ProcessWorker.IsBusy && form.PortfolioDocs[i].Visible; } );
-					Assert.AreEqual(form.PortfolioDocs.Count,i+1,"Charts");
-					Assert.IsFalse(form.ProcessWorker.IsBusy,"ProcessWorker.Busy");
-					Assert.IsTrue(form.PortfolioDocs[i].Visible,"Chart visible failed at " + i);
+					config.HistoricalButtonClick(null,null);
+					WaitComplete(120, () => { return !config.ProcessWorker.IsBusy && config.PortfolioDocs[i].Visible; } );
+					Assert.AreEqual(config.PortfolioDocs.Count,i+1,"Charts");
+					Assert.IsFalse(config.ProcessWorker.IsBusy,"ProcessWorker.Busy");
+					Assert.IsTrue(config.PortfolioDocs[i].Visible,"Chart visible failed at " + i);
 				}
 			}
 		}
 #endif
-		public void WaitForEngine(Form1 form) {
-			while( !form.IsEngineLoaded) {
+		public void WaitForEngine(StarterConfig config) {
+			while( !config.IsEngineLoaded) {
 				Thread.Sleep(1);
 				Application.DoEvents();
 			}
@@ -127,20 +123,15 @@ namespace Other
 		[Test]
 		public void TestRealTimeNoHistorical()
 		{
-			using( form = CreateForm()) {
-				form.SymbolList.Text = "IBM,GBP/USD";
-				form.DefaultPeriod.Text = "10";
-				form.DefaultBarUnit.Text = "Tick";
-				viewModel.Realtime();
-				WaitComplete(120, () => { return form.PortfolioDocs.Count == 2 &&
-				             		form.PortfolioDocs[0].Visible &&
-				             		form.PortfolioDocs[1].Visible; } );
-				Assert.AreEqual(2,form.PortfolioDocs.Count,"Charts");
-				Assert.IsTrue(form.PortfolioDocs[0].Visible &&
-				             		form.PortfolioDocs[1].Visible,"Charts Visible");
-				viewModel.Stop();
-				WaitComplete(120, () => { return !viewModel.CommandWorker.IsBusy; } );
-				Assert.IsFalse(viewModel.CommandWorker.IsBusy,"ProcessWorker.Busy");
+			using( config = CreateConfig()) {
+				config.SymbolList = "IBM,GBP/USD";
+				config.DefaultPeriod = 10;
+				config.DefaultBarUnit = BarUnit.Tick;
+				config.Realtime();
+				WaitComplete(10);
+				config.Stop();
+				WaitComplete(120, () => { return !config.CommandWorker.IsBusy; } );
+				Assert.IsFalse(config.CommandWorker.IsBusy,"ProcessWorker.Busy");
 			}
 		}
 		
@@ -188,25 +179,21 @@ namespace Other
 		[Test]
 		public void TestCapturedDataMatchesProvider()
 		{
-			using( form = CreateForm()) {
-				form.SymbolList.Text = "/ESZ9";
-				form.DefaultPeriod.Text = "1";
-				form.DefaultBarUnit.Text = "Minute";
-				viewModel.EndDateTime = DateTime.UtcNow;
-				viewModel.Realtime();
-				WaitComplete(120, () => { return form.PortfolioDocs.Count == 1 &&
-				             		form.PortfolioDocs[0].Visible; } );
-				Assert.AreEqual(1,form.PortfolioDocs.Count,"Charts");
-				Pause(2);
-				viewModel.Stop();
-				WaitComplete(120, () => { return !viewModel.CommandWorker.IsBusy; } );
-				Assert.IsFalse(viewModel.CommandWorker.IsBusy,"ProcessWorker.Busy");
-				Assert.Greater(form.LogOutput.Lines.Length,2,"number of log lines");
+			using( config = CreateConfig()) {
+				config.SymbolList = "/ESZ9";
+				config.DefaultPeriod = 1;
+				config.DefaultBarUnit = BarUnit.Minute;
+				config.EndDateTime = DateTime.UtcNow;
+				config.Realtime();
+				WaitComplete(10);
+				config.Stop();
+				WaitComplete(120, () => { return !config.CommandWorker.IsBusy; } );
+				Assert.IsFalse(config.CommandWorker.IsBusy,"ProcessWorker.Busy");
 				string appData = Factory.Settings["AppDataFolder"];
 				string compareFile1 = appData + @"\Test\MockProviderData\ESZ9.tck";
 				string compareFile2 = appData + @"\Test\ServerCache\ESZ9.tck";
 				using ( TickReader reader1 = Factory.TickUtil.TickReader()) {
-					reader1.Initialize(compareFile1,form.SymbolList.Text);
+					reader1.Initialize(compareFile1,config.SymbolList);
 					TickBinary tick1 = new TickBinary();
 					try {
 						int count = 0;
@@ -221,8 +208,8 @@ namespace Other
 				}
 				using ( TickReader reader1 = Factory.TickUtil.TickReader())
 				using ( TickReader reader2 = Factory.TickUtil.TickReader()) {
-					reader1.Initialize(compareFile1,form.SymbolList.Text);
-					reader2.Initialize(compareFile2,form.SymbolList.Text);
+					reader1.Initialize(compareFile1,config.SymbolList);
+					reader2.Initialize(compareFile2,config.SymbolList);
 					TickBinary tick1 = new TickBinary();
 					TickBinary tick2 = new TickBinary();
 					bool result = true;

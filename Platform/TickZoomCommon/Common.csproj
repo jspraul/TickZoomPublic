@@ -52,6 +52,7 @@
   <Import Project="..\..\TickZoom.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -83,6 +84,21 @@
     <Compile Include="Interceptors\FillSimulatorPhysical.cs" />
     <Compile Include="Interceptors\PhysicalFillDefault.cs" />
     <Compile Include="Interceptors\StrategyInterceptor.cs" />
+    <Compile Include="Presentation.Framework\ActionCommand.cs" />
+    <Compile Include="Presentation.Framework\Command.cs" />
+    <Compile Include="Presentation.Framework\CommandInterface.cs" />
+    <Compile Include="Presentation.Framework\IResult.cs" />
+    <Compile Include="Presentation.Framework\IScreen.cs" />
+    <Compile Include="Presentation.Framework\IShell.cs" />
+    <Compile Include="Presentation.Framework\LoopTask.cs" />
+    <Compile Include="Presentation.Framework\ReflectiveCommand.cs" />
+    <Compile Include="Presentation.Framework\ResultEnumerator.cs" />
+    <Compile Include="Presentation.Framework\ScreenConductor.cs" />
+    <Compile Include="Presentation.Framework\StarterCommand.cs" />
+    <Compile Include="Presentation.Framework\SyncTask.cs" />
+    <Compile Include="Presentation.Framework\Task.cs" />
+    <Compile Include="Presentation.Framework\AutoBindable.cs" />
+    <Compile Include="Presentation\StarterConfig.cs" />
     <Compile Include="ProviderUtilities\Arguments.cs" />
     <Compile Include="ProviderUtilities\ServiceInstaller.cs" />
     <Compile Include="Reports\EquityStatsReport.cs" />
@@ -170,5 +186,7 @@
       <Project>{67EBC93F-0D47-4F6E-979F-E5622E1025E9}</Project>
       <Name>ZedGraph</Name>
     </ProjectReference>
+    <Folder Include="Presentation" />
+    <Folder Include="Presentation.Framework" />
   </ItemGroup>
 </Project>

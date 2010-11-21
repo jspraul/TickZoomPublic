@@ -26,7 +26,7 @@
 
 #endregion Header
 
-namespace TickZoom
+namespace TickZoom.Presentation
 {
     using System;
     using System.Collections.Generic;
@@ -35,12 +35,10 @@ namespace TickZoom
     using System.IO;
     using System.Media;
     using System.Threading;
-    using System.Windows.Forms;
-
     using TickZoom.Api;
-    using TickZoom.GUI.Framework;
+	using TickZoom.Presentation.Framework;
 
-    public class ViewModel : ViewModelBase
+    public class StarterConfig : AutoBindable, IDisposable
     {
         #region Fields
 
@@ -67,7 +65,7 @@ namespace TickZoom
         private BarUnit engineBarUnit = BarUnit.Hour;
         private int enginePeriod = 1;
         private bool failedAlarmSound = false;
-        private Action flushCharts;
+        private Action flushCharts = () => { };
         private Interval initialInterval;
         private Interval intervalChartBar;
         private Interval intervalDefault;
@@ -110,15 +108,15 @@ namespace TickZoom
 
         #region Constructors
 
-        public ViewModel()
+        public StarterConfig()
             : this("project")
         {
         }
 
-        public ViewModel(string projectName)
+        public StarterConfig(string projectName)
         {
             ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
-            log = Factory.SysLog.GetLogger(typeof(ViewModel));
+            log = Factory.SysLog.GetLogger(typeof(StarterConfig));
             progressChildren = new Dictionary<int,Progress>();
             string storageFolder = Factory.Settings["AppDataFolder"];
             string workspace = Path.Combine(storageFolder,"Workspace");
@@ -176,18 +174,11 @@ namespace TickZoom
             endDateTime = maxDateTime;
             }
             }
+            TryAutoUpdate();
             isInitialized = true;
         }
 
         #endregion Constructors
-
-        #region Delegates
-
-        public delegate Chart CreateChartDelegate();
-
-        public delegate void UpdateProgressDelegate(string fileName, Int64 BytesRead, Int64 TotalBytes);
-
-        #endregion Delegates
 
         #region Properties
 
@@ -499,11 +490,6 @@ namespace TickZoom
             chartBarUnit = defaultBarUnit;
         }
 
-        private Chart CreateChartInvoke()
-        {
-            return Execute.OnUIThread<Chart>(CreateChart);
-        }
-
         public void GeneticOptimize()
         {
             Starter starter = Factory.Starter.GeneticStarter();
@@ -540,18 +526,11 @@ namespace TickZoom
             enableAlarmSounds = true;
             SetupStarter(starter);
         }
-
+        
         public void RunCommand(CommandInterface command)
         {
-            if (commandWorker.IsBusy)
-            {
-                MessageBox.Show("A task is already running. Please either the stop the current task or await for its completion before starting a new one.", "Test in progress", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                Save();
-                CommandWorker.RunWorkerAsync(command);
-            }
+            Save();
+            CommandWorker.RunWorkerAsync(command);
         }
 
         public void Save()
@@ -576,15 +555,6 @@ namespace TickZoom
             projectConfig.SetValue("AutoUpdate",projectConfig.GetValue("AutoUpdate"));
         }
 
-        private void ShowChartInvoke()
-        {
-            try {
-                Execute.OnUIThread(ShowChart);
-            } catch( Exception ex) {
-                log.Error(ex.Message, ex);
-            }
-        }
-
         public void Stop()
         {
             commandWorker.CancelAsync();
@@ -602,7 +572,7 @@ namespace TickZoom
         	}
         }
 
-        public void Terminate()
+        public void Dispose()
         {
             Stop();
             Factory.Engine.Dispose();
@@ -717,7 +687,7 @@ namespace TickZoom
 
             // Calculate the task progress in percentages
             if( final > 0) {
-               	PercentProgress = Convert.ToInt32((current * 1000) / final);
+               	PercentProgress = Convert.ToInt32((current * 100) / final);
             } else {
                	PercentProgress = 0;
             }
@@ -755,8 +725,12 @@ namespace TickZoom
             starter.ProjectProperties.Starter.StartTime = (TimeStamp) startDateTime;
             starter.BackgroundWorker = commandWorker;
             if( !disableCharting) {
-                starter.CreateChartCallback = CreateChartInvoke;
-                starter.ShowChartCallback = ShowChartInvoke;
+            	if( CreateChart == null || ShowChart == null) {
+            		log.Warn( "Charting is enabled but you never set one of the CreateChart or the ShowChart properties.");
+            	} else {
+            		starter.CreateChartCallback = new CreateChartCallback(CreateChart);
+	            	starter.ShowChartCallback = new ShowChartCallback(ShowChart);
+            	}
             } else {
                 log.Notice("You have the \"disable charts\" check box enabled.");
             }

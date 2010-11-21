@@ -1,4 +1,5 @@
-﻿namespace TickZoom.GUI.Framework
+﻿using TickZoom.Presentation.Framework;
+namespace TickZoom.GUI
 {
     using System;
     using System.Collections.Generic;
@@ -17,6 +18,11 @@
         private static List<Task> tasks = new List<Task>();
         private static List<Loop> loops = new List<Loop>();
         private static object tasksLocker = new object();
+        private static Thread messageLoopThread;
+        
+        public static void Initialize() {
+        	messageLoopThread = Thread.CurrentThread;
+        }
 
         #endregion Fields
 
@@ -30,6 +36,9 @@
 
         public static void MessageLoop(object sender, EventArgs e)
         {
+        	if( messageLoopThread != Thread.CurrentThread) {
+        		throw new ApplicationException("Must always call MessageLoop with same thread as Initialize().");
+        	}
             while( AppIsIdle()) {
                 Interlocked.Increment( ref loopcount);
                 if( tasks.Count > 0) {
@@ -69,6 +78,9 @@
 
         public static T OnUIThread<T>(Delegate action)
         {
+        	if( messageLoopThread == Thread.CurrentThread) {
+        		return (T) action.DynamicInvoke();
+        	}
             var isComplete = false;
             var task = new SyncTask( action, () => isComplete = true );
             lock( tasksLocker) {
@@ -92,7 +104,7 @@
 
         public static void TrySleep()
         {
-            if( busycount == 0) {
+        	if( busycount == 0) { // || loopcount * 100 / busycount < 10) {
                 Thread.Sleep(1);
             }
             Interlocked.Exchange(ref loopcount, 0);

@@ -26,12 +26,10 @@
 
 #endregion Header
 
-namespace TickZoom
+namespace TickZoom.GUI
 {
     using System;
     using System.Windows.Forms;
-
-    using Utilities;
 
     /// <summary>
     /// Description of Class1.

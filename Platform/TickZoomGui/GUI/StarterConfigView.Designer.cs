@@ -1,6 +1,6 @@
-namespace TickZoom
+namespace TickZoom.GUI
 {
-    partial class Form1
+	partial class StarterConfigView
     {
         /// <summary>
         /// Required designer variable.

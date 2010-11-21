@@ -46,7 +46,7 @@
 
 #endregion Header
 
-namespace Utilities
+namespace TickZoom.GUI
 {
     using System;
     using System.Collections.Generic;

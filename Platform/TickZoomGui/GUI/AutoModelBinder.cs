@@ -1,5 +1,7 @@
 ﻿using System.Text;
-namespace TickZoom.GUI.Framework
+using TickZoom.Presentation.Framework;
+
+namespace TickZoom.GUI
 {
     using System;
     using System.Collections.Generic;
@@ -10,11 +12,11 @@ namespace TickZoom.GUI.Framework
 
     using TickZoom.Api;
 
-    public static class ViewModelBinder
+    public static class AutoModelBinder
     {
         #region Fields
 
-        private static readonly Log log = Factory.SysLog.GetLogger(typeof(ViewModelBinder));
+        private static readonly Log log = Factory.SysLog.GetLogger(typeof(AutoModelBinder));
 
         #endregion Fields
 

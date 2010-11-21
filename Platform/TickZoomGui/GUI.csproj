@@ -69,29 +69,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Framework\Bootstrapper.cs" />
-    <Compile Include="Framework\BusyResult.cs" />
-    <Compile Include="Framework\Command.cs" />
-    <Compile Include="Framework\CommandInterface.cs" />
-    <Compile Include="Framework\Execute.cs" />
-    <Compile Include="Framework\IResult.cs" />
-    <Compile Include="Framework\IScreen.cs" />
-    <Compile Include="Framework\IShell.cs" />
-    <Compile Include="Framework\LoopTask.cs" />
-    <Compile Include="Framework\ReflectiveCommand.cs" />
-    <Compile Include="Framework\ResultEnumerator.cs" />
-    <Compile Include="Framework\ScreenConductor.cs" />
-    <Compile Include="Framework\SyncTask.cs" />
-    <Compile Include="Framework\Task.cs" />
-    <Compile Include="Framework\ViewModelBase.cs" />
-    <Compile Include="Framework\ViewModelBinder.cs" />
-    <Compile Include="GUI\ActionCommand.cs" />
-    <Compile Include="GUI\ServiceInstaller.cs" />
-    <Compile Include="GUI\Form1.cs">
+    <Compile Include="GUI\AutoModelBinder.cs" />
+    <Compile Include="GUI\Execute.cs" />
+    <Compile Include="GUI\StarterConfigView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="GUI\StarterConfigView.Designer.cs">
+      <DependentUpon>StarterConfigView.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\globalKeyboardHook.cs" />
     <Compile Include="GUI\GlobalShortCuts.cs" />
@@ -102,12 +86,10 @@
       <DependentUpon>NumericTextBox.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Program.cs" />
-    <Compile Include="GUI\StarterCommand.cs" />
-    <Compile Include="GUI\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="GUI\Form1.resx">
+    <EmbeddedResource Include="GUI\StarterConfigView.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>Form1.cs</DependentUpon>
+      <DependentUpon>StarterConfigView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -139,7 +121,14 @@
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
     </ProjectReference>
-    <Folder Include="Framework" />
+    <ProjectReference Include="..\TickZoomCommon\Common.csproj">
+      <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TickZoomCommon\Common.csproj">
+      <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
