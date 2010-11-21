@@ -62,8 +62,11 @@ namespace TickZoom.MBTFIX
 				throw new ApplicationException("Please remove .config from config section name.");
 			}
   			ConfigSection = name;
-  			HeartbeatDelay = 3500;
-			int TIP_Increase_Heartbeat_Delay_For_Debugging = 0;
+  			if( SyncTicks.Enabled) {
+	  			HeartbeatDelay = 3500;
+  			} else {
+	  			HeartbeatDelay = 30;
+  			}
   			FIXFilter = new MBTFIXFilter();
 		}
 		

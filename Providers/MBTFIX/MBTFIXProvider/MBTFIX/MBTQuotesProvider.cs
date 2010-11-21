@@ -52,8 +52,11 @@ namespace TickZoom.MBTQuotes
 			RetryStart = 1;
 			RetryIncrease = 1;
 			RetryMaximum = 30;
-  			HeartbeatDelay = 1500;
-  			int TIP_Increase_Heartbeat_Delay_For_Debugging = 0;
+			if( SyncTicks.Enabled) {
+	  			HeartbeatDelay = 1500;
+			} else {
+	  			HeartbeatDelay = 15;
+			}
         }
 		
 		public override void PositionChange(Receiver receiver, SymbolInfo symbol, double signal, Iterable<LogicalOrder> orders)
