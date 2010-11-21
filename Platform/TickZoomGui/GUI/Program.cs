@@ -56,12 +56,8 @@ namespace TickZoom
                 var vm = new ViewModel();
                 var form = new Form1(vm);
                 ViewModelBinder.Bind( vm, form);
-                form.Visible = true;
-                while( true) {
-                    Application.DoEvents();
-                    Execute.MessageLoop();
-                    form.ProcessMessages();
-                }
+                Application.Idle += Execute.MessageLoop;
+                Application.Run(form);
             } catch( Exception ex) {
                 Console.WriteLine(ex.GetType() + ": " + ex.Message + Environment.NewLine + ex.StackTrace);
                 System.Diagnostics.Debug.WriteLine(ex.GetType() + ": " + ex.Message + Environment.NewLine + ex.StackTrace);

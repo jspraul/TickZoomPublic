@@ -6,7 +6,7 @@
     using System.Linq;
     using System.Linq.Expressions;
 
-    public class ViewModelBase : INotifyPropertyChanged, IDataErrorInfo
+    public class ViewModelBase : INotifyPropertyChanged //, IDataErrorInfo
     {
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
@@ -23,12 +23,16 @@
             }
         }
 
-        public string this[string propertyName]
+        public object this[string propertyName]
         {
             get
             {
-                var result = GetType().GetProperty(propertyName).GetValue(this, null);
-                return result.ToString();
+                return GetType().GetProperty(propertyName).GetValue(this, null);
+//                if( result != null) {
+//                	return result.ToString();
+//                } else {
+//                	return null;
+//                }
             }
         }
 

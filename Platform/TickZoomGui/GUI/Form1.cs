@@ -1,3 +1,4 @@
+using TickZoom.GUI.Framework;
 #region Header
 
 /*
@@ -62,6 +63,7 @@ namespace TickZoom
             log = Factory.SysLog.GetLogger(typeof(ViewModel));
                			this.vm = vm;
             InitializeComponent();
+            Execute.OnUIThread( (Func<bool>) ProcessMessages);
         }
 
         #endregion Constructors
@@ -69,8 +71,6 @@ namespace TickZoom
         #region Delegates
 
         public delegate Chart CreateChartDelegate();
-
-        public delegate void UpdateProgressDelegate(string fileName, Int64 BytesRead, Int64 TotalBytes);
 
         #endregion Delegates
 
@@ -94,16 +94,6 @@ namespace TickZoom
         #endregion Properties
 
         #region Methods
-
-        public void btnStop_Click(object sender, EventArgs e)
-        {
-            vm.StopProcess();
-            // Set the progress bar back to 0 and the label
-            prgExecute.Value = 0;
-            lock(progressLocker) {
-                lblProgress.Text = "Execute Stopped";
-            }
-        }
 
         public void Catch()
         {
@@ -150,13 +140,9 @@ namespace TickZoom
             }
         }
 
-        public void HistoricalButtonClick(object sender, System.EventArgs e)
+        public bool ProcessMessages()
         {
-            vm.RunCommand(1);
-        }
-
-        public void ProcessMessages()
-        {
+        	var result = false;
             try {
                 if(  !stopMessages && log.HasLine) {
                     try {
@@ -168,15 +154,12 @@ namespace TickZoom
                			} catch( CollectionTerminatedException) {
                         stopMessages = true;
                     }
-                }
+        			result = true;
+        		}
             } catch( Exception ex) {
                 log.Error("ERROR: Thread had an exception:",ex);
-            }
-        }
-
-        public void RealTimeButtonClick(object sender, System.EventArgs e)
-        {
-            vm.RunCommand(2);
+        	}
+        	return result;
         }
 
         public void ShowChart()
@@ -202,16 +185,6 @@ namespace TickZoom
             PlayAlarmSound();
         }
 
-        void BtnGeneticClick(object sender, EventArgs e)
-        {
-            vm.RunCommand(3);
-        }
-
-        private void btnOptimize_Click(object sender, EventArgs e)
-        {
-            vm.RunCommand(0);
-        }
-
         void ChartRadioClick(object sender, EventArgs e)
         {
             if( barChartRadio.Checked) {
@@ -228,21 +201,6 @@ namespace TickZoom
             } else {
                 return str;
             }
-        }
-
-        void CopyDebugCheckBoxClick(object sender, EventArgs e)
-        {
-            CheckBox cb = (CheckBox) sender;
-            cb.Checked = false;
-            CopyDefaultIntervals();
-        }
-
-        void CopyDefaultIntervals()
-        {
-            engineBarsBox.Text = defaultBox.Text;
-               		engineBarsCombo.Text = defaultCombo.Text;
-               		chartBarsBox.Text = defaultBox.Text;
-               		chartBarsCombo.Text = defaultCombo.Text;
         }
 
         void DefaultOnlyClick(object sender, EventArgs e)
@@ -266,11 +224,11 @@ namespace TickZoom
 
         void EndTimePickerCloseUp(object sender, System.EventArgs e)
         {
-            if( endTimePicker.Value <= vm.StartDateTime.DateTime) {
-                endTimePicker.Value = vm.EndDateTime.DateTime;
+            if( endDateTime.Value <= vm.StartDateTime) {
+                endDateTime.Value = vm.EndDateTime;
                 DialogResult dr = MessageBox.Show("End date must be greater than start date.", "Continue", MessageBoxButtons.OK);
             } else {
-                vm.EndDateTime = new TimeStamp(endTimePicker.Value);
+                vm.EndDateTime = endDateTime.Value;
                 vm.Save();
             }
         }
@@ -291,33 +249,18 @@ namespace TickZoom
 
         void Form1Shown(object sender, EventArgs e)
         {
-            vm.TryAutoUpdate();
+        	vm.TryAutoUpdate();
+            defaultPeriod.DataBindings.Add( "Enabled", vm, "UseDefaultInterval");
+            defaultBarUnit.DataBindings.Add( "Enabled", vm, "UseDefaultInterval");
+            enginePeriod.DataBindings.Add( "Enabled", vm, "UseOtherIntervals");
+            engineBarUnit.DataBindings.Add( "Enabled", vm, "UseOtherIntervals");
+            chartPeriod.DataBindings.Add( "Enabled", vm, "UseOtherIntervals");
+            chartBarUnit.DataBindings.Add( "Enabled", vm, "UseOtherIntervals");
         }
 
         void IntervalChange(object sender, EventArgs e)
         {
             vm.IntervalsUpdate();
-        }
-
-        private void IntervalDefaults()
-        {
-            if( defaultBox.Text.Length == 0) { defaultBox.Text = "1"; }
-            if( engineBarsBox.Text.Length == 0) { engineBarsBox.Text = "1"; }
-            if( chartBarsBox.Text.Length == 0) { chartBarsBox.Text = "1"; }
-            if( defaultCombo.Text == "None" || defaultCombo.Text.Length == 0) {
-                defaultCombo.Text = "Hour";
-            }
-            if( engineBarsCombo.Text == "None" || engineBarsCombo.Text.Length == 0 ) {
-                engineBarsCombo.Text = "Hour";
-            }
-            if( chartBarsCombo.Text == "None" || chartBarsCombo.Text.Length == 0 ) {
-                chartBarsCombo.Text = "Hour";
-            }
-        }
-
-        void ModelLoaderBoxSelectedIndexChanged(object sender, EventArgs e)
-        {
-            modelLoaderText = modelLoaderBox.Text;
         }
 
         void PlayAlarmSound()
@@ -335,7 +278,7 @@ namespace TickZoom
 
         private void StartAlarm()
         {
-            stopAlarmButton.Visible = true;
+            stopAlarm.Visible = true;
             stopAlarmLabel.Visible = true;
             alarmTimer.Enabled = true;
             testTheAlarm.Visible = false;
@@ -344,11 +287,11 @@ namespace TickZoom
 
         void StartTimePickerCloseUp(object sender, EventArgs e)
         {
-            if( startTimePicker.Value >= vm.EndDateTime.DateTime ) {
-                startTimePicker.Value = vm.StartDateTime.DateTime;
+            if( startDateTime.Value >= vm.EndDateTime) {
+                startDateTime.Value = vm.StartDateTime;
                 DialogResult dr = MessageBox.Show("Start date must be less than end date.", "Continue", MessageBoxButtons.OK);
             } else {
-                vm.StartDateTime = new TimeStamp(startTimePicker.Value);
+                vm.StartDateTime = startDateTime.Value;
                 vm.Save();
             }
         }
@@ -356,7 +299,7 @@ namespace TickZoom
         void StopAlarmButtonClick(object sender, EventArgs e)
         {
             alarmTimer.Enabled = false;
-            stopAlarmButton.Visible = false;
+            stopAlarm.Visible = false;
             stopAlarmLabel.Visible = false;
             testTheAlarm.Checked = false;
             testTheAlarm.Visible = true;
@@ -376,10 +319,10 @@ namespace TickZoom
 
         void UpdateCheckBoxes()
         {
-            engineBarsBox.Enabled = !defaultOnly.Checked;
-               		engineBarsCombo.Enabled = !defaultOnly.Checked;
-               		chartBarsBox.Enabled = !defaultOnly.Checked;
-               		chartBarsCombo.Enabled = !defaultOnly.Checked;
+            enginePeriod.Enabled = !useDefaultInterval.Checked;
+               		engineBarUnit.Enabled = !useDefaultInterval.Checked;
+               		chartPeriod.Enabled = !useDefaultInterval.Checked;
+               		chartBarUnit.Enabled = !useDefaultInterval.Checked;
         }
 
         #endregion Methods

@@ -2,49 +2,64 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
     using System.Threading;
     using System.Windows;
-
-    public interface Task
-    {
-        #region Properties
-
-        object Result
-        {
-            get;
-        }
-
-        #endregion Properties
-
-        #region Methods
-
-        void Execute();
-
-        #endregion Methods
-    }
+    using System.Windows.Forms;
 
     public static class Execute
     {
         #region Fields
 
+        private static long busycount = 0;
+        private static long loopcount = 0;
         private static List<Task> tasks = new List<Task>();
+        private static List<Loop> loops = new List<Loop>();
         private static object tasksLocker = new object();
 
         #endregion Fields
 
         #region Methods
 
-        public static void MessageLoop()
+        public static bool AppIsIdle()
         {
-            while( tasks.Count > 0) {
-                lock( tasksLocker) {
-                    var task = tasks[0];
-                    task.Execute();
-                    tasks.Remove(task);
-                }
-            }
+            peek_message msg;
+              return !PeekMessage(out msg, IntPtr.Zero, 0, 0, 0);
         }
 
+        public static void MessageLoop(object sender, EventArgs e)
+        {
+            while( AppIsIdle()) {
+                Interlocked.Increment( ref loopcount);
+                if( tasks.Count > 0) {
+                    lock( tasksLocker) {
+                        var task = tasks[0];
+                        task.Execute();
+                        tasks.Remove(task);
+                        Interlocked.Increment( ref busycount);
+                    }
+                }
+                for( int i=0; i<loops.Count; i++) {
+                	var loop = loops[i];
+                	if( loop.Execute()) {
+                        Interlocked.Increment( ref busycount);
+                	}
+                }
+                if( loopcount > 1000) {
+                    TrySleep();
+                }
+            }
+            Interlocked.Increment( ref busycount);
+        }
+
+        public static void OnUIThread(Func<bool> function)
+        {
+            lock( tasksLocker) {
+                loops.Add( new Loop( function));
+            }
+        }
+        
         public static void OnUIThread(Action action)
         {
             lock( tasksLocker) {
@@ -65,46 +80,40 @@
             return (T) task.Result;
         }
 
-        #endregion Methods
-    }
+        [System.Security.SuppressUnmanagedCodeSecurity]
+        [DllImport("User32.dll", CharSet=CharSet.Auto)]
+        public static extern bool PeekMessage(
+            out peek_message msg,
+            IntPtr hWnd,
+            uint messageFilterMin,
+            uint messageFilterMax,
+            uint flags
+            );
 
-    public class SyncTask : Task
-    {
-        #region Fields
-
-        private Action complete;
-        private Delegate execute;
-        private object result;
-
-        #endregion Fields
-
-        #region Constructors
-
-        public SyncTask( Delegate execute, Action complete)
+        public static void TrySleep()
         {
-            this.execute = execute;
-            this.complete = complete;
-        }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public object Result
-        {
-            get { return result; }
-        }
-
-        #endregion Properties
-
-        #region Methods
-
-        public void Execute()
-        {
-            result = execute.DynamicInvoke();
-            complete();
+            if( busycount == 0) {
+                Thread.Sleep(1);
+            }
+            Interlocked.Exchange(ref loopcount, 0);
+            Interlocked.Exchange(ref busycount, 0);
         }
 
         #endregion Methods
+
+        #region Nested Types
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct peek_message
+        {
+            public IntPtr hWnd;
+            public Message msg;
+            public IntPtr wParam;
+            public IntPtr lParam;
+            public uint time;
+            public System.Drawing.Point p;
+        }
+
+        #endregion Nested Types
     }
 }

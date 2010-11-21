@@ -71,16 +71,21 @@
   <ItemGroup>
     <Compile Include="Framework\Bootstrapper.cs" />
     <Compile Include="Framework\BusyResult.cs" />
+    <Compile Include="Framework\Command.cs" />
+    <Compile Include="Framework\CommandInterface.cs" />
     <Compile Include="Framework\Execute.cs" />
     <Compile Include="Framework\IResult.cs" />
     <Compile Include="Framework\IScreen.cs" />
     <Compile Include="Framework\IShell.cs" />
+    <Compile Include="Framework\LoopTask.cs" />
     <Compile Include="Framework\ReflectiveCommand.cs" />
     <Compile Include="Framework\ResultEnumerator.cs" />
     <Compile Include="Framework\ScreenConductor.cs" />
+    <Compile Include="Framework\SyncTask.cs" />
+    <Compile Include="Framework\Task.cs" />
     <Compile Include="Framework\ViewModelBase.cs" />
     <Compile Include="Framework\ViewModelBinder.cs" />
-    <Compile Include="GUI\Command.cs" />
+    <Compile Include="GUI\ActionCommand.cs" />
     <Compile Include="GUI\ServiceInstaller.cs" />
     <Compile Include="GUI\Form1.cs">
       <SubType>Form</SubType>
@@ -97,6 +102,7 @@
       <DependentUpon>NumericTextBox.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Program.cs" />
+    <Compile Include="GUI\StarterCommand.cs" />
     <Compile Include="GUI\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="GUI\Form1.resx">

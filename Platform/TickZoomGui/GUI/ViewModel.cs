@@ -40,7 +40,7 @@ namespace TickZoom
     using TickZoom.Api;
     using TickZoom.GUI.Framework;
 
-    public class ViewModel
+    public class ViewModel : ViewModelBase
     {
         #region Fields
 
@@ -52,13 +52,18 @@ namespace TickZoom
         private int chartPeriod = 1;
         private ChartType chartType = ChartType.Bar;
         private System.ComponentModel.BackgroundWorker commandWorker;
-        private SynchronizationContext context;
         private BarUnit defaultBarUnit = BarUnit.Hour;
-        private bool defaultOnly = true;
         private int defaultPeriod = 1;
         private bool disableCharting;
+        
+		public bool DisableCharting {
+			get { return disableCharting; }
+			set { NotifyOfPropertyChange(() => DisableCharting);
+			      disableCharting = value;
+			}
+		}
         private bool enableAlarmSounds = false;
-        private TimeStamp endDateTime;
+        private DateTime endDateTime;
         private BarUnit engineBarUnit = BarUnit.Hour;
         private int enginePeriod = 1;
         private bool failedAlarmSound = false;
@@ -70,21 +75,36 @@ namespace TickZoom
         private bool isEngineLoaded = false;
         bool isInitialized = false;
         Log log;
-        private TimeStamp maxDateTime;
-        private TimeStamp minDateTime;
-        private string modelLoaderText = null;
+        private DateTime maxDateTime;
+        private DateTime minDateTime;
+        private string modelLoader = null;
+        
+		public string ModelLoader {
+			get { return modelLoader; }
+			set { NotifyOfPropertyChange( () => ModelLoader);
+			     modelLoader = value;
+			}
+		}
 
         // The progress of the task in percentage
         private int percentProgress;
         Dictionary<int, Progress> progressChildren = new Dictionary<int,Progress>();
         private string progressText;
+        
+		public string ProgressText {
+			get { return progressText; }
+			set { NotifyOfPropertyChange(() => ProgressText);
+				progressText = value;
+			}
+		}
         ConfigFile projectConfig;
         private int replaySpeed = 0;
         private Action showChart;
-        private TimeStamp startDateTime;
+        private DateTime startDateTime;
         private string symbolList;
         private Exception taskException;
         string tickZoomEngine;
+        private bool useDefaultInterval = true;
 
         #endregion Fields
 
@@ -99,26 +119,21 @@ namespace TickZoom
         {
             ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
             log = Factory.SysLog.GetLogger(typeof(ViewModel));
+            progressChildren = new Dictionary<int,Progress>();
             string storageFolder = Factory.Settings["AppDataFolder"];
             string workspace = Path.Combine(storageFolder,"Workspace");
             string projectFile = Path.Combine(workspace,projectName+".tzproj");
             projectConfig = new ConfigFile( projectFile, GetDefaultConfig());
-            context = SynchronizationContext.Current;
             this.commandWorker = new System.ComponentModel.BackgroundWorker();
             this.commandWorker.WorkerReportsProgress = true;
             this.commandWorker.WorkerSupportsCancellation = true;
             this.commandWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ProcessWorkerDoWork);
-            this.commandWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ProcessWorkerRunWorkerCompleted);
+            this.commandWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(this.ProcessWorkerRunWorkerCompleted);
             this.commandWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.ProcessWorkerProgressChanged);
-            if(context == null)
-            {
-                context = new SynchronizationContext();
-                SynchronizationContext.SetSynchronizationContext(context);
-            }
             intervalDefault = initialInterval;
             intervalEngine = initialInterval;
             intervalChartBar = initialInterval;
-               		alarmFile = projectConfig.GetValue("AlarmSound");
+            alarmFile = projectConfig.GetValue("AlarmSound");
             if( string.IsNullOrEmpty(alarmFile)) {
                		alarmFile = @"..\..\Media\59642_AlternatingToneAlarm.wav";
             }
@@ -128,11 +143,9 @@ namespace TickZoom
             storageFolder = Factory.Settings["AppDataFolder"];
             tickZoomEngine = projectConfig.GetValue("TickZoomEngine");
             Array units = Enum.GetValues(typeof(BarUnit));
-            minDateTime = new TimeStamp(1800,1,1);
+            minDateTime = new DateTime(1800,1,1);
             startDateTime = minDateTime;
-            maxDateTime = TimeStamp.UtcNow;
-               	maxDateTime.AddDays(1);
-            maxDateTime.AddSeconds(-1);
+            maxDateTime = DateTime.Now.AddDays(1).AddSeconds(-1);
             endDateTime = maxDateTime;
 
             var disableChartingString = projectConfig.GetValue("DisableCharting");
@@ -140,29 +153,29 @@ namespace TickZoom
 
             string startTimeStr = projectConfig.GetValue("StartTime");
             string endTimeStr = projectConfig.GetValue("EndTime");
+            modelLoader = projectConfig.GetValue("ModelLoader");
 
-               		if( startTimeStr != null) {
-                try {
-               			startDateTime = new TimeStamp(startTimeStr);
-                } catch {
-                    startDateTime = minDateTime;
-                }
-               		}
+            symbolList = projectConfig.GetValue("Symbol");
 
-               		if( endTimeStr != null) {
-                try {
-               			var time = new TimeStamp(endTimeStr);
-               			time.AddDays(1);
-               				time.AddSeconds(-1);
-               			EndDateTime = time;
-                } catch {
-                    endDateTime = maxDateTime;
-                }
-               			if( endDateTime > maxDateTime) {
-               				endDateTime = maxDateTime;
-               			}
-               		}
+            if( startTimeStr != null) {
+            try {
+            startDateTime = new TimeStamp(startTimeStr).DateTime;
+            } catch {
+            startDateTime = minDateTime;
+            }
+            }
 
+            if( endTimeStr != null) {
+            try {
+            var time = new TimeStamp(endTimeStr).DateTime.AddDays(1).AddSeconds(-1);
+            EndDateTime = time;
+            } catch {
+            endDateTime = maxDateTime;
+            }
+            if( endDateTime > maxDateTime) {
+            endDateTime = maxDateTime;
+            }
+            }
             isInitialized = true;
         }
 
@@ -191,10 +204,75 @@ namespace TickZoom
             }
         }
 
+        public bool CanGeneticOptimize
+        {
+            get {
+                return IsEngineLoaded && !commandWorker.IsBusy;
+            }
+        	set {
+        		NotifyOfPropertyChange( () => CanGeneticOptimize);
+        	}
+        }
+
+        public bool CanHistorical
+        {
+            get {
+                return IsEngineLoaded && !commandWorker.IsBusy;
+            }
+        	set {
+        		NotifyOfPropertyChange( () => CanHistorical);
+        	}
+        }
+
+        public bool CanOptimize
+        {
+            get {
+                return IsEngineLoaded && !commandWorker.IsBusy;
+            }
+        	set {
+        		NotifyOfPropertyChange( () => CanOptimize);
+        	}
+        }
+
+        public bool CanRealtime
+        {
+            get {
+                return IsEngineLoaded && !commandWorker.IsBusy;
+            }
+        	set {
+        		NotifyOfPropertyChange( () => CanRealtime);
+        	}
+        }
+
+        public bool CanTryAutoUpdate
+        {
+            get {
+                return !commandWorker.IsBusy;
+            }
+        	set {
+        		NotifyOfPropertyChange( () => CanTryAutoUpdate);
+        	}
+        }
+
+        public BarUnit ChartBarUnit
+        {
+            get { return chartBarUnit; }
+            set { NotifyOfPropertyChange(() => ChartBarUnit);
+            	chartBarUnit = value; }
+        }
+
+        public int ChartPeriod
+        {
+            get { return chartPeriod; }
+            set { NotifyOfPropertyChange(() => ChartPeriod);
+            	chartPeriod = value; }
+        }
+
         public ChartType ChartType
         {
             get { return chartType; }
-            set { chartType = value; }
+            set { NotifyOfPropertyChange(() => ChartType);
+            	chartType = value; }
         }
 
         public BackgroundWorker CommandWorker
@@ -205,7 +283,22 @@ namespace TickZoom
         public Func<Chart> CreateChart
         {
             get { return createChart; }
-            set { createChart = value; }
+            set { NotifyOfPropertyChange(() => CreateChart);
+            	createChart = value; }
+        }
+
+        public BarUnit DefaultBarUnit
+        {
+            get { return defaultBarUnit; }
+            set { NotifyOfPropertyChange(() => DefaultBarUnit);
+            	defaultBarUnit = value; }
+        }
+
+        public int DefaultPeriod
+        {
+            get { return defaultPeriod; }
+            set { NotifyOfPropertyChange(() => DefaultPeriod);
+            	defaultPeriod = value; }
         }
 
         public bool EnableAlarmSounds
@@ -216,47 +309,73 @@ namespace TickZoom
         public bool EnableChartBarsChoice
         {
             get {
-                return !defaultOnly;
+                return !useDefaultInterval;
             }
         }
 
         public bool EnableEngineBarsChoice
         {
             get {
-                return !defaultOnly;
+                return !useDefaultInterval;
             }
         }
 
-        public TimeStamp EndDateTime
+        public DateTime EndDateTime
         {
             get { return endDateTime; }
-            set { endDateTime = value; }
+            set { NotifyOfPropertyChange(() => EndDateTime);
+            	endDateTime = value; }
+        }
+
+        public BarUnit EngineBarUnit
+        {
+            get { return engineBarUnit; }
+            set { NotifyOfPropertyChange(() => EngineBarUnit);
+            	engineBarUnit = value; }
+        }
+
+        public int EnginePeriod
+        {
+            get { return enginePeriod; }
+            set { NotifyOfPropertyChange(() => EnginePeriod);
+            	enginePeriod = value; }
+        }
+        
+        public bool EnginePeriodEnabled {
+        	get {
+        		return !useDefaultInterval;
+        	}
+        	set { NotifyOfPropertyChange(() => EnginePeriodEnabled); }
         }
 
         public Action FlushCharts
         {
             get { return flushCharts; }
-            set { flushCharts = value; }
+            set { NotifyOfPropertyChange(() => FlushCharts);
+            	flushCharts = value; }
         }
 
         public bool IsEngineLoaded
         {
-            get { return isEngineLoaded; }
+            get { NotifyOfPropertyChange(() => IsEngineLoaded);
+            	return isEngineLoaded; }
         }
 
-        public TimeStamp MaxDateTime
+        public DateTime MaxDateTime
         {
             get { return maxDateTime; }
-            set { maxDateTime = value; }
+            set { NotifyOfPropertyChange(() => MaxDateTime);
+            	maxDateTime = value; }
         }
 
-        public TimeStamp MinDateTime
+        public DateTime MinDateTime
         {
             get { return minDateTime; }
-            set { minDateTime = value; }
+            set { NotifyOfPropertyChange(() => MinDateTime);
+            	minDateTime = value; }
         }
 
-        public List<string> ModelLoaderList
+        public List<string> ModelLoaderValues
         {
             get {
                 var plugins = Plugins.Instance;
@@ -270,47 +389,85 @@ namespace TickZoom
                 return modelLoaderList;
             }
         }
-
-        public string ModelLoaderSelected
-        {
-            get {
-                return projectConfig.GetValue("ModelLoader");
-            }
-        }
-
         public int PercentProgress
         {
             get { return percentProgress; }
-            set { percentProgress = value; }
+            set { NotifyOfPropertyChange(() => PercentProgress);
+            	percentProgress = value; }
         }
 
         public Action ShowChart
         {
             get { return showChart; }
-            set { showChart = value; }
+            set { NotifyOfPropertyChange(() => ShowChart);
+            	showChart = value; }
         }
 
-        public TimeStamp StartDateTime
+        public DateTime StartDateTime
         {
             get { return startDateTime; }
-            set { startDateTime = value; }
+            set { NotifyOfPropertyChange(() => StartDateTime);
+            	startDateTime = value; }
         }
 
         public string SymbolList
         {
             get { return symbolList; }
-            set { symbolList = value; }
+            set { NotifyOfPropertyChange(() => SymbolList);
+            	symbolList = value; }
         }
 
         public Exception TaskException
         {
             get { return taskException; }
-            set { taskException = value; }
+            set { NotifyOfPropertyChange(() => TaskException);
+            	taskException = value; }
+        }
+
+        public bool UseOtherIntervals
+        {
+            get { return !useDefaultInterval; }
+        }
+        
+        public bool UseDefaultInterval
+        {
+            get { return useDefaultInterval; }
+            set { NotifyOfPropertyChange(() => UseDefaultInterval);
+            	  NotifyOfPropertyChange(() => UseOtherIntervals);
+            	  useDefaultInterval = value; }
         }
 
         #endregion Properties
 
         #region Methods
+
+        public static string GetDefaultConfig()
+        {
+            return @"<?xml version=""1.0"" encoding=""utf-8""?>
+            <configuration>
+            <appSettings>
+            <clear />
+            <add key=""StartTime"" value=""Wednesday, January 01, 1800"" />
+            <add key=""EndTime"" value=""Thursday, July 23, 2009"" />
+            <add key=""AutoUpdate"" value=""true"" />
+            <add key=""Symbol"" value=""GBP/USD,EUR/JPY"" />
+            <add key=""UseModelLoader"" value=""true"" />
+            <add key=""AlarmSound"" value=""..\..\Media\59642_AlternatingToneAlarm.wav"" />
+            <add key=""ModelLoader"" value=""Example: Reversal Multi-Symbol"" />
+            <add key=""Model"" value=""ExampleReversalStrategy"" />
+            <add key=""MaxParallelPasses"" value=""1000"" />
+            <add key=""DefaultPeriod"" value=""1"" />
+            <add key=""DefaultInterval"" value=""Hour"" />
+            <add key=""EnginePeriod"" value=""1"" />
+            <add key=""EngineInterval"" value=""Hour"" />
+            <add key=""ChartPeriod"" value=""1"" />
+            <add key=""ChartInterval"" value=""Hour"" />
+            <add key=""ServiceAddress"" value=""InProcess"" />
+            <add key=""ServicePort"" value=""6490"" />
+            <add key=""ProviderAssembly"" value=""MBTFIXProvider"" />
+            </appSettings>
+            </configuration>";
+        }
 
         public void Catch()
         {
@@ -322,33 +479,45 @@ namespace TickZoom
         public void CheckForEngine()
         {
             try {
-               			TickEngine engine = Factory.Engine.TickEngine;
-               			isEngineLoaded = true;
-               			} catch( Exception) {
-               				string msg = "Sorry, cannot find an engine compatible with this version.";
-               				log.Notice(msg);
-               			}
-               			if( isEngineLoaded) {
+               	TickEngine engine = Factory.Engine.TickEngine;
+               	isEngineLoaded = true;
+            } catch( Exception) {
+              	string msg = "Sorry, cannot find an engine compatible with this version.";
+              	log.Notice(msg);
+            }
+            if( isEngineLoaded) {
                 initialInterval = Factory.Engine.DefineInterval(BarUnit.Day,1);
                 IntervalsUpdate();
             }
         }
 
-        public Chart CreateChartInvoke()
+        public void CopyDefaultIntervals()
+        {
+            enginePeriod = defaultPeriod;
+            engineBarUnit = defaultBarUnit;
+            chartPeriod = defaultPeriod;
+            chartBarUnit = defaultBarUnit;
+        }
+
+        private Chart CreateChartInvoke()
         {
             return Execute.OnUIThread<Chart>(CreateChart);
         }
 
-        public void GeneticOptimize(BackgroundWorker bw)
+        public void GeneticOptimize()
         {
             Starter starter = Factory.Starter.GeneticStarter();
             starter.ProjectProperties.Starter.EndTime = (TimeStamp) endDateTime;
-                SetupStarter(starter,bw);
+            SetupStarter(starter);
         }
 
-        public void HistoricalButtonClick(object sender, System.EventArgs e)
+        public void Historical()
         {
-            RunCommand(1);
+            Starter starter = Factory.Starter.HistoricalStarter();
+            starter.ProjectProperties.Engine.TickReplaySpeed = replaySpeed;
+            starter.ProjectProperties.Engine.BreakAtBar = breakAtBar;
+            starter.ProjectProperties.Starter.EndTime = (TimeStamp) endDateTime;
+            SetupStarter(starter);
         }
 
         public void IntervalsUpdate()
@@ -358,23 +527,22 @@ namespace TickZoom
             intervalChartBar = Factory.Engine.DefineInterval(chartBarUnit, chartPeriod);
         }
 
-        public void Optimize(BackgroundWorker bw)
+        public void Optimize()
         {
             Starter starter = Factory.Starter.OptimizeStarter();
             starter.ProjectProperties.Starter.EndTime = (TimeStamp) endDateTime;
-                SetupStarter(starter,bw);
+            SetupStarter(starter);
         }
 
-        public void RealTime(BackgroundWorker bw)
+        public void Realtime()
         {
             Starter starter = Factory.Starter.RealTimeStarter();
             enableAlarmSounds = true;
-            SetupStarter(starter,bw,true);
+            SetupStarter(starter);
         }
 
-        public void RunCommand(int command)
+        public void RunCommand(CommandInterface command)
         {
-            if( !isEngineLoaded) return;
             if (commandWorker.IsBusy)
             {
                 MessageBox.Show("A task is already running. Please either the stop the current task or await for its completion before starting a new one.", "Test in progress", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -382,8 +550,7 @@ namespace TickZoom
             else
             {
                 Save();
-
-                commandWorker.RunWorkerAsync(command);
+                CommandWorker.RunWorkerAsync(command);
             }
         }
 
@@ -392,7 +559,7 @@ namespace TickZoom
             projectConfig.SetValue("StartTime",startDateTime.ToString());
             projectConfig.SetValue("EndTime",endDateTime.ToString());
             projectConfig.SetValue("Symbol",symbolList);
-            projectConfig.SetValue("ModelLoader",ModelLoaderSelected);
+            projectConfig.SetValue("ModelLoader",ModelLoader);
             projectConfig.SetValue("AutoUpdate",projectConfig.GetValue("AutoUpdate"));
             projectConfig.SetValue("DisableCharting",disableCharting ? "true" : "false" );
 
@@ -409,37 +576,7 @@ namespace TickZoom
             projectConfig.SetValue("AutoUpdate",projectConfig.GetValue("AutoUpdate"));
         }
 
-        public void SetupForm( Form1 form)
-        {
-            form.DefaultCombo.DataSource = Enum.GetValues(typeof(BarUnit));
-            form.EngineBarsCombo.DataSource = Enum.GetValues(typeof(BarUnit));
-            form.ChartBarsCombo.DataSource = Enum.GetValues(typeof(BarUnit));
-            form.SymbolList.Text = symbolList;
-            form.StartTimePicker.Value = startDateTime.DateTime;
-            form.StartTimePicker.MaxDate = maxDateTime.DateTime;
-
-            form.EndTimePicker.MinDate = minDateTime.DateTime;
-            form.EndTimePicker.Value = endDateTime.DateTime;
-
-               		form.EngineBarsBox.Enabled = !defaultOnly;
-               		form.EngineBarsCombo.Enabled = !defaultOnly;
-               		form.ChartBarsBox.Enabled = !defaultOnly;
-               		form.ChartBarsCombo.Enabled = !defaultOnly;
-            form.ModelLoaderBox.Enabled = true;
-            form.ModelLoaderBox.DataSource = ModelLoaderList;
-            form.ModelLoaderBox.SelectedItem = ModelLoaderSelected;
-            form.LblProgress.Text = progressText;
-            form.PrgExecute.Value = percentProgress;
-            form.DefaultBox.Text = defaultPeriod.ToString();
-            form.EngineBarsBox.Text = enginePeriod.ToString();
-            form.ChartBarsBox.Text = chartPeriod.ToString();
-            form.DefaultCombo.Text = defaultBarUnit.ToString();
-            form.EngineBarsCombo.Text = engineBarUnit.ToString();
-            form.ChartBarsCombo.Text = chartBarUnit.ToString();
-            form.BarChartRadio.Checked = BarChartEnabled;
-        }
-
-        public void ShowChartInvoke()
+        private void ShowChartInvoke()
         {
             try {
                 Execute.OnUIThread(ShowChart);
@@ -448,23 +585,26 @@ namespace TickZoom
             }
         }
 
-        public void StartHistorical(BackgroundWorker bw)
-        {
-            Starter starter = Factory.Starter.HistoricalStarter();
-            starter.ProjectProperties.Engine.TickReplaySpeed = replaySpeed;
-            starter.ProjectProperties.Engine.BreakAtBar = breakAtBar;
-            starter.ProjectProperties.Starter.EndTime = (TimeStamp) endDateTime;
-            SetupStarter(starter,bw);
-        }
-
-        public void StopProcess()
+        public void Stop()
         {
             commandWorker.CancelAsync();
+            PercentProgress = 0;
+            ProgressText = "Execution Stopped";
+            
+        }
+        
+        public bool CanStop {
+        	get {
+        		return commandWorker.IsBusy;
+        	}
+        	set {
+        		NotifyOfPropertyChange( () => CanStop);
+        	}
         }
 
         public void Terminate()
         {
-            StopProcess();
+            Stop();
             Factory.Engine.Dispose();
             Factory.Provider.Release();
             Factory.TickUtil.TickReader().CloseAll();
@@ -473,12 +613,12 @@ namespace TickZoom
         public void TryAutoUpdate()
         {
             var autoUpdateFlag = projectConfig.GetValue("AutoUpdate");
-               			if( "true".Equals(autoUpdateFlag) ) {
-               	commandWorker.RunWorkerAsync(4);
-               		    } else {
+            if( "true".Equals(autoUpdateFlag) ) {
+                commandWorker.RunWorkerAsync( new ActionCommand( DoAutoUpdate));
+            } else {
                 log.Notice("To enable AutoUpdate, set AutoUpdate 'true' in " + projectConfig);
                 CheckForEngine();
-               			}
+            }
         }
 
         void AlarmTimerTick(object sender, EventArgs e)
@@ -495,19 +635,12 @@ namespace TickZoom
             }
         }
 
-        void CopyDebugCheckBoxClick(object sender, EventArgs e)
+        private void DoAutoUpdate()
         {
-            CheckBox cb = (CheckBox) sender;
-            cb.Checked = false;
-            CopyDefaultIntervals();
-        }
-
-        void CopyDefaultIntervals()
-        {
-            enginePeriod = defaultPeriod;
-               		engineBarUnit = defaultBarUnit;
-               		chartPeriod = defaultPeriod;
-               		chartBarUnit = defaultBarUnit;
+            if( Factory.AutoUpdate(commandWorker)) {
+                log.Notice("AutoUpdate succesful. Restart unnecessary.");
+            }
+            CheckForEngine();
         }
 
         void IntervalChange(object sender, EventArgs e)
@@ -548,60 +681,47 @@ namespace TickZoom
 
         void ProcessWorkerDoWork(object sender, DoWorkEventArgs e)
         {
+        	UpdateStatus();
             BackgroundWorker bw = sender as BackgroundWorker;
-            int arg = (int)e.Argument;
-            progressChildren = new Dictionary<int,Progress>();
-            if( log.IsTraceEnabled) log.Trace("Started thread to do work.");
+            CommandInterface command = (CommandInterface)e.Argument;
+            if( log.IsTraceEnabled) log.Trace("Started background worker.");
             if( Thread.CurrentThread.Name == null) {
-                Thread.CurrentThread.Name = "ProcessWorker";
+                Thread.CurrentThread.Name = "CommandWorker";
             }
-            switch( arg) {
-                case 0:
-                        if( !isEngineLoaded) return;
-                    Optimize(bw);
-                    break;
-                case 1:
-                        if( !isEngineLoaded) return;
-                    StartHistorical(bw);
-                    break;
-                case 2:
-                        if( !isEngineLoaded) return;
-                    RealTime(bw);
-                    break;
-                case 3:
-                        if( !isEngineLoaded) return;
-                    GeneticOptimize(bw);
-                    break;
-                case 4:
-                    TryUpdate(bw);
-                    break;
+            if( command.CanExecute) {
+                command.Execute();
             }
+        }
+        
+        private void UpdateStatus() {
+        	CanOptimize = true;
+        	CanHistorical = true;
+        	CanRealtime = true;
+        	CanStop = true;
+        	CanTryAutoUpdate = true;
+        	CanGeneticOptimize = true;
         }
 
         void ProcessWorkerProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            context.Post(new SendOrPostCallback(
-               		delegate(object state)
-               	    {
-               	Progress progress = (Progress) e.UserState;
-               	progressChildren[progress.Id] = progress;
+           	Progress progress = (Progress) e.UserState;
+           	progressChildren[progress.Id] = progress;
 
-               	long final = 0;
-               	long current = 0;
-               	foreach( var kvp in progressChildren) {
-                    Progress child = kvp.Value;
-               		final += child.Final;
-               		current += child.Current;
-               	}
+           	long final = 0;
+           	long current = 0;
+           	foreach( var kvp in progressChildren) {
+                Progress child = kvp.Value;
+           		final += child.Final;
+           		current += child.Current;
+           	}
 
-                // Calculate the task progress in percentages
-                if( final > 0) {
-                   	PercentProgress = Convert.ToInt32((current * 100) / final);
-                } else {
-                   	PercentProgress = 0;
-                }
-                progressText = progress.Text + ": " + progress.Current + " out of " + progress.Final + " (" + PercentProgress + "%)";
-               		}), null);
+            // Calculate the task progress in percentages
+            if( final > 0) {
+               	PercentProgress = Convert.ToInt32((current * 1000) / final);
+            } else {
+               	PercentProgress = 0;
+            }
+            ProgressText = progress.Text + ": " + progress.Current + " out of " + progress.Final + " (" + PercentProgress + "%)";
         }
 
         void ProcessWorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -616,6 +736,7 @@ namespace TickZoom
                     log.Error(taskException.Message,taskException);
                 }
             }
+        	UpdateStatus();
         }
 
         void SaveIntervals()
@@ -628,16 +749,11 @@ namespace TickZoom
             projectConfig.SetValue("ChartInterval",chartBarUnit.ToString());
         }
 
-        private void SetupStarter( Starter starter, BackgroundWorker bw)
+        private void SetupStarter( Starter starter)
         {
-            SetupStarter( starter, bw, false);
-        }
-
-        private void SetupStarter( Starter starter, BackgroundWorker bw, bool isRealTime)
-        {
-            flushCharts();
+            FlushCharts();
             starter.ProjectProperties.Starter.StartTime = (TimeStamp) startDateTime;
-            starter.BackgroundWorker = bw;
+            starter.BackgroundWorker = commandWorker;
             if( !disableCharting) {
                 starter.CreateChartCallback = CreateChartInvoke;
                 starter.ShowChartCallback = ShowChartInvoke;
@@ -651,7 +767,7 @@ namespace TickZoom
             starter.Config = projectConfig.GetValue("ServiceConfig");
             starter.Port = (ushort) projectConfig.GetValue("ServicePort",typeof(ushort));
             starter.AddProvider( projectConfig.GetValue("ProviderAssembly"));
-            if( defaultOnly) {
+            if( useDefaultInterval) {
                 starter.ProjectProperties.Chart.IntervalChartBar = intervalDefault;
             } else {
                 starter.ProjectProperties.Chart.IntervalChartBar = intervalChartBar;
@@ -659,45 +775,11 @@ namespace TickZoom
             if( intervalChartBar.BarUnit == BarUnit.Default) {
                 starter.ProjectProperties.Chart.IntervalChartBar = intervalDefault;
             }
-            log.Info("Running Loader named: " + modelLoaderText);
-            starter.Run(Plugins.Instance.GetLoader(modelLoaderText));
+            log.Info("Running Loader named: " + modelLoader);
+            var loader = Plugins.Instance.GetLoader(modelLoader);
+            RunCommand( new StarterCommand( starter, loader));
         }
 
-        private void TryUpdate(BackgroundWorker bw)
-        {
-            if( Factory.AutoUpdate(bw)) {
-                log.Notice("AutoUpdate succesful. Restart unnecessary.");
-            }
-            CheckForEngine();
-        }
-
-        public static string GetDefaultConfig() {
-        	return @"<?xml version=""1.0"" encoding=""utf-8""?>
-        <configuration>
-        <appSettings>
-        <clear />
-        <add key=""StartTime"" value=""Wednesday, January 01, 1800"" />
-        <add key=""EndTime"" value=""Thursday, July 23, 2009"" />
-        <add key=""AutoUpdate"" value=""true"" />
-        <add key=""Symbol"" value=""GBP/USD,EUR/JPY"" />
-        <add key=""UseModelLoader"" value=""true"" />
-        <add key=""AlarmSound"" value=""..\..\Media\59642_AlternatingToneAlarm.wav"" />
-        <add key=""ModelLoader"" value=""Example: Reversal Multi-Symbol"" />
-        <add key=""Model"" value=""ExampleReversalStrategy"" />
-        <add key=""MaxParallelPasses"" value=""1000"" />
-        <add key=""DefaultPeriod"" value=""1"" />
-        <add key=""DefaultInterval"" value=""Hour"" />
-        <add key=""EnginePeriod"" value=""1"" />
-        <add key=""EngineInterval"" value=""Hour"" />
-        <add key=""ChartPeriod"" value=""1"" />
-        <add key=""ChartInterval"" value=""Hour"" />
-        <add key=""ServiceAddress"" value=""InProcess"" />
-        <add key=""ServicePort"" value=""6490"" />
-        <add key=""ProviderAssembly"" value=""MBTFIXProvider"" />
-        </appSettings>
-        </configuration>";
-        }
-
-       #endregion Methods
+        #endregion Methods
     }
 }

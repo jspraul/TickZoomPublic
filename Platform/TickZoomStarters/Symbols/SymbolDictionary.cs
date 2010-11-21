@@ -293,8 +293,8 @@ namespace TickZoom.Symbols
     <property name=""TimeAndSales"" value=""ActualTrades"" />
     <property name=""QuoteType"" value=""Level1"" />
     <symbol name=""SPY"">
-      <property name=""MaxPositionSize"" value=""5"" />
-      <property name=""MaxOrderSize"" value=""5"" />
+      <property name=""MaxPositionSize"" value=""100"" />
+      <property name=""MaxOrderSize"" value=""100"" />
       <property name=""TimeAndSales"" value=""ActualTrades"" />
       <property name=""QuoteType"" value=""None"" />
     </symbol>

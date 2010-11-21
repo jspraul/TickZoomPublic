@@ -129,16 +129,16 @@ namespace Other
 		{
 			using( form = CreateForm()) {
 				form.SymbolList.Text = "IBM,GBP/USD";
-				form.DefaultBox.Text = "10";
-				form.DefaultCombo.Text = "Tick";
-				form.RealTimeButtonClick(null,null);
+				form.DefaultPeriod.Text = "10";
+				form.DefaultBarUnit.Text = "Tick";
+				viewModel.Realtime();
 				WaitComplete(120, () => { return form.PortfolioDocs.Count == 2 &&
 				             		form.PortfolioDocs[0].Visible &&
 				             		form.PortfolioDocs[1].Visible; } );
 				Assert.AreEqual(2,form.PortfolioDocs.Count,"Charts");
 				Assert.IsTrue(form.PortfolioDocs[0].Visible &&
 				             		form.PortfolioDocs[1].Visible,"Charts Visible");
-				form.btnStop_Click(null,null);
+				viewModel.Stop();
 				WaitComplete(120, () => { return !viewModel.CommandWorker.IsBusy; } );
 				Assert.IsFalse(viewModel.CommandWorker.IsBusy,"ProcessWorker.Busy");
 			}
@@ -190,15 +190,15 @@ namespace Other
 		{
 			using( form = CreateForm()) {
 				form.SymbolList.Text = "/ESZ9";
-				form.DefaultBox.Text = "1";
-				form.DefaultCombo.Text = "Minute";
-				viewModel.EndDateTime = TimeStamp.UtcNow;
-				form.RealTimeButtonClick(null,null);
+				form.DefaultPeriod.Text = "1";
+				form.DefaultBarUnit.Text = "Minute";
+				viewModel.EndDateTime = DateTime.UtcNow;
+				viewModel.Realtime();
 				WaitComplete(120, () => { return form.PortfolioDocs.Count == 1 &&
 				             		form.PortfolioDocs[0].Visible; } );
 				Assert.AreEqual(1,form.PortfolioDocs.Count,"Charts");
 				Pause(2);
-				form.btnStop_Click(null,null);
+				viewModel.Stop();
 				WaitComplete(120, () => { return !viewModel.CommandWorker.IsBusy; } );
 				Assert.IsFalse(viewModel.CommandWorker.IsBusy,"ProcessWorker.Busy");
 				Assert.Greater(form.LogOutput.Lines.Length,2,"number of log lines");
