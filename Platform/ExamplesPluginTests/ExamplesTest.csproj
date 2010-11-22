@@ -115,11 +115,6 @@
     <None Include="Lib\nunit.framework.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="GUI" />
-    <Folder Include="Loaders" />
-    <Folder Include="Other" />
-    <Folder Include="Lib" />
-    <Folder Include="RealTime" />
     <ProjectReference Include="..\Charting\Charting.csproj">
       <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
       <Name>Charting</Name>
@@ -127,6 +122,10 @@
     <ProjectReference Include="..\ExamplesPlugin\Examples.csproj">
       <Project>{B1A8F8F4-F7C9-46DC-B4BE-F08394778EF4}</Project>
       <Name>Examples</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Presentation\Presentation.csproj">
+      <Project>{26EBB13A-E553-4465-B7B1-A3EDE3BA7EAA}</Project>
+      <Name>Presentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>

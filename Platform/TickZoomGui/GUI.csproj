@@ -112,6 +112,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Presentation\Presentation.csproj">
+      <Project>{26EBB13A-E553-4465-B7B1-A3EDE3BA7EAA}</Project>
+      <Name>Presentation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
@@ -119,10 +123,6 @@
     <ProjectReference Include="..\Charting\Charting.csproj">
       <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
       <Name>Charting</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TickZoomCommon\Common.csproj">
-      <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
-      <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
