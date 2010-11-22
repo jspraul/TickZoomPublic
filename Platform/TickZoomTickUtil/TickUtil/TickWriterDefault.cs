@@ -241,25 +241,6 @@ namespace TickZoom.TickUtil
 			}
 		}
 		
-		public virtual void Close() {
-			if( !isInitialized) {
-				throw new ApplicationException("Please initialized TickWriter first.");
-			}
-			if( debug) log.Debug("Entering Close()");
-    		if( appendTask != null && writeQueue != null) {
-				while( !writeQueue.TryEnqueue(EventType.Terminate, symbol)) {
-					Thread.Sleep(1);
-				}
-				appendTask.Join();
-			}
-			if( keepFileOpen && fs!=null ) {
-	    		fs.Close();
-	    		log.Debug("keepFileOpen - Close()");
-	    		fs = null;
-	    	}
-			if( debug) log.Debug("Exiting Close()");
-		}
-		
 		public bool LogTicks = false;
 		
 		void progressCallback( string text, Int64 current, Int64 final) {
@@ -269,6 +250,42 @@ namespace TickZoom.TickUtil
 			}
 		}
 		
+		public void Close() {
+			Dispose();
+		}
+		
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		private volatile bool isDisposed = false;
+		private object taskLocker = new object();
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!isDisposed) {
+				isDisposed = true;
+				lock (taskLocker) {
+					if( !isInitialized) {
+						throw new ApplicationException("Please initialize TickWriter first.");
+					}
+					if( debug) log.Debug("Dispose()");
+		    		if( appendTask != null && writeQueue != null) {
+						while( !writeQueue.TryEnqueue(EventType.Terminate, symbol)) {
+							Thread.Sleep(1);
+						}
+						appendTask.Join();
+					}
+					if( fs!=null ) {
+			    		fs.Close();
+			    		log.Debug("keepFileOpen - Close()");
+			    	}
+					if( debug) log.Debug("Exiting Close()");
+				}
+			}
+		}
+
  		public BackgroundWorker BackgroundWorker {
 			get { return backgroundWorker; }
 			set { backgroundWorker = value; }

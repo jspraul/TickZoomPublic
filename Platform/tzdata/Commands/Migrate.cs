@@ -51,41 +51,40 @@ namespace TickZoom.TZData
 				Console.WriteLine("A backup file already exists. Please delete it first at: " + file + ".back");
 				return;
 			}
-			TickReader reader = Factory.TickUtil.TickReader();
-			reader.Initialize( file, symbol);
-			
-			TickWriter writer = Factory.TickUtil.TickWriter(true);
-			writer.KeepFileOpen = true;
-			writer.Initialize( file + ".temp", symbol);
-			
-			TickIO firstTick = Factory.TickUtil.TickIO();
-			TickIO tickIO = Factory.TickUtil.TickIO();
-			TickBinary tickBinary = new TickBinary();
-			int count = 0;
-			bool first = false;
-			try {
-				while(true) {
-					while( !reader.ReadQueue.TryDequeue(ref tickBinary)) {
-						Thread.Sleep(1);
+			using( var reader = Factory.TickUtil.TickReader()) 
+			using( var writer = Factory.TickUtil.TickWriter(true)) {
+				reader.Initialize( file, symbol);
+				
+				writer.KeepFileOpen = true;
+				writer.Initialize( file + ".temp", symbol);
+				
+				TickIO firstTick = Factory.TickUtil.TickIO();
+				TickIO tickIO = Factory.TickUtil.TickIO();
+				TickBinary tickBinary = new TickBinary();
+				int count = 0;
+				bool first = false;
+				try {
+					while(true) {
+						while( !reader.ReadQueue.TryDequeue(ref tickBinary)) {
+							Thread.Sleep(1);
+						}
+						tickIO.Inject(tickBinary);
+						while( !writer.TryAdd(tickIO)) {
+							Thread.Sleep(1);
+						}
+						if( first) {
+							firstTick.Copy(tickIO);
+							first = false;
+						}
+						count++;
 					}
-					tickIO.Inject(tickBinary);
-					while( !writer.TryAdd(tickIO)) {
-						Thread.Sleep(1);
+				} catch( QueueException ex) {
+					if( ex.EntryType != EventType.EndHistorical) {
+						throw new ApplicationException("Unexpected QueueException: " + ex);
 					}
-					if( first) {
-						firstTick.Copy(tickIO);
-						first = false;
-					}
-					count++;
 				}
-			} catch( QueueException ex) {
-				if( ex.EntryType != EventType.EndHistorical) {
-					throw new ApplicationException("Unexpected QueueException: " + ex);
-				}
+				Console.WriteLine(reader.Symbol + ": Migrated " + count + " ticks from " + firstTick.Time + " to " + tickIO.Time );
 			}
-			Console.WriteLine(reader.Symbol + ": Migrated " + count + " ticks from " + firstTick.Time + " to " + tickIO.Time );
-			Factory.TickUtil.TickReader().CloseAll();
-			writer.Close();
 			File.Move( file, file + ".back");
 			File.Move( file + ".temp", file);
 		}

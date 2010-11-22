@@ -56,8 +56,6 @@ namespace TickZoom.TickUtil
 		Task fileReaderTask;
 		private static object readerListLocker = new object();
 		private static List<Reader> readerList = new List<Reader>();
-		private object taskLocker = new object();
-		private volatile bool isDisposed = false;
 		string priceDataFolder;
 		string appDataFolder;
 		MemoryStream memory;
@@ -500,6 +498,8 @@ namespace TickZoom.TickUtil
 			return Yield.Terminate;
 		}
 
+		private volatile bool isDisposed = false;
+		private object taskLocker = new object();
 		public void Dispose()
 		{
 			Dispose(true);
@@ -516,6 +516,7 @@ namespace TickZoom.TickUtil
 						fileReaderTask.Join();
 					}
 					if (dataIn != null) {
+						dataIn.BaseStream.Close();
 						dataIn.Close();
 					}
 					lock( readerListLocker) {

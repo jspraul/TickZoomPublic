@@ -30,7 +30,7 @@ using System.Reflection;
 namespace TickZoom.Api
 {
 	[CLSCompliant(false)]
-	public interface TickWriter {
+	public interface TickWriter : IDisposable {
 		void Initialize(string folder, string symbol);
 		bool TryAdd(TickIO tick);
 		void Add(TickIO tick);
