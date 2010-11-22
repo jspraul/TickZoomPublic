@@ -217,15 +217,4 @@
     <Compile Include="Misc\Structs\TickBinary.cs" />
     <Compile Include="Misc\Structs\TimeStamp.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Aspects" />
-    <Folder Include="Misc\HTTP" />
-    <Folder Include="Misc\Events" />
-    <Folder Include="Misc\ExtensionMethods" />
-    <Folder Include="Misc" />
-    <Folder Include="Misc\Collections" />
-    <Folder Include="Misc\Structs" />
-    <Folder Include="Locks" />
-    <Folder Include="Provider" />
-  </ItemGroup>
 </Project>

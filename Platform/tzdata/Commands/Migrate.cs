@@ -34,6 +34,7 @@ using TickZoom.Api;
 
 namespace TickZoom.TZData
 {
+
 	public class Migrate : Command
 	{
 		public void Run(string[] args)

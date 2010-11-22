@@ -12,5 +12,6 @@
     </BootstrapperUrlHistory>
     <FallbackCulture>en-US</FallbackCulture>
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
+    <ReferencePath>C:\Local\TickZoom\Project\Public\;C:\Local\TickZoom\Project\Public\Platform\;C:\Local\TickZoom\Project\Public\Platform\TickZoomAPI1.0\</ReferencePath>
   </PropertyGroup>
 </Project>

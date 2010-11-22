@@ -52,6 +52,19 @@ namespace TickZoom.Presentation
         private int breakAtBar;
         private BarUnit chartBarUnit = BarUnit.Hour;
         private int chartPeriod = 1;
+
+        public int ReplaySpeed
+        {
+            get { return replaySpeed; }
+            set { replaySpeed = value; }
+        }
+
+        public int BreakAtBar
+        {
+            get { return breakAtBar; }
+            set { breakAtBar = value; }
+        }
+
         private ChartType chartType = ChartType.Bar;
         public Func<Chart> createChart;
         private BarUnit defaultBarUnit = BarUnit.Hour;

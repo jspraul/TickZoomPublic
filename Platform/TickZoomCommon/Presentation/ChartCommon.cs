@@ -93,6 +93,12 @@ namespace TickZoom.Presentation
             }
         }
 
+        public bool IsVisible
+        {
+            get { return isVisible; }
+            set { IsVisible = value;  }
+        }
+
         public bool IsValid
         {
             get { return ChartBars != null; }

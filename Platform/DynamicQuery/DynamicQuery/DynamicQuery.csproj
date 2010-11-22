@@ -46,12 +46,6 @@
     <Content Include="..\Dynamic Expressions.html" />
     <Content Include="..\ReadMe.html" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\NorthwindMapping\NorthwindMapping.csproj">
-      <Project>{C7E8EFA4-1320-4714-8BDE-25E1BE328090}</Project>
-      <Name>NorthwindMapping</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

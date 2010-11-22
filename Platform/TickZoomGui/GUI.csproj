@@ -12,7 +12,6 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Wayne Walter\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <PublishUrl>publish\</PublishUrl>
@@ -113,17 +112,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Charting\Charting.csproj">
-      <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
-      <Name>Charting</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TickZoomCommon\Common.csproj">
-      <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
-      <Name>Common</Name>
+    <ProjectReference Include="..\Charting\Charting.csproj">
+      <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
+      <Name>Charting</Name>
     </ProjectReference>
     <ProjectReference Include="..\TickZoomCommon\Common.csproj">
       <Project>{3272A53F-7A88-4A5B-BBCA-1C3A9EA2E21F}</Project>
@@ -147,6 +142,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <PropertyGroup>
+    <SkipPostSharp>true</SkipPostSharp>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\TickZoom.CSharp.Targets" />
   <Target Name="BeforeBuild">

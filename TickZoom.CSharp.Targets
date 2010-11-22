@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
         <SkipPostSharp>true</SkipPostSharp>
   </PropertyGroup>
@@ -27,16 +27,10 @@
   <PropertyGroup Condition=" '$(SkipPostSharp)' == 'true' ">
        <DefineConstants>$(DefineConstants);SkipPostSharp</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(SkipPostSharp)' != 'true' ">
-        <PostSharpDirectory>C:\Local\TickZoom\Project\EngineTools\1.0\PostSharp 2.0\</PostSharpDirectory>
-        <PostSharpLicenseKey>
-		16801-AEE2WQQQAEQEQXKCA4LKNBAW7CUUXMHRB4ZZQQEAEAHUQSVFZMJFDB273U6L2JF65H79PY3UL7CK94QURTVRE2GUGFDLD6BAY2EZLXRXSPZQTP2
-	</PostSharpLicenseKey>
-  </PropertyGroup>
   <Import Condition=" '$(SkipPostSharp)' != 'true' " Project="$(PostSharpDirectory)PostSharp.targets" />
-  <ItemGroup Condition=" '$(SkipPostSharp)' != 'true' ">
+  <!--ItemGroup Condition=" '$(SkipPostSharp)' != 'true' ">
        <Reference Include="PostSharp">
            <HintPath>$(PostSharpDirectory)Reference Assemblies\.NET Framework 2.0\PostSharp.dll</HintPath>
        </Reference>
-   </ItemGroup>
+   </ItemGroup-->
 </Project>

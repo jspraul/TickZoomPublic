@@ -64,7 +64,7 @@ namespace TickZoom.Interceptors
 		
 		public ExitStrategy(Strategy strategy) : base( strategy) {
 			position = new PositionCommon(strategy);
-			int OptimizeTickEvent = 0;
+//			int OptimizeTickEvent = 0;
 			strategy.RequestEvent(EventType.Tick);
 		}
 		
