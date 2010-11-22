@@ -4,3 +4,6 @@ bin/
 *.tmp
 *.temp
 *.cache
+_ReSharper.*/
+*.ReSharper
+*.ReSharper.user

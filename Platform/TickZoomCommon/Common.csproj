@@ -98,7 +98,13 @@
     <Compile Include="Presentation.Framework\SyncTask.cs" />
     <Compile Include="Presentation.Framework\Task.cs" />
     <Compile Include="Presentation.Framework\AutoBindable.cs" />
+    <Compile Include="Presentation\ChartArrow.cs" />
+    <Compile Include="Presentation\ChartBox.cs" />
+    <Compile Include="Presentation\ChartCommon.cs" />
+    <Compile Include="Presentation\ChartItem.cs" />
+    <Compile Include="Presentation\ChartLine.cs" />
     <Compile Include="Presentation\StarterConfig.cs" />
+    <Compile Include="Presentation\ChartText.cs" />
     <Compile Include="ProviderUtilities\Arguments.cs" />
     <Compile Include="ProviderUtilities\ServiceInstaller.cs" />
     <Compile Include="Reports\EquityStatsReport.cs" />
@@ -186,7 +192,5 @@
       <Project>{67EBC93F-0D47-4F6E-979F-E5622E1025E9}</Project>
       <Name>ZedGraph</Name>
     </ProjectReference>
-    <Folder Include="Presentation" />
-    <Folder Include="Presentation.Framework" />
   </ItemGroup>
 </Project>
