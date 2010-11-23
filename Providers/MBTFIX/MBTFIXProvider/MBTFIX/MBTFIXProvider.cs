@@ -437,13 +437,6 @@ namespace TickZoom.MBTFIX
 					log.Debug("ExecutionReport: " + packetFIX);
 				}
 				string orderStatus = packetFIX.OrderStatus;
-				if( packetFIX.Symbol == null) {
-					if( packetFIX.Text != null) {
-						log.Error("Received execution report with error: " + packetFIX.Text);
-					} else {
-						throw new ApplicationException("Received execution report with null symbol and w/o any error text explaining the issue.");
-					}
-				}
 				switch( orderStatus) {
 					case "0": // New
 						var symbol = Factory.Symbol.LookupSymbol( packetFIX.Symbol);

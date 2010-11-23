@@ -153,7 +153,7 @@ namespace TickZoom.GUI
         	} else {
 	            foundControl.DataBindings.Add(controlPropertyName, viewModel, propertyName);
         	}
-            log.Info( foundControl.Name + "." + controlPropertyName + " => " + viewModel.GetType().Name + "." + propertyName);
+        	if( debug) log.Debug( foundControl.Name + "." + controlPropertyName + " => " + viewModel.GetType().Name + "." + propertyName);
         }
 
         private static bool TrySetCommand(object control, CommandInterface command)

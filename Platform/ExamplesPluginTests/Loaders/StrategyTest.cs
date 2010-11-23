@@ -670,7 +670,15 @@ namespace Loaders
 				throw;
 			}
 		}
-		
+
+/**************************
+ * This was found to be useless because
+ * A) we already compare all combo trades to known good.
+ * B) the partial fills can some times vary due to the random
+ * sequence and on occasion a order is lost and resent which changes
+ * the sequence.
+ * C) But we'll still store transactions for reconciliation
+ * to the back end during real time or FIX Simulation.
 		public void DynamicTransactions(string strategyName) {
 			if( string.IsNullOrEmpty(strategyName)) return;
 			var model = GetModelByName(strategyName);
@@ -700,7 +708,8 @@ namespace Loaders
 				throw;
 			}
 		}
-		
+**************************************/
+
 		public void PerformReconciliation(SymbolInfo symbolInfo) {
 			try {
 				var symbol = symbolInfo.Symbol;
