@@ -118,6 +118,7 @@ namespace TickZoom.GUI
             Chart chart = null;
             try {
                 PortfolioDoc portfolioDoc = new PortfolioDoc();
+                portfolioDoc.CallbackAction = Execute.OnUIThread;
                 portfolioDocs.Add( portfolioDoc);
                 chart = portfolioDoc.ChartControl;
             } catch( Exception ex) {

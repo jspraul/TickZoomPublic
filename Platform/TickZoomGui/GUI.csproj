@@ -68,21 +68,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GUI\AutoModelBinder.cs" />
-    <Compile Include="GUI\Execute.cs" />
     <Compile Include="GUI\StarterConfigView.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\StarterConfigView.Designer.cs">
       <DependentUpon>StarterConfigView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\globalKeyboardHook.cs" />
-    <Compile Include="GUI\GlobalShortCuts.cs" />
-    <Compile Include="GUI\NumericTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="GUI\NumericTextBox.Designer.cs">
-      <DependentUpon>NumericTextBox.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -123,6 +113,10 @@
     <ProjectReference Include="..\Charting\Charting.csproj">
       <Project>{DD11DD33-785D-4B89-871D-9F7F7CCE486E}</Project>
       <Name>Charting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WinFormsUtil\WinFormsUtil.csproj">
+      <Project>{771668A4-C8C5-4C51-B8DD-822D374F3DB4}</Project>
+      <Name>WinFormsUtil</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

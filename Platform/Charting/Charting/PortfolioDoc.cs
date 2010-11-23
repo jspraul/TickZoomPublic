@@ -40,6 +40,12 @@ namespace TickZoom
 	{
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private SynchronizationContext context;
+        private Action<Action> callbackAction = (action) => { action(); };
+        
+		public Action<Action> CallbackAction {
+			get { return callbackAction; }
+			set { callbackAction = value; }
+		}
         
 		public PortfolioDoc()
 		{
