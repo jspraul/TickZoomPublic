@@ -49,7 +49,7 @@ namespace TickZoom.Presentation
         private readonly ConfigFile projectConfig;
         private string alarmFile;
         private int breakAtBar;
-        private BarUnit chartBarUnit = BarUnit.Hour;
+        private string chartBarUnit = BarUnit.Hour.ToString();
         private int chartPeriod = 1;
         private ushort servicePort;
         private ModelLoaderInterface loaderInstance;
@@ -89,13 +89,13 @@ namespace TickZoom.Presentation
 
         private ChartType chartType = ChartType.Bar;
         public Func<Chart> createChart;
-        private BarUnit defaultBarUnit = BarUnit.Hour;
+        private string defaultBarUnit = BarUnit.Hour.ToString();
         private int defaultPeriod = 1;
         private bool disableCharting;
 
         private bool enableAlarmSounds;
         private DateTime endDateTime;
-        private BarUnit engineBarUnit = BarUnit.Hour;
+        private string engineBarUnit = BarUnit.Hour.ToString();
         private int enginePeriod = 1;
         private bool failedAlarmSound;
         private Action flushCharts = () => { };
@@ -243,7 +243,7 @@ namespace TickZoom.Presentation
             set { NotifyOfPropertyChange(() => CanTryAutoUpdate); }
         }
 
-        public BarUnit ChartBarUnit
+        public string ChartBarUnit
         {
             get { return chartBarUnit; }
             set
@@ -288,7 +288,7 @@ namespace TickZoom.Presentation
             }
         }
 
-        public BarUnit DefaultBarUnit
+        public string DefaultBarUnit
         {
             get { return defaultBarUnit; }
             set
@@ -296,6 +296,10 @@ namespace TickZoom.Presentation
                 NotifyOfPropertyChange(() => DefaultBarUnit);
                 defaultBarUnit = value;
             }
+        }
+        
+        public Array DefaultBarUnitValues {
+        	get { return Enum.GetValues(typeof(BarUnit)); }
         }
 
         public int DefaultPeriod
@@ -333,7 +337,7 @@ namespace TickZoom.Presentation
             }
         }
 
-        public BarUnit EngineBarUnit
+        public string EngineBarUnit
         {
             get { return engineBarUnit; }
             set
@@ -585,9 +589,9 @@ namespace TickZoom.Presentation
 
         public void IntervalsUpdate()
         {
-            intervalDefault = Factory.Engine.DefineInterval(defaultBarUnit, defaultPeriod);
-            intervalEngine = Factory.Engine.DefineInterval(engineBarUnit, enginePeriod);
-            intervalChartBar = Factory.Engine.DefineInterval(chartBarUnit, chartPeriod);
+        	intervalDefault = Factory.Engine.DefineInterval((BarUnit)Enum.Parse(typeof(BarUnit),defaultBarUnit), defaultPeriod);
+        	intervalEngine = Factory.Engine.DefineInterval((BarUnit)Enum.Parse(typeof(BarUnit),engineBarUnit), enginePeriod);
+        	intervalChartBar = Factory.Engine.DefineInterval((BarUnit)Enum.Parse(typeof(BarUnit),chartBarUnit), chartPeriod);
         }
 
 
@@ -692,12 +696,11 @@ namespace TickZoom.Presentation
                 }
             }
             defaultPeriod = int.Parse(CheckNull(projectConfig.GetValue("DefaultPeriod")));
-            defaultBarUnit =
-                (BarUnit) Enum.Parse(typeof (BarUnit), CheckNull(projectConfig.GetValue("DefaultInterval")));
+            defaultBarUnit = projectConfig.GetValue("DefaultInterval");
             enginePeriod = int.Parse(CheckNull(projectConfig.GetValue("EnginePeriod")));
-            engineBarUnit = (BarUnit) Enum.Parse(typeof (BarUnit), CheckNull(projectConfig.GetValue("EngineInterval")));
+            engineBarUnit = projectConfig.GetValue("EngineInterval");
             chartPeriod = int.Parse(CheckNull(projectConfig.GetValue("ChartPeriod")));
-            chartBarUnit = (BarUnit) Enum.Parse(typeof (BarUnit), CheckNull(projectConfig.GetValue("ChartInterval")));
+            chartBarUnit = projectConfig.GetValue("ChartInterval");
             var starterFactoryName = projectConfig.GetValue("Starter");
             starter = GetStarterByFactoryName( starterFactoryName);
         }
@@ -860,10 +863,10 @@ namespace TickZoom.Presentation
             starterInstance.ProjectProperties.Chart.ChartType = chartType;
             starterInstance.ProjectProperties.Starter.SetSymbols(symbolList);
             starterInstance.ProjectProperties.Starter.IntervalDefault = intervalDefault;
-//            starterInstance.Address = projectConfig.GetValue("ServiceAddress");
-//            starterInstance.Config = projectConfig.GetValue("ServiceConfig");
+            starterInstance.Address = projectConfig.GetValue("ServiceAddress");
+            starterInstance.Config = projectConfig.GetValue("ServiceConfig");
             starterInstance.Port = servicePort;
-//            starterInstance.AddProvider(projectConfig.GetValue("ProviderAssembly"));
+            starterInstance.AddProvider(projectConfig.GetValue("ProviderAssembly"));
             if (useDefaultInterval)
             {
                 starterInstance.ProjectProperties.Chart.IntervalChartBar = intervalDefault;

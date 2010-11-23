@@ -1,3 +1,4 @@
+using TickZoom;
 #region Copyright
 /*
  * Software: TickZoom Trading Platform
@@ -56,6 +57,7 @@ namespace TickZoom
 		{
 			this.components = new System.ComponentModel.Container();
 			this.chartControl1 = new TickZoom.ChartControl();
+			this.chartControl1.CallbackAction = CallbackAction;
 			this.SuspendLayout();
 			// 
 			// chartControl1

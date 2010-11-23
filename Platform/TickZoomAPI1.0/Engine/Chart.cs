@@ -148,5 +148,7 @@ namespace TickZoom.Api
 		List<IndicatorInterface> Indicators {
 			get;
 		}
+		
+		object ChartRenderLock { get; set; }
 	}
 }

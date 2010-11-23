@@ -126,7 +126,8 @@ namespace Other
 			using( config = CreateConfig()) {
 				config.SymbolList = "IBM,GBP/USD";
 				config.DefaultPeriod = 10;
-				config.DefaultBarUnit = BarUnit.Tick;
+				config.DefaultBarUnit = BarUnit.Tick.ToString();
+				config.ModelLoader = "Example: Reversal Multi-Symbol";
 				config.Starter = "RealTimeStarter";
 				config.Start();
 				WaitComplete(10);
@@ -183,8 +184,9 @@ namespace Other
 			using( config = CreateConfig()) {
 				config.SymbolList = "/ESZ9";
 				config.DefaultPeriod = 1;
-				config.DefaultBarUnit = BarUnit.Minute;
+				config.DefaultBarUnit = BarUnit.Minute.ToString();
 				config.EndDateTime = DateTime.UtcNow;
+				config.ModelLoader = "Example: Reversal Multi-Symbol";
 				config.Starter = "RealTimeStarter";
 				config.Start();
 				WaitComplete(10);

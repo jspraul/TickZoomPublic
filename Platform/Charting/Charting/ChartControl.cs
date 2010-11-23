@@ -38,6 +38,7 @@ using System.Windows.Forms;
 
 using TickZoom;
 using TickZoom.Api;
+//using TickZoom.GUI;
 using ZedGraph;
 using ArrowDirection = TickZoom.Api.ArrowDirection;
 
@@ -50,11 +51,11 @@ namespace TickZoom
 		private static Log log;
 		private static bool debug;
 		private static bool trace;
+		private object chartRenderLock = new object();
 	    TimeStamp firstTime;
 		StockPointList stockPointList;
 		List<PointPairList> lineList;
 		List<IndicatorInterface> indicators; 
-		object chartLocker = new Object();
 		bool showPriceGraph = true;
 		int objectId = 0;
 		float _clusterWidth = 0;
@@ -519,25 +520,31 @@ namespace TickZoom
 		public void AddBar( Bars updateSeries, Bars displaySeries) {
 			throw new NotImplementedException();
 		}
-		
+		private volatile bool isBusy = false;		
 		public void AddBar( Bars chartBars) {
-			lock( chartLocker) {
-//				dataGraph.PartialErase();
-				
-	    		if( firstTime == TimeStamp.MinValue) {
-	    			firstTime = chartBars.Time[0];
-	    		}
-				// Set the default bar color
-	        	lastColorValue = 2;
-		        //if price is increasing color=black, else color=red
-		        lastColorValue = chartBars.Close[0] > chartBars.Open[0] ? 0 : 1;
-				
+			if( !isBusy) {
+				isBusy = true;
+				CallbackAction(AddBarPrivate);
+			}
+		}
+		
+		private void AddBarPrivate() {			
+    		if( firstTime == TimeStamp.MinValue) {
+    			firstTime = chartBars.Time[0];
+    		}
+			// Set the default bar color
+        	lastColorValue = 2;
+	        //if price is increasing color=black, else color=red
+	        lastColorValue = chartBars.Close[0] > chartBars.Open[0] ? 0 : 1;
+			
+			lock( chartRenderLock) {
 				UpdateIndicators(chartBars);
-			    
+		    
 			    if( showPriceGraph) {
 			    	UpdatePriceGraph(chartBars,chartBars);
 			    }
-			}
+	        }
+			isBusy = false;
 		}
 		
 		string paintBarName = "";
@@ -555,9 +562,6 @@ namespace TickZoom
 		
 		private void UpdateIndicator(int index, IndicatorInterface indicator, Bars updateSeries) {
 			if( indicator.Count > 0) { 
-				while( lineList[index].Count <= updateSeries.CurrentBar) {
-					lineList[index].Add(double.NaN,double.NaN);
-				}
 				switch( indicator.Drawing.GraphType ) {
 					case GraphType.PaintBar:
 						UpdatePaintBar(indicator);
@@ -578,13 +582,21 @@ namespace TickZoom
 				colorIndex = indicator.Drawing.ColorIndex;
 			} catch ( ApplicationException) {
 			}
-			double val = indicator[0];
-			double time = updateSeries.Time[0].ToOADate();
 			PointPair ppair;
-			ppair = lineList[index][updateSeries.CurrentBar];
-			ppair.X = time;
-			ppair.Y = val;
-			ppair.Z = colorIndex;
+			int barCount = updateSeries.BarCount;
+			var line = lineList[index];
+			while( updateSeries.Count > line.Count) {
+				var lookback = barCount - line.Count - 1;
+				line.Add(double.NaN,double.NaN);
+				ppair = line[line.Count-1];
+				ppair.X = updateSeries.Time[lookback].ToOADate();
+				ppair.Y = indicator[lookback];
+				ppair.Z = colorIndex;
+				lookback = barCount - (line.Count - 1);
+			}
+			if( barCount != updateSeries.BarCount) {
+				throw new ApplicationException("Synchonization problem to solve.");
+			}
 		}
 		
 		private void UpdatePaintBar(IndicatorInterface indicator) {
@@ -603,77 +615,72 @@ namespace TickZoom
 				colorIndex = indicator.Drawing.ColorIndex;
 			} catch ( ApplicationException) {
 			}
-			double val = indicator[0];
-			double time = updateSeries.Time[0].ToOADate();
 			PointPair ppair;
-			int startBar = 0; 
-			ppair = lineList[index][updateSeries.CurrentBar];
-			ppair.X = time;
-			ppair.Y = val;
-			ppair.Z = colorIndex;
-			startBar ++;
+			int barCount = updateSeries.BarCount;
+			var line = lineList[index];
+			while( updateSeries.BarCount > line.Count) {
+				var lookback = barCount - line.Count - 1;
+				line.Add(double.NaN,double.NaN);
+				ppair = line[line.Count-1];
+				ppair.X = updateSeries.Time[lookback].ToOADate();
+				ppair.Y = indicator[lookback];
+				ppair.Z = colorIndex;
+			}
+			if( barCount != updateSeries.BarCount) {
+				throw new ApplicationException("Synchonization problem to solve.");
+			}
 			PointPairList ppList;
 			if( repeatList.TryGetValue(indicator, out ppList) == false) {
 				ppList = new PointPairList();
 				repeatList[indicator] = ppList;
 			}
-			while( ppList.Count <= updateSeries.CurrentBar) {
-				ppList.Add(double.NaN,double.NaN);
-			}
-			// TODO: Make pplist an array. Wrap Indicator in IndicatorGraph object.
-// 			for( int repeat=1; repeat < indicator.GraphRepeat && repeat < indicator.Count; repeat++, startBar++) {
-//	    		val = indicator[startBar];
-//	    		colorIndex = 1;
-//				if( formula.checkWaitTillReady()) {
-//					try {
-//			    		colorIndex = indicator.GetColorIndex(startBar);
-//					} catch ( BeyondCircularException e) {
-//						formula.WaitTillReady.Add( e);
-//					}
-//	    		}
-//	    		ppair = ppList[series.CurrentBar];
-//	    		ppair.X = time;
-//	    		ppair.Y = val;
-//	    		ppair.Z = colorIndex;
-// 			}
 		}
 		
 		private void UpdatePriceGraph(Bars displaySeries, Bars updateSeries) {
     		StockPt pt;
-    		if( stockPointList.Count < updateSeries.BarCount ) {
-    			double time = updateSeries.Time[0].ToOADate();
-				double high = displaySeries.High[0];
-		        double low = displaySeries.Low[0];
-		        double open = displaySeries.Open[0];
-		        double close = displaySeries.Close[0];
-				pt = new StockPt( time, displaySeries.High[0],
-		                                 displaySeries.Low[0],
-		                                 displaySeries.Open[0],
-		                                 displaySeries.Close[0], 10000 );
+			int barCount = updateSeries.BarCount;
+			while( updateSeries.BarCount > stockPointList.Count) {
+				var lookback = barCount - stockPointList.Count - 1;
+    			double time = updateSeries.Time[lookback].ToOADate();
+				double high = displaySeries.High[lookback];
+		        double low = displaySeries.Low[lookback];
+		        double open = displaySeries.Open[lookback];
+		        double close = displaySeries.Close[lookback];
+		        double volume = displaySeries.Volume[lookback];
+				pt = new StockPt( time, high, low, open, close, volume);
 		        //if price is increasing color=black, else color=red
 		        pt.ColorValue = lastColorValue;
 				stockPointList.Add( pt );
-    		} else {
-			    pt = (StockPt) stockPointList.GetAt(updateSeries.CurrentBar);
-			    // Update the bar on the chart.
-				pt.High = displaySeries.High[0];
-				pt.Low = displaySeries.Low[0];
-				pt.Open = displaySeries.Open[0];
-		        pt.Close = displaySeries.Close[0];
-		        pt.ColorValue = lastColorValue;
-    		}
+			}
+			if( barCount != updateSeries.BarCount) {
+				throw new ApplicationException("Synchonization problem to solve.");
+			}
+		    pt = (StockPt) stockPointList.GetAt(updateSeries.CurrentBar);
+		    // Update the bar on the chart.
+			pt.High = displaySeries.High[0];
+			pt.Low = displaySeries.Low[0];
+			pt.Open = displaySeries.Open[0];
+	        pt.Close = displaySeries.Close[0];
+	        pt.ColorValue = lastColorValue;
     		UpdateScaleCheck( displaySeries );
 		}
 		
+		private Action<Action> callbackAction = (action) => {action();};
+		
+		public Action<Action> CallbackAction {
+			get { return callbackAction; }
+			set { callbackAction = value; }
+		}
+		
 		public void OnInitialize() {
-       		context.Send(new SendOrPostCallback(
-       		delegate(object state)
-       	    {
-			    InitializeChart( );
-				if( isDynamicUpdate && !priceGraphPane.XAxis.Scale.IsAnyOrdinal) {
-			    	AutoZoom( dataGraph.GraphPane);
-				}
-       		}), null);
+			CallbackAction(OnInitializePrivate);
+		}
+		
+		private void OnInitializePrivate() {
+		    InitializeChart( );
+			if( isDynamicUpdate && !priceGraphPane.XAxis.Scale.IsAnyOrdinal) {
+		    	AutoZoom( dataGraph.GraphPane);
+			}
 		}
 		
 		protected void MenuClick_ZoomToLast( object sender, EventArgs e )
@@ -839,7 +846,11 @@ namespace TickZoom
 					resetXScaleSpeed *= 1.5f;
 					log.Debug("resetXScaleSpeed = " + resetXScaleSpeed);
 				}
-				xScale.Min = MoveByPixels(xScale,xScale.Min,resetXScaleSpeed);
+				try {
+					xScale.Min = MoveByPixels(xScale,xScale.Min,resetXScaleSpeed);
+				} catch( ApplicationException ex) {
+					throw new ApplicationException( "xScale.Min = " + xScale.Min + ", resetXScaleSpeed=" + resetXScaleSpeed);
+				}
 				xScale.Max = MoveByPixels(xScale,xScale.Max,resetXScaleSpeed);
 				reset = true;
 			} else {
@@ -889,40 +900,40 @@ namespace TickZoom
 		GraphPane priceGraphPane;
 		
 		public void DrawChart() {
+			CallbackAction(DrawChartPrivate);
+		}
+		
+		private void DrawChartPrivate() {
 			if( debug) log.Debug("ChartResize()");
-       		context.Send(new SendOrPostCallback(
-       		delegate(object state)
-       	    {
-       			try {
-					// Setup the gradient fill...
-					// Use Red for negative days and black for positive days
-					Fill myFill = new Fill( colors );
-					myFill.Type = FillType.GradientByColorValue;
-					myFill.SecondaryValueGradientColor = Color.Empty;
-					myFill.RangeMin = 0;
-					myFill.RangeMax = colors.Length-1;
-					
-					//Create the OHLC and assign it a Fill
-					ohlcCurve = priceGraphPane.AddOHLCBar( "Price", stockPointList, Color.Empty );
-					ohlcCurve.Bar.GradientFill = myFill;
-					ohlcCurve.Bar.Size = ClusterWidth;
-					ohlcCurve.Bar.IsAutoSize = true;
-					
-					if( priceGraphPane != null && dataGraph.MasterPane != null) {
-						CreateIndicators();
-					}
-					
-					if( isDynamicUpdate) {
-						AutoZoom(dataGraph.GraphPane);
-					}
-					
-					setLayout();
-					// Calculate the Axis Scale Ranges
-					dataGraph.AxisChange();
-       			} catch (Exception ex) {
-       				log.Error("ERROR: DrawChart ", ex);
-       			}
-       		}), null);
+   			try {
+				// Setup the gradient fill...
+				// Use Red for negative days and black for positive days
+				Fill myFill = new Fill( colors );
+				myFill.Type = FillType.GradientByColorValue;
+				myFill.SecondaryValueGradientColor = Color.Empty;
+				myFill.RangeMin = 0;
+				myFill.RangeMax = colors.Length-1;
+				
+				//Create the OHLC and assign it a Fill
+				ohlcCurve = priceGraphPane.AddOHLCBar( "Price", stockPointList, Color.Empty );
+				ohlcCurve.Bar.GradientFill = myFill;
+				ohlcCurve.Bar.Size = ClusterWidth;
+				ohlcCurve.Bar.IsAutoSize = true;
+				
+				if( priceGraphPane != null && dataGraph.MasterPane != null) {
+					CreateIndicators();
+				}
+				
+				if( isDynamicUpdate) {
+					AutoZoom(dataGraph.GraphPane);
+				}
+				
+				setLayout();
+				// Calculate the Axis Scale Ranges
+				dataGraph.AxisChange();
+   			} catch (Exception ex) {
+   				log.Error("ERROR: DrawChart ", ex);
+   			}
 		}
 		
 	    Dictionary<string,GraphPane> signalPaneList = new Dictionary<string,GraphPane>();
@@ -1075,7 +1086,7 @@ namespace TickZoom
 		        myPane.ReverseTransform( mousePt, out curX, out curY);
 	        	dragIndex = 0;
 				// save the starting point information
-				if( stockPointList.Count > 0 ) {
+				if( stockPointList.Count > 0 && !double.IsInfinity(curX) && !double.IsNaN(curX)) {
 					if( priceGraphPane.XAxis.Scale.IsAnyOrdinal) {
 						dragIndex = Math.Min(stockPointList.Count-1,Math.Max(0,(int) Math.Round(curX-1)));
 					} else {
@@ -1109,30 +1120,29 @@ namespace TickZoom
 		   return false;
 		}
 		
-		void refreshTick(object sender, EventArgs e)
+		private void refreshTick(object sender, EventArgs e)
 		{
 			try {
 				if( Visible) {
-					lock( chartLocker) {
-						System.Windows.Forms.Timer timer = (System.Windows.Forms.Timer) sender;
-						if( layoutChange) {
-							setLayout();
-							layoutChange = false;
-						}
-						if( stockPointList.Count > 0 && isDynamicUpdate ) {
-							if( !isScrolling && isAutoScroll ) {
-								timer.Interval = 20;
-								bool reset = false;
-								if( KeepWithinScale()) {
-									reset = true;	
-								}
-								if( SetCommonXScale()) {
-									reset = true;
-								}
-								if( reset ) {
-									dataGraph.AxisChange();
-									dataGraph.Refresh();
-								}
+					System.Windows.Forms.Timer timer = (System.Windows.Forms.Timer) sender;
+					if( layoutChange) {
+						setLayout();
+						layoutChange = false;
+					}
+					var barsBehind = chartBars.BarCount - stockPointList.Count;
+					if( stockPointList.Count > 0 && barsBehind < 5 && isDynamicUpdate ) {
+						if( !isScrolling && isAutoScroll ) {
+							timer.Interval = 20;
+							bool reset = false;
+							if( KeepWithinScale()) {
+								reset = true;	
+							}
+							if( SetCommonXScale()) {
+								reset = true;
+							}
+							if( reset ) {
+								dataGraph.AxisChange();
+								dataGraph.Refresh();
 							}
 						}
 					}
@@ -1376,5 +1386,9 @@ namespace TickZoom
 			set { showTradeTips = value; }
 		}
 		
+		public object ChartRenderLock {
+			get { return chartRenderLock; }
+			set { chartRenderLock = value; }
+		}
 	}
 }

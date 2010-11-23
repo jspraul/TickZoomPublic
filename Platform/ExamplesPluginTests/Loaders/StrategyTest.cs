@@ -123,7 +123,7 @@ namespace Loaders
     		config.DataSubFolder = "Test\\DataCache";
     		config.SymbolList = Symbols;
 			config.DefaultPeriod = intervalDefault.Period;
-			config.DefaultBarUnit = intervalDefault.BarUnit;
+			config.DefaultBarUnit = intervalDefault.BarUnit.ToString();
 			config.ModelLoader = loader.Name;
     		return config;
 		}
