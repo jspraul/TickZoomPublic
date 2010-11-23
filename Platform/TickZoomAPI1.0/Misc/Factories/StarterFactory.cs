@@ -39,7 +39,9 @@ namespace TickZoom.Api
 		Starter OptimizeStarter();
 		Starter RealTimeStarter();
 		Starter HistoricalStarter();
-		ISymbolProperties SymbolProperties();
+        Starter FIXSimulatorStarter();
+        Starter CreateStarter(string name);
+        ISymbolProperties SymbolProperties();
 		ProjectProperties ProjectProperties(string path);
 	}
 }

@@ -127,6 +127,8 @@ namespace Other
 				config.SymbolList = "IBM,GBP/USD";
 				config.DefaultPeriod = 10;
 				config.DefaultBarUnit = BarUnit.Tick;
+//				config.Starter = "RealTimeStarter";
+//				config.Start();
 				config.Realtime();
 				WaitComplete(10);
 				config.Stop();
@@ -184,6 +186,8 @@ namespace Other
 				config.DefaultPeriod = 1;
 				config.DefaultBarUnit = BarUnit.Minute;
 				config.EndDateTime = DateTime.UtcNow;
+//				config.Starter = "RealTimeStarter";
+//				config.Start();
 				config.Realtime();
 				WaitComplete(10);
 				config.Stop();

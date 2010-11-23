@@ -93,6 +93,10 @@ namespace TickZoom.Starters
 			return new OptimizeStarter();
 		}
 		
+		public Starter FIXSimulatorStarter() {
+			return new FIXSimulatorStarter();
+		}
+		
 		public Starter CreateStarter( string starterName) {
 			var starterType = Type.GetType("TickZoom.Starters."+starterName);
 			var assembly = starterType.Assembly;
