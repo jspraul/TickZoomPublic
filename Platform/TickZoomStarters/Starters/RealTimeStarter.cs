@@ -76,13 +76,13 @@ namespace TickZoom.Starters
 				}
 			}
 		}
-		public void SetupWarehouseConfig(string providerAssembly, ushort servicePort)
+		public void SetupProviderServiceConfig(string providerAssembly, ushort servicePort)
 		{
 			try { 
 				string storageFolder = Factory.Settings["AppDataFolder"];
-				var providersPath = Path.Combine(storageFolder,"Providers");
-				string configPath = Path.Combine(providersPath,"ProviderCommon");
-				string configFile = Path.Combine(configPath,"WarehouseTest.config");
+				var providersFolder = Path.Combine(storageFolder,"Providers");
+				string configFolder = Path.Combine(providersFolder,"ProviderService");
+				string configFile = Path.Combine(configFolder,"WarehouseTest.config");
 				ConfigFile warehouseConfig = new ConfigFile(configFile);
 				warehouseConfig.SetValue("ServerCacheFolder","Test\\ServerCache");
 				warehouseConfig.SetValue("ServiceAddress","0.0.0.0");

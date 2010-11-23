@@ -33,20 +33,20 @@ namespace TickZoom.Starters
 {
 	public class FIXSimulatorStarter : RealTimeStarter {
 		private FIXSimulator fixServer;
-		public FIXSimulatorStarter(ushort servicePort) {
+		public FIXSimulatorStarter() {
 			SyncTicks.Enabled = true;
 			PhysicalOrderDefault.ResetOrderId();
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			ProjectProperties.Engine.SimulateRealTime = true;
 //			ProjectProperties.Engine.RealtimeOutput = false;
-			Config = "WarehouseTest.config";
-			Port = servicePort;
-			SetupWarehouseConfig("MBTFIXProvider/Simulate",servicePort);
 		}
 		
 		public override void Run(ModelLoaderInterface loader)
 		{
-			try { 
+			Config = "WarehouseTest.config";
+            SetupProviderServiceConfig("MBTFIXProvider/Simulate", (ushort) Port);
+            try
+            { 
 				fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
 				base.Run(loader);
 			} finally {

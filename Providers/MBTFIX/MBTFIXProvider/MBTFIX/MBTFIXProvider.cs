@@ -65,7 +65,7 @@ namespace TickZoom.MBTFIX
   			if( SyncTicks.Enabled) {
 	  			HeartbeatDelay = 3500;
   			} else {
-	  			HeartbeatDelay = 30;
+	  			HeartbeatDelay = 40;
   			}
   			FIXFilter = new MBTFIXFilter();
 		}
@@ -437,6 +437,13 @@ namespace TickZoom.MBTFIX
 					log.Debug("ExecutionReport: " + packetFIX);
 				}
 				string orderStatus = packetFIX.OrderStatus;
+				if( packetFIX.Symbol == null) {
+					if( packetFIX.Text != null) {
+						log.Error("Received execution report with error: " + packetFIX.Text);
+					} else {
+						throw new ApplicationException("Received execution report with null symbol and w/o any error text explaining the issue.");
+					}
+				}
 				var symbol = Factory.Symbol.LookupSymbol( packetFIX.Symbol);
 				switch( orderStatus) {
 					case "0": // New

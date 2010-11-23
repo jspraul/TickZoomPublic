@@ -107,10 +107,12 @@ namespace Loaders
 					starter = CreateStarterCallback();
 					break;
 				case AutoTestMode.RealTime:
-					starter = new TestRealTimeStarter(servicePort);
+					starter = new TestRealTimeStarter();
+					starter.Port = servicePort;
 					break;
 				case AutoTestMode.SimulateFIX:
-					starter = new FIXSimulatorStarter(servicePort);
+					starter = new FIXSimulatorStarter();
+					starter.Port = servicePort;
 					break;			
 				default:
 					throw new ApplicationException("AutoTestMode " + autoTestMode + " is unknown.");

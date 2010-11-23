@@ -34,16 +34,19 @@ using TickZoom.Common;
 namespace TickZoom.Starters
 {
 	public class TestRealTimeStarter : RealTimeStarter {
-		public TestRealTimeStarter(ushort servicePort) {
+		public TestRealTimeStarter() {
 			SyncTicks.Enabled = true;
 			PhysicalOrderDefault.ResetOrderId();
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			ProjectProperties.Engine.SimulateRealTime = true;
-	//			ProjectProperties.Engine.RealtimeOutput = false;
-			Config = "WarehouseTest.config";
-			Port = servicePort;
-			SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
+//			ProjectProperties.Engine.RealtimeOutput = false;
 		}
-		
-	}
+
+        public override void Run(ModelLoaderInterface loader)
+        {
+			Config = "WarehouseTest.config";
+            SetupProviderServiceConfig("TickZoomCombinedMock", (ushort)Port);
+            base.Run(loader);
+        }
+    }
 }

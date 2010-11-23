@@ -67,7 +67,7 @@ namespace MockProvider
 		{
 			ushort servicePort = 6490;
 			var starter = new RealTimeStarter();
-			starter.SetupWarehouseConfig("TickZoomCombinedMock",servicePort);
+			starter.SetupProviderServiceConfig("TickZoomCombinedMock",servicePort);
 			starter.Config = "WarehouseTest.config";
 			starter.Port = servicePort;
 			return starter;
