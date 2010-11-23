@@ -55,15 +55,10 @@ namespace Other
 		}
 		
 		private StarterConfig CreateConfig() {
-			string storageFolder = Factory.Settings["AppDataFolder"];
-			string workspaceFolder = Path.Combine(storageFolder,"Workspace");
-			string projectFile = Path.Combine(workspaceFolder,"test.tzproj");
-			ConfigFile projectConfig = new ConfigFile(projectFile,StarterConfig.GetDefaultConfig());
-			projectConfig.SetValue("ProviderAssembly","TickZoomCombinedMock");
-			projectConfig.SetValue("ServicePort",servicePort.ToString());
-			projectConfig.SetValue("ServiceConfig","WarehouseTest.config");
-			SetupWarehouseConfig();
 			config = new StarterConfig("test");
+			config.ServiceConfig = "WarehouseTest.config";
+			config.ServicePort = servicePort;
+			config.ProviderAssembly = "TickZoomCombinedMock";
 			
 			WaitForEngine(config);
 			return config;
@@ -156,25 +151,6 @@ namespace Other
 						Thread.Sleep(1);
 					}
 				}
-			}
-		}
-		
-		public void SetupWarehouseConfig()
-		{
-			try { 
-				string storageFolder = Factory.Settings["AppDataFolder"];
-				var providersPath = Path.Combine(storageFolder,"Providers");
-				string configPath = Path.Combine(providersPath,"ProviderCommon");
-				string configFile = Path.Combine(configPath,"WarehouseTest.config");
-				ConfigFile warehouseConfig = new ConfigFile(configFile);
-				warehouseConfig.SetValue("ServerCacheFolder","Test\\ServerCache");
-				warehouseConfig.SetValue("ServiceAddress","0.0.0.0");
-				warehouseConfig.SetValue("ServicePort",servicePort.ToString());
-				warehouseConfig.SetValue("ProviderAssembly","TickZoomCombinedMock");
-	 			// Clear the history files
-			} catch( Exception ex) {
-				log.Error("Setup error.",ex);
-				throw ex;
 			}
 		}
 		

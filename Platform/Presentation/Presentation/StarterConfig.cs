@@ -54,6 +54,20 @@ namespace TickZoom.Presentation
         private ushort servicePort;
         private ModelLoaderInterface loaderInstance;
         private string dataSubFolder;
+        private string serviceConfig;
+        private string providerAssembly;
+        
+		public string ProviderAssembly {
+			get { return providerAssembly; }
+			set { NotifyOfPropertyChange( () => ProviderAssembly );
+				providerAssembly = value; }
+		}
+        
+		public string ServiceConfig {
+			get { return serviceConfig; }
+			set { NotifyOfPropertyChange( () => ServiceConfig );
+				serviceConfig = value; }
+		}
         
 		public string DataSubFolder {
 			get { return dataSubFolder; }
@@ -650,7 +664,9 @@ namespace TickZoom.Presentation
 
         private void Load()
         {
-            servicePort = (ushort) projectConfig.GetValue("ServicePort", typeof (ushort));
+			providerAssembly = projectConfig.GetValue("ProviderAssembly");
+			serviceConfig = projectConfig.GetValue("ServiceConfig");
+			servicePort = (ushort) projectConfig.GetValue("ServicePort", typeof (ushort));
             dataSubFolder = projectConfig.GetValue("DataSubFolder");
             alarmFile = projectConfig.GetValue("AlarmSound");
             if (string.IsNullOrEmpty(alarmFile))
@@ -742,6 +758,8 @@ namespace TickZoom.Presentation
             projectConfig.SetValue("AutoUpdate", "false");
             projectConfig.SetValue("AutoUpdate", projectConfig.GetValue("AutoUpdate"));
             projectConfig.SetValue("DataSubFolder", dataSubFolder);
+            projectConfig.SetValue("ServiceConfig", serviceConfig);
+            projectConfig.SetValue("ProviderAssembly", providerAssembly);
         }
 
         private void PlayAlarmSound()
@@ -863,10 +881,10 @@ namespace TickZoom.Presentation
             starterInstance.ProjectProperties.Chart.ChartType = chartType;
             starterInstance.ProjectProperties.Starter.SetSymbols(symbolList);
             starterInstance.ProjectProperties.Starter.IntervalDefault = intervalDefault;
-            starterInstance.Address = projectConfig.GetValue("ServiceAddress");
-            starterInstance.Config = projectConfig.GetValue("ServiceConfig");
+//            starterInstance.Address = projectConfig.GetValue("ServiceAddress");
+            starterInstance.Config = serviceConfig;
             starterInstance.Port = servicePort;
-            starterInstance.AddProvider(projectConfig.GetValue("ProviderAssembly"));
+            starterInstance.AddProvider(providerAssembly);
             if (useDefaultInterval)
             {
                 starterInstance.ProjectProperties.Chart.IntervalChartBar = intervalDefault;
