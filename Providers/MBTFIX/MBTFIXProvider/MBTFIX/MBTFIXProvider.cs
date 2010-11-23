@@ -574,28 +574,21 @@ namespace TickZoom.MBTFIX
 		}
 		
 		public void RejectOrder( PacketFIX4_4 packetFIX) {
-			if( !IsRecovered) {
-				if( debug && (LogRecovery || !IsRecovery) ) {
-					log.Debug("Order Rejected: " + packetFIX.Text + ")");
-				}
-				RemoveOrder( packetFIX, packetFIX.ClientOrderId);
-			} else {
+			var rejectReason = false;
+			rejectReason = packetFIX.Text.Contains("Outside trading hours") ? true : rejectReason;
+			rejectReason = packetFIX.Text.Contains("not accepted this session") ? true : rejectReason;
+			rejectReason = packetFIX.Text.Contains("Pending live orders") ? true : rejectReason;
+			rejectReason = packetFIX.Text.Contains("Trading temporarily unavailable") ? true : rejectReason;
+			rejectReason = packetFIX.Text.Contains("ORDER in pending state") ? true : rejectReason;
+			rejectReason = packetFIX.Text.Contains("Cancel request already pending") ? true : rejectReason;
+			rejectReason = packetFIX.Text.Contains("No such order") ? true : rejectReason;
+			RemoveOrder( packetFIX, packetFIX.ClientOrderId);
+			if( !rejectReason && IsRecovered) {
 				var message = "Order Rejected: " + packetFIX.Text + "\n" + packetFIX;
-				var rejectReason = false;
-				rejectReason = packetFIX.Text.Contains("Outside trading hours") ? true : rejectReason;
-				rejectReason = packetFIX.Text.Contains("not accepted this session") ? true : rejectReason;
-				rejectReason = packetFIX.Text.Contains("Pending live orders") ? true : rejectReason;
-				rejectReason = packetFIX.Text.Contains("Trading temporarily unavailable") ? true : rejectReason;
-				rejectReason = packetFIX.Text.Contains("ORDER in pending state") ? true : rejectReason;
-				rejectReason = packetFIX.Text.Contains("Cancel request already pending") ? true : rejectReason;
-//				rejectReason = packetFIX.Text.Contains("Not a valid destination") ? true : rejectReason;
-				if( rejectReason) {
-					log.Warn( message + " -- Sending EndBroker event. Retrying.");
-					RemoveOrder( packetFIX, packetFIX.ClientOrderId);
-				} else {
-					log.Error( message);
-					throw new ApplicationException( message);					
-				}
+				var ignore = "The rejected error message was UNRECOGNIZED. So it is being ignored. ";
+				var handle = "If this reject causes any other problems please report it to have it added and properly handled.";
+				log.Warn( message);
+				log.Warn( ignore + handle);
 			}
 		}
 		
