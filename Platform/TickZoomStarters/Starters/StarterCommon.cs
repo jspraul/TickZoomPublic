@@ -54,7 +54,6 @@ namespace TickZoom.Starters
 	    static object callBackLocker = new object();
 	    ProjectProperties projectProperties = new ProjectPropertiesCommon();
 	    string projectFile = Factory.Settings["AppDataFolder"] + @"\portfolio.tzproj";
-		private List<Provider> tickProviders = new List<Provider>();
 	    string fileName;
 	    string storageFolder;
 		Dictionary<ModelInterface,Dictionary<string,object>> optimizeValueMap = new Dictionary<ModelInterface, Dictionary<string, object>>();
@@ -458,16 +457,6 @@ namespace TickZoom.Starters
 			set { projectFile = value; }
 		}
 		
-		public Provider[] DataFeeds {
-			get { return tickProviders.ToArray(); }
-			set { tickProviders = new List<Provider>(value); }
-		}
-		
-		public void AddProvider(Provider provider)
-		{
-			tickProviders.Add(provider);
-		}
-		
 		public abstract void Wait();
 		
 	    
@@ -487,6 +476,7 @@ namespace TickZoom.Starters
 		}
 		
 		public void AddProvider( string provider) {
+			providerPlugins.Clear();
 			providerPlugins.Add(provider);
 		}
 		

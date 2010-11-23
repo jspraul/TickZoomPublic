@@ -45,7 +45,9 @@ namespace TickZoom.Starters
         public override void Run(ModelLoaderInterface loader)
         {
 			Config = "WarehouseTest.config";
-            SetupProviderServiceConfig("TickZoomCombinedMock", (ushort)Port);
+			var provider = "TickZoomCombinedMock";
+			AddProvider(provider);
+            SetupProviderServiceConfig(provider, (ushort)Port);
             base.Run(loader);
         }
     }
