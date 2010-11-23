@@ -26,6 +26,8 @@
 
 using System;
 using System.IO;
+using System.Reflection;
+
 using TickZoom.Api;
 using TickZoom.Properties;
 using TickZoom.Symbols;
@@ -90,5 +92,12 @@ namespace TickZoom.Starters
 		public Starter OptimizeStarter() {
 			return new OptimizeStarter();
 		}
-	}
+		
+		public Starter CreateStarter( string starterName) {
+			var starterType = Type.GetType("TickZoom.Starters."+starterName);
+			var assembly = starterType.Assembly;
+			return (Starter) assembly.CreateInstance(starterType.FullName);
+		}
+
+    }
 }

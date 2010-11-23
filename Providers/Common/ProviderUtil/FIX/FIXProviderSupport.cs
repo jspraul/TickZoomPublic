@@ -66,7 +66,7 @@ namespace TickZoom.FIX
 		public abstract Yield OnLogin();
 		private string providerName;
 		private long heartbeatTimeout;
-		private int heartbeatDelay = 30;
+		private int heartbeatDelay = 35;
 		private bool logRecovery = true;
         private string configFilePath;
         private string configSection;
@@ -354,7 +354,7 @@ namespace TickZoom.FIX
         private void LoadProperties(string configFilePath) {
         	this.configFilePath = configFilePath;
 	        ConfigFile configFile;
-	        log.Notice("Config file path: " + configFilePath);
+	        log.Notice("Using section " + configSection + " in file: " + configFilePath);
 			if( !File.Exists(configFilePath) ) {
 	        	configFile = new ConfigFile(configFilePath);
 	        	configFile.SetValue("EquityDemo/ServerAddress","127.0.0.1");

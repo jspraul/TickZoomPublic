@@ -168,7 +168,7 @@ namespace TickZoom.MBTFIX
 			try {
 				order = GetOrderById( symbol, packet.OriginalClientOrderId);
 			} catch( ApplicationException) {
-				log.Warn( symbol + ": Cannot cancel order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
+				if( debug) log.Debug( symbol + ": Cannot cancel order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
 				if( SyncTicks.Enabled) {
 					var tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 					tickSync.RemovePhysicalOrder();
