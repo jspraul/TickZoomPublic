@@ -36,6 +36,7 @@ using NUnit.Framework;
 using TickZoom;
 using TickZoom.Api;
 using TickZoom.Common;
+using TickZoom.Presentation;
 using TickZoom.Starters;
 using TickZoom.Statistics;
 using TickZoom.Transactions;
@@ -98,6 +99,34 @@ namespace Loaders
 			return new HistoricalStarter();			
 		}
 		
+		public StarterConfig SetupConfigStarter(AutoTestMode autoTestMode) {
+			var config = new StarterConfig("test");
+			config.ServicePort = 6490;
+			switch( autoTestMode) {
+				case AutoTestMode.Historical:
+					config.Starter = "HistoricalStarter";
+					break;
+				case AutoTestMode.RealTime:
+					config.Starter = "TestRealTimeStarter";
+                    break;
+				case AutoTestMode.SimulateFIX:
+					config.Starter = "FIXSimulatorStarter";
+                    break;			
+				default:
+					throw new ApplicationException("AutoTestMode " + autoTestMode + " is unknown.");
+			}
+			
+			// Set run properties as in the GUI.
+			config.StartDateTime = startTime.DateTime;
+    		config.EndDateTime = endTime.DateTime;
+    		
+    		config.DataSubFolder = "Test\\DataCache";
+    		config.SymbolList = Symbols;
+			config.DefaultPeriod = intervalDefault.Period;
+			config.DefaultBarUnit = intervalDefault.BarUnit;
+			config.ModelLoader = loader.Name;
+    		return config;
+		}
 		
 		public Starter SetupStarter(AutoTestMode autoTestMode) {
 			Starter starter;
@@ -141,10 +170,19 @@ namespace Loaders
 			try {
 				// Run the loader.
 				try { 
-					var loaderInstance = GetLoaderInstance();
-					var starter = SetupStarter(autoTestMode);
-		    		starter.Run(loaderInstance);
-		    		topModel = loaderInstance.TopModel;
+					if( false) {
+						var loaderInstance = GetLoaderInstance();
+						var starter = SetupStarter(autoTestMode);
+			    		starter.Run(loaderInstance);
+			    		topModel = loaderInstance.TopModel;
+					} else {
+						var config = SetupConfigStarter(autoTestMode);
+						config.Start();
+						while( config.IsBusy) {
+							Thread.Sleep(10);
+						}
+			    		topModel = config.TopModel;
+					}
 				} catch( ApplicationException ex) {
 					if( ex.Message.Contains("not found")) {
 						Assert.Ignore("LoaderName could not be loaded.");
@@ -934,15 +972,6 @@ namespace Loaders
    				}
    			}
    			throw new ApplicationException("Model was not found for the name: " + modelName);
-   		}
-   		
-		public void DynamicCompareChart(string strategyName) {
-			if( string.IsNullOrEmpty(strategyName)) return;
-   			var model = GetModelByName( strategyName);
-   			if( !(model is StrategyInterface)) {
-   				return;
-   			}
-   			CompareChart(model as StrategyInterface);
    		}
    		
 		public void CompareChart(StrategyInterface strategy) {

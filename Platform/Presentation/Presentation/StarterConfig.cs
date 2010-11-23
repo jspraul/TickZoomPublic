@@ -44,7 +44,6 @@ namespace TickZoom.Presentation
         #region Fields
 
         private readonly BackgroundWorker commandWorker;
-        private readonly bool isInitialized;
         private readonly Log log;
         private readonly Dictionary<int, Progress> progressChildren = new Dictionary<int, Progress>();
         private readonly ConfigFile projectConfig;
@@ -52,6 +51,29 @@ namespace TickZoom.Presentation
         private int breakAtBar;
         private BarUnit chartBarUnit = BarUnit.Hour;
         private int chartPeriod = 1;
+        private ushort servicePort;
+        private ModelLoaderInterface loaderInstance;
+        private string dataSubFolder;
+        
+		public string DataSubFolder {
+			get { return dataSubFolder; }
+			set { NotifyOfPropertyChange( () => DataSubFolder );
+				dataSubFolder = value; }
+		}
+        
+        public ModelInterface TopModel {
+        	get { if( loaderInstance != null) {
+        			return loaderInstance.TopModel;
+        		} else {
+        			return null;
+        		}
+        	}
+        }
+        
+		public ushort ServicePort {
+			get { return servicePort; }
+			set { servicePort = value; }
+		}
 
         public int ReplaySpeed
         {
@@ -95,16 +117,38 @@ namespace TickZoom.Presentation
         private DateTime startDateTime;
         private string symbolList;
         private Exception taskException;
-        private string tickZoomEngine;
         private bool useDefaultInterval = true;
-        private Dictionary<string, Func<Starter>> starterOptions = new Dictionary<string, Func<Starter>>()
+        private Dictionary<string, string> starters = new Dictionary<string, string>()
         {
-            { "Historical Simulation", Factory.Starter.HistoricalStarter},
-            { "Optimization a.k.a. Brute Force", Factory.Starter.OptimizeStarter},
-            { "Genetic Optimization", Factory.Starter.GeneticStarter},
-//            { "Genetic Optimization", Factory.Starter.}
-            { "Realtime Operation (Demo or Live)", Factory.Starter.RealTimeStarter},
+            { "Historical Simulation", "HistoricalStarter"},
+            { "Optimization a.k.a. Brute Force", "OptimizeStarter"},
+            { "Genetic Optimization", "GeneticStarter"},
+            { "Realtime Simulation", "TestRealTimeStarter"},
+            { "FIX Server Simulation", "FIXSimulatorStarter"},
+            { "Realtime Operation (Demo or Live)", "RealTimeStarter"},
         };
+
+        private string starter;
+
+        public List<string> StarterValues
+        {
+            get {
+                var labels = new List<string>();
+                foreach( var kvp in starters)
+                {
+                    labels.Add(kvp.Key);
+                }
+                return labels;
+            }
+        }
+
+        public string Starter
+        {
+            get { return starter; }
+            set { NotifyOfPropertyChange(() => Starter);
+            	starter = value;
+            }
+        }
 
         public bool DisableCharting
         {
@@ -163,62 +207,13 @@ namespace TickZoom.Presentation
             intervalDefault = initialInterval;
             intervalEngine = initialInterval;
             intervalChartBar = initialInterval;
-            alarmFile = projectConfig.GetValue("AlarmSound");
-            if (string.IsNullOrEmpty(alarmFile))
-            {
-                alarmFile = @"..\..\Media\59642_AlternatingToneAlarm.wav";
-            }
-            IntervalDefaults();
-            LoadIntervals();
-            IntervalDefaults();
-            storageFolder = Factory.Settings["AppDataFolder"];
-            tickZoomEngine = projectConfig.GetValue("TickZoomEngine");
             Array units = Enum.GetValues(typeof (BarUnit));
             minDateTime = new DateTime(1800, 1, 1);
             startDateTime = minDateTime;
             maxDateTime = DateTime.Now.AddDays(1).AddSeconds(-1);
             endDateTime = maxDateTime;
-
-            string disableChartingString = projectConfig.GetValue("DisableCharting");
-            disableCharting = !string.IsNullOrEmpty(disableChartingString) &&
-                              "true".Equals(disableChartingString.ToLower());
-
-            string startTimeStr = projectConfig.GetValue("StartTime");
-            string endTimeStr = projectConfig.GetValue("EndTime");
-            modelLoader = projectConfig.GetValue("ModelLoader");
-
-            symbolList = projectConfig.GetValue("Symbol");
-
-            if (startTimeStr != null)
-            {
-                try
-                {
-                    startDateTime = new TimeStamp(startTimeStr).DateTime;
-                }
-                catch
-                {
-                    startDateTime = minDateTime;
-                }
-            }
-
-            if (endTimeStr != null)
-            {
-                try
-                {
-                    DateTime time = new TimeStamp(endTimeStr).DateTime.AddDays(1).AddSeconds(-1);
-                    EndDateTime = time;
-                }
-                catch
-                {
-                    endDateTime = maxDateTime;
-                }
-                if (endDateTime > maxDateTime)
-                {
-                    endDateTime = maxDateTime;
-                }
-            }
+            Load();
             TryAutoUpdate();
-            isInitialized = true;
         }
 
         #endregion Constructors
@@ -236,28 +231,10 @@ namespace TickZoom.Presentation
             get { return chartType == ChartType.Bar; }
         }
 
-        public bool CanGeneticOptimize
+        public bool CanStart
         {
             get { return IsEngineLoaded && !commandWorker.IsBusy; }
-            set { NotifyOfPropertyChange(() => CanGeneticOptimize); }
-        }
-
-        public bool CanHistorical
-        {
-            get { return IsEngineLoaded && !commandWorker.IsBusy; }
-            set { NotifyOfPropertyChange(() => CanHistorical); }
-        }
-
-        public bool CanOptimize
-        {
-            get { return IsEngineLoaded && !commandWorker.IsBusy; }
-            set { NotifyOfPropertyChange(() => CanOptimize); }
-        }
-
-        public bool CanRealtime
-        {
-            get { return IsEngineLoaded && !commandWorker.IsBusy; }
-            set { NotifyOfPropertyChange(() => CanRealtime); }
+            set { NotifyOfPropertyChange(() => CanStart); }
         }
 
         public bool CanTryAutoUpdate
@@ -508,6 +485,11 @@ namespace TickZoom.Presentation
         #endregion Properties
 
         #region Methods
+        
+        public bool IsBusy {
+            get { return commandWorker.IsBusy; }
+            set { NotifyOfPropertyChange(() => IsBusy); }
+        }
 
         public bool CanStop
         {
@@ -540,6 +522,7 @@ namespace TickZoom.Presentation
             <add key=""Model"" value=""ExampleReversalStrategy"" />
             <add key=""MaxParallelPasses"" value=""1000"" />
             <add key=""DefaultPeriod"" value=""1"" />
+            <add key=""Starter"" value=""HistoricalStarter"" />
             <add key=""DefaultInterval"" value=""Hour"" />
             <add key=""EnginePeriod"" value=""1"" />
             <add key=""EngineInterval"" value=""Hour"" />
@@ -575,7 +558,6 @@ namespace TickZoom.Presentation
             if (isEngineLoaded)
             {
                 initialInterval = Factory.Engine.DefineInterval(BarUnit.Day, 1);
-                IntervalsUpdate();
             }
         }
 
@@ -587,20 +569,18 @@ namespace TickZoom.Presentation
             chartBarUnit = defaultBarUnit;
         }
 
-        public void GeneticOptimize()
+        public void Start()
         {
-            Starter starter = Factory.Starter.GeneticStarter();
-            starter.ProjectProperties.Starter.EndTime = (TimeStamp) endDateTime;
-            SetupStarter(starter);
-        }
-
-        public void Historical()
-        {
-            Starter starter = Factory.Starter.HistoricalStarter();
-            starter.ProjectProperties.Engine.TickReplaySpeed = replaySpeed;
-            starter.ProjectProperties.Engine.BreakAtBar = breakAtBar;
-            starter.ProjectProperties.Starter.EndTime = (TimeStamp) endDateTime;
-            SetupStarter(starter);
+        	string starterName;
+        	if( !starters.TryGetValue(starter, out starterName)) {
+        		starterName = starter;
+        	}
+            var starterInstance = Factory.Starter.CreateStarter( starterName);
+            if (starterName.Contains("RealTime"))
+            {
+                enableAlarmSounds = true;
+            }
+            SetupStarter(starterInstance);
         }
 
         public void IntervalsUpdate()
@@ -610,46 +590,11 @@ namespace TickZoom.Presentation
             intervalChartBar = Factory.Engine.DefineInterval(chartBarUnit, chartPeriod);
         }
 
-        public void Optimize()
-        {
-            Starter starter = Factory.Starter.OptimizeStarter();
-            starter.ProjectProperties.Starter.EndTime = (TimeStamp) endDateTime;
-            SetupStarter(starter);
-        }
-
-        public void Realtime()
-        {
-            Starter starter = Factory.Starter.RealTimeStarter();
-            enableAlarmSounds = true;
-            SetupStarter(starter);
-        }
 
         public void RunCommand(CommandInterface command)
         {
             Save();
             CommandWorker.RunWorkerAsync(command);
-        }
-
-        public void Save()
-        {
-            projectConfig.SetValue("StartTime", startDateTime.ToString());
-            projectConfig.SetValue("EndTime", endDateTime.ToString());
-            projectConfig.SetValue("Symbol", symbolList);
-            projectConfig.SetValue("ModelLoader", ModelLoader);
-            projectConfig.SetValue("AutoUpdate", projectConfig.GetValue("AutoUpdate"));
-            projectConfig.SetValue("DisableCharting", disableCharting ? "true" : "false");
-
-            SaveIntervals();
-        }
-
-        public void SaveAutoUpdate()
-        {
-            projectConfig.SetValue("AutoUpdate", "false");
-
-            // Add an entry to appSettings.
-            int appStgCnt = ConfigurationManager.AppSettings.Count;
-
-            projectConfig.SetValue("AutoUpdate", projectConfig.GetValue("AutoUpdate"));
         }
 
         public void Stop()
@@ -699,17 +644,53 @@ namespace TickZoom.Presentation
             CheckForEngine();
         }
 
-        private void IntervalChange(object sender, EventArgs e)
+        private void Load()
         {
-            if (isInitialized) IntervalsUpdate();
-        }
+            servicePort = (ushort) projectConfig.GetValue("ServicePort", typeof (ushort));
+            dataSubFolder = projectConfig.GetValue("DataSubFolder");
+            alarmFile = projectConfig.GetValue("AlarmSound");
+            if (string.IsNullOrEmpty(alarmFile))
+            {
+                alarmFile = @"..\..\Media\59642_AlternatingToneAlarm.wav";
+            }
+            var disableChartingString = projectConfig.GetValue("DisableCharting");
+            disableCharting = !string.IsNullOrEmpty(disableChartingString) &&
+                              "true".Equals(disableChartingString.ToLower());
 
-        private void IntervalDefaults()
-        {
-        }
+            var startTimeStr = projectConfig.GetValue("StartTime");
+            var endTimeStr = projectConfig.GetValue("EndTime");
+            modelLoader = projectConfig.GetValue("ModelLoader");
 
-        private void LoadIntervals()
-        {
+            symbolList = projectConfig.GetValue("Symbol");
+
+            if (startTimeStr != null)
+            {
+                try
+                {
+                    startDateTime = new TimeStamp(startTimeStr).DateTime;
+                }
+                catch
+                {
+                    startDateTime = minDateTime;
+                }
+            }
+
+            if (endTimeStr != null)
+            {
+                try
+                {
+                    var time = new TimeStamp(endTimeStr).DateTime.AddDays(1).AddSeconds(-1);
+                    EndDateTime = time;
+                }
+                catch
+                {
+                    endDateTime = maxDateTime;
+                }
+                if (endDateTime > maxDateTime)
+                {
+                    endDateTime = maxDateTime;
+                }
+            }
             defaultPeriod = int.Parse(CheckNull(projectConfig.GetValue("DefaultPeriod")));
             defaultBarUnit =
                 (BarUnit) Enum.Parse(typeof (BarUnit), CheckNull(projectConfig.GetValue("DefaultInterval")));
@@ -717,6 +698,47 @@ namespace TickZoom.Presentation
             engineBarUnit = (BarUnit) Enum.Parse(typeof (BarUnit), CheckNull(projectConfig.GetValue("EngineInterval")));
             chartPeriod = int.Parse(CheckNull(projectConfig.GetValue("ChartPeriod")));
             chartBarUnit = (BarUnit) Enum.Parse(typeof (BarUnit), CheckNull(projectConfig.GetValue("ChartInterval")));
+            var starterFactoryName = projectConfig.GetValue("Starter");
+            starter = GetStarterByFactoryName( starterFactoryName);
+        }
+        
+        private string GetStarterByFactoryName(string name) {
+        	foreach( var kvp in starters) {
+        		if( kvp.Value == name) {
+        			return kvp.Key;
+        		}
+        	}
+        	return null;
+        }
+
+        public void Save()
+        {
+            projectConfig.SetValue("ServicePort", servicePort.ToString());
+            projectConfig.SetValue("DisableCharting", disableCharting ? "true" : "false");
+            projectConfig.SetValue("StartTime", new TimeStamp(startDateTime).ToString());
+            projectConfig.SetValue("EndTime", new TimeStamp(endDateTime).ToString());
+            projectConfig.SetValue("Symbol", symbolList);
+            projectConfig.SetValue("ModelLoader", ModelLoader);
+            projectConfig.SetValue("AutoUpdate", projectConfig.GetValue("AutoUpdate"));
+
+            // Intervals
+            projectConfig.SetValue("DefaultPeriod", defaultPeriod.ToString());
+            projectConfig.SetValue("DefaultInterval", defaultBarUnit.ToString());
+            projectConfig.SetValue("EnginePeriod", enginePeriod.ToString());
+            projectConfig.SetValue("EngineInterval", engineBarUnit.ToString());
+            projectConfig.SetValue("ChartPeriod", chartPeriod.ToString());
+            projectConfig.SetValue("ChartInterval", chartBarUnit.ToString());
+            string starterFactoryName;
+            if( starter == null || !starters.TryGetValue(starter, out starterFactoryName)) {
+               	starterFactoryName = starter;
+            }
+            if( string.IsNullOrEmpty(starterFactoryName)) {
+            	starterFactoryName = "";
+            }
+            projectConfig.SetValue("Starter", starterFactoryName);
+            projectConfig.SetValue("AutoUpdate", "false");
+            projectConfig.SetValue("AutoUpdate", projectConfig.GetValue("AutoUpdate"));
+            projectConfig.SetValue("DataSubFolder", dataSubFolder);
         }
 
         private void PlayAlarmSound()
@@ -759,12 +781,11 @@ namespace TickZoom.Presentation
 
         private void UpdateStatus()
         {
-            CanOptimize = true;
-            CanHistorical = true;
-            CanRealtime = true;
+        	// value ignore. Just forces update.
+            CanStart = true;
             CanStop = true;
             CanTryAutoUpdate = true;
-            CanGeneticOptimize = true;
+            IsBusy = true;
         }
 
         private void ProcessWorkerProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -812,21 +833,14 @@ namespace TickZoom.Presentation
             UpdateStatus();
         }
 
-        private void SaveIntervals()
-        {
-            projectConfig.SetValue("DefaultPeriod", defaultPeriod.ToString());
-            projectConfig.SetValue("DefaultInterval", defaultBarUnit.ToString());
-            projectConfig.SetValue("EnginePeriod", enginePeriod.ToString());
-            projectConfig.SetValue("EngineInterval", engineBarUnit.ToString());
-            projectConfig.SetValue("ChartPeriod", chartPeriod.ToString());
-            projectConfig.SetValue("ChartInterval", chartBarUnit.ToString());
-        }
-
-        private void SetupStarter(Starter starter)
+        private void SetupStarter(Starter starterInstance)
         {
             FlushCharts();
-            starter.ProjectProperties.Starter.StartTime = (TimeStamp) startDateTime;
-            starter.BackgroundWorker = commandWorker;
+            IntervalsUpdate();
+            starterInstance.ProjectProperties.Starter.StartTime = (TimeStamp) startDateTime;
+            starterInstance.ProjectProperties.Starter.EndTime = (TimeStamp)endDateTime;
+            starterInstance.BackgroundWorker = commandWorker;
+            starterInstance.DataFolder = dataSubFolder;
             if (!disableCharting)
             {
                 if (CreateChart == null || ShowChart == null)
@@ -835,36 +849,36 @@ namespace TickZoom.Presentation
                 }
                 else
                 {
-                    starter.CreateChartCallback = new CreateChartCallback(CreateChart);
-                    starter.ShowChartCallback = new ShowChartCallback(ShowChart);
+                    starterInstance.CreateChartCallback = new CreateChartCallback(CreateChart);
+                    starterInstance.ShowChartCallback = new ShowChartCallback(ShowChart);
                 }
             }
             else
             {
                 log.Notice("You have the \"disable charts\" check box enabled.");
             }
-            starter.ProjectProperties.Chart.ChartType = chartType;
-            starter.ProjectProperties.Starter.SetSymbols(symbolList);
-            starter.ProjectProperties.Starter.IntervalDefault = intervalDefault;
-            starter.Address = projectConfig.GetValue("ServiceAddress");
-            starter.Config = projectConfig.GetValue("ServiceConfig");
-            starter.Port = (ushort) projectConfig.GetValue("ServicePort", typeof (ushort));
-            starter.AddProvider(projectConfig.GetValue("ProviderAssembly"));
+            starterInstance.ProjectProperties.Chart.ChartType = chartType;
+            starterInstance.ProjectProperties.Starter.SetSymbols(symbolList);
+            starterInstance.ProjectProperties.Starter.IntervalDefault = intervalDefault;
+//            starterInstance.Address = projectConfig.GetValue("ServiceAddress");
+//            starterInstance.Config = projectConfig.GetValue("ServiceConfig");
+            starterInstance.Port = servicePort;
+//            starterInstance.AddProvider(projectConfig.GetValue("ProviderAssembly"));
             if (useDefaultInterval)
             {
-                starter.ProjectProperties.Chart.IntervalChartBar = intervalDefault;
+                starterInstance.ProjectProperties.Chart.IntervalChartBar = intervalDefault;
             }
             else 
             {
-                starter.ProjectProperties.Chart.IntervalChartBar = intervalChartBar;
+                starterInstance.ProjectProperties.Chart.IntervalChartBar = intervalChartBar;
             }
             if (intervalChartBar.BarUnit == BarUnit.Default)
             {
-                starter.ProjectProperties.Chart.IntervalChartBar = intervalDefault;
+                starterInstance.ProjectProperties.Chart.IntervalChartBar = intervalDefault;
             }
             log.Info("Running Loader named: " + modelLoader);
-            ModelLoaderInterface loader = Plugins.Instance.GetLoader(modelLoader);
-            RunCommand(new StarterCommand(starter, loader));
+            loaderInstance = Plugins.Instance.GetLoader(modelLoader);
+            RunCommand(new StarterCommand(starterInstance, loaderInstance));
         }
 
         #endregion Methods

@@ -268,11 +268,6 @@ namespace TickZoom.GUI
             chartBarUnit.DataBindings.Add( "Enabled", vm, "UseOtherIntervals");
         }
 
-        void IntervalChange(object sender, EventArgs e)
-        {
-            vm.IntervalsUpdate();
-        }
-
         void PlayAlarmSound()
         {
             if( !failedAlarmSound) {

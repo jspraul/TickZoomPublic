@@ -136,7 +136,7 @@ namespace TickZoom.Common
 					}
 				} else if( errorNeverAnyLevel1Tick) {
 					log.Notice( "Okay. Found a Level 1 quote tick that resolves the earlier warning message.");
-					errorNeverAnyLevel1Tick = true;
+					errorNeverAnyLevel1Tick = false;
 				}
 			}
 			if( symbol.TimeAndSales == TimeAndSales.ActualTrades) {
