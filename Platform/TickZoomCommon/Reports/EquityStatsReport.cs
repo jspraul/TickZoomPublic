@@ -62,7 +62,7 @@ namespace TickZoom.Reports
 	
 		private void WriteReport() {
 			EquityStats stats = new EquityStats(equity.StartingEquity,equity.Daily,equity.Weekly,equity.Monthly,equity.Yearly);
-			WriteChart(folder,name,"DailyEquity",stats.Daily,equity.Daily);
+//			WriteChart(folder,name,"DailyEquity",stats.Daily,equity.Daily);
 			fwriter.WriteLine("<HTML>");
 			fwriter.WriteLine("<HEAD>");
 			WriteStyle();
@@ -70,7 +70,7 @@ namespace TickZoom.Reports
 			fwriter.WriteLine("<BODY>");
 			fwriter.WriteLine("<H1>" + name + " Strategy Report</H1>");
 	
-			fwriter.WriteLine("<img src=\"Images/DailyEquity.gif\"/><BR>");
+//			fwriter.WriteLine("<img src=\"Images/DailyEquity.gif\"/><BR>");
 			
 			fwriter.WriteLine("<BR>");
 			

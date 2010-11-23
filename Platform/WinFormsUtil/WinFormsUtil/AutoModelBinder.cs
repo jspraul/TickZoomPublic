@@ -17,6 +17,8 @@ namespace TickZoom.GUI
         #region Fields
 
         private static readonly Log log = Factory.SysLog.GetLogger(typeof(AutoModelBinder));
+        private static readonly bool debug = log.IsDebugEnabled;
+        private static readonly bool trace = log.IsTraceEnabled;
 
         #endregion Fields
 
@@ -45,21 +47,21 @@ namespace TickZoom.GUI
 
                 var foundControl = GetControl( view, method.Name);
                 if(foundControl == null) {
-                    log.Info("No button found for " + viewModel.GetType().Name + "." + method.Name + "()");
+                	if( debug) log.Debug("No button found for " + viewModel.GetType().Name + "." + method.Name + "()");
                     continue;
                 }
 
                 var canMethodName = "Can" + method.Name;
                 var foundProperty = properties.FirstOrDefault(x => x.Name == canMethodName);
                 if( foundProperty == null) {
-                    log.Info( canMethodName + "() was not found on class " + viewModel.GetType().Name);
+                	if( debug) log.Debug( canMethodName + "() was not found on class " + viewModel.GetType().Name);
                 } else {
                     properties.Remove(foundProperty);
                 }
 
                 var command = new ReflectiveCommand(viewModel, method, foundProperty);
                 if( TrySetCommand(foundControl, command)) {
-                    log.Info( view.GetType().Name + "." + foundControl.Name + " => " + viewModel.GetType().Name + "." + method.Name);
+                	if(debug) log.Debug( view.GetType().Name + "." + foundControl.Name + " => " + viewModel.GetType().Name + "." + method.Name);
                 } else {
                     log.Error( "Failed binding " + view.GetType().Name + "." + foundControl.Name + " to " + viewModel.GetType().Name + "." + foundProperty.Name);
                 }
@@ -73,23 +75,23 @@ namespace TickZoom.GUI
             	if( typeof(Delegate).IsAssignableFrom(property.PropertyType)) {
 	                var foundMethod = GetMethod( view, property.Name);
 	                if( foundMethod == null) {
-	                    log.Info("Unabled to find " + view.GetType().Name + "." + property.Name + "() to assign to " + viewModel.GetType().Name + "." + property.Name);
+	                	if( debug) log.Debug("Unabled to find " + view.GetType().Name + "." + property.Name + "() to assign to " + viewModel.GetType().Name + "." + property.Name);
 	                } else {
 	                    var action = Delegate.CreateDelegate(property.PropertyType,view,property.Name);
 	                    property.SetValue(viewModel, action, null);
-	                    log.Info( view.GetType().Name + "." + property.Name + "() => " + viewModel.GetType().Name + "." + property.Name);
+	                    if( debug) log.Debug( view.GetType().Name + "." + property.Name + "() => " + viewModel.GetType().Name + "." + property.Name);
 	                }
 	                continue;
             	}
 
                 var foundControl = GetControl( view, property.Name);
                 if(foundControl == null) {
-                    log.Info("No control found for " + viewModel.GetType().Name + "." + property.Name);
+                	if( debug) log.Debug("No control found for " + viewModel.GetType().Name + "." + property.Name);
                     continue;
                 }
 
 	            if( foundControl.DataBindings.Count > 0) {
-                	log.Info( view.GetType().Name + "." + foundControl.Name + " was already bound.");
+                	if( debug) log.Debug( view.GetType().Name + "." + foundControl.Name + " was already bound.");
                 	continue;
 	            }
                 
@@ -100,20 +102,20 @@ namespace TickZoom.GUI
 	                    TryBind(foundControl,"Text",viewModel,property.Name);
                         var comboBox = foundControl as ComboBox;
                         comboBox.DataSource = Enum.GetValues(property.PropertyType);
-                        log.Info( "DataSource => enum values of " + viewModel + "." + property.Name);
+                        if( debug) log.Debug( "DataSource => enum values of " + viewModel + "." + property.Name);
                     } else if( property.PropertyType == typeof(string)) {
 	                    TryBind(foundControl,"Text",viewModel,property.Name);
                         var comboBox = foundControl as ComboBox;
                         var valuesPropertyName = property.Name + "Values";
                         var foundProperty = properties.FirstOrDefault(x => x.Name == valuesPropertyName);
                         if( foundProperty == null) {
-	                        log.Info( "Values property not found for " + viewModel + "." + property.Name);
+                        	if( debug) log.Debug( "Values property not found for " + viewModel + "." + property.Name);
                         } else {
                         	comboBox.DataSource = foundProperty.GetValue(viewModel,null);
-	                        log.Info( "DataSource => " + viewModel + "." + foundProperty.Name);
+                        	if( debug) log.Debug( "DataSource => " + viewModel + "." + foundProperty.Name);
                         }
                     } else {
-                        log.Info( "DataSource was not set on control for " + viewModel + "." + property.Name);
+                		if( debug) log.Debug( "DataSource was not set on control for " + viewModel + "." + property.Name);
                     }
                 } else if( foundControl is DateTimePicker) {
                     TryBind(foundControl,"Value",viewModel,property.Name);

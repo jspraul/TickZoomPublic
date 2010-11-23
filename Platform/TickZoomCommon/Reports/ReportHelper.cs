@@ -33,7 +33,6 @@ using System.IO;
 using TickZoom.Api;
 using TickZoom.Statistics;
 using TickZoom.Transactions;
-using ZedGraph;
 
 namespace TickZoom.Reports
 {
@@ -120,7 +119,8 @@ namespace TickZoom.Reports
 	            fwriter.WriteLine(".leftcol { font-weight: bold; text-align: left; width: 150px; ");
 		    fwriter.WriteLine("</STYLE>");
 		}
-	
+
+#if ZEDGRAPH
 		public void WriteChart(string folder, string strategyName, string chartName, TradeStats stats, TransactionPairs daily)
 		{
 			if( daily.Count == 0) return;
@@ -161,7 +161,8 @@ namespace TickZoom.Reports
 		    Directory.CreateDirectory(Path.GetDirectoryName(pathName));
 			myPane.GetImage().Save(pathName, ImageFormat.Gif);
 		}
-		
+#endif
+
 		public void WriteYearHeader() {
 			fwriter.WriteLine("<TABLE class=\"stats\">");
 		}

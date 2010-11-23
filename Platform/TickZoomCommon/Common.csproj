@@ -167,9 +167,5 @@
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ZedGraph\ZedGraph.csproj">
-      <Project>{67EBC93F-0D47-4F6E-979F-E5622E1025E9}</Project>
-      <Name>ZedGraph</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>
