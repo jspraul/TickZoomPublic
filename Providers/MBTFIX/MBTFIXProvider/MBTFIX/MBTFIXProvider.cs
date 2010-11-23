@@ -444,9 +444,9 @@ namespace TickZoom.MBTFIX
 						throw new ApplicationException("Received execution report with null symbol and w/o any error text explaining the issue.");
 					}
 				}
-				var symbol = Factory.Symbol.LookupSymbol( packetFIX.Symbol);
 				switch( orderStatus) {
 					case "0": // New
+						var symbol = Factory.Symbol.LookupSymbol( packetFIX.Symbol);
 						var order = UpdateOrder( packetFIX, OrderState.Active, null);
 						var algorithm = GetAlgorithm( symbol.BinaryIdentifier);
 						algorithm.OnCreateBrokerOrder( order);
@@ -464,14 +464,22 @@ namespace TickZoom.MBTFIX
 						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						break;
 					case "4": // Canceled
-						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
-						algorithm = GetAlgorithm( symbol.BinaryIdentifier);
-						algorithm.OnCancelBrokerOrder( symbol, packetFIX.ClientOrderId);
+						order = RemoveOrder( packetFIX, packetFIX.ClientOrderId);
+						if( order != null) {
+							algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
+							algorithm.OnCancelBrokerOrder( order.Symbol, packetFIX.ClientOrderId);
+						} else {
+							log.Warn("Remove order after cancel failed. Probably due to already being canceled by the platform. Ignoring.");
+						}
 						break;
 					case "5": // Replaced
 						order = ReplaceOrder( packetFIX, OrderState.Active, null);
-						algorithm = GetAlgorithm( symbol.BinaryIdentifier);
-						algorithm.OnChangeBrokerOrder( order, packetFIX.OriginalClientOrderId);
+						if( order != null) {
+							algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
+							algorithm.OnChangeBrokerOrder( order, packetFIX.OriginalClientOrderId);
+						} else {
+							log.Warn("Chaning order status after cancel/replace failed. Probably due to already being canceled or filled. Ignoring.");
+						}
 						break;
 					case "6": // Pending Cancel
 						var clientOrderId = packetFIX.OriginalClientOrderId == null ? packetFIX.ClientOrderId : packetFIX.OriginalClientOrderId;
