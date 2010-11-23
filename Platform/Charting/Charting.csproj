@@ -62,18 +62,20 @@
     <Compile Include="Charting\PortfolioDoc.Designer.cs">
       <DependentUpon>PortfolioDoc.cs</DependentUpon>
     </Compile>
-    <Compile Include="MyClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Charting\ChartControl.resx">
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Content Include="ProfilingSessions\Session20100803_204211.sdps" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TickZoomAPI1.0\API1.0.csproj">
       <Project>{27D6C88D-52B6-432C-820B-CD38A299830C}</Project>
       <Name>API1.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WinFormsUtil\WinFormsUtil.csproj">
+      <Project>{771668A4-C8C5-4C51-B8DD-822D374F3DB4}</Project>
+      <Name>WinFormsUtil</Name>
     </ProjectReference>
     <ProjectReference Include="..\ZedGraph\ZedGraph.csproj">
       <Project>{67EBC93F-0D47-4F6E-979F-E5622E1025E9}</Project>

@@ -161,6 +161,9 @@ namespace ZedGraph
 		/// </returns>
 		public StockPt GetAt( int index )
 		{
+			if( index < 0 || index >= base.Count) {
+				throw new ArgumentOutOfRangeException("collection has " + base.Count + " items with an attempt to access item " + index + ".");
+			}
 			return base[index];
 		}
 

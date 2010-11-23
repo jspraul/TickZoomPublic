@@ -1,9 +1,13 @@
-﻿namespace TickZoom.Presentation.Framework
+﻿using System.Reflection;
+using TickZoom.Api;
+
+namespace TickZoom.Presentation.Framework
 {
     using System;
 
     public class SyncTask : Task
     {
+    	private Log log = Factory.SysLog.GetLogger(typeof(SyncTask));
         #region Fields
 
         private Action complete;
@@ -38,8 +42,13 @@
 
         public void Execute()
         {
-            result = execute.DynamicInvoke();
-            complete();
+        	try {
+	        	result = execute.DynamicInvoke();
+    	        complete();
+        	} catch( TargetInvocationException ex) {
+        		log.Error( ex.InnerException.Message, ex.InnerException);
+        		throw ex.InnerException;
+        	}
         }
 
         #endregion Methods

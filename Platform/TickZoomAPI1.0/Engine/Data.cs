@@ -86,5 +86,7 @@ namespace TickZoom.Api
 		SymbolInfo UniversalSymbol {
 			get;
 		}
+		
+		object ChartRenderLock { get; }
 	}
 }

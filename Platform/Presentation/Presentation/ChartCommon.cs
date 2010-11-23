@@ -41,7 +41,8 @@ namespace TickZoom.Presentation
         private bool isVisible;
         private static bool debug;
         private static bool trace;
-        private readonly object chartLocker = new Object();
+        private object chartRenderLock = new Object();
+        
         private readonly SynchronizationContext context;
         private readonly Dictionary<int, ChartItem> graphObjs = new Dictionary<int, ChartItem>();
         private readonly List<IndicatorInterface> indicators;
@@ -110,6 +111,10 @@ namespace TickZoom.Presentation
             set { chartType = value; }
         }
 
+		public object ChartRenderLock {
+			get { return chartRenderLock; }
+			set { chartRenderLock = value; }
+		}
         #region Chart Members
 
         public void Hide()
@@ -257,9 +262,6 @@ namespace TickZoom.Presentation
 
         public void AddBar(Bars chartBars)
         {
-            lock (chartLocker)
-            {
-            }
         }
 
         public void OnInitialize()
