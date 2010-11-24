@@ -469,18 +469,17 @@ namespace Loaders
 		}
 		
 		public void LoadReconciliation() {
-			string fileDir = @"..\..\Platform\ExamplesPluginTests\Loaders\Trades\";
-			string knownGoodPath = fileDir + testFileName + "Transactions.log";
-			string newPath = Factory.SysLog.LogFolder + @"\MockProviderTransactions.log";
-			if( File.Exists(newPath)) {
+			string frontEndPath = Factory.SysLog.LogFolder + @"\Transactions.log";
+			string backEndPath = Factory.SysLog.LogFolder + @"\MockProviderTransactions.log";
+			if( File.Exists(backEndPath)) {
 				// Never store known good. That will get stored by LoadTransactions
 				// and merely used for reconciliation.
 				testReconciliationMap.Clear();
-				LoadReconciliation(newPath,testReconciliationMap);
+				LoadReconciliation(backEndPath,testReconciliationMap);
 			}
-			if( File.Exists(knownGoodPath)) {
+			if( File.Exists(frontEndPath)) {
 				goodReconciliationMap.Clear();
-				LoadReconciliation(knownGoodPath,goodReconciliationMap);
+				LoadReconciliation(frontEndPath,goodReconciliationMap);
 			}
 		}
 		

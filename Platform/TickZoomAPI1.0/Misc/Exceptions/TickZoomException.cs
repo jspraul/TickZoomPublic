@@ -44,7 +44,7 @@ namespace TickZoom.Api
 			do {
 				frame++;
 				sf = new StackFrame(frame,true);
-			} while( sf.GetMethod().DeclaringType.Namespace == "TickZoom.Common");
+			} while( sf.GetMethod().DeclaringType.Namespace == "TickZoom.Interceptors");
 			
 			StackTrace st = new StackTrace(sf);
 			stackTrace = st.ToString();
