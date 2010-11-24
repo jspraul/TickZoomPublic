@@ -56,6 +56,18 @@ namespace TickZoom.Presentation
         private string dataSubFolder;
         private string serviceConfig;
         private string providerAssembly;
+        private bool autoUpdate;
+        
+		public bool AutoUpdate {
+			get { return autoUpdate; }
+			set { NotifyOfPropertyChange( () => AutoUpdate );
+				autoUpdate = value;
+				Save();
+				if( autoUpdate) {
+					TryAutoUpdate();
+				}
+			}
+		}
         
 		public string ProviderAssembly {
 			get { return providerAssembly; }
@@ -624,14 +636,13 @@ namespace TickZoom.Presentation
 
         public void TryAutoUpdate()
         {
-            string autoUpdateFlag = projectConfig.GetValue("AutoUpdate");
-            if ("true".Equals(autoUpdateFlag))
+            if (autoUpdate)
             {
                 commandWorker.RunWorkerAsync(new ActionCommand(DoAutoUpdate));
             }
             else
             {
-                log.Notice("To enable AutoUpdate, set AutoUpdate 'true' in " + projectConfig);
+                log.Notice("To enable AutoUpdate, click the check box to the right.");
                 CheckForEngine();
             }
         }
@@ -657,7 +668,10 @@ namespace TickZoom.Presentation
         {
             if (Factory.AutoUpdate(commandWorker))
             {
-                log.Notice("AutoUpdate succesful. Restart unnecessary.");
+                log.Notice("AutoUpdate successful. Restart unnecessary.");
+                PercentProgress = 100;
+            } else {
+            	PercentProgress = 0;
             }
             CheckForEngine();
         }
@@ -665,6 +679,7 @@ namespace TickZoom.Presentation
         private void Load()
         {
 			providerAssembly = projectConfig.GetValue("ProviderAssembly");
+			autoUpdate = (bool) projectConfig.GetValue("AutoUpdate",typeof(bool));
 			serviceConfig = projectConfig.GetValue("ServiceConfig");
 			servicePort = (ushort) projectConfig.GetValue("ServicePort", typeof (ushort));
             dataSubFolder = projectConfig.GetValue("DataSubFolder");
@@ -738,7 +753,7 @@ namespace TickZoom.Presentation
             projectConfig.SetValue("EndTime", new TimeStamp(endDateTime).ToString());
             projectConfig.SetValue("Symbol", symbolList);
             projectConfig.SetValue("ModelLoader", ModelLoader);
-            projectConfig.SetValue("AutoUpdate", projectConfig.GetValue("AutoUpdate"));
+            projectConfig.SetValue("AutoUpdate", autoUpdate.ToString());
 
             // Intervals
             projectConfig.SetValue("DefaultPeriod", defaultPeriod.ToString());
@@ -755,7 +770,6 @@ namespace TickZoom.Presentation
             	starterFactoryName = "";
             }
             projectConfig.SetValue("Starter", starterFactoryName);
-            projectConfig.SetValue("AutoUpdate", "false");
             projectConfig.SetValue("AutoUpdate", projectConfig.GetValue("AutoUpdate"));
             projectConfig.SetValue("DataSubFolder", dataSubFolder);
             projectConfig.SetValue("ServiceConfig", serviceConfig);

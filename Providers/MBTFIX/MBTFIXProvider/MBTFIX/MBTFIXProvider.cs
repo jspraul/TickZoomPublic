@@ -461,7 +461,7 @@ namespace TickZoom.MBTFIX
 						if( order != null) {
 							algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
 							algorithm.OnCancelBrokerOrder( order.Symbol, packetFIX.ClientOrderId);
-						} else {
+						} else if( IsRecovered) {
 							log.Warn("Remove order after cancel failed. Probably due to already being canceled by the platform. Ignoring.");
 						}
 						break;

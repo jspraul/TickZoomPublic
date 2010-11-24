@@ -53,27 +53,27 @@ a secure user key is required. You may request a 2 week FREE demo at http://www.
 \htmlonly
 <a href="http://c0020426.cdn1.cloudfiles.rackspacecloud.com/TickZoom-Public-$(VERSION).zip"> http://c0020426.cdn1.cloudfiles.rackspacecloud.com/TickZoom-Public-$(VERSION).zip</a>
 \endhtmlonly
-   -# Create a folder for the source called anywhere you like. Suggested folder name: TickZoomSource
-   -# Unzip the file into that folder. It will create sub-folders called, Public, Tools, and User.
+   -# Create a folder for the source whereever you like. Suggested folder name: TickZoomSource
+   -# When you unzip the file into that folder, it will create sub-folders called, Public, Tools, and User.
 
 @section setup_run_sect Run TickZoom For The First Time
 
-   -# You need either SharpDevelop or Visual Studio for writing your strategies. You can find installation steps for those further below, after this section.
-   -# Using SharpDevelop or VisualStudio, navigate to the User folder and open the User solution file called User.sln.
-   -# Run the application using the big green arrow at the stop of SharpDevelop or similar in Visual Studio.
-   -# TickZoom will select your disk drive with the largest amount of free space and create a folder called TickZoomHome at the root of that drive.
-   -# The simply GUI form will show errors due to a missing User Key.
+   -# You need either SharpDevelop or Visual Studio for writing your strategies. You can find installation details for those further below.
+   -# Using SharpDevelop or VisualStudio, navigate to the User then the Solutions folder and pick either Visual Studio 2008 or SharpDevelop 3.2 folder to find the file called User.sln.
+   -# Once you open the User solution, simply run the application clicking the big green arrow at the stop of SharpDevelop or Visual Studio to run the App.
+   -# TickZoom will select your disk drive with the largest amount of free space and create a folder called TickZoomHome at the root of that drive. That drive will contain you price data warehouse and application data.
+   -# The simple GUI form will show errors due to a missing User Key. Next we'll look at how to setup your user key.
    
 @section setup_user_key Installing Your User Key
 
    -# Upon approval, you receive a TickZoomUser.key file via email.
    -# Simply save this file into your TickZoomHome\\AutoUpdate folder.
-   -# Close the TickZoom application and restart it in the IDE.
-   -# You should see it report a successful "AutoUpdate".
-   -# You are finished installing unless you want to download sample data.
+   -# Next, close the TickZoom application and restart it.
+   -# You will see it report a successful "AutoUpdate".
+   -# Next, you probably want download sample data already in the TCK binary format for TickZoom.
    
 @section setup_sample_data Downloading Sample Data
-   -# Next download the Sample data and extract it into your TickZoomHome/DataCache folder. If you don't know where to find the TickZoomHome folder, you can find it at the top of your disk drive with the largest amount of free space. For example:
+   -# After you ownload the Sample data, you need to extract it into your TickZoomHome/DataCache folder. If you don't know where to find the TickZoomHome folder, you can find it at the top of your disk drive with the largest amount of free space. For example:
       C:\\TickZoomHome or E:\\TickZoomHome<BR>
       http://cloud.github.com/downloads/tickzoom/TickZoomPublic/TickZoomData.zip
       
@@ -90,10 +90,12 @@ a secure user key is required. You may request a 2 week FREE demo at http://www.
 
 @section vs_setup Setup Visual Studio for TickZoom
 
-   -# TickZoom offers "best effort" support for Visual Studio. If you have any doubt, please choose SharpDevelop instead of Visual Studio so as to get full support with any issues you have from TickZoom.
-   -# You will need a version of Visual Studio which supports .NET 3.5. The install typically includes the Windows SDK.
-   -# In Visual Studio, you must disable the feature that pops up dialog boxs for unhandled exceptions because of a defect in Visual Studio where it intercepts ordinary exceptions passed between DLLs. Otherwise, you will continually get these dialog boxes popping up when using Visual Studio with TickZoom.
-	-# In VS 2008, do these steps:  Select the "Debug" menu from the top menu bar. Then click "Exceptions...". On the dialog box, uncheck the box beside "Common Language Runtime Exceptions"  under the column "User-Unhandled".  Then select Okay and exit the dialog box.
+   -# TickZoom now fully supports Visual Studio 2008 with support for 2010 soon.
+   -# In Visual Studio, the feature that pops up dialog boxs for unhandled exceptions must be disable (which it is already by default when you open the solution provided by TickZoom.
+   This must be disabled because of a defect in Visual Studio where it intercepts ordinary exceptions passed between DLLs. If you enable this, you will continually get dialog boxes popping up when using Visual Studio with TickZoom.
+   -# If for any reason it gets enabled again, here are the steps in VS 2008, to disable:  Select the "Debug" menu from the top menu bar. Then click "Exceptions...". On the dialog box, uncheck the box beside "Common Language Runtime Exceptions"  under the column "User-Unhandled".  Then select Okay and exit the dialog box.
 
-The members only site for questions, tickets, and forums is at www.tickzoom.com
+The fast way to get support is to email support@tickzoom.com. That address fires email instantly plus automatically opens a private ticket in the issue tracking system.
+
+NOTE: The issue tracking system totally private now because the existing TickZoom customers voted to keep everything related to their trading private.
 */

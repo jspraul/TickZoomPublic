@@ -6,14 +6,18 @@ http://tickzoom.wnmh.net/docs/1.1.0.409/index.html
 
 
 GREATER STABILITY 
-	  This release 0.9.x offers far greater stability and reliability of the engine and provider services
-	  plus better performance in the handling of real time data. There have been almost zero changes
-	  to the open source platform as all this work was done in the engine and provider service.
+	  This release 1.1.x is a release candidate version (RC). It was entirely focused on fixed issues found
+	  by users during beta testing real time with demo or live accounts while using the newest features like
+	  multi-strategy portfolios, multi-symbols, mult-level nested portfolios, and completely automated order
+	  flow to handle partial fills and constant synchronization with the broker automatically. It also includes
+	  improvement in this release for FIX support currently certified for MB Trading.
           
 RELEASE NOTES:
-          See the commit history for this project on GitHub for the latest release notes. Simple click
-          the "Commit" tab on GitHub or look at the git log after you do an update. Isn't that convenient?
-          Please give feedback on the improved release notes!
+          You can look at commit history for this project on GitHub for the latest release notes. However, this
+          release has a very long list of changes in the commits which can all be summarized by the paragraph above.
+          That is, this release was for solving beta test issues for real time live trading the new more powerful
+          capabilities.
+          
 
 NOTE: The TickZoom open source application auto downloads the TickZoom data engine for which
-a secure user key is required. You may request a 2 week FREE demo at http://www.tickzoom.com
+a secure user key is required. You may request a FREE trial at http://www.tickzoom.com

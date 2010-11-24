@@ -1,4 +1,5 @@
-﻿namespace TickZoom.Presentation.Framework
+﻿using TickZoom.Api;
+namespace TickZoom.Presentation.Framework
 {
     using System;
     using System.Collections.Generic;
@@ -7,6 +8,7 @@
 
     public class ReflectiveCommand : Command
     {
+    	private static readonly Log log = Factory.SysLog.GetLogger(typeof(ReflectiveCommand));
         #region Fields
 
         private readonly PropertyInfo _canExecute;
@@ -53,9 +55,13 @@
 
         public override void Execute()
         {
-            var returnValue = _execute.Invoke(_model, null);
-            if(returnValue != null)
-                HandleReturnValue(returnValue);
+        	try {
+	            var returnValue = _execute.Invoke(_model, null);
+	            if(returnValue != null)
+	                HandleReturnValue(returnValue);
+        	} catch( TargetInvocationException ex) {
+        		log.Error( ex.InnerException.Message, ex.InnerException);
+        	}
         }
 
         private static void HandleReturnValue(object returnValue)

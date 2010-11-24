@@ -97,6 +97,8 @@ namespace TickZoom.GUI
                 
                 if( foundControl is TextBox) {
                     TryBind(foundControl,"Text",viewModel,property.Name);
+                } else if( foundControl is Label) {
+                    TryBind(foundControl,"Text",viewModel,property.Name);
                 } else if( foundControl is ComboBox) {
                     if( property.PropertyType.IsEnum) {
 	                    TryBind(foundControl,"Text",viewModel,property.Name);
