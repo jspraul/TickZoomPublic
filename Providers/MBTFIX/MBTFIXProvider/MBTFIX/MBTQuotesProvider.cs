@@ -48,7 +48,7 @@ namespace TickZoom.MBTQuotes
 			if( name.Contains(".config")) {
 				throw new ApplicationException("Please remove .config from config section name.");
 			}
-			ConfigName = name;
+			ConfigSection = name;
 			RetryStart = 1;
 			RetryIncrease = 1;
 			RetryMaximum = 30;

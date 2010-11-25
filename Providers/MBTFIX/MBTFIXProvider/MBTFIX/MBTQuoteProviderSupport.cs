@@ -65,7 +65,7 @@ namespace TickZoom.MBTQuotes
 		private int heartbeatDelay = 30;
 		private bool logRecovery = false;
 	    private string configFilePath;
-	    private string configName;
+	    private string configSection;
         private bool useLocalTickTime = true;
 		
 		public MBTQuoteProviderSupport()
@@ -376,23 +376,43 @@ namespace TickZoom.MBTQuotes
 		}
 	        
         private void ParseProperties(ConfigFile configFile) {
-			var value = configFile.GetValue(configName + "/UseLocalTickTime");
-			if( value != null && value.ToLower() == "false" ) {
-			   useLocalTickTime = false;
-			}
-			AddrStr = configFile.GetValue(configName + "/ServerAddress");
-			var portStr = configFile.GetValue(configName + "/ServerPort");
+			var value = GetField("UseLocalTickTime",configFile);
+			useLocalTickTime = value.ToLower() != "false";
+			
+			AddrStr = GetField("ServerAddress",configFile);
+			var portStr = GetField("ServerPort",configFile);
 			if( !ushort.TryParse(portStr, out port)) {
-				throw new ApplicationException("Please set 'ServerPort' to a valid port number in '"+configFilePath+"'.");
+				Exception("ServerPort",configFile);
 			}
-			userName = configFile.GetValue(configName + "/UserName");
-			password = configFile.GetValue(configName + "/Password");
+			userName = GetField("UserName",configFile);
+			password = GetField("Password",configFile);
 			
 			if( File.Exists(failedFile) ) {
 				throw new ApplicationException("Please correct the username or password error described in " + failedFile + ". Then delete the file before retrying, please.");
 			}
         }
-	        
+        
+        private string GetField( string field, ConfigFile configFile) {
+			var result = configFile.GetValue(configSection + "/" + field);
+			if( string.IsNullOrEmpty(AddrStr)) {
+				Exception( field, configFile);
+			}
+			return result;
+        }
+        
+        private void Exception( string field, ConfigFile configFile) {
+        	var sb = new StringBuilder();
+        	sb.AppendLine("Sorry, an error occurred finding the '" + field +"' setting.");
+        	sb.AppendLine("Please either set '" + field +"' in section '"+configSection+"' of '"+configFile+"'.");
+            sb.AppendLine("Otherwise you may choose a different section within the config file.");
+            sb.AppendLine("You can choose the section either in your project.tzproj file or");
+            sb.AppendLine("if you run a standalone ProviderService, in the ProviderServer\\Default.config file.");
+            sb.AppendLine("In either case, you may set the ProviderAssembly value as <AssemblyName>/<Section>");
+            sb.AppendLine("For example, MBTFIXProvider/EquityDemo will choose the MBTFIXProvider.exe assembly");
+            sb.AppendLine("with the EquityDemo section within the MBTFIXProvider\\Default.config file for that assembly.");
+            throw new ApplicationException(sb.ToString());
+        }
+        
 		private string UpperFirst(string input)
 		{
 			string temp = input.Substring(0, 1);
@@ -546,9 +566,9 @@ namespace TickZoom.MBTQuotes
 			get { return connectionStatus; }
 		}
 	    
-		public string ConfigName {
-			get { return configName; }
-			set { configName = value; }
+		public string ConfigSection {
+			get { return configSection; }
+			set { configSection = value; }
 		}
         
 		public bool UseLocalTickTime {
