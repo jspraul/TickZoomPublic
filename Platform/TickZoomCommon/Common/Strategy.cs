@@ -56,6 +56,8 @@ namespace TickZoom.Common
 		OrderHandlers orders;
 		ReverseCommon reverseActiveNow;
 		ReverseCommon reverseNextBar;
+		ChangeCommon changeActiveNow;
+		ChangeCommon changeNextBar;
 		ExitCommon exitActiveNow;
 		EnterCommon enterActiveNow;
 		ExitCommon exitNextBar;
@@ -79,6 +81,10 @@ namespace TickZoom.Common
 			exitActiveNow = new ExitCommon(this);
 			enterActiveNow = new EnterCommon(this);
 			reverseActiveNow = new ReverseCommon(this);
+			changeActiveNow = new ChangeCommon(this);
+			changeNextBar = new ChangeCommon(this);
+			changeNextBar.Orders = changeActiveNow.Orders;
+			changeNextBar.IsNextBar = true;
 			reverseNextBar = new ReverseCommon(this);
 			reverseNextBar.Orders = reverseActiveNow.Orders;
 			reverseNextBar.IsNextBar = true;
@@ -90,7 +96,8 @@ namespace TickZoom.Common
 			enterNextBar.IsNextBar = true;
 			orders = new OrderHandlers(enterActiveNow,enterNextBar,
 			                           exitActiveNow,exitNextBar,
-			                           reverseActiveNow,reverseNextBar);
+			                           reverseActiveNow,reverseNextBar,
+			                           changeActiveNow,changeNextBar);
 			
 			// Interceptors.
 			performance = new Performance(this);
@@ -107,6 +114,8 @@ namespace TickZoom.Common
 		
 		public override void OnConfigure()
 		{
+			changeActiveNow.OnInitialize();
+			changeNextBar.OnInitialize();
 			reverseActiveNow.OnInitialize();
 			reverseNextBar.OnInitialize();
 			exitActiveNow.OnInitialize();

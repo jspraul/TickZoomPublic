@@ -79,6 +79,7 @@
     <Compile Include="Common\Strategy.cs" />
     <Compile Include="Common\StrategyWatcher.cs" />
     <Compile Include="Enums\Trend.cs" />
+    <Compile Include="Interceptors\ChangeCommon.cs" />
     <Compile Include="Interceptors\FillHandlerDefault.cs" />
     <Compile Include="Interceptors\FillManager.cs" />
     <Compile Include="Interceptors\FillSimulatorPhysical.cs" />

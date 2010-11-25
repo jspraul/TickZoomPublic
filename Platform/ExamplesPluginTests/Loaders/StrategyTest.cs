@@ -476,10 +476,14 @@ namespace Loaders
 				// and merely used for reconciliation.
 				testReconciliationMap.Clear();
 				LoadReconciliation(backEndPath,testReconciliationMap);
+			} else {
+				log.Warn("Back end reconciliation file was not found: " + backEndPath);
 			}
 			if( File.Exists(frontEndPath)) {
 				goodReconciliationMap.Clear();
 				LoadReconciliation(frontEndPath,goodReconciliationMap);
+			} else {
+				log.Warn("Front end reconciliation file was not found: " + frontEndPath);
 			}
 		}
 		
@@ -487,6 +491,7 @@ namespace Loaders
 			using( FileStream fileStream = new FileStream(filePath,FileMode.Open,FileAccess.Read,FileShare.ReadWrite)) {
 				StreamReader file = new StreamReader(fileStream);
 				string line;
+				int count = 0;
 				while( (line = file.ReadLine()) != null) {
 					string[] fields = line.Split(',');
 					int fieldIndex = 0;
@@ -505,7 +510,9 @@ namespace Loaders
 						transactionList.Add(testInfo);
 						tempReconciliation.Add(testInfo.Symbol,transactionList);
 					}
+					count++;
 				}
+				log.Warn( "Loaded "+ count + " transactions from " + filePath);
 			}
 		}
 		

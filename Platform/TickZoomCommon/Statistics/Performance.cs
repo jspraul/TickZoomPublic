@@ -318,7 +318,7 @@ namespace TickZoom.Statistics
 		}
 		
 		private void TryUpdateComboTrades() {
-			if( comboTradesBinary.Count > 0) {
+			if( comboTradesBinary != null && comboTradesBinary.Count > 0) {
 				TransactionPairBinary binary = comboTradesBinary.Tail;
 				binary.TryUpdate(model.Ticks[0]);
 				comboTradesBinary.Tail = binary;

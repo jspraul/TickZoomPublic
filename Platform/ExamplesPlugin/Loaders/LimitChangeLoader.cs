@@ -25,35 +25,28 @@
 #endregion
 
 using System;
-using System.Configuration;
+using System.Collections.Generic;
 using TickZoom.Api;
 using TickZoom.Common;
 
-namespace TickZoom.Starters
+namespace TickZoom.Examples
 {
-	public class FIXSimulatorStarter : RealTimeStarter {
-		private FIXSimulator fixServer;
-		public FIXSimulatorStarter() {
-			SyncTicks.Enabled = true;
-			PhysicalOrderDefault.ResetOrderId();
-			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
-			ProjectProperties.Engine.SimulateRealTime = true;
-//			ProjectProperties.Engine.RealtimeOutput = false;
+	public class LimitChangeLoader : ModelLoaderCommon
+	{
+		public LimitChangeLoader() {
+			/// <summary>
+			/// IMPORTANT: You can personalize the name of each model loader.
+			/// </summary>
+			category = "Example";
+			name = "Limit Order Change Multi-Symbol";
 		}
 		
-		public override void Run(ModelLoaderInterface loader)
-		{
-			Config = "WarehouseTest.config";
-            SetupProviderServiceConfig("MBTFIXProvider/Simulate", (ushort) Port);
-            try
-            { 
-				fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
-				base.Run(loader);
-			} finally {
-            	if( fixServer != null) {
-					fixServer.Dispose();
-            	}
-			}
+		public override void OnInitialize(ProjectProperties properties) {
 		}
+		
+		public override void OnLoad(ProjectProperties model) {
+			TopModel = new LimitChangeStrategy();
+		}
+		
 	}
 }

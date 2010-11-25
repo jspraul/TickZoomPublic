@@ -210,6 +210,18 @@ namespace Loaders
 				EndTime = new TimeStamp( 2009, 6, 10),
 				IntervalDefault = Intervals.Minute1,
 			});
+			
+			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.All,
+			    Name = "LimitChangeTest",
+			    Loader = new LimitChangeLoader(),
+				Symbols = primarySymbol,
+				StoreKnownGood = storeKnownGood,
+				ShowCharts = false,
+				StartTime = new TimeStamp( 1800, 1, 1),
+				EndTime = new TimeStamp( 2009, 6, 10),
+				IntervalDefault = Intervals.Minute1,
+			});
 			return list.ToArray();
 		}
 	}
