@@ -423,6 +423,9 @@ namespace TickZoom.Statistics
 			return new StrategyStats(ComboTrades);
 		}
 		
+		/// <summary>
+		/// <b>Obsolete:</b> Please use the same property at Performance.Equity.* instead.
+		/// </summary>
 		[Obsolete("Please use the same property at Performance.Equity.* instead.",true)]
 		public bool GraphEquity {
 			get { return Equity.GraphEquity; }

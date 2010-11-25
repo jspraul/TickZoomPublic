@@ -95,6 +95,7 @@
     <Compile Include="Loaders\ExampleReversalLoader.cs" />
     <Compile Include="Loaders\ExampleSimulatedLoader.cs" />
     <Compile Include="Loaders\ExampleDualSymbolLoader.cs" />
+    <Compile Include="Loaders\LimitReversalLoader.cs" />
     <Compile Include="Loaders\Test5000Strategies.cs" />
     <Compile Include="Loaders\MarketOrderLoader.cs" />
     <Compile Include="Loaders\TestCancelReplaceLoader.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Portfolios\Portfolio5000Strategies.cs" />
     <Compile Include="Strategies\ExampleBreakoutReversal.cs" />
     <Compile Include="Strategies\ExampleBreakoutStops.cs" />
+    <Compile Include="Strategies\LimitReversalStrategy.cs" />
     <Compile Include="Strategies\TestCancelReplaceStrategy.cs" />
     <Compile Include="Strategies\TestStopStrategy.cs" />
     <Compile Include="Strategies\Unsupported\BreakoutTrend.cs" />

@@ -760,7 +760,7 @@ namespace Loaders
 			}
 			if( !a.Equals(b)) {
 				assertFlag = true;
-				log.Error("Expected '" + a + "' but was '" + b + "': " + message);
+				log.Error("Trade mismatch:\nExpected '" + a + "'\n but was '" + b + "': " + message);
 			}
 		}
 		

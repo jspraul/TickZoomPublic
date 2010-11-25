@@ -173,7 +173,7 @@ namespace TickZoom.Starters
 			loader.OnInitialize(ProjectProperties);
 			loader.OnLoad(ProjectProperties);
 			if( !SetOptimizeValues(loader)) {
-				throw new ApplicationException("Error, setting optimize variables.");
+				throw new ApplicationException("Error, setting optimize variables. See log file for details.");
 			}
 			ModelInterface model = loader.TopModel;
 			Run( model);

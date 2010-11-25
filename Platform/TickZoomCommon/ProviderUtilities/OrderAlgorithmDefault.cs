@@ -36,7 +36,7 @@ using TickZoom.Api;
 namespace TickZoom.Common
 {
 	public class OrderAlgorithmDefault : OrderAlgorithm {
-		private static readonly Log staticLog = Factory.SysLog.GetLogger("TickZoom.Common.OrderAlgorithm");
+		private static readonly Log staticLog = Factory.SysLog.GetLogger(typeof(OrderAlgorithmDefault));
 		private static readonly bool debug = staticLog.IsDebugEnabled;
 		private static readonly bool trace = staticLog.IsTraceEnabled;
 		private Log log;
@@ -58,7 +58,7 @@ namespace TickZoom.Common
 		private Dictionary<long,long> filledOrders = new Dictionary<long,long>();
 		
 		public OrderAlgorithmDefault(string name, SymbolInfo symbol, PhysicalOrderHandler brokerOrders) {
-			this.log = Factory.SysLog.GetLogger("TickZoom.Common.OrderAlgorithm." + symbol.Symbol.StripInvalidPathChars() + "." + name );
+			this.log = Factory.SysLog.GetLogger(typeof(OrderAlgorithmDefault).FullName + "." + symbol.Symbol.StripInvalidPathChars() + "." + name );
 			this.symbol = symbol;
 			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			this.physicalOrderHandler = brokerOrders;
@@ -194,12 +194,13 @@ namespace TickZoom.Common
 				physical.Size : - physical.Size;
 			var delta = logicalPosition - strategyPosition;
 			var difference = delta - physicalPosition;
-			if( delta == 0) {
+			if( delta == 0 || strategyPosition == 0) {
 				TryCancelBrokerOrder(physical);
 			} else if( difference != 0) {
+				var origBrokerOrder = physical.BrokerOrder;
 				if( delta > 0) {
 					physical = new PhysicalOrderDefault(OrderState.Active,symbol, logical,OrderSide.Buy,Math.Abs(delta));
-					TryCreateBrokerOrder(physical);
+					TryChangeBrokerOrder(physical, origBrokerOrder);
 				} else {
 					OrderSide side;
 					if( strategyPosition > 0 && logicalPosition < 0) {
@@ -210,7 +211,7 @@ namespace TickZoom.Common
 					}
 					side = (long) strategyPosition >= (long) Math.Abs(delta) ? OrderSide.Sell : OrderSide.SellShort;
 					physical = new PhysicalOrderDefault(OrderState.Active,symbol, logical, side, Math.Abs(delta));
-					TryCreateBrokerOrder(physical);
+					TryChangeBrokerOrder(physical, origBrokerOrder);
 				}
 			} else if( logical.Price.ToLong() != physical.Price.ToLong()) {
 				var origBrokerOrder = physical.BrokerOrder;
