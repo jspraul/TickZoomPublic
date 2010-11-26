@@ -54,7 +54,6 @@ namespace ZedGraph
 	[Serializable]
 	public class GraphPane : PaneBase, ICloneable, ISerializable
 	{
-		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 	#region Events
 

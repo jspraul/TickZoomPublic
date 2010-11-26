@@ -585,7 +585,7 @@ namespace TickZoom
 			PointPair ppair;
 			int barCount = updateSeries.BarCount;
 			var line = lineList[index];
-			while( updateSeries.Count > line.Count) {
+			while( barCount > line.Count) {
 				var lookback = barCount - line.Count - 1;
 				line.Add(double.NaN,double.NaN);
 				ppair = line[line.Count-1];
@@ -616,17 +616,17 @@ namespace TickZoom
 			} catch ( ApplicationException) {
 			}
 			PointPair ppair;
-			int barCount = updateSeries.BarCount;
+			int seriesCount = updateSeries.BarCount;
 			var line = lineList[index];
-			while( updateSeries.BarCount > line.Count) {
-				var lookback = barCount - line.Count - 1;
+			while( seriesCount > line.Count) {
+				var lookback = seriesCount - line.Count - 1;
 				line.Add(double.NaN,double.NaN);
 				ppair = line[line.Count-1];
 				ppair.X = updateSeries.Time[lookback].ToOADate();
 				ppair.Y = indicator[lookback];
 				ppair.Z = colorIndex;
 			}
-			if( barCount != updateSeries.BarCount) {
+			if( seriesCount != updateSeries.BarCount) {
 				throw new ApplicationException("Synchonization problem to solve.");
 			}
 			PointPairList ppList;
