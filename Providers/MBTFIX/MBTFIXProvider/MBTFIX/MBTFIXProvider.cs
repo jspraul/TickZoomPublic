@@ -456,15 +456,6 @@ namespace TickZoom.MBTFIX
 						}
 						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 						break;
-					case "4": // Canceled
-						order = RemoveOrder( packetFIX, packetFIX.ClientOrderId);
-						if( order != null) {
-							algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
-							algorithm.OnCancelBrokerOrder( order.Symbol, packetFIX.ClientOrderId);
-						} else if( IsRecovered) {
-							log.Warn("Remove order after cancel failed. Probably due to already being canceled by the platform. Ignoring.");
-						}
-						break;
 					case "5": // Replaced
 						order = ReplaceOrder( packetFIX, OrderState.Active, null);
 						if( order != null) {
@@ -474,9 +465,17 @@ namespace TickZoom.MBTFIX
 							log.Warn("Chaning order status after cancel/replace failed. Probably due to already being canceled or filled. Ignoring.");
 						}
 						break;
+					case "4": // Canceled
+						order = RemoveOrder( packetFIX, packetFIX.ClientOrderId);
+						if( order != null) {
+							algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
+							algorithm.OnCancelBrokerOrder( order.Symbol, packetFIX.ClientOrderId);
+						} else if( IsRecovered) {
+							log.Notice("Order " + packetFIX.ClientOrderId + " was already removed after cancel. Ignoring.");
+						}
+						break;
 					case "6": // Pending Cancel
-						var clientOrderId = packetFIX.OriginalClientOrderId == null ? packetFIX.ClientOrderId : packetFIX.OriginalClientOrderId;
-						RemoveOrder( packetFIX, clientOrderId);
+						UpdateOrder( packetFIX, OrderState.Pending, "PendingCancel");
 						break;
 					case "8": // Rejected
 						RejectOrder( packetFIX);
@@ -597,14 +596,13 @@ namespace TickZoom.MBTFIX
 		
 		private static readonly char[] DOT_SEPARATOR = new char[] { '.' };
 		public PhysicalOrder RemoveOrder( PacketFIX4_4 packetFIX, string clientOrderId) {
-			if( debug && (LogRecovery || !IsRecovery) ) {
-				log.Debug("RemoveOrder( " + clientOrderId + ")");
-			}
 			lock( openOrdersLocker) {
 				PhysicalOrder order = null;
 				if( openOrders.TryGetValue(clientOrderId, out order)) {
-					if( trace) log.Trace( "Removing open order id: " + clientOrderId);
 					openOrders.Remove(clientOrderId);
+					if( debug && (LogRecovery || !IsRecovery) ) {
+						log.Debug("RemoveOrder( " + clientOrderId + ")");
+					}
 				}
 				return order;
 			}

@@ -345,6 +345,7 @@ namespace TickZoom.MBTQuotes
 	    private void LoadProperties(string configFilePath) {
 	        this.configFilePath = configFilePath;
 	        ConfigFile configFile;
+	        log.Notice("Using section " + configSection + " in file: " + configFilePath);
 			if( !File.Exists(configFilePath) ) {
 	        	configFile = new ConfigFile(configFilePath);
 	        	configFile.SetValue("EquityDemo/ServerAddress","216.52.236.111");
@@ -376,25 +377,25 @@ namespace TickZoom.MBTQuotes
 		}
 	        
         private void ParseProperties(ConfigFile configFile) {
-			var value = GetField("UseLocalTickTime",configFile);
-			useLocalTickTime = value.ToLower() != "false";
+			var value = GetField("UseLocalTickTime",configFile, false);
+			useLocalTickTime = value != null && value.ToLower() != "false";
 			
-			AddrStr = GetField("ServerAddress",configFile);
-			var portStr = GetField("ServerPort",configFile);
+			AddrStr = GetField("ServerAddress",configFile,true);
+			var portStr = GetField("ServerPort",configFile,true);
 			if( !ushort.TryParse(portStr, out port)) {
 				Exception("ServerPort",configFile);
 			}
-			userName = GetField("UserName",configFile);
-			password = GetField("Password",configFile);
+			userName = GetField("UserName",configFile,true);
+			password = GetField("Password",configFile,true);
 			
 			if( File.Exists(failedFile) ) {
 				throw new ApplicationException("Please correct the username or password error described in " + failedFile + ". Then delete the file before retrying, please.");
 			}
         }
         
-        private string GetField( string field, ConfigFile configFile) {
+        private string GetField( string field, ConfigFile configFile, bool required) {
 			var result = configFile.GetValue(configSection + "/" + field);
-			if( string.IsNullOrEmpty(AddrStr)) {
+			if( required && string.IsNullOrEmpty(result)) {
 				Exception( field, configFile);
 			}
 			return result;

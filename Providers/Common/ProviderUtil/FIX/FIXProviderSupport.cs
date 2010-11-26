@@ -406,7 +406,7 @@ namespace TickZoom.FIX
         
         private string GetField( string field, ConfigFile configFile) {
 			var result = configFile.GetValue(configSection + "/" + field);
-			if( string.IsNullOrEmpty(AddrStr)) {
+			if( string.IsNullOrEmpty(result)) {
 				Exception( field, configFile);
 			}
 			return result;

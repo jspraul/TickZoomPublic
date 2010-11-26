@@ -44,7 +44,9 @@ namespace TickZoom.Starters
 		public override void Run(ModelLoaderInterface loader)
 		{
 			Config = "WarehouseTest.config";
-            SetupProviderServiceConfig("MBTFIXProvider/Simulate", (ushort) Port);
+			var provider = "MBTFIXProvider/Simulate";
+			AddProvider(provider);
+            SetupProviderServiceConfig(provider, (ushort)Port);
             try
             { 
 				fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
