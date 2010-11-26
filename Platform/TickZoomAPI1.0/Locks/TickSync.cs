@@ -69,7 +69,7 @@ namespace TickZoom.Api
 		public void Clear() {
 			if( !CheckCompletedInternal()) {
 				System.Diagnostics.Debugger.Break();
-				throw new ApplicationException(symbol + ": Tick, position changes, physical orders, and physical fills, must all complete before clearing the tick sync.");
+				throw new ApplicationException(symbol + ": Tick, position changes, physical orders, and physical fills, must all complete before clearing the tick sync. Current numbers are: " + this);
 			}
 			ForceClear();
 		}

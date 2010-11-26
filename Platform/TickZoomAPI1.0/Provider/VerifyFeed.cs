@@ -46,5 +46,6 @@ namespace TickZoom.Api
 		TickIO LastTick { get; }
 		bool KeepReceived { get; set; }
 		List<TickBinary> GetReceived();
+		int PauseSeconds { get; set; }
 	}
 }

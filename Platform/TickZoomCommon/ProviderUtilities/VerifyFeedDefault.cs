@@ -47,6 +47,7 @@ namespace TickZoom.Common
 		private Pool<TickBinaryBox> tickPool = Factory.TickUtil.TickPool();
 		private bool keepReceived = false;
 		private List<TickBinary> received = new List<TickBinary>();
+		private int pauseSeconds = 3;
 		
 		public List<TickBinary> GetReceived() {
 			return received;
@@ -233,7 +234,6 @@ namespace TickZoom.Common
 		{
 			if (debug)
 				log.Debug("VerifyFeed");
-			int pauseSeconds = 3;
 			log.Info("Sleeping " + pauseSeconds + " seconds to allow checking for over filling of orders.");
 			Thread.Sleep( pauseSeconds * 1000);
 			long startTime = Factory.TickCount;
@@ -577,6 +577,11 @@ namespace TickZoom.Common
 		public bool KeepReceived {
 			get { return keepReceived; }
 			set { keepReceived = value; }
+		}
+		
+		public int PauseSeconds {
+			get { return pauseSeconds; }
+			set { pauseSeconds = value; }
 		}
 	}
 }

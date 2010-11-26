@@ -40,12 +40,19 @@ namespace TickZoom.Test
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TimeAndSales));
 		private static readonly bool debug = log.IsDebugEnabled;		
 		private bool isTestSeperate = true;	
+		private int secondsDelay = 5;
+		
+		public int SecondsDelay {
+			get { return secondsDelay; }
+			set { secondsDelay = value; }
+		}
 		
 #if CERTIFICATION
 		[Test]
 		public void ZAutoReconnection() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
+				verify.PauseSeconds = secondsDelay;
 				if(debug) log.Debug("===ZAutoReconnection===");
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
@@ -72,10 +79,10 @@ namespace TickZoom.Test
 		public void DemoConnectionTest() {
 			using( var verify = Factory.Utility.VerifyFeed())
 			using( var provider = CreateProvider(true)) {
+				verify.PauseSeconds = secondsDelay;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				if(debug) log.Debug("===DemoConnectionTest===");
 				if(debug) log.Debug("===StartSymbol===");
-				var secondsDelay = 3;
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);
 				if(debug) log.Debug("===VerifyState===");
@@ -93,9 +100,9 @@ namespace TickZoom.Test
 		public void TestSpecificLogicalOrder() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
+				verify.PauseSeconds = secondsDelay;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
-				var secondsDelay = 3;
 				VerifyConnected(verify);
 				ClearOrders(0);
 				ClearPosition(provider,verify,secondsDelay);
@@ -120,8 +127,8 @@ namespace TickZoom.Test
 		public void TestMarketOrder() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
+				verify.PauseSeconds = secondsDelay;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
-				int secondsDelay = 5;
 				if(debug) log.Debug("===TestMarketOrder===");
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);
@@ -172,10 +179,10 @@ namespace TickZoom.Test
 		public void TestLogicalLimitOrders() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
+				verify.PauseSeconds = secondsDelay;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);
-				int secondsDelay = 5;
 				
 				ClearOrders(0);
 				ClearPosition(provider,verify,secondsDelay);
@@ -211,9 +218,9 @@ namespace TickZoom.Test
 		
 		[Test]
 		public void DemoReConnectionTest() {
-			int secondsDelay = 8;
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = CreateProvider(true)) {
+				verify.PauseSeconds = secondsDelay;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				if(debug) log.Debug("===VerifyState===");
@@ -228,6 +235,7 @@ namespace TickZoom.Test
 			
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = CreateProvider(true)) {
+				verify.PauseSeconds = secondsDelay;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 	  			provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				if(debug) log.Debug("===VerifyState===");
@@ -243,6 +251,7 @@ namespace TickZoom.Test
 		public void DemoStopSymbolTest() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = CreateProvider(true)) {
+				verify.PauseSeconds = secondsDelay;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				log.Info("===DemoStopSymbolTest===");
 				if(debug) log.Debug("===StartSymbol===");
@@ -250,7 +259,7 @@ namespace TickZoom.Test
 				if(debug) log.Debug("===VerifyState===");
 				VerifyConnected(verify);
 				if(debug) log.Debug("===VerifyFeed===");
-		  		long count = verify.Verify(2,assertTick,symbol,5);
+		  		long count = verify.Verify(2,assertTick,symbol,secondsDelay);
 		  		Assert.GreaterOrEqual(count,2,"tick count");
 				if(debug) log.Debug("===StopSymbol===");
 		  		provider.SendEvent(verify,symbol,(int)EventType.StopSymbol,null);
@@ -262,11 +271,11 @@ namespace TickZoom.Test
 		  		Assert.IsTrue(actualState,"after receiving a StopSymbol event, if your provider plugin was sending ticks then it must return either respond with an EndHistorical or EndRealTime event. If it has already sent one of those prior to the StopSymbol, then no reponse is required.");
 		  		
 		  		// Clean out and ignore any extra ticks.
-		  		count = verify.Verify(1000,assertTick,symbol,5);
+		  		count = verify.Verify(1000,assertTick,symbol,secondsDelay);
 		  		Assert.Less(count,1000,"your provider plugin must not send any more ticks after receiving a StopSymbol event.");
 		  		
 		  		// Make sure we don't get any more ticks.
-		  		count = verify.Verify(0,assertTick,symbol,5);
+		  		count = verify.Verify(0,assertTick,symbol,secondsDelay);
 		  		Assert.AreEqual(0,count,"your provider plugin must not send any more ticks after receiving a StopSymbol event.");
 		  		
 		  		provider.SendEvent(verify,null,(int)EventType.Disconnect,null);	
@@ -278,10 +287,10 @@ namespace TickZoom.Test
 		public void TestLogicalStopOrders() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
+				verify.PauseSeconds = secondsDelay;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);
-				var secondsDelay = 5;
 				
 				ClearOrders(0);
 				ClearPosition(provider,verify,secondsDelay);
@@ -298,7 +307,7 @@ namespace TickZoom.Test
 				CreateExit(strategy,OrderType.SellStop,bid-180*symbol.MinimumTick,strategyPosition);
 				LogicalOrder exitBuyStop = CreateExit(strategy,OrderType.BuyStop,ask+540*symbol.MinimumTick,strategyPosition);
 				SendOrders(provider,verify,0,secondsDelay);
-	  			var count = verify.Verify(2,assertTick,symbol,5);
+	  			var count = verify.Verify(2,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			
 				ClearOrders(0);
@@ -308,7 +317,7 @@ namespace TickZoom.Test
 				orders.AddLast(enterSellStop);
 				orders.AddLast(exitBuyStop);
 				SendOrders(provider,verify,0,secondsDelay);
-	  			count = verify.Verify(2,assertTick,symbol,5);
+	  			count = verify.Verify(2,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			
 				ClearOrders(0);
@@ -321,6 +330,7 @@ namespace TickZoom.Test
 			if( !IsTestSeperate) return;
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = CreateProvider(false)) {
+				verify.PauseSeconds = secondsDelay;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				if(debug) log.Debug("===VerifyState===");
@@ -340,10 +350,10 @@ namespace TickZoom.Test
 		public virtual void TestPositionSyncAndStopExits() {
 			using( VerifyFeed verify = Factory.Utility.VerifyFeed())
 			using( Provider provider = ProviderFactory()) {
+				verify.PauseSeconds = secondsDelay;
 				provider.SendEvent(verify,null,(int)EventType.Connect,null);
 				provider.SendEvent(verify,symbol,(int)EventType.StartSymbol,new StartSymbolDetail(TimeStamp.MinValue));
 				VerifyConnected(verify);
-				int secondsDelay = 3;
 				
 				ClearOrders(0);
 				ClearPosition(provider,verify,secondsDelay);

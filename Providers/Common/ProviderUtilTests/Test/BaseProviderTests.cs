@@ -239,6 +239,7 @@ namespace TickZoom.Test
 			var expectedTicks = 1;
   			var count = verify.Wait(symbol,expectedTicks,secondsDelay);
   			Assert.GreaterOrEqual(count,expectedTicks,"at least one tick");
+  			
   			if( SyncTicks.Enabled) tickSync.AddPositionChange();
 			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,desiredPosition,orders));
 		}
