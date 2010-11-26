@@ -49,7 +49,7 @@ namespace TickZoom.Examples
 			factor = 10;
 			Performance.GraphTrades = true;
 			
-			sma = new SMA(Bars.Close,length);
+			sma = Formula.SMA(Bars.Close,length);
 			sma.Drawing.IsVisible = true;
 			AddIndicator( sma);
 			
