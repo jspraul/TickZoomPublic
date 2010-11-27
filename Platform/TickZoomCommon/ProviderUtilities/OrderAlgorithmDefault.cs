@@ -593,6 +593,11 @@ namespace TickZoom.Common
 					filledOrder.Position : - filledOrder.Position;
 				if( debug) log.Debug("Change order fill = " + orderPosition + ", strategy = " + strategyPosition + ", fill = " + fill.Position);
 				isCompleteFill = orderPosition + strategyPosition == fill.Position;
+				if( !isCompleteFill) {
+					var change = fill.Position - filledOrder.StrategyPosition;
+					filledOrder.Position = Math.Abs(orderPosition - change);
+					if( debug) log.Debug( "Changing order to position: " + filledOrder.Position);
+				}
 			}
 			if( isCompleteFill) {
 				try { 

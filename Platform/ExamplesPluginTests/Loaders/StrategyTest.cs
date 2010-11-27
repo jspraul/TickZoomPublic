@@ -216,7 +216,12 @@ namespace Loaders
 		
 		public void CleanupFiles() {
 			CleanupServerCache();
-			string filePath = Factory.SysLog.LogFolder + @"\Trades.log";
+			var appDataFolder = Factory.Settings["AppDataFolder"];
+			var providersFolder = Path.Combine(appDataFolder,"Providers");
+			var mbtfixFolder = Path.Combine(providersFolder,"MBTFIXProvider");
+			var filePath = Path.Combine(mbtfixFolder,"LoginFailed.txt");
+			File.Delete(filePath);
+			filePath = Factory.SysLog.LogFolder + @"\Trades.log";
 			File.Delete(filePath);
 			filePath = Factory.SysLog.LogFolder + @"\BarData.log";
 			File.Delete(filePath);
