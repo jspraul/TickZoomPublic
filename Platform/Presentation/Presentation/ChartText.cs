@@ -1,5 +1,4 @@
-﻿#region Copyright
-
+#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -23,7 +22,6 @@
  * Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  */
-
 #endregion
 
 using System.Drawing;

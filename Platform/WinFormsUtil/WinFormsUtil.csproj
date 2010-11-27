@@ -56,11 +56,12 @@
     <Compile Include="WinFormsUtil\Execute.cs" />
     <Compile Include="WinFormsUtil\globalKeyboardHook.cs" />
     <Compile Include="WinFormsUtil\GlobalShortCuts.cs" />
-    <Compile Include="WinFormsUtil\NumericTextBox.cs" />
+    <Compile Include="WinFormsUtil\NumericTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="WinFormsUtil\NumericTextBox.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="WinFormsUtil" />
     <ProjectReference Include="..\Presentation\Presentation.csproj">
       <Project>{26EBB13A-E553-4465-B7B1-A3EDE3BA7EAA}</Project>
       <Name>Presentation</Name>
