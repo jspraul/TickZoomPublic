@@ -261,11 +261,11 @@ namespace TickZoom.FIX
 			return false;
 		}
 
-		public void AddSymbol(string symbol, Func<SymbolInfo, Tick, Yield> onTick, Action<PhysicalFill,int,int,int> onPhysicalFill)
+		public void AddSymbol(string symbol, Func<SymbolInfo, Tick, Yield> onTick, Action<PhysicalFill,int,int,int> onPhysicalFill, Action<PhysicalOrder,string> onOrderReject)
 		{
 			var symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 			if (!symbolHandlers.ContainsKey(symbolInfo.BinaryIdentifier)) {
-				var symbolHandler = new FIXServerSymbolHandler(symbol, onTick, onPhysicalFill);
+				var symbolHandler = new FIXServerSymbolHandler(symbol, onTick, onPhysicalFill, onOrderReject);
 				symbolHandlers.Add(symbolInfo.BinaryIdentifier, symbolHandler);
 			}
 		}

@@ -51,6 +51,7 @@ namespace TickZoom.Interceptors
 		private TimeStamp openTime;
 
 		private Action<PhysicalFill,int,int,int> onPhysicalFill;
+		private Action<PhysicalOrder,string> onRejectOrder;
 		private Action<int> onPositionChange;
 		private bool useSyntheticMarkets = true;
 		private bool useSyntheticStops = true;
@@ -266,25 +267,59 @@ namespace TickZoom.Interceptors
 			}
 		}
 		
+		private void OrderSideWrongReject(PhysicalOrder order) {
+			var message = "Sorry, improper setting of a " + order.Side + " order when position is " + actualPosition;
+			RemoveActive(order);
+			if( onRejectOrder != null) {
+				onRejectOrder( order, message);
+			} else {
+				throw new ApplicationException( message + " while handling order: " + order);
+			}
+		}
+		
+		private void VerifySellSide( PhysicalOrder order) {
+			if( actualPosition > 0) {
+				if( order.Side != OrderSide.Sell) {
+					OrderSideWrongReject(order);
+				}
+			} else {
+				if( order.Side != OrderSide.SellShort) {
+					OrderSideWrongReject(order);
+				}
+			}
+		}
+		
+		private void VerifyBuySide( PhysicalOrder order) {
+			if( order.Side != OrderSide.Buy) {
+				OrderSideWrongReject(order);
+			}
+		}
+		
 		private void OnProcessOrder(PhysicalOrder order, Tick tick)
 		{
 			switch (order.Type) {
 				case OrderType.SellMarket:
+					VerifySellSide(order);
 					ProcessSellMarket(order, tick);
 					break;
 				case OrderType.SellStop:
+					VerifySellSide(order);
 					ProcessSellStop(order, tick);
 					break;
 				case OrderType.SellLimit:
+					VerifySellSide(order);
 					ProcessSellLimit(order, tick);
 					break;
 				case OrderType.BuyMarket:
+					VerifyBuySide(order);
 					ProcessBuyMarket(order, tick);
 					break;
 				case OrderType.BuyStop:
+					VerifyBuySide(order);
 					ProcessBuyStop(order, tick);
 					break;
 				case OrderType.BuyLimit:
+					VerifyBuySide(order);
 					ProcessBuyLimit(order, tick);
 					break;
 			}
@@ -449,6 +484,11 @@ namespace TickZoom.Interceptors
 		public bool IsBarData {
 			get { return isBarData; }
 			set { isBarData = value; }
+		}
+		
+		public Action<PhysicalOrder, string> OnRejectOrder {
+			get { return onRejectOrder; }
+			set { onRejectOrder = value; }
 		}
 	}
 }

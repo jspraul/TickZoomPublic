@@ -41,13 +41,14 @@ namespace TickZoom.FIX
 		private SymbolInfo symbol;
 		private TickIO nextTick = Factory.TickUtil.TickIO();
 		
-		public FIXServerSymbolHandler( string symbolString, Func<SymbolInfo,Tick,Yield> onTick, Action<PhysicalFill,int,int,int> onPhysicalFill) {
+		public FIXServerSymbolHandler( string symbolString, Func<SymbolInfo,Tick,Yield> onTick, Action<PhysicalFill,int,int,int> onPhysicalFill, Action<PhysicalOrder,string> onRejectOrder) {
 			this.onTick = onTick;
 			this.symbol = Factory.Symbol.LookupSymbol(symbolString);
 			reader = Factory.TickUtil.TickReader();
 			reader.Initialize("Test\\MockProviderData", symbolString);
 			fillSimulator = Factory.Utility.FillSimulator( "FIX", symbol, false);
 			fillSimulator.OnPhysicalFill = onPhysicalFill;
+			fillSimulator.OnRejectOrder = onRejectOrder;
 			tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			tickSync.ForceClear();
 			queueTask = Factory.Parallel.Loop("FIXServerSymbol-"+symbolString, OnException, ProcessQueue);
@@ -56,7 +57,6 @@ namespace TickZoom.FIX
 	    private void TryCompleteTick() {
 	    	if( tickSync.Completed) {
 		    	if( trace) log.Trace("TryCompleteTick()");
-//				fillSimulator.FinishTick(lastTick);
 		    	tickSync.Clear();
 	    	} else if( tickSync.OnlyProcessPhysicalOrders) {
 				fillSimulator.StartTick(nextTick);

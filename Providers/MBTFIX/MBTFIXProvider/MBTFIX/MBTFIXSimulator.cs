@@ -302,12 +302,27 @@ namespace TickZoom.MBTFIX
 			quotePacketQueue.Enqueue(writePacket);
 		}
 		
+		
 		private void OnPhysicalFill( PhysicalFill fill, int totalSize, int cumulativeSize, int remainingSize) {
 			if( debug) log.Debug("Converting physical fill to FIX: " + fill);
 			SendPositionUpdate(fill.Order.Symbol, GetPosition(fill.Order.Symbol));
 			var orderStatus = cumulativeSize == totalSize ? "2" : "1";
 			SendExecutionReport( fill.Order, orderStatus, fill.Price, totalSize, cumulativeSize, fill.Size, remainingSize, fill.UtcTime, null);
 		}
+
+		private void OnRejectOrder( PhysicalOrder order, string error) {
+			var writePacket = fixSocket.CreatePacket();
+			var mbtMsg = new FIXMessage4_4(target,sender);
+			mbtMsg.SetAccount( "33006566");
+			mbtMsg.SetClientOrderId( order.BrokerOrder.ToString());
+			mbtMsg.SetOrderStatus("8");
+			mbtMsg.SetText(error);
+			mbtMsg.AddHeader("8");
+			string message = mbtMsg.ToString();
+			writePacket.DataOut.Write(message.ToCharArray());
+			if(debug) log.Debug("Sending position update: " + message);
+			fixPacketQueue.Enqueue(writePacket);
+		}	
 		
 		private void SendPositionUpdate(SymbolInfo symbol, int position) {
 			var writePacket = fixSocket.CreatePacket();
@@ -398,7 +413,7 @@ namespace TickZoom.MBTFIX
 							var symbol = packet.GetString( ref ptr);
 							symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 							log.Info("Received symbol request for " + symbolInfo);
-							AddSymbol(symbol, OnTick, OnPhysicalFill);
+							AddSymbol(symbol, OnTick, OnPhysicalFill, OnRejectOrder);
 							break;
 						case 2000: // Type of data.
 							var feedType = packet.GetString( ref ptr);
