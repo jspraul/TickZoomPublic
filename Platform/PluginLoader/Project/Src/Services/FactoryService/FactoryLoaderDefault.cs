@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 
 using TickZoom.Api;
@@ -74,17 +75,23 @@ namespace TickZoom.Update
 				Directory.CreateDirectory(path);
 			}
 		}
-
+		StringBuilder logMessage = new StringBuilder();
 		internal void LogMsg(string message)
 		{
 			if (debugFlag) {
 				Console.WriteLine(message);
 				System.Diagnostics.Debug.WriteLine("Debug: " + message);
 			}
+			logMessage.AppendLine(message);
+		}
+		
+		internal void ResetLog() {
+			logMessage.Length = 0;
 		}
 
 		public object Load(Type type, string assemblyName, params object[] args)
 		{
+			ResetLog();
 			assemblyName = Path.GetFileNameWithoutExtension(assemblyName);
 			LogMsg("Attempting Load of " + type + " from " + assemblyName);
 			errorCount = 0;
@@ -105,9 +112,10 @@ namespace TickZoom.Update
 				LogMsg("Individual load failed: " + ex.Message);
 			}
 			if (obj == null) {
-				string message = "Sorry, type " + type.Name + " was not found in any assembly named, " + assemblyName + ", in " + currentDirectoryPath;
-				LogMsg(message);
-				throw new Exception(message);
+				var sb = new StringBuilder();
+				sb.AppendLine("Sorry, type " + type.Name + " was not found in any assembly named, " + assemblyName);
+				sb.Append( logMessage);
+				throw new Exception(sb.ToString());
 			}
 			return obj;
 		}

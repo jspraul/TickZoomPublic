@@ -44,6 +44,7 @@ namespace TickZoom.Starters
 
         public override void Run(ModelLoaderInterface loader)
         {
+			IgnoreEndTime = false;
 			Config = "WarehouseTest.config";
 			var provider = "TickZoomCombinedMock";
 			AddProvider(provider);

@@ -35,6 +35,7 @@ namespace TickZoom.Starters
 {
 	public class RealTimeStarter : HistoricalStarter
 	{
+		private bool ignoreEndTime = true;
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		public override Provider[] SetupProviders(bool quietMode, bool singleLoad)
@@ -49,6 +50,9 @@ namespace TickZoom.Starters
 		
 		public override void Run(ModelInterface model)
 		{
+			if( ignoreEndTime) {
+				ProjectProperties.Starter.EndTime = TimeStamp.MaxValue;
+			}
 			ServiceConnection service = null;
 			switch( Address) {
 				case "InProcess":
@@ -93,6 +97,11 @@ namespace TickZoom.Starters
 				log.Error("Setup error.",ex);
 				throw ex;
 			}
+		}
+		
+		public bool IgnoreEndTime {
+			get { return ignoreEndTime; }
+			set { ignoreEndTime = value; }
 		}
 	}
 }
