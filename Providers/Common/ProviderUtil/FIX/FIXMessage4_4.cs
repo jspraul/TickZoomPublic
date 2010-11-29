@@ -255,7 +255,7 @@ namespace TickZoom.FIX
 		/// <summary>
 		///	151 Leaves Quantity
 		/// </summary>
-		public void SetLeavesQuantity(int value ) {
+		public void SetLeavesQuantity(double value ) {
 			Append(151,value);
 		}
 		

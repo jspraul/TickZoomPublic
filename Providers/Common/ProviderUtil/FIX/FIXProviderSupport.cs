@@ -70,6 +70,11 @@ namespace TickZoom.FIX
 		private bool logRecovery = true;
         private string configFilePath;
         private string configSection;
+        private bool hasFirstRecovery = false;
+        
+		public bool HasFirstRecovery {
+			get { return hasFirstRecovery; }
+		}
 		
 		public FIXProviderSupport()
 		{
@@ -190,6 +195,7 @@ namespace TickZoom.FIX
 		
 		public void EndRecovery() {
 			connectionStatus = Status.Recovered;
+			hasFirstRecovery = true;
 			if( debug) log.Debug("ConnectionStatus changed to: " + connectionStatus);
 		}
 		
@@ -318,6 +324,7 @@ namespace TickZoom.FIX
 		
         public void Start(Receiver receiver)
         {
+        	if( debug) log.Debug("Start() receiver: " + receiver);
         	this.receiver = (Receiver) receiver;
         }
         

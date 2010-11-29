@@ -441,8 +441,10 @@ namespace TickZoom.MBTFIX
 					case "0": // New
 						var symbol = Factory.Symbol.LookupSymbol( packetFIX.Symbol);
 						var order = UpdateOrder( packetFIX, OrderState.Active, null);
-						var algorithm = GetAlgorithm( symbol.BinaryIdentifier);
-						algorithm.OnCreateBrokerOrder( order);
+						if( IsRecovered) {
+							var algorithm = GetAlgorithm( symbol.BinaryIdentifier);
+							algorithm.OnCreateBrokerOrder( order);
+						}
 						break;
 					case "1": // Partial
 						UpdateOrder( packetFIX, OrderState.Active, null);
@@ -458,20 +460,24 @@ namespace TickZoom.MBTFIX
 						break;
 					case "5": // Replaced
 						order = ReplaceOrder( packetFIX, OrderState.Active, null);
-						if( order != null) {
-							algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
-							algorithm.OnChangeBrokerOrder( order, packetFIX.OriginalClientOrderId);
-						} else {
-							log.Warn("Chaning order status after cancel/replace failed. Probably due to already being canceled or filled. Ignoring.");
+						if( IsRecovered) {
+							if( order != null) {
+								var algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
+								algorithm.OnChangeBrokerOrder( order, packetFIX.OriginalClientOrderId);
+							} else {
+								log.Warn("Changing order status after cancel/replace failed. Probably due to already being canceled or filled. Ignoring.");
+							}
 						}
 						break;
 					case "4": // Canceled
-						order = RemoveOrder( packetFIX, packetFIX.ClientOrderId);
-						if( order != null) {
-							algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
-							algorithm.OnCancelBrokerOrder( order.Symbol, packetFIX.ClientOrderId);
-						} else if( IsRecovered) {
-							log.Notice("Order " + packetFIX.ClientOrderId + " was already removed after cancel. Ignoring.");
+						order = RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+						if( IsRecovered) {
+							if( order != null) {
+								var algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
+								algorithm.OnCancelBrokerOrder( order.Symbol, packetFIX.ClientOrderId);
+							} else if( IsRecovered) {
+								log.Notice("Order " + packetFIX.ClientOrderId + " was already removed after cancel. Ignoring.");
+							}
 						}
 						break;
 					case "6": // Pending Cancel
@@ -537,15 +543,13 @@ namespace TickZoom.MBTFIX
 				configTime.AddSeconds( timeZone.UtcOffset(executionTime));
 				var fill = Factory.Utility.PhysicalFill(fillPosition,packetFIX.LastPrice,configTime,executionTime,order,false);
 				if( debug) log.Debug( "Sending physical fill: " + fill);
-//				lock( openOrdersLocker) {
-//            		openOrders.Remove(packetFIX.ClientOrderId);
-//				}
 	            algorithm.ProcessFill( fill,packetFIX.OrderQuantity,packetFIX.CumulativeQuantity,packetFIX.LeavesQuantity);
 			}
 		}
 		
 		public void ProcessFill( SymbolInfo symbol, LogicalFillBinary fill) {
 			lock( openOrdersLocker) {
+				if( debug) log.Debug("Sending fill event for " + symbol + " to receiver: " + fill);
 				while( !receiver.OnEvent(symbol,(int)EventType.LogicalFill,fill)) {
 					Factory.Parallel.Yield();
 				}
@@ -824,7 +828,12 @@ namespace TickZoom.MBTFIX
 		public override void PositionChange(Receiver receiver, SymbolInfo symbol, int desiredPosition, Iterable<LogicalOrder> inputOrders)
 		{
 			if( !IsRecovered) {
-				throw new ApplicationException("PositionChange event received prior to completing FIX recovery. Current connection status is: " + ConnectionStatus);
+				if( HasFirstRecovery) {
+					log.Warn("PositionChange event received while FIX was offline or recovering. Current connection status is: " + ConnectionStatus);
+					return;
+				} else {
+					throw new ApplicationException("PositionChange event received prior to completing FIX recovery. Current connection status is: " + ConnectionStatus);
+				}
 			}
 			var count = inputOrders == null ? 0 : inputOrders.Count;
 			if( debug) log.Debug( "PositionChange " + symbol + ", desired " + desiredPosition + ", order count " + count);

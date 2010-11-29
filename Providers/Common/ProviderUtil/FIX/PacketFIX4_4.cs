@@ -146,7 +146,9 @@ namespace TickZoom.FIX
 					result = GetString(out executionType);
 					break;
 				case 151:
-					result = GetInt(out leavesQuantity);
+					double temp;
+					result = GetDouble(out temp);
+					leavesQuantity = (int) temp;
 					break;
 				case 460:
 					result = GetInt(out productType);
