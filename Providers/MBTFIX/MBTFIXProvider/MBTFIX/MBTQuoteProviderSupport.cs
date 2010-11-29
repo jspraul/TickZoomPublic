@@ -348,18 +348,22 @@ namespace TickZoom.MBTQuotes
 	        log.Notice("Using section " + configSection + " in file: " + configFilePath);
 			if( !File.Exists(configFilePath) ) {
 	        	configFile = new ConfigFile(configFilePath);
+	        	configFile.SetValue("EquityDemo/UseLocalTickTime","true");
 	        	configFile.SetValue("EquityDemo/ServerAddress","216.52.236.111");
 	            configFile.SetValue("EquityDemo/ServerPort","5020");
 	        	configFile.SetValue("EquityDemo/UserName","CHANGEME");
 	            configFile.SetValue("EquityDemo/Password","CHANGEME");
+	        	configFile.SetValue("ForexDemo/UseLocalTickTime","true");
 	        	configFile.SetValue("ForexDemo/ServerAddress","216.52.236.111");
 	            configFile.SetValue("ForexDemo/ServerPort","5020");
 	        	configFile.SetValue("ForexDemo/UserName","CHANGEME");
 	            configFile.SetValue("ForexDemo/Password","CHANGEME");
+	        	configFile.SetValue("EquityLive/UseLocalTickTime","true");
 	        	configFile.SetValue("EquityLive/ServerAddress","216.52.236.111");
 	            configFile.SetValue("EquityLive/ServerPort","5020");
 	        	configFile.SetValue("EquityLive/UserName","CHANGEME");
 	            configFile.SetValue("EquityLive/Password","CHANGEME");
+	        	configFile.SetValue("ForexLive/UseLocalTickTime","true");
 	        	configFile.SetValue("ForexLive/ServerAddress","216.52.236.111");
 	            configFile.SetValue("ForexLive/ServerPort","5020");
 	        	configFile.SetValue("ForexLive/UserName","CHANGEME");
@@ -378,7 +382,9 @@ namespace TickZoom.MBTQuotes
 	        
         private void ParseProperties(ConfigFile configFile) {
 			var value = GetField("UseLocalTickTime",configFile, false);
-			useLocalTickTime = value != null && value.ToLower() != "false";
+			if( !string.IsNullOrEmpty(value)) {
+				useLocalTickTime = value.ToLower() != "false";
+        	}
 			
 			AddrStr = GetField("ServerAddress",configFile,true);
 			var portStr = GetField("ServerPort",configFile,true);

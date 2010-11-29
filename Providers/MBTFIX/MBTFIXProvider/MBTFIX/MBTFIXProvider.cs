@@ -456,7 +456,11 @@ namespace TickZoom.MBTFIX
 						if( IsRecovered) {
 							SendFill( packetFIX);
 						}
-						RemoveOrder( packetFIX, packetFIX.ClientOrderId);
+						order = RemoveOrder( packetFIX, packetFIX.ClientOrderId);
+						if( IsRecovered) {
+							var algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
+							algorithm.PerformCompare();
+						}
 						break;
 					case "5": // Replaced
 						order = ReplaceOrder( packetFIX, OrderState.Active, null);
@@ -538,7 +542,12 @@ namespace TickZoom.MBTFIX
 				var algorithm = GetAlgorithm(symbolInfo.BinaryIdentifier);
 				var order = GetPhysicalOrder( packetFIX.ClientOrderId);
 				var fillPosition = packetFIX.LastQuantity * SideToSign(packetFIX.Side);
-				var executionTime = new TimeStamp(packetFIX.TransactionTime);
+				TimeStamp executionTime;
+				if( UseLocalFillTime) {
+					executionTime = TimeStamp.UtcNow;
+				} else {
+					executionTime = new TimeStamp(packetFIX.TransactionTime);
+				}
 				var configTime = executionTime;
 				configTime.AddSeconds( timeZone.UtcOffset(executionTime));
 				var fill = Factory.Utility.PhysicalFill(fillPosition,packetFIX.LastPrice,configTime,executionTime,order,false);

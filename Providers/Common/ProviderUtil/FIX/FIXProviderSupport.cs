@@ -71,6 +71,11 @@ namespace TickZoom.FIX
         private string configFilePath;
         private string configSection;
         private bool hasFirstRecovery = false;
+        private bool useLocalFillTime = true;
+        
+		public bool UseLocalFillTime {
+			get { return useLocalFillTime; }
+		}
         
 		public bool HasFirstRecovery {
 			get { return hasFirstRecovery; }
@@ -364,26 +369,31 @@ namespace TickZoom.FIX
 	        log.Notice("Using section " + configSection + " in file: " + configFilePath);
 			if( !File.Exists(configFilePath) ) {
 	        	configFile = new ConfigFile(configFilePath);
+	        	configFile.SetValue("EquityDemo/UseLocalFillTime","true");
 	        	configFile.SetValue("EquityDemo/ServerAddress","127.0.0.1");
 	        	configFile.SetValue("EquityDemo/ServerPort","5679");
 	        	configFile.SetValue("EquityDemo/UserName","CHANGEME");
 	        	configFile.SetValue("EquityDemo/Password","CHANGEME");
 	        	configFile.SetValue("EquityDemo/AccountNumber","CHANGEME");
+	        	configFile.SetValue("ForexDemo/UseLocalFillTime","true");
 	        	configFile.SetValue("ForexDemo/ServerAddress","127.0.0.1");
 	        	configFile.SetValue("ForexDemo/ServerPort","5679");
 	        	configFile.SetValue("ForexDemo/UserName","CHANGEME");
 	        	configFile.SetValue("ForexDemo/Password","CHANGEME");
 	        	configFile.SetValue("ForexDemo/AccountNumber","CHANGEME");
+	        	configFile.SetValue("EquityLive/UseLocalFillTime","true");
 	        	configFile.SetValue("EquityLive/ServerAddress","127.0.0.1");
 	        	configFile.SetValue("EquityLive/ServerPort","5680");
 	        	configFile.SetValue("EquityLive/UserName","CHANGEME");
 	        	configFile.SetValue("EquityLive/Password","CHANGEME");
 	        	configFile.SetValue("EquityLive/AccountNumber","CHANGEME");
+	        	configFile.SetValue("ForexLive/UseLocalFillTime","true");
 	        	configFile.SetValue("ForexLive/ServerAddress","127.0.0.1");
 	        	configFile.SetValue("ForexLive/ServerPort","5680");
 	        	configFile.SetValue("ForexLive/UserName","CHANGEME");
 	        	configFile.SetValue("ForexLive/Password","CHANGEME");
 	        	configFile.SetValue("ForexLive/AccountNumber","CHANGEME");
+	        	configFile.SetValue("Simulate/UseLocalFillTime","false");
 	        	configFile.SetValue("Simulate/ServerAddress","127.0.0.1");
 	        	configFile.SetValue("Simulate/ServerPort","6489");
 	        	configFile.SetValue("Simulate/UserName","Simulate1");
@@ -397,23 +407,28 @@ namespace TickZoom.FIX
 		}
         
         private void ParseProperties(ConfigFile configFile) {
-        	AddrStr = GetField("ServerAddress",configFile);
-        	var portStr = GetField("ServerPort",configFile);
+			var value = GetField("UseLocalFillTime",configFile, false);
+			if( !string.IsNullOrEmpty(value)) {
+				useLocalFillTime = value.ToLower() != "false";
+        	}
+			
+        	AddrStr = GetField("ServerAddress",configFile, true);
+        	var portStr = GetField("ServerPort",configFile, true);
 			if( !ushort.TryParse(portStr, out port)) {
 				Exception( "ServerPort", configFile);
 			}
-			userName = GetField("UserName",configFile);
-			password = GetField("Password",configFile);
-			accountNumber = GetField("AccountNumber",configFile);
+			userName = GetField("UserName",configFile, true);
+			password = GetField("Password",configFile, true);
+			accountNumber = GetField("AccountNumber",configFile, true);
 			
 			if( File.Exists(failedFile) ) {
 				throw new ApplicationException("Please correct the username or password error described in " + failedFile + ". Then delete the file before retrying, please.");
 			}
         }
         
-        private string GetField( string field, ConfigFile configFile) {
+        private string GetField( string field, ConfigFile configFile, bool required) {
 			var result = configFile.GetValue(configSection + "/" + field);
-			if( string.IsNullOrEmpty(result)) {
+			if( required && string.IsNullOrEmpty(result)) {
 				Exception( field, configFile);
 			}
 			return result;
