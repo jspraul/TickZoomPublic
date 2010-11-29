@@ -134,6 +134,9 @@ namespace TickZoom.Common
 			if( debug) log.Debug("Create Broker Order " + physical);
 			sentPhysicalOrders++;
 			TryAddPhysicalOrder(physical);
+			if( physical.Size <= 0) {
+				throw new ApplicationException("Sorry, order size must be greater than or equal to zero.");
+			}
 			physicalOrderHandler.OnCreateBrokerOrder(physical);
 		}
 		
@@ -331,9 +334,9 @@ namespace TickZoom.Common
 		private void VerifySide( LogicalOrder logical, PhysicalOrder physical) {
 			var side = GetOrderSide(logical.Type);
 			if( physical.Side != side) {
-				var origBrokerOrder = physical.BrokerOrder;
-				physical = new PhysicalOrderDefault(OrderState.Active,symbol,logical,side,Math.Abs(logical.StrategyPosition));
-				TryChangeBrokerOrder(physical, origBrokerOrder);
+				TryCancelBrokerOrder(physical);
+				physical = new PhysicalOrderDefault(OrderState.Active,symbol,logical,side,physical.Size);
+				TryCreateBrokerOrder(physical);
 			}
 		}
 		

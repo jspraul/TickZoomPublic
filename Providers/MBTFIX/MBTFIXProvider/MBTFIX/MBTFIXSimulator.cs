@@ -141,10 +141,10 @@ namespace TickZoom.MBTFIX
 		
 		private void FIXChangeOrder(PacketFIX4_4 packet) {
 			var symbol = Factory.Symbol.LookupSymbol(packet.Symbol);
-			PhysicalOrder order = null;
+			PhysicalOrder origOrder = null;
 			if( debug) log.Debug( "FIXChangeOrder() for " + packet.Symbol + ". Client id: " + packet.ClientOrderId + ". Original client id: " + packet.OriginalClientOrderId);
 			try {
-				order = GetOrderById( symbol, packet.OriginalClientOrderId);
+				origOrder = GetOrderById( symbol, packet.OriginalClientOrderId);
 			} catch( ApplicationException) {
 				log.Warn( symbol + ": Cannot change order by client id: " + packet.OriginalClientOrderId + ". Probably already filled or canceled. Should send a reject in this case.");
 				if( SyncTicks.Enabled) {
@@ -153,7 +153,19 @@ namespace TickZoom.MBTFIX
 				}
 				return;
 			}
-			order = ConstructOrder( packet, packet.ClientOrderId);
+			var order = ConstructOrder( packet, packet.ClientOrderId);
+			if( order.Side != origOrder.Side) {
+				var message = "Cannot change " + origOrder.Side + " to " + order.Side;
+				log.Error( message);
+				OnRejectOrder(origOrder,message);
+				return;     
+			}
+			if( order.Type != origOrder.Type) {
+				var message = "Cannot change " + origOrder.Type + " to " + order.Type;
+				log.Error( message);
+				OnRejectOrder(origOrder,message);
+				return;     
+			}
 			SendExecutionReport( order, "E", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			SendExecutionReport( order, "5", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);

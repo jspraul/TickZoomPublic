@@ -126,6 +126,7 @@ namespace TickZoom.Interceptors
 				orderMap.Add((string)order.BrokerOrder,order);
 			}
 			SortAdjust(order);
+			VerifySide(order);
 		}
 		
 		public void OnCreateBrokerOrder(PhysicalOrder order)
@@ -266,6 +267,21 @@ namespace TickZoom.Interceptors
 				}
 			}
 		}
+
+		private void VerifySide(PhysicalOrder order) {
+			switch (order.Type) {
+				case OrderType.SellMarket:
+				case OrderType.SellStop:
+				case OrderType.SellLimit:
+					VerifySellSide(order);
+					break;
+				case OrderType.BuyMarket:
+				case OrderType.BuyStop:
+				case OrderType.BuyLimit:
+					VerifyBuySide(order);
+					break;
+			}
+		}
 		
 		private void OrderSideWrongReject(PhysicalOrder order) {
 			var message = "Sorry, improper setting of a " + order.Side + " order when position is " + actualPosition;
@@ -299,27 +315,21 @@ namespace TickZoom.Interceptors
 		{
 			switch (order.Type) {
 				case OrderType.SellMarket:
-					VerifySellSide(order);
 					ProcessSellMarket(order, tick);
 					break;
 				case OrderType.SellStop:
-					VerifySellSide(order);
 					ProcessSellStop(order, tick);
 					break;
 				case OrderType.SellLimit:
-					VerifySellSide(order);
 					ProcessSellLimit(order, tick);
 					break;
 				case OrderType.BuyMarket:
-					VerifyBuySide(order);
 					ProcessBuyMarket(order, tick);
 					break;
 				case OrderType.BuyStop:
-					VerifyBuySide(order);
 					ProcessBuyStop(order, tick);
 					break;
 				case OrderType.BuyLimit:
-					VerifyBuySide(order);
 					ProcessBuyLimit(order, tick);
 					break;
 			}
