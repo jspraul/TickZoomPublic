@@ -130,14 +130,16 @@ namespace TickZoom.Test
 		}
 		
 		public void ClearPosition(Provider provider, VerifyFeed verify, int secondsDelay) {
-			var expectedTicks = 1;
-  			var count = verify.Wait(symbol,expectedTicks,secondsDelay);
-  			Assert.GreaterOrEqual(count,expectedTicks,"at least one tick");
 			var expectedPosition = 0;
+  			var actualPosition = verify.VerifyPosition(expectedPosition,symbol,secondsDelay, () => {
+			    ClearPositionInternal(provider,verify,expectedPosition);
+  			});
+  			Assert.AreEqual(expectedPosition, actualPosition, "Starting position.");
+		}
+		
+		private void ClearPositionInternal(Provider provider, VerifyFeed verify, int expectedPosition) {
   			if( SyncTicks.Enabled) tickSync.AddPositionChange();
   			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,expectedPosition,orders));
-  			var actualPosition = verify.VerifyPosition(expectedPosition,symbol,secondsDelay);
-  			Assert.AreEqual(expectedPosition, actualPosition, "Starting position.");
 		}
 		
 		public LogicalOrder CreateEntry( StrategyInterface strategy, OrderType orderType, double price, int position, int strategyPosition) {
@@ -236,10 +238,6 @@ namespace TickZoom.Test
 //		}
 		
 		public void SendOrders(Provider provider, VerifyFeed verify, int desiredPosition, int secondsDelay) {
-			var expectedTicks = 1;
-  			var count = verify.Wait(symbol,expectedTicks,secondsDelay);
-  			Assert.GreaterOrEqual(count,expectedTicks,"at least one tick");
-  			
   			if( SyncTicks.Enabled) tickSync.AddPositionChange();
 			provider.SendEvent(verify,symbol,(int)EventType.PositionChange,new PositionChangeDetail(symbol,desiredPosition,orders));
 		}

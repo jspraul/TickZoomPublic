@@ -116,9 +116,9 @@ namespace TickZoom.Test
 	  			var count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
 	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
 
-	  			SendOrders(provider,verify,0,secondsDelay);
-				
-	  			count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay);
+				count = verify.Verify(expectedTicks,assertTick,symbol,secondsDelay, () => {
+					SendOrders(provider,verify,0,secondsDelay);
+				});
 	  			Assert.GreaterOrEqual(count,expectedTicks,"tick count");
 			}
 		}
@@ -137,40 +137,44 @@ namespace TickZoom.Test
 	  			var desiredPosition = 2 * LotSize;
 	  			log.Notice("Sending 1");
 	  			CreateEntry(strategy,OrderType.BuyMarket,0.0,desiredPosition,0);
-	  			SendOrders(provider,verify,0,30);
-	  			var actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
+	  			var actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay, () => {
+		  			SendOrders(provider,verify,0,30);
+	  			});
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 	
 	  			desiredPosition = 0;
 	  			log.Warn("Sending 2");
 				ClearOrders(0);
 	  			CreateExit(strategy,OrderType.SellMarket,0.0,actualPosition);
-	  			SendOrders(provider,verify,actualPosition,30);
-	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
+	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay, () => {
+		  			SendOrders(provider,verify,actualPosition,30);
+	  			});
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 	
 	  			desiredPosition = 2 * LotSize;
 	  			log.Warn("Sending 3");
 				ClearOrders(0);
 	  			CreateEntry(strategy,OrderType.BuyMarket,0.0,desiredPosition,actualPosition);
-	  			SendOrders(provider,verify,actualPosition,30);
-	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
-	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
+	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay, () => {
+		  			SendOrders(provider,verify,actualPosition,30);
+	  			});
 	
 	  			desiredPosition = 2 * LotSize;
 	  			log.Warn("Sending 4");
 				ClearOrders(0);
 	  			CreateEntry(strategy,OrderType.BuyMarket,0.0,desiredPosition,actualPosition);
-	  			SendOrders(provider,verify,actualPosition,30);
-	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
+	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay, () => {
+		  			SendOrders(provider,verify,actualPosition,30);
+	  			});
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 	  			
 	  			desiredPosition = 0;
 	  			log.Warn("Sending 5");
 				ClearOrders(0);
 	  			CreateExit(strategy,OrderType.SellMarket,0.0,actualPosition);
-	  			SendOrders(provider,verify,actualPosition,30);
-	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay);
+	  			actualPosition = verify.VerifyPosition(desiredPosition,symbol,secondsDelay, () => {
+		  			SendOrders(provider,verify,actualPosition,30);
+	  			});
 	  			Assert.AreEqual(desiredPosition,actualPosition,"position");
 			}
 		}		
@@ -196,8 +200,9 @@ namespace TickZoom.Test
 				CreateExit(strategy,OrderType.SellLimit,ask+400*symbol.MinimumTick,strategyPosition);
 				CreateExit(strategy,OrderType.BuyLimit,bid-150*symbol.MinimumTick,strategyPosition);
 				LogicalOrder exitBuyStop = CreateExit(strategy,OrderType.BuyStop,ask+540*symbol.MinimumTick,strategyPosition);
-				SendOrders(provider,verify,0,secondsDelay);
-	  			var count = verify.Verify(2,assertTick,symbol,secondsDelay);
+				var count = verify.Verify(2,assertTick,symbol,secondsDelay, () => {
+					SendOrders(provider,verify,0,secondsDelay);
+				});
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 
 				ClearOrders(0);
@@ -206,8 +211,9 @@ namespace TickZoom.Test
 				orders.AddLast(enterBuyLimit);
 				orders.AddLast(enterSellLimit);
 				orders.AddLast(exitSellLimit);
-				SendOrders(provider,verify,0,secondsDelay);
-	  			count = verify.Verify(2,assertTick,symbol,secondsDelay);
+				count = verify.Verify(2,assertTick,symbol,secondsDelay, () => {
+					SendOrders(provider,verify,0,secondsDelay);
+				});
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			
 				ClearOrders(0);
@@ -306,8 +312,9 @@ namespace TickZoom.Test
 				LogicalOrder enterSellStop = CreateEntry(strategy,OrderType.SellStop,bid-400*symbol.MinimumTick,2,strategyPosition);
 				CreateExit(strategy,OrderType.SellStop,bid-180*symbol.MinimumTick,strategyPosition);
 				LogicalOrder exitBuyStop = CreateExit(strategy,OrderType.BuyStop,ask+540*symbol.MinimumTick,strategyPosition);
-				SendOrders(provider,verify,0,secondsDelay);
-	  			var count = verify.Verify(2,assertTick,symbol,secondsDelay);
+				var count = verify.Verify(2,assertTick,symbol,secondsDelay, () => {
+					SendOrders(provider,verify,0,secondsDelay);
+				});
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			
 				ClearOrders(0);
@@ -316,12 +323,13 @@ namespace TickZoom.Test
 				orders.AddLast(enterBuyStop);
 				orders.AddLast(enterSellStop);
 				orders.AddLast(exitBuyStop);
-				SendOrders(provider,verify,0,secondsDelay);
-	  			count = verify.Verify(2,assertTick,symbol,secondsDelay);
+				count = verify.Verify(2,assertTick,symbol,secondsDelay, () => {
+					SendOrders(provider,verify,0,secondsDelay);
+				});
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			
-				ClearOrders(0);
-				ClearPosition(provider,verify,secondsDelay);
+//				ClearOrders(0);
+//				ClearPosition(provider,verify,secondsDelay);
 			}
 		}
 
@@ -364,8 +372,9 @@ namespace TickZoom.Test
 	  			int strategyPosition = 0;
 				CreateExit(strategy,OrderType.SellStop,bid-180*symbol.MinimumTick,strategyPosition);
 				LogicalOrder exitBuyStop = CreateExit(strategy,OrderType.BuyStop,ask+540*symbol.MinimumTick,strategyPosition);
-				SendOrders( provider, verify, 0, secondsDelay);
-	  			var count = verify.Verify(2,assertTick,symbol,secondsDelay);
+				var count = verify.Verify(2,assertTick,symbol,secondsDelay, () => {
+					SendOrders(provider,verify,0,secondsDelay);
+				});
 	  			Assert.GreaterOrEqual(count,2,"tick count");
 	  			
 				ClearOrders(0);

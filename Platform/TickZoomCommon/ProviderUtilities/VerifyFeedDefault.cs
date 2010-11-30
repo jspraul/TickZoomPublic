@@ -85,7 +85,11 @@ namespace TickZoom.Common
 		int countLog = 0;
 		TickBinary tickBinary = new TickBinary();
 		TickIO tickIO = Factory.TickUtil.TickIO();
-		public long Verify(int expectedCount, Action<TickIO, TickIO, long> assertTick, SymbolInfo symbol, int timeout)
+		public long Verify(int expectedCount, Action<TickIO, TickIO, long> assertTick, SymbolInfo symbol, int timeout) {
+			return Verify( expectedCount, assertTick, symbol, timeout, null);
+		}
+		private bool actionAlreadyRun = false;
+		public long Verify(int expectedCount, Action<TickIO, TickIO, long> assertTick, SymbolInfo symbol, int timeout, Action action)
 		{
 			if (debug) log.Debug("Verify");
 			if( SyncTicks.Enabled) {
@@ -110,6 +114,10 @@ namespace TickZoom.Common
 							assertTick(tickIO, lastTick, symbol.BinaryIdentifier);
 						}
 						lastTick.Copy(tickIO);
+						if( !actionAlreadyRun && action != null) {
+							actionAlreadyRun = true;
+							action();
+						}
 						if( SyncTicks.Enabled) tickSync.RemoveTick();
 						if (count >= expectedCount) {
 							break;
@@ -230,7 +238,11 @@ namespace TickZoom.Common
 			return count;
 		}
 		
-		public int VerifyPosition(int expectedPosition, SymbolInfo symbol, int timeout)
+		public int VerifyPosition(int expectedPosition, SymbolInfo symbol, int timeout) {
+			return VerifyPosition( expectedPosition, symbol, timeout, null);
+		}
+		
+		public int VerifyPosition(int expectedPosition, SymbolInfo symbol, int timeout, Action action)
 		{
 			if (debug)
 				log.Debug("VerifyFeed");
@@ -239,6 +251,7 @@ namespace TickZoom.Common
 			long startTime = Factory.TickCount;
 			count = 0;
 			int position;
+			bool actionAlreadyRun = false;
 			TickBinary binary = new TickBinary();
 			while (Factory.TickCount - startTime < timeout * 1000) {
 				if( propagateException != null) {
@@ -248,6 +261,10 @@ namespace TickZoom.Common
 					if( !tickQueue.TryDequeue(ref binary)) {
 						Thread.Sleep(10);
 					} else {
+						if( !actionAlreadyRun && action != null) {
+							actionAlreadyRun = true;
+							action();
+						}
 						if( SyncTicks.Enabled) tickSync.RemoveTick();
 					}
 				} catch (QueueException ex) {
