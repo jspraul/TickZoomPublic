@@ -43,6 +43,7 @@ namespace TickZoom.Common
 		private SymbolInfo symbol;
 		private PhysicalOrderHandler physicalOrderHandler;
 		private ActiveList<PhysicalOrder> originalPhysicals;
+		private ActiveList<LogicalOrder> bufferedLogicals;
 		private ActiveList<LogicalOrder> originalLogicals;
 		private ActiveList<LogicalOrder> logicalOrders;
 		private ActiveList<PhysicalOrder> physicalOrders;
@@ -62,6 +63,7 @@ namespace TickZoom.Common
 			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			this.physicalOrderHandler = brokerOrders;
 			this.originalLogicals = new ActiveList<LogicalOrder>();
+			this.bufferedLogicals = new ActiveList<LogicalOrder>();
 			this.originalPhysicals = new ActiveList<PhysicalOrder>();
 			this.logicalOrders = new ActiveList<LogicalOrder>();
 			this.physicalOrders = new ActiveList<PhysicalOrder>();
@@ -513,14 +515,10 @@ namespace TickZoom.Common
 				int count = originalLogicals == null ? 0 : originalLogicals.Count;
 				log.Trace("SetLogicalOrders() order count = " + count);
 			}
-			if( CheckForFilledOrders( inputLogicals)) {
-				if( debug) log.Debug("Found already filled orders in logical orders. Ignoring position update.");
-				return;
-			}
 			var orderCache = Factory.Engine.LogicalOrderCache(symbol);
 			orderCache.SetActiveOrders(inputLogicals);
-			originalLogicals.Clear();
-			originalLogicals.AddLast(orderCache.ActiveOrders);
+			bufferedLogicals.Clear();
+			bufferedLogicals.AddLast(orderCache.ActiveOrders);
 		}
 		
 		public void SetDesiredPosition(	int position) {
@@ -599,10 +597,10 @@ namespace TickZoom.Common
 				return;
 			}
 			
-			logicalOrders.Clear();
-			if( originalLogicals != null) {
-				logicalOrders.AddLast(originalLogicals);
-			}
+//			logicalOrders.Clear();
+//			if( originalLogicals != null) {
+//				logicalOrders.AddLast(originalLogicals);
+//			}
 			var filledOrder = FindLogicalOrder( orderId);
 			if( debug) log.Debug( "Matched fill with order: " + filledOrder);
 			var isCompleteFill = filledOrder.Position == Math.Abs(fill.Position);
@@ -751,21 +749,22 @@ namespace TickZoom.Common
 				}
 			}
 			
-			if( CheckForFilledOrders(originalLogicals)) {
-				if( debug) log.Debug("Found already filled orders in position change event. Skipping compare.");
-				originalLogicals.Clear();
-				originalLogicals.AddLast(logicalOrders);
-			}
-			
 			if( CheckForPending()) {
 				if( debug) log.Debug("Found pending physical orders. Skipping compare.");
 				return;
 			}
 			
-			logicalOrders.Clear();
-			if(originalLogicals != null) {
-				logicalOrders.AddLast(originalLogicals);
+			if( CheckForFilledOrders(bufferedLogicals)) {
+				if( debug) log.Debug("Found already filled orders in position change event. Skipping compare.");
+			} else {
+				originalLogicals.Clear();
+				if(bufferedLogicals != null) {
+					originalLogicals.AddLast(bufferedLogicals);
+				}
 			}
+			
+			logicalOrders.Clear();
+			logicalOrders.AddLast(originalLogicals);
 			
 			physicalOrders.Clear();
 			if(originalPhysicals != null) {
