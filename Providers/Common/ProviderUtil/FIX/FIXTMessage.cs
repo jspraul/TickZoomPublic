@@ -34,63 +34,52 @@ namespace TickZoom.FIX
 		protected FIXTBuffer header = new FIXTBuffer();
 		protected FIXTBuffer body = new FIXTBuffer();
 		protected string version = "FIXT.1.1";
-		private bool isWrapped = false;
 		public FIXTMessage() {
 		}
 		public FIXTMessage( string version) {
 			this.version = version;
 		}
 		public void Append(int key, string value) {
-			EnsureUnwrapped();
 			body.Append(key,value);
 		}
 		public void Append(int key, int value) {
-			EnsureUnwrapped();
 			body.Append(key,value);
 		}
 		public void Append(int key, double value) {
-			EnsureUnwrapped();
 			body.Append(key,value);
 		}
 		public void Append(int key, TimeStamp time) {
-			EnsureUnwrapped();
 			body.Append(key,time);
 		}
-		private void EnsureUnwrapped() {
-			if( isWrapped) {
-				throw new ApplicationException("FIXTMessage already wrapped. Must call Clear() first.");
-			}
-		}
 		public abstract void AddHeader(string type);
-		private void AddFIXTHeader() {
+		private void AddFIXTHeader(FIXTBuffer buffer) {
 			// FIXT1.1 Header
 			int length = body.Length;
-			header.Clear();
-			header.Append(8,version);
-			header.Append(9,length);
-			body.Insert(header.ToString());
+			buffer.Clear();
+			buffer.Append(8,version);
+			buffer.Append(9,length);
 		}
-		private void AddFIXTFooter() {
+		private void AddFIXTFooter(FIXTBuffer buffer) {
 			string message = body.ToString();
 			int total = 0;
 			for( int i=0; i<message.Length; i++) {
 				total += (byte) message[i];
 			}
 			int checksum = total % 256;
-			Append(10,checksum.ToString("000"));
+			buffer.Append(10,checksum.ToString("000"));
 		}
+		
 		public override string ToString()
 		{
-			if( !isWrapped) {
-				if( header.Length == 0) {
-					throw new ApplicationException("Must call AddHeaterFooter() before ToString()");
-				}
-				body.Insert(header.ToString());
-				AddFIXTHeader();
-				AddFIXTFooter();
-				isWrapped = true;
+			if( header.Length == 0) {
+				throw new ApplicationException("Must call AddHeaterFooter() before ToString()");
 			}
-			return body.ToString();
+			var message = new FIXTBuffer();
+			AddFIXTHeader(message);
+			message.Append(header.ToString());
+			message.Append(body.ToString());
+			AddFIXTFooter(message);
+			return message.ToString();
 		}
 	}
 }

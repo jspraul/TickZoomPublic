@@ -323,7 +323,9 @@ namespace TickZoom.FIX
 				if( debug) log.Debug( "Found resend request for " + packetFIX.BegSeqNum + " to " + end + ": " + packetFIX);
 				for( int i = packetFIX.BegSeqNum; i <= end; i++) {
 					if( debug) log.Debug("Resending message " + i + "...");
-			    	SendMessageInternal( messageHistory[i]);
+					var message = messageHistory[i];
+					message.SetDuplicate(true);
+			    	SendMessageInternal( message );
 				}
 				result = true;
 			}

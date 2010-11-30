@@ -69,6 +69,16 @@ namespace TickZoom.FIX
 			Append(16,value);  
 		}
 		/// <summary>
+		/// 43 Possible Duplicate
+		/// </summary>
+		public void SetDuplicate(bool value) {
+			if( value) {
+				Append(43,"Y");  
+			} else {
+				Append(43,"N");  
+			}
+		}
+		/// <summary>
 		/// 108 HeartBeatInterval. In seconds.
 		/// </summary>
 		public void SetHeartBeatInterval(int value) {

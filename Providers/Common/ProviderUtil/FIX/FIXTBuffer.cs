@@ -67,6 +67,9 @@ namespace TickZoom.FIX
 		public void Insert(string header) {
 			sb.Insert(0,header);
 		}
+		public void Append(string body) {
+			sb.Append(body);
+		}
 		public void Clear() {
 			sb.Length = 0;
 		}
