@@ -648,10 +648,13 @@ namespace TickZoom.Common
 			bool cancelAllExits = false;
 			bool cancelAllExitStrategies = false;
 			bool cancelAllReverse = false;
+			bool cancelAllChanges = false;
+			if( filledOrder.StrategyPosition == 0) {
+				cancelAllChanges = true;
+				clean = true;
+			}
 			switch( filledOrder.TradeDirection) {
 				case TradeDirection.Change:
-					cancelAllEntries = true;
-					clean = true;
 					break;
 				case TradeDirection.Entry:
 					cancelAllEntries = true;
@@ -661,6 +664,7 @@ namespace TickZoom.Common
 				case TradeDirection.ExitStrategy:
 					cancelAllExits = true;
 					cancelAllExitStrategies = true;
+					cancelAllChanges = true;
 					clean = true;
 					break;
 				case TradeDirection.Reverse:
@@ -678,7 +682,7 @@ namespace TickZoom.Common
 								if( cancelAllEntries) originalLogicals.Remove(order);
 								break;
 							case TradeDirection.Change:
-								if( cancelAllEntries) originalLogicals.Remove(order);
+								if( cancelAllChanges) originalLogicals.Remove(order);
 								break;
 							case TradeDirection.Exit:
 								if( cancelAllExits) originalLogicals.Remove(order);
