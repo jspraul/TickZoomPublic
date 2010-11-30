@@ -42,9 +42,16 @@ namespace Loaders
 		{
 			var autoTestFixture = (IAutoTestFixture) Reflect.Construct(type);
 			var mainSuite = new TestSuite("DynamicTest");
-			AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.Historical);
-			AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.RealTime);
-			AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.SimulateFIX);
+			var modesToRun = autoTestFixture.GetModesToRun();
+			if( (modesToRun & AutoTestMode.Historical) == AutoTestMode.Historical) {
+				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.Historical);
+			}
+			if( (modesToRun & AutoTestMode.RealTime) == AutoTestMode.RealTime) {
+				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.RealTime);
+			}
+			if( (modesToRun & AutoTestMode.SimulateFIX) == AutoTestMode.SimulateFIX) {
+				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.SimulateFIX);
+			}
 			return mainSuite;
 		}
 		

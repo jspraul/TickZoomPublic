@@ -31,5 +31,6 @@ namespace Loaders
 {
 	public interface IAutoTestFixture {
 		AutoTestSettings[] GetAutoTestSettings();
+		AutoTestMode GetModesToRun();
 	}
 }

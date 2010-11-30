@@ -73,6 +73,7 @@ namespace TickZoom.Transactions
 			pair.postedExitTime = TimeStamp.Parse(fields[field++]).Internal;
 			pair.maxPrice = double.Parse(fields[field++]);
 			pair.minPrice = double.Parse(fields[field++]);
+			pair.volume = int.Parse(fields[field++]);
 			return pair;
 		}
 	

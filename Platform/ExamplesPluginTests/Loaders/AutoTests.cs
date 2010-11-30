@@ -33,6 +33,9 @@ namespace Loaders
 {
 	[AutoTestFixture]
 	public class AutoTests : IAutoTestFixture {
+		public AutoTestMode GetModesToRun() {
+			return AutoTestMode.All;
+		}
 		public AutoTestSettings[] GetAutoTestSettings() {
 			var list = new System.Collections.Generic.List<AutoTestSettings>();
 			var storeKnownGood = false;
