@@ -55,7 +55,7 @@ namespace TickZoom.MBTQuotes
 			if( SyncTicks.Enabled) {
 	  			HeartbeatDelay = 1500;
 			} else {
-	  			HeartbeatDelay = 15;
+	  			HeartbeatDelay = 30;
 			}
         }
 		
@@ -109,7 +109,6 @@ namespace TickZoom.MBTQuotes
 			Packet packet;
 			if(Socket.TryGetPacket(out packet)) {
 				if( trace) log.Trace("Received tick: " + new string(packet.DataIn.ReadChars(packet.Remaining)));
-//				log.Info("Received tick: " + new string(packet.DataIn.ReadChars(packet.Remaining)));
 				packet.BeforeRead();
 				while( packet.Remaining > 0) {
 					char firstChar = (char) packet.Data.GetBuffer()[packet.Data.Position];

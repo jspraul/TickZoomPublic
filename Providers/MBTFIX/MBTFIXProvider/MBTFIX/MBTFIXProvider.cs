@@ -343,7 +343,7 @@ namespace TickZoom.MBTFIX
 			var text = packetFIX.Text;
 			var errorOkay = false;
 			errorOkay = lower.Contains("order") && lower.Contains("server") ? true : errorOkay;
-			errorOkay = text.Contains("DEMOORDS1") ? true : errorOkay;
+			errorOkay = text.Contains("DEMOORDS") ? true : errorOkay;
 			if( errorOkay) {
 				log.Warn( packetFIX.Text + " -- Sending EndBroker event. \n" + packetFIX);
 				SendEndBroker();
@@ -588,6 +588,7 @@ namespace TickZoom.MBTFIX
 			rejectReason = packetFIX.Text.Contains("Cancel request already pending") ? true : rejectReason;
 			rejectReason = packetFIX.Text.Contains("No such order") ? true : rejectReason;
 			RemoveOrder( packetFIX, packetFIX.ClientOrderId);
+			RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
 			if( !rejectReason && IsRecovered) {
 				var message = "Order Rejected: " + packetFIX.Text + "\n" + packetFIX;
 				var ignore = "The rejected error message was UNRECOGNIZED. So it is being ignored. ";
@@ -609,6 +610,9 @@ namespace TickZoom.MBTFIX
 		
 		private static readonly char[] DOT_SEPARATOR = new char[] { '.' };
 		public PhysicalOrder RemoveOrder( PacketFIX4_4 packetFIX, string clientOrderId) {
+			if( string.IsNullOrEmpty(clientOrderId)) {
+				return null;
+			}
 			lock( openOrdersLocker) {
 				PhysicalOrder order = null;
 				if( openOrders.TryGetValue(clientOrderId, out order)) {
