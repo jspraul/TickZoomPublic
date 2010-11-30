@@ -38,6 +38,7 @@ namespace TickZoom.FIX
 		private static bool trace = log.IsTraceEnabled;
 		private static bool debug = log.IsDebugEnabled;
 		private SimpleLock symbolHandlersLocker = new SimpleLock();
+		private FIXFactory4_4 fixFactory = new FIXFactory4_4(1);
 
 		// FIX fields.
 		private ushort fixPort = 0;
@@ -239,7 +240,6 @@ namespace TickZoom.FIX
 			fixWritePacket = (Packet) fixPacketQueue.Dequeue();
 			return true;
 		}
-		
 		private bool ProcessQuotePackets() {
 			if( quoteWritePacket == null && quotePacketQueue.Count == 0) {
 				return false;
@@ -248,25 +248,40 @@ namespace TickZoom.FIX
 			quoteWritePacket = (Packet) quotePacketQueue.Dequeue();
 			return true;
 		}
+		private void Resend(PacketFIXT1_1 packetFIX) {
+			var writePacket = fixSocket.CreatePacket();			
+			var mbtMsg = fixFactory.Create(packetFIX.Target,packetFIX.Sender);
+			mbtMsg.AddHeader("2");
+			mbtMsg.SetBeginSeqNum(sequenceCounter);
+			mbtMsg.SetEndSeqNum(0);
+			string message = mbtMsg.ToString();
+			if( debug) log.Debug("Sending resend request: " + message);
+			writePacket.DataOut.Write(message.ToCharArray());
+			fixPacketQueue.Enqueue(writePacket);
+		}
 		private Random random = new Random(1234);
 		private int sequenceCounter = 1;
 		private bool FIXReadLoop()
 		{
 			if (isFIXSimulationStarted) {
 				if (fixSocket.TryGetPacket(out fixReadPacket)) {
-//					if( random.Next(10) == 1) {
-//						// Ignore this message. Pretend we never received it.
-//						// This will test the message recovery.
-//						return true;
-//					}
-					if (trace) log.Trace("Local Read: " + fixReadPacket);
 					var packetFIX = (PacketFIXT1_1) fixReadPacket;
-					if( packetFIX.Sequence != sequenceCounter) {
-						throw new ApplicationException("Sequence " + packetFIX.Sequence + " mismatch with expected sequency " + sequenceCounter);
+					if( random.Next(10) == 1) {
+						// Ignore this message. Pretend we never received it.
+						// This will test the message recovery.
+						if( debug) log.Debug("Ignoring fix message sequence " + packetFIX.Sequence);
+						Resend(packetFIX);
+						return true;
 					}
-					sequenceCounter++;
-					ParseFIXMessage(fixReadPacket);
-					return true;
+					if (trace) log.Trace("Local Read: " + fixReadPacket);
+					if( packetFIX.Sequence != sequenceCounter) {
+						Resend(packetFIX);
+						return true;
+					} else {
+						sequenceCounter++;
+						ParseFIXMessage(fixReadPacket);
+						return true;
+					}
 				}
 			}
 			return false;
@@ -419,6 +434,11 @@ namespace TickZoom.FIX
 
 		public ushort QuotesPort {
 			get { return quotesPort; }
+		}
+		
+		public FIXFactory4_4 FixFactory {
+			get { return fixFactory; }
+			set { fixFactory = value; }
 		}
 	}
 }

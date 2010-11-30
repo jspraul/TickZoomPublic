@@ -52,6 +52,8 @@ namespace TickZoom.FIX
 		private byte* ptr;
 		private byte* end;
 		private string version = null;
+		private int begSeqNum;
+		private int endSeqNum;
 		private int length = 0;
 		private string messageType = null;
 		private string sender = null;
@@ -265,11 +267,17 @@ namespace TickZoom.FIX
 		protected virtual bool HandleKey(int key) {
 			bool result = false;
 			switch( key) {
+				case 7:
+					result = GetInt(out begSeqNum);
+					break;
 				case 8:
 					result = GetString(out version);
 					break;
 				case 9:
 					result = GetInt(out length);
+					break;
+				case 16:
+					result = GetInt(out endSeqNum);
 					break;
 				case 35:
 					result = GetString(out messageType);
@@ -347,6 +355,14 @@ namespace TickZoom.FIX
 		
 		public int Id {
 			get { return id; }
+		}
+		
+		public int BegSeqNum {
+			get { return begSeqNum; }
+		}
+		
+		public int EndSeqNum {
+			get { return endSeqNum; }
 		}
 	}
 }

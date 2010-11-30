@@ -49,11 +49,24 @@ namespace TickZoom.FIX
 			this.target = target;
 			this.sender = sender;
 		}
+		
 		/// <summary>
 		/// 98 Encryption. 0= NO encryption
 		/// </summary>
 		public void SetEncryption(int value) {
 			Append(98,value);  
+		}
+		/// <summary>
+		/// 7 BeginSeqNumber
+		/// </summary>
+		public void SetBeginSeqNum(int value) {
+			Append(7,value);  
+		}
+		/// <summary>
+		/// 16 EndSeqNumber
+		/// </summary>
+		public void SetEndSeqNum(int value) {
+			Append(16,value);  
 		}
 		/// <summary>
 		/// 108 HeartBeatInterval. In seconds.

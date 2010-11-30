@@ -43,7 +43,6 @@ namespace TickZoom.MBTFIX
 		private ServerState quoteState = ServerState.Startup;
 		private TimeStamp heartbeatTimer;
 		private bool firstHearbeat = true;
-		private FIXFactory4_4 fixFactory = new FIXFactory4_4(1);
 		
 		public MBTFIXSimulator() : base( 6489, 6488, new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes()) {
 			
@@ -118,7 +117,7 @@ namespace TickZoom.MBTFIX
 		
 		private void FIXOrderList(PacketFIX4_4 packet) {
 			var writePacket = fixSocket.CreatePacket();			
-			var mbtMsg = fixFactory.Create(packet.Target,packet.Sender);
+			var mbtMsg = FixFactory.Create(packet.Target,packet.Sender);
 			mbtMsg.SetText("END");
 			mbtMsg.AddHeader("8");
 			string message = mbtMsg.ToString();
@@ -130,7 +129,7 @@ namespace TickZoom.MBTFIX
 		
 		private void FIXPositionList(PacketFIX4_4 packet) {
 			var writePacket = fixSocket.CreatePacket();			
-			var mbtMsg = fixFactory.Create(packet.Target,packet.Sender);
+			var mbtMsg = FixFactory.Create(packet.Target,packet.Sender);
 			mbtMsg.SetText("DONE");
 			mbtMsg.AddHeader("AO");
 			string message = mbtMsg.ToString();
@@ -269,7 +268,7 @@ namespace TickZoom.MBTFIX
 			var writePacket = fixSocket.CreatePacket();
 			target = packet.Target;
 			sender = packet.Sender;
-			var mbtMsg = fixFactory.Create(packet.Target,packet.Sender);
+			var mbtMsg = FixFactory.Create(packet.Target,packet.Sender);
 			mbtMsg.SetEncryption(0);
 			mbtMsg.SetHeartBeatInterval(30);
 			mbtMsg.AddHeader("A");
@@ -294,7 +293,7 @@ namespace TickZoom.MBTFIX
 			if( tick.Time > heartbeatTimer && fixSocket != null) {
 				IncreaseHeartbeat(tick);
 				var writePacket = fixSocket.CreatePacket();
-				var mbtMsg = fixFactory.Create(target,sender);
+				var mbtMsg = FixFactory.Create(target,sender);
 				mbtMsg.AddHeader("1");
 				string message = mbtMsg.ToString();
 				writePacket.DataOut.Write(message.ToCharArray());
@@ -325,7 +324,7 @@ namespace TickZoom.MBTFIX
 
 		private void OnRejectOrder( PhysicalOrder order, string error) {
 			var writePacket = fixSocket.CreatePacket();
-			var mbtMsg = fixFactory.Create(target,sender);
+			var mbtMsg = FixFactory.Create(target,sender);
 			mbtMsg.SetAccount( "33006566");
 			mbtMsg.SetClientOrderId( order.BrokerOrder.ToString());
 			mbtMsg.SetOrderStatus("8");
@@ -339,7 +338,7 @@ namespace TickZoom.MBTFIX
 		
 		private void SendPositionUpdate(SymbolInfo symbol, int position) {
 			var writePacket = fixSocket.CreatePacket();
-			var mbtMsg = fixFactory.Create(target,sender);
+			var mbtMsg = FixFactory.Create(target,sender);
 			mbtMsg.SetAccount( "33006566");
 			mbtMsg.SetSymbol( symbol.Symbol);
 			if( position <= 0) {
@@ -383,7 +382,7 @@ namespace TickZoom.MBTFIX
 					break;
 			}
 			var writePacket = fixSocket.CreatePacket();
-			var mbtMsg = fixFactory.Create(target,sender);
+			var mbtMsg = FixFactory.Create(target,sender);
 			mbtMsg.SetAccount( "33006566");
 			mbtMsg.SetDestination("MBTX");
 			mbtMsg.SetOrderQuantity( orderQty);
@@ -540,7 +539,7 @@ namespace TickZoom.MBTFIX
 		
 		private void CloseWithFixError(PacketFIX4_4 packet, string message) {
 			var writePacket = fixSocket.CreatePacket();
-			var fixMsg = fixFactory.Create(packet.Target,packet.Sender);
+			var fixMsg = FixFactory.Create(packet.Target,packet.Sender);
 			TimeStamp timeStamp = TimeStamp.UtcNow;
 			fixMsg.SetAccount(packet.Account);
 			fixMsg.SetText( message);

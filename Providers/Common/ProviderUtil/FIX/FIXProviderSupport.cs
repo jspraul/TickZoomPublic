@@ -72,6 +72,7 @@ namespace TickZoom.FIX
         private string configSection;
         private bool hasFirstRecovery = false;
         private bool useLocalFillTime = true;
+		private FIXFactory4_4 fixFactory = new FIXFactory4_4(1);
         
 		public bool UseLocalFillTime {
 			get { return useLocalFillTime; }
@@ -272,7 +273,9 @@ namespace TickZoom.FIX
 							}
 							Packet packet;
 							if( Socket.TryGetPacket(out packet)) {
-								ReceiveMessage(packet);
+								if( !CheckForResend(packet)) {
+									ReceiveMessage(packet);
+								}
 								IncreaseRetryTimeout();
 								return Yield.DidWork.Repeat;
 							} else {
@@ -310,6 +313,21 @@ namespace TickZoom.FIX
 					log.Error( message);
 					throw new ApplicationException(message);
 			}
+		}
+		
+		private bool CheckForResend(Packet packet) {
+			var packetFIX = (PacketFIXT1_1) packet;
+			var result = false;
+			if( packetFIX.MessageType == "2") {
+				int end = packetFIX.EndSeqNum == 0 ? lastSequenceNumber : packetFIX.EndSeqNum;
+				if( debug) log.Debug( "Found resend request for " + packetFIX.BegSeqNum + " to " + end + ": " + packetFIX);
+				for( int i = packetFIX.BegSeqNum; i <= end; i++) {
+					if( debug) log.Debug("Resending message " + i + "...");
+			    	SendMessageInternal( messageHistory[i]);
+				}
+				result = true;
+			}
+			return result;
 		}
 
 		protected void IncreaseRetryTimeout() {
@@ -548,13 +566,19 @@ namespace TickZoom.FIX
 			}
 		}
 	    
+	    private int lastSequenceNumber;
 	    private Dictionary<int,FIXTMessage1_1> messageHistory = new Dictionary<int, FIXTMessage1_1>();
 	    public void SendMessage(FIXTMessage1_1 fixMsg) {
-	    	messageHistory.Add( fixMsg.Sequence, fixMsg);
+	    	lastSequenceNumber = fixMsg.Sequence;
+	    	messageHistory.Add( lastSequenceNumber, fixMsg);
+	    	SendMessageInternal( fixMsg);
+	    }
+		
+	    private void SendMessageInternal(FIXTMessage1_1 fixMsg) {
 			var fixString = fixMsg.ToString();
-			if( trace) {
+			if( debug) {
 				string view = fixString.Replace(FIXTBuffer.EndFieldStr,"  ");
-				log.Trace("Send FIX message: \n" + view);
+				log.Debug("Send FIX message: \n" + view);
 			}
 			var packet = Socket.CreatePacket();
 			packet.DataOut.Write(fixString.ToCharArray());
@@ -567,7 +591,7 @@ namespace TickZoom.FIX
 				Factory.Parallel.Yield();
 			}
 	    }
-		
+			
 		public Socket Socket {
 			get { return socket; }
 		}
