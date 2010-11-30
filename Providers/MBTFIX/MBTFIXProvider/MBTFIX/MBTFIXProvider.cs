@@ -53,7 +53,6 @@ namespace TickZoom.MBTFIX
 		private bool isPositionUpdateComplete = false;
 		private bool isOrderUpdateComplete = false;
 		private string fixDestination = "MBT";
-		private FIXFactory4_4 fixFactory = new FIXFactory4_4(1);
 		
 		public MBTFIXProvider(string name)
 		{
@@ -118,8 +117,9 @@ namespace TickZoom.MBTFIX
 			}
 			
 			lastLoginTry = Factory.Parallel.TickCount;
-			
-			var mbtMsg = fixFactory.Create(UserName,fixDestination);
+
+			FixFactory = new FIXFactory4_4(1,UserName,fixDestination);
+			var mbtMsg = FixFactory.Create();
 			mbtMsg.SetEncryption(0);
 			mbtMsg.SetHeartBeatInterval(30);
 			mbtMsg.ResetSequence();
@@ -141,6 +141,7 @@ namespace TickZoom.MBTFIX
 				}
 			}
 
+			if( debug) log.Debug("Received FIX message: " + packet);
 			if( !VerifyLogin(packet)) {
 				RegenerateSocket();
 				return Yield.DidWork.Repeat;
@@ -152,7 +153,7 @@ namespace TickZoom.MBTFIX
         }
 		
 		private void Logout() {
-			var mbtMsg = fixFactory.Create(UserName,fixDestination);
+			var mbtMsg = FixFactory.Create();
 			log.Info("Logout message = " + mbtMsg);
 			mbtMsg.AddHeader("5");
 			SendMessage(mbtMsg);
@@ -199,7 +200,7 @@ namespace TickZoom.MBTFIX
 		
 
 		private void RequestPositions() {
-			var fixMsg = fixFactory.Create(UserName,fixDestination);
+			var fixMsg = (FIXMessage4_4) FixFactory.Create();
 			fixMsg.SetSubscriptionRequestType(1);
 			fixMsg.SetAccount(AccountNumber);
 			fixMsg.SetPositionRequestId(1);
@@ -209,7 +210,7 @@ namespace TickZoom.MBTFIX
 		}
 
 		private void RequestOrders() {
-			var fixMsg = fixFactory.Create(UserName,fixDestination);
+			var fixMsg = (FIXMessage4_4) FixFactory.Create();
 			fixMsg.SetAccount(AccountNumber);
 			fixMsg.SetMassStatusRequestID(TimeStamp.UtcNow);
 			fixMsg.SetMassStatusRequestType(90);
@@ -218,7 +219,7 @@ namespace TickZoom.MBTFIX
 		}
 		
 		private void SendHeartbeat() {
-			var fixMsg = fixFactory.Create(UserName,fixDestination);
+			var fixMsg = (FIXMessage4_4) FixFactory.Create();
 			fixMsg.AddHeader("0");
 			SendMessage( fixMsg);
 		}
@@ -832,7 +833,7 @@ namespace TickZoom.MBTFIX
 	        
 		private void OnCreateOrChangeBrokerOrder(PhysicalOrder physicalOrder, object origBrokerOrder, bool isChange)
 		{
-			var fixMsg = fixFactory.Create(UserName,fixDestination);
+			var fixMsg = (FIXMessage4_4) FixFactory.Create();
 			lock( openOrdersLocker) {
 				openOrders[(string)physicalOrder.BrokerOrder] = physicalOrder;
 			}
@@ -937,7 +938,7 @@ namespace TickZoom.MBTFIX
 			}
 			if( debug) log.Debug( "OnCancelBrokerOrder " + physicalOrder);
 			
-			var fixMsg = fixFactory.Create(UserName,fixDestination);
+			var fixMsg = (FIXMessage4_4) FixFactory.Create();
 			string newClientOrderId = physicalOrder.LogicalOrderId + "." + GetUniqueOrderId();
 			fixMsg.SetOriginalClientOrderId((string)origBrokerOrder);
 			fixMsg.SetClientOrderId(newClientOrderId);
@@ -945,20 +946,7 @@ namespace TickZoom.MBTFIX
 			fixMsg.SetSide( GetOrderSide(physicalOrder.Side));
 			fixMsg.AddHeader("F");
 			fixMsg.SetSymbol(physicalOrder.Symbol.Symbol);
-			switch( physicalOrder.Type) {
-				case OrderType.BuyLimit:
-				case OrderType.BuyMarket:
-				case OrderType.BuyStop:
-					fixMsg.SetSide(1);
-					break;
-				case OrderType.SellLimit:
-				case OrderType.SellMarket:
-				case OrderType.SellStop:
-					fixMsg.SetSide(2);
-					break;
-			}
 			fixMsg.SetTransactTime(TimeStamp.UtcNow);
-			if( debug) log.Debug("Cancel order: \n" + fixMsg);
 			SendMessage(fixMsg);
 		}
 		

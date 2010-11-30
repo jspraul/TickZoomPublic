@@ -52,15 +52,15 @@ namespace TickZoom.FIX
 			body.Append(key,time);
 		}
 		public abstract void AddHeader(string type);
-		private void AddFIXTHeader(FIXTBuffer buffer) {
-			// FIXT1.1 Header
-			int length = body.Length;
-			buffer.Clear();
+		public abstract void CreateHeader();
+		private void AddFIXTHeader(FIXTBuffer message) {
+			var buffer = new FIXTBuffer();
 			buffer.Append(8,version);
-			buffer.Append(9,length);
+			buffer.Append(9,message.Length);
+			message.Insert(buffer.ToString());
 		}
 		private void AddFIXTFooter(FIXTBuffer buffer) {
-			string message = body.ToString();
+			string message = buffer.ToString();
 			int total = 0;
 			for( int i=0; i<message.Length; i++) {
 				total += (byte) message[i];
@@ -71,13 +71,11 @@ namespace TickZoom.FIX
 		
 		public override string ToString()
 		{
-			if( header.Length == 0) {
-				throw new ApplicationException("Must call AddHeaterFooter() before ToString()");
-			}
 			var message = new FIXTBuffer();
-			AddFIXTHeader(message);
-			message.Append(header.ToString());
+			CreateHeader();
 			message.Append(body.ToString());
+			message.Insert(header.ToString());
+			AddFIXTHeader(message);
 			AddFIXTFooter(message);
 			return message.ToString();
 		}

@@ -38,7 +38,7 @@ namespace TickZoom.FIX
 		private static bool trace = log.IsTraceEnabled;
 		private static bool debug = log.IsDebugEnabled;
 		private SimpleLock symbolHandlersLocker = new SimpleLock();
-		private FIXFactory4_4 fixFactory = new FIXFactory4_4(1);
+		private FIXTFactory1_1 fixFactory;
 
 		// FIX fields.
 		private ushort fixPort = 0;
@@ -250,7 +250,7 @@ namespace TickZoom.FIX
 		}
 		private void Resend(PacketFIXT1_1 packetFIX) {
 			var writePacket = fixSocket.CreatePacket();			
-			var mbtMsg = fixFactory.Create(packetFIX.Target,packetFIX.Sender);
+			var mbtMsg = fixFactory.Create();
 			mbtMsg.AddHeader("2");
 			mbtMsg.SetBeginSeqNum(sequenceCounter);
 			mbtMsg.SetEndSeqNum(0);
@@ -436,7 +436,7 @@ namespace TickZoom.FIX
 			get { return quotesPort; }
 		}
 		
-		public FIXFactory4_4 FixFactory {
+		public FIXTFactory1_1 FixFactory {
 			get { return fixFactory; }
 			set { fixFactory = value; }
 		}

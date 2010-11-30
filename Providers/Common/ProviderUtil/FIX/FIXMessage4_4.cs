@@ -30,15 +30,15 @@ using TickZoom.Api;
 
 namespace TickZoom.FIX
 {
-	public class FIXFactory4_4 {
-		private int nextSequence;
-		public FIXFactory4_4(int nextSequence) {
-			this.nextSequence = nextSequence;
+	public class FIXFactory4_4 : FIXTFactory1_1 {
+		public FIXFactory4_4(int nextSequence,string sender,string destination) :
+			base( nextSequence, sender, destination) {
+			
 		}
-		public FIXMessage4_4 Create(string sender, string destination) {
-			var message = new FIXMessage4_4(sender,destination);
-			message.Sequence = nextSequence;
-			nextSequence ++;
+		public override FIXTMessage1_1 Create() {
+			var message = new FIXMessage4_4(Sender,Destination);
+			message.Sequence = NextSequence;
+			NextSequence ++;
 			return message;
 		}
 	}

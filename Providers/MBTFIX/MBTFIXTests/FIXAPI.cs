@@ -43,7 +43,6 @@ namespace Test
 	{
 		private string destination = "MBT";
 		private static Log log = Factory.SysLog.GetLogger(typeof(FIXAPI));
-		private FIXFactory4_4 fixFactory = new FIXFactory4_4(1);
 	
 		public FIXAPI()
 		{ 
@@ -148,8 +147,9 @@ namespace Test
 		
 				Packet packet = socket.CreatePacket();
 				string hashPassword = MBTQuotesProvider.Hash(password);
-				
-				var mbtMsg = fixFactory.Create(userName,destination);
+
+				var fixFactory = new FIXFactory4_4(1,userName,destination);
+				var mbtMsg = (FIXMessage4_4) fixFactory.Create();
 				mbtMsg.SetEncryption(0);
 				mbtMsg.SetHeartBeatInterval(30);
 				mbtMsg.ResetSequence();
@@ -209,7 +209,8 @@ namespace Test
 				Packet packet = socket.CreatePacket();
 				string hashPassword = MBTQuotesProvider.Hash(password);
 				
-				var mbtMsg = fixFactory.Create(userName,destination);
+				var fixFactory = new FIXFactory4_4(1,userName,destination);
+				var mbtMsg = (FIXMessage4_4) fixFactory.Create();
 				mbtMsg.SetEncryption(0);
 				mbtMsg.SetHeartBeatInterval(30);
 				mbtMsg.ResetSequence();

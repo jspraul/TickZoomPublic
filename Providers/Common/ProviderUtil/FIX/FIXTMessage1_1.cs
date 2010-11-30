@@ -37,6 +37,8 @@ namespace TickZoom.FIX
 		string sender;
 		string target;
 		int sequence;
+		bool duplicate;
+		string type;
 		public int Sequence {
 			get {
 				return sequence;
@@ -72,11 +74,7 @@ namespace TickZoom.FIX
 		/// 43 Possible Duplicate
 		/// </summary>
 		public void SetDuplicate(bool value) {
-			if( value) {
-				Append(43,"Y");  
-			} else {
-				Append(43,"N");  
-			}
+			duplicate = value;
 		}
 		/// <summary>
 		/// 108 HeartBeatInterval. In seconds.
@@ -108,11 +106,21 @@ namespace TickZoom.FIX
 		}
 		public override void AddHeader(string type)
 		{
+			this.type = type;
+		}
+		
+		public override void CreateHeader() {
+			header.Clear();
 			header.Append(35,type);
 			header.Append(49,sender);
 			header.Append(56,target);
 			header.Append(34,Sequence);
 			header.Append(52,TimeStamp.UtcNow);
+			if( duplicate) {
+				header.Append(43,"Y");  
+			} else {
+				header.Append(43,"N");  
+			}
 		}
 		
 		public static string Hash(string password) {

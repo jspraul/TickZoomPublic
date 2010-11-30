@@ -59,6 +59,8 @@
     <Compile Include="FIX\FIXSimulatorSupport.cs" />
     <Compile Include="FIX\FIXServerSymbolHandler.cs" />
     <Compile Include="FIX\FIXTBuffer.cs" />
+    <Compile Include="FIX\FIXTFactory.cs" />
+    <Compile Include="FIX\FIXTFactory1_1.cs" />
     <Compile Include="FIX\FIXTMessage.cs" />
     <Compile Include="FIX\FIXTMessage1_1.cs" />
     <Compile Include="FIX\PacketFactoryFIX4_4.cs" />

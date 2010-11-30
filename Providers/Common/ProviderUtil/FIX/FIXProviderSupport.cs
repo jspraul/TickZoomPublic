@@ -35,7 +35,6 @@ using TickZoom.Api;
 
 namespace TickZoom.FIX
 {
-
 	public abstract class FIXProviderSupport : Provider
 	{
 		private FIXFilter fixFilter;
@@ -72,7 +71,7 @@ namespace TickZoom.FIX
         private string configSection;
         private bool hasFirstRecovery = false;
         private bool useLocalFillTime = true;
-		private FIXFactory4_4 fixFactory = new FIXFactory4_4(1);
+		private FIXTFactory fixFactory;
         
 		public bool UseLocalFillTime {
 			get { return useLocalFillTime; }
@@ -273,6 +272,7 @@ namespace TickZoom.FIX
 							}
 							Packet packet;
 							if( Socket.TryGetPacket(out packet)) {
+								if( debug) log.Debug( "Received FIX Message: " + packet);
 								if( !CheckForResend(packet)) {
 									ReceiveMessage(packet);
 								}
@@ -319,11 +319,11 @@ namespace TickZoom.FIX
 			var packetFIX = (PacketFIXT1_1) packet;
 			var result = false;
 			if( packetFIX.MessageType == "2") {
-				int end = packetFIX.EndSeqNum == 0 ? lastSequenceNumber : packetFIX.EndSeqNum;
+				int end = packetFIX.EndSeqNum == 0 ? fixFactory.LastSequence : packetFIX.EndSeqNum;
 				if( debug) log.Debug( "Found resend request for " + packetFIX.BegSeqNum + " to " + end + ": " + packetFIX);
 				for( int i = packetFIX.BegSeqNum; i <= end; i++) {
 					if( debug) log.Debug("Resending message " + i + "...");
-					var message = messageHistory[i];
+					var message = fixFactory.GetHistory(i);
 					message.SetDuplicate(true);
 			    	SendMessageInternal( message );
 				}
@@ -568,11 +568,8 @@ namespace TickZoom.FIX
 			}
 		}
 	    
-	    private int lastSequenceNumber;
-	    private Dictionary<int,FIXTMessage1_1> messageHistory = new Dictionary<int, FIXTMessage1_1>();
 	    public void SendMessage(FIXTMessage1_1 fixMsg) {
-	    	lastSequenceNumber = fixMsg.Sequence;
-	    	messageHistory.Add( lastSequenceNumber, fixMsg);
+	    	fixFactory.AddHistory(fixMsg);
 	    	SendMessageInternal( fixMsg);
 	    }
 		
@@ -666,5 +663,10 @@ namespace TickZoom.FIX
 			get { return configSection; }
 			set { configSection = value; }
 		}		
+		
+		public FIXTFactory FixFactory {
+			get { return fixFactory; }
+			set { fixFactory = value; }
+		}
 	}
 }
