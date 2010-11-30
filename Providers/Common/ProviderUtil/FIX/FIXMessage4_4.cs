@@ -30,8 +30,20 @@ using TickZoom.Api;
 
 namespace TickZoom.FIX
 {
+	public class FIXFactory4_4 {
+		private int nextSequence;
+		public FIXFactory4_4(int nextSequence) {
+			this.nextSequence = nextSequence;
+		}
+		public FIXMessage4_4 Create(string sender, string destination) {
+			var message = new FIXMessage4_4(sender,destination);
+			message.Sequence = nextSequence;
+			nextSequence ++;
+			return message;
+		}
+	}
 	public class FIXMessage4_4 : FIXTMessage1_1 {
-		public FIXMessage4_4(string sender,string destination) : base("FIX.4.4",sender,destination) {
+		internal FIXMessage4_4(string sender,string destination) : base("FIX.4.4",sender,destination) {
 		}
 		/// <summary>
 		/// 1 Account mnemonic as agreed between buy and sell sides, e.g. broker and institution or investor/intermediary and fund manager.

@@ -36,10 +36,13 @@ namespace TickZoom.FIX
 		string encoding;
 		string sender;
 		string target;
-		private static int sequence = 0;
-		private int Sequence {
+		int sequence;
+		public int Sequence {
 			get {
-				return Interlocked.Increment(ref sequence);
+				return sequence;
+			}
+			set {
+				sequence = value;
 			}
 		}
 		public FIXTMessage1_1(string version, string sender, string target) : base(version) {
@@ -56,7 +59,6 @@ namespace TickZoom.FIX
 		/// 108 HeartBeatInterval. In seconds.
 		/// </summary>
 		public void SetHeartBeatInterval(int value) {
-			Interlocked.Exchange(ref sequence, 0);
 			Append(108,value); 
 		}
 		/// <summary>

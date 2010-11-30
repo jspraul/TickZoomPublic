@@ -248,12 +248,23 @@ namespace TickZoom.FIX
 			quoteWritePacket = (Packet) quotePacketQueue.Dequeue();
 			return true;
 		}
-		
+		private Random random = new Random(1234);
+		private int sequenceCounter = 1;
 		private bool FIXReadLoop()
 		{
 			if (isFIXSimulationStarted) {
 				if (fixSocket.TryGetPacket(out fixReadPacket)) {
+//					if( random.Next(10) == 1) {
+//						// Ignore this message. Pretend we never received it.
+//						// This will test the message recovery.
+//						return true;
+//					}
 					if (trace) log.Trace("Local Read: " + fixReadPacket);
+					var packetFIX = (PacketFIXT1_1) fixReadPacket;
+					if( packetFIX.Sequence != sequenceCounter) {
+						throw new ApplicationException("Sequence " + packetFIX.Sequence + " mismatch with expected sequency " + sequenceCounter);
+					}
+					sequenceCounter++;
 					ParseFIXMessage(fixReadPacket);
 					return true;
 				}

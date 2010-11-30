@@ -53,6 +53,7 @@ namespace TickZoom.MBTFIX
 		private bool isPositionUpdateComplete = false;
 		private bool isOrderUpdateComplete = false;
 		private string fixDestination = "MBT";
+		private FIXFactory4_4 fixFactory = new FIXFactory4_4(1);
 		
 		public MBTFIXProvider(string name)
 		{
@@ -118,37 +119,25 @@ namespace TickZoom.MBTFIX
 			
 			lastLoginTry = Factory.Parallel.TickCount;
 			
-			var packet = Socket.CreatePacket();
-			
-			var mbtMsg = new FIXMessage4_4(UserName,fixDestination);
+			var mbtMsg = fixFactory.Create(UserName,fixDestination);
 			mbtMsg.SetEncryption(0);
 			mbtMsg.SetHeartBeatInterval(30);
 			mbtMsg.ResetSequence();
 			mbtMsg.SetEncoding("554_H1");
 			mbtMsg.SetPassword(Password);
 			mbtMsg.AddHeader("A");
-			
-			string login = mbtMsg.ToString();
-			packet.DataOut.Write(login.ToCharArray());
-			string packetString = packet.ToString();
 			if( debug) {
-				log.Debug("Login message: \n" + packetString);
+				log.Debug("Login message: \n" + mbtMsg);
 			}
-			long end = Factory.Parallel.TickCount + 2000;
-			while( !Socket.TrySendPacket(packet)) {
-				if( IsInterrupted) return Yield.NoWork.Repeat;
-				if( Factory.Parallel.TickCount > end) {
-					throw new ApplicationException("Timeout while sending login message.");
-				}
-				Factory.Parallel.Yield();
-			}
+			SendMessage( mbtMsg);
 			
-			end = Factory.Parallel.TickCount + 15 * 1000;
+			var end = Factory.Parallel.TickCount + 15 * 1000;
+			Packet packet;
 			while( !Socket.TryGetPacket(out packet)) {
 				if( IsInterrupted) return Yield.NoWork.Repeat;
 				Factory.Parallel.Yield();
 				if( Factory.Parallel.TickCount > end) {
-					FailLogin(packetString);
+					FailLogin(mbtMsg.ToString());
 				}
 			}
 
@@ -163,13 +152,10 @@ namespace TickZoom.MBTFIX
         }
 		
 		private void Logout() {
-			var mbtMsg = new FIXMessage4_4(UserName,fixDestination);
+			var mbtMsg = fixFactory.Create(UserName,fixDestination);
+			log.Info("Logout message = " + mbtMsg);
 			mbtMsg.AddHeader("5");
-			var logout = mbtMsg.ToString();
-			var packet = Socket.CreatePacket();
-			packet.DataOut.Write(logout.ToCharArray());
-			var packetString = packet.ToString();
-			log.Info("Logout message = " + packetString);
+			SendMessage(mbtMsg);
 		}
 		
 		protected override void OnStartRecovery()
@@ -213,71 +199,28 @@ namespace TickZoom.MBTFIX
 		
 
 		private void RequestPositions() {
-			Packet packet = Socket.CreatePacket();
-			
-			var fixMsg = new FIXMessage4_4(UserName,fixDestination);
+			var fixMsg = fixFactory.Create(UserName,fixDestination);
 			fixMsg.SetSubscriptionRequestType(1);
 			fixMsg.SetAccount(AccountNumber);
 			fixMsg.SetPositionRequestId(1);
 			fixMsg.SetPositionRequestType(0);
 			fixMsg.AddHeader("AN");
-			string login = fixMsg.ToString();
-			if( debug) {
-				string view = login.Replace(FIXTBuffer.EndFieldStr,"  ");
-				log.Info("Request Positions message: \n" + view);
-			}
-			packet.DataOut.Write(login.ToCharArray());
-			long end = Factory.Parallel.TickCount + 2000;
-			while( !Socket.TrySendPacket(packet)) {
-				if( IsInterrupted) return;
-				if( Factory.Parallel.TickCount > end) {
-					throw new ApplicationException("Timeout while sending request positions.");
-				}
-				Factory.Parallel.Yield();
-			}
+			SendMessage(fixMsg);
 		}
 
 		private void RequestOrders() {
-			Packet packet = Socket.CreatePacket();
-			var fixMsg = new FIXMessage4_4(UserName,fixDestination);
+			var fixMsg = fixFactory.Create(UserName,fixDestination);
 			fixMsg.SetAccount(AccountNumber);
 			fixMsg.SetMassStatusRequestID(TimeStamp.UtcNow);
 			fixMsg.SetMassStatusRequestType(90);
 			fixMsg.AddHeader("AF");
-			string login = fixMsg.ToString();
-			if( debug) {
-				string view = login.Replace(FIXTBuffer.EndFieldStr,"  ");
-				log.Debug("Request Orders message: \n" + view);
-			}
-			packet.DataOut.Write(login.ToCharArray());
-			long end = Factory.Parallel.TickCount + 2000;
-			while( !Socket.TrySendPacket(packet)) {
-				if( IsInterrupted) return;
-				if( Factory.Parallel.TickCount > end) {
-					throw new ApplicationException("Timeout while sending request orders.");
-				}
-				Factory.Parallel.Yield();
-			}
+			SendMessage(fixMsg);
 		}
 		
 		private void SendHeartbeat() {
-			Packet packet = Socket.CreatePacket();
-			var fixMsg = new FIXMessage4_4(UserName,fixDestination);
+			var fixMsg = fixFactory.Create(UserName,fixDestination);
 			fixMsg.AddHeader("0");
-			string login = fixMsg.ToString();
-			if( trace) {
-				string view = login.Replace(FIXTBuffer.EndFieldStr,"  ");
-				log.Trace("Send heartbeat message: \n" + view);
-			}
-			packet.DataOut.Write(login.ToCharArray());
-			long end = Factory.Parallel.TickCount + 2000;
-			while( !Socket.TrySendPacket(packet)) {
-				if( IsInterrupted) return;
-				if( Factory.Parallel.TickCount > end) {
-					throw new ApplicationException("Timeout while sending heartbeat.");
-				}
-				Factory.Parallel.Yield();
-			}
+			SendMessage( fixMsg);
 		}
 		
 		private unsafe bool VerifyLogin(Packet packet) {
@@ -303,38 +246,32 @@ namespace TickZoom.MBTFIX
 			return 1 == packetFIX.Sequence;
 		}
 		
-		protected override Yield ReceiveMessage() {
-			Packet packet;
-			if(Socket.TryGetPacket(out packet)) {
-				PacketFIX4_4 packetFIX = (PacketFIX4_4) packet;
-				switch( packetFIX.MessageType) {
-					case "AP":
-					case "AO":
-						PositionUpdate( packetFIX);
-						break;
-					case "8":
-					case "9":
-						ExecutionReport( packetFIX);
-						break;
-					case "1":
-						SendHeartbeat();
-						break;
-					case "0":
-						// Received heartbeat
-						break;
-					case "j":
-						BusinessReject( packetFIX);
-						break;
-					case "h":
-						log.Info("Ignoring packet: '" + packetFIX.MessageType + "'\n" + packetFIX);
-						break;
-					default:
-						log.Warn("Ignoring packet: '" + packetFIX.MessageType + "'\n" + packetFIX);
-						break;
-				}
-				return Yield.DidWork.Repeat;
-			} else {
-				return Yield.NoWork.Repeat;
+		protected override void ReceiveMessage(Packet packet) {
+			var packetFIX = (PacketFIX4_4) packet;
+			switch( packetFIX.MessageType) {
+				case "AP":
+				case "AO":
+					PositionUpdate( packetFIX);
+					break;
+				case "8":
+				case "9":
+					ExecutionReport( packetFIX);
+					break;
+				case "1":
+					SendHeartbeat();
+					break;
+				case "0":
+					// Received heartbeat
+					break;
+				case "j":
+					BusinessReject( packetFIX);
+					break;
+				case "h":
+					log.Info("Ignoring packet: '" + packetFIX.MessageType + "'\n" + packetFIX);
+					break;
+				default:
+					log.Warn("Ignoring packet: '" + packetFIX.MessageType + "'\n" + packetFIX);
+					break;
 			}
 		}
 		
@@ -895,9 +832,7 @@ namespace TickZoom.MBTFIX
 	        
 		private void OnCreateOrChangeBrokerOrder(PhysicalOrder physicalOrder, object origBrokerOrder, bool isChange)
 		{
-			Packet packet = Socket.CreatePacket();
-			
-			var fixMsg = new FIXMessage4_4(UserName,fixDestination);
+			var fixMsg = fixFactory.Create(UserName,fixDestination);
 			lock( openOrdersLocker) {
 				openOrders[(string)physicalOrder.BrokerOrder] = physicalOrder;
 			}
@@ -921,22 +856,7 @@ namespace TickZoom.MBTFIX
 			}
 			fixMsg.SetHandlingInstructions(1);
 			fixMsg.SetSymbol(physicalOrder.Symbol.Symbol);
-			switch( physicalOrder.Side) {
-				case OrderSide.Buy:
-					fixMsg.SetSide(1);
-					break;
-				case OrderSide.Sell:
-					fixMsg.SetSide(2);
-					break;
-				case OrderSide.SellShort:
-					fixMsg.SetSide(5);
-					break;
-				case OrderSide.SellShortExempt:
-					fixMsg.SetSide(6);
-					break;
-				default:
-					throw new ApplicationException("Unknown OrderSide: " + physicalOrder.Side);
-			}
+			fixMsg.SetSide( GetOrderSide(physicalOrder.Side));
 			switch( physicalOrder.Type) {
 				case OrderType.BuyLimit:
 					fixMsg.SetOrderType(2);
@@ -974,29 +894,29 @@ namespace TickZoom.MBTFIX
 			fixMsg.SetOrderQuantity((int)physicalOrder.Size);
 			fixMsg.SetOrderCapacity("A");
 			fixMsg.SetUserName();
-			string message = fixMsg.ToString();
-			string view = message.Replace(FIXTBuffer.EndFieldStr,"  ");
 			if( isChange) {
-				if( debug) log.Debug("Change order: \n" + view);
+				if( debug) log.Debug("Change order: \n" + fixMsg);
 			} else {
-				if( debug) log.Debug("Create new order: \n" + view);
+				if( debug) log.Debug("Create new order: \n" + fixMsg);
 			}
-			packet.DataOut.Write(message.ToCharArray());
-//			if( origBrokerOrder != null) {
-//				log.Info( "Sending change with client id: " + physicalOrder.BrokerOrder +
-//				         ", original id: " + origBrokerOrder);
-//			} else {
-//				log.Info( "Sending create with client id: " + physicalOrder.BrokerOrder);
-//			}
-			long end = Factory.Parallel.TickCount + 2000;
-			while( !Socket.TrySendPacket(packet)) {
-				if( IsInterrupted) return;
-				if( Factory.Parallel.TickCount > end) {
-					throw new ApplicationException("Timeout while sending an order.");
-				}
-				Factory.Parallel.Yield();
+			SendMessage( fixMsg);
+		}
+
+		private int GetOrderSide( OrderSide side) {
+			switch( side) {
+				case OrderSide.Buy:
+					return 1;
+				case OrderSide.Sell:
+					return 2;
+				case OrderSide.SellShort:
+					return 5;
+				case OrderSide.SellShortExempt:
+					return 6;
+				default:
+					throw new ApplicationException("Unknown OrderSide: " + side);
 			}
 		}
+		
 
 		private long GetUniqueOrderId() {
 			return TimeStamp.UtcNow.Internal;
@@ -1016,13 +936,13 @@ namespace TickZoom.MBTFIX
 				return;
 			}
 			if( debug) log.Debug( "OnCancelBrokerOrder " + physicalOrder);
-			Packet packet = Socket.CreatePacket();
 			
-			var fixMsg = new FIXMessage4_4(UserName,fixDestination);
+			var fixMsg = fixFactory.Create(UserName,fixDestination);
 			string newClientOrderId = physicalOrder.LogicalOrderId + "." + GetUniqueOrderId();
 			fixMsg.SetOriginalClientOrderId((string)origBrokerOrder);
 			fixMsg.SetClientOrderId(newClientOrderId);
 			fixMsg.SetAccount(AccountNumber);
+			fixMsg.SetSide( GetOrderSide(physicalOrder.Side));
 			fixMsg.AddHeader("F");
 			fixMsg.SetSymbol(physicalOrder.Symbol.Symbol);
 			switch( physicalOrder.Type) {
@@ -1038,19 +958,8 @@ namespace TickZoom.MBTFIX
 					break;
 			}
 			fixMsg.SetTransactTime(TimeStamp.UtcNow);
-			string message = fixMsg.ToString();
-			packet.DataOut.Write(message.ToCharArray());
-			if( debug) log.Debug("Cancel order: \n" + packet);
-//			log.Info( "Sending cancel with client id: " + newClientOrderId +
-//			         ", original id: " + origBrokerOrder);
-			long end = Factory.Parallel.TickCount + 2000;
-			while( !Socket.TrySendPacket(packet)) {
-				if( IsInterrupted) return;
-				if( Factory.Parallel.TickCount > end) {
-					throw new ApplicationException("Timeout while sending a cancel order.");
-				}
-				Factory.Parallel.Yield();
-			}
+			if( debug) log.Debug("Cancel order: \n" + fixMsg);
+			SendMessage(fixMsg);
 		}
 		
 		public void OnChangeBrokerOrder(PhysicalOrder physicalOrder, object origBrokerOrder)

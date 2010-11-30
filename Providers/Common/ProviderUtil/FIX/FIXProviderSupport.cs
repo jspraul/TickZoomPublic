@@ -270,11 +270,14 @@ namespace TickZoom.FIX
 								IncreaseRetryTimeout();
 								return Yield.DidWork.Repeat;
 							}
-							result = ReceiveMessage();
-							if( !result.IsIdle) {
+							Packet packet;
+							if( Socket.TryGetPacket(out packet)) {
+								ReceiveMessage(packet);
 								IncreaseRetryTimeout();
+								return Yield.DidWork.Repeat;
+							} else {
+								return Yield.NoWork.Repeat;
 							}
-							return result;
 						case Status.PendingLogin:
 						default:
 							return Yield.NoWork.Repeat;
@@ -316,7 +319,7 @@ namespace TickZoom.FIX
 		
 		protected abstract void OnStartRecovery();
 		
-		protected abstract Yield ReceiveMessage();
+		protected abstract void ReceiveMessage(Packet packet);
 		
 		private long retryTimeout;
 		
@@ -544,6 +547,26 @@ namespace TickZoom.FIX
 					throw new ApplicationException("Unexpected event type: " + (EventType) eventType);
 			}
 		}
+	    
+	    private Dictionary<int,FIXTMessage1_1> messageHistory = new Dictionary<int, FIXTMessage1_1>();
+	    public void SendMessage(FIXTMessage1_1 fixMsg) {
+	    	messageHistory.Add( fixMsg.Sequence, fixMsg);
+			var fixString = fixMsg.ToString();
+			if( trace) {
+				string view = fixString.Replace(FIXTBuffer.EndFieldStr,"  ");
+				log.Trace("Send FIX message: \n" + view);
+			}
+			var packet = Socket.CreatePacket();
+			packet.DataOut.Write(fixString.ToCharArray());
+			var end = Factory.Parallel.TickCount + 2000;
+			while( !Socket.TrySendPacket(packet)) {
+				if( IsInterrupted) return;
+				if( Factory.Parallel.TickCount > end) {
+					throw new ApplicationException("Timeout while sending heartbeat.");
+				}
+				Factory.Parallel.Yield();
+			}
+	    }
 		
 		public Socket Socket {
 			get { return socket; }

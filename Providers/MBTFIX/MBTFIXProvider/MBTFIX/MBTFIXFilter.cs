@@ -42,6 +42,7 @@ namespace TickZoom.MBTFIX
 		private bool isRecovered = false;
 		private string fixSender = typeof(MBTFIXFilter).Name;
 		private Dictionary<long,double> symbolPositionMap = new Dictionary<long,double>();
+		private FIXFactory4_4 fixFactory = new FIXFactory4_4(1);
 		
 		public void Local(FIXContext context, Packet localPacket)
 		{
@@ -184,7 +185,7 @@ namespace TickZoom.MBTFIX
 
 		private void CloseWithError(FIXContext context, PacketFIX4_4 packetIn, string message) {
 			Packet packet = context.LocalSocket.CreatePacket();
-			var fixMsg = new FIXMessage4_4(fixSender,packetIn.Sender);
+			var fixMsg = fixFactory.Create(fixSender,packetIn.Sender);
 			TimeStamp timeStamp = TimeStamp.UtcNow;
 			fixMsg.SetAccount(packetIn.Account);
 			fixMsg.SetText( message);
