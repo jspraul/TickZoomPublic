@@ -42,7 +42,7 @@ namespace TickZoom.Api
 	{
 		Action<LogicalOrder> OnModified { get; set; }
 		
-		StrategyInterface Strategy {
+		object Strategy {
 			get;
 		}
 		

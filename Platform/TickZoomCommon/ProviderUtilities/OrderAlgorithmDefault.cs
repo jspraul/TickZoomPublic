@@ -42,7 +42,6 @@ namespace TickZoom.Common
 		private Log log;
 		private SymbolInfo symbol;
 		private PhysicalOrderHandler physicalOrderHandler;
-		private LogicalOrderCache orderCache;
 		private ActiveList<PhysicalOrder> originalPhysicals;
 		private ActiveList<LogicalOrder> originalLogicals;
 		private ActiveList<LogicalOrder> logicalOrders;
@@ -66,7 +65,6 @@ namespace TickZoom.Common
 			this.originalPhysicals = new ActiveList<PhysicalOrder>();
 			this.logicalOrders = new ActiveList<LogicalOrder>();
 			this.physicalOrders = new ActiveList<PhysicalOrder>();
-			this.orderCache = Factory.Engine.LogicalOrderCache(symbol);
 		}
 		
 		private bool TryMatchId( LogicalOrder logical, out PhysicalOrder physicalOrder) {
@@ -515,6 +513,11 @@ namespace TickZoom.Common
 				int count = originalLogicals == null ? 0 : originalLogicals.Count;
 				log.Trace("SetLogicalOrders() order count = " + count);
 			}
+			if( CheckForFilledOrders( inputLogicals)) {
+				if( debug) log.Debug("Found already filled orders in logical orders. Ignoring position update.");
+				return;
+			}
+			var orderCache = Factory.Engine.LogicalOrderCache(symbol);
 			orderCache.SetActiveOrders(inputLogicals);
 			originalLogicals.Clear();
 			originalLogicals.AddLast(orderCache.ActiveOrders);
@@ -697,10 +700,10 @@ namespace TickZoom.Common
 		}
 	
 		private void UpdateOrderCache(LogicalOrder order, LogicalFill fill) {
-			var strategyPosition = orderCache.GetStrategyPosition(order.StrategyId);
+			var strategyPosition = (StrategyPosition) order.Strategy;
 			if( debug) log.Debug("Adjusting strategy position to " + order.Position + ", strategy position was " + strategyPosition.Position);
 			strategyPosition.Position = fill.Position;
-			orderCache.RemoveInactive(order);
+//			orderCache.RemoveInactive(order);
 		}
 		
 		public int PerformCompare() {
@@ -711,8 +714,8 @@ namespace TickZoom.Common
 			return sentPhysicalOrders;
 		}
 
-		private bool CheckForFilledOrders() {
-			foreach( var logical in originalLogicals) {
+		private bool CheckForFilledOrders(Iterable<LogicalOrder> orders) {
+			foreach( var logical in orders) {
 				var binaryTime = 0L;
 				if( filledOrders.TryGetValue( logical.SerialNumber, out binaryTime)) {
 					if( debug) log.Debug("Found already filled order: " + logical);
@@ -748,7 +751,7 @@ namespace TickZoom.Common
 				}
 			}
 			
-			if( CheckForFilledOrders()) {
+			if( CheckForFilledOrders(originalLogicals)) {
 				if( debug) log.Debug("Found already filled orders in position change event. Skipping compare.");
 				originalLogicals.Clear();
 				originalLogicals.AddLast(logicalOrders);
