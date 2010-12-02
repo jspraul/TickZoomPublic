@@ -32,9 +32,11 @@ using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Media;
-using TickZoom.Common;
+using System.Reflection;
 using System.Threading;
+
 using TickZoom.Api;
+using TickZoom.Common;
 using TickZoom.Presentation.Framework;
 
 namespace TickZoom.Presentation
@@ -45,6 +47,7 @@ namespace TickZoom.Presentation
 
         private readonly BackgroundWorker commandWorker;
         private readonly Log log;
+        private object progressLocker = new object();
         private readonly Dictionary<int, Progress> progressChildren = new Dictionary<int, Progress>();
         private readonly ConfigFile projectConfig;
         private string alarmFile;
@@ -582,7 +585,8 @@ namespace TickZoom.Presentation
             }
             catch (Exception)
             {
-                string msg = "Sorry, cannot find an engine compatible with this version.";
+            	var version = GetType().Assembly.GetName().Version;
+                string msg = "Sorry, cannot find an engine compatible with version " + version +".";
                 log.Notice(msg);
             }
             if (isEngineLoaded)
@@ -826,15 +830,17 @@ namespace TickZoom.Presentation
         private void ProcessWorkerProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             var progress = (Progress) e.UserState;
-            progressChildren[progress.Id] = progress;
-
             long final = 0;
             long current = 0;
-            foreach (var kvp in progressChildren)
-            {
-                Progress child = kvp.Value;
-                final += child.Final;
-                current += child.Current;
+            lock( progressLocker) {
+	            progressChildren[progress.Id] = progress;
+	
+	            foreach (var kvp in progressChildren)
+	            {
+	                Progress child = kvp.Value;
+	                final += child.Final;
+	                current += child.Current;
+	            }
             }
 
             // Calculate the task progress in percentages
