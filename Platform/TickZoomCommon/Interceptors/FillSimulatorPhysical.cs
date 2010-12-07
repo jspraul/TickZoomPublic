@@ -33,6 +33,11 @@ using TickZoom.Common;
 
 namespace TickZoom.Interceptors
 {
+	public enum LimitOrderSimulation {
+		OppositeQuote,
+		MarketMaker,
+		QuoteThrough
+	}
 	public class FillSimulatorPhysical : FillSimulator
 	{
 		private static readonly Log staticLog = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical));
@@ -63,6 +68,7 @@ namespace TickZoom.Interceptors
 		private PhysicalOrderHandler confirmOrders;
 		private bool isBarData = false;
 		private bool createSimulatedFills = false;
+		private LimitOrderSimulation limitOrderSimulation = LimitOrderSimulation.OppositeQuote;
 		// Randomly rotate the partial fills but using a fixed
 		// seed so that test results are reproducable.
 		private Random random = new Random(1234);
@@ -321,7 +327,19 @@ namespace TickZoom.Interceptors
 					ProcessSellStop(order, tick);
 					break;
 				case OrderType.SellLimit:
-					ProcessSellLimit(order, tick);
+					switch( limitOrderSimulation) {
+						case LimitOrderSimulation.OppositeQuote:
+							ProcessSellLimit(order, tick);
+							break;
+						case LimitOrderSimulation.MarketMaker:
+							ProcessSellLimitMM(order, tick);
+							break;
+						case LimitOrderSimulation.QuoteThrough:
+							ProcessSellLimitQuoteThrough(order, tick);
+							break;
+						default:
+							throw new ApplicationException("Unknown LimitOrderSimulation: " + limitOrderSimulation);
+					}
 					break;
 				case OrderType.BuyMarket:
 					ProcessBuyMarket(order, tick);
@@ -330,7 +348,19 @@ namespace TickZoom.Interceptors
 					ProcessBuyStop(order, tick);
 					break;
 				case OrderType.BuyLimit:
-					ProcessBuyLimit(order, tick);
+					switch( limitOrderSimulation) {
+						case LimitOrderSimulation.OppositeQuote:
+							ProcessBuyLimit(order, tick);
+							break;
+						case LimitOrderSimulation.MarketMaker:
+							ProcessBuyLimitMM(order, tick);
+							break;
+						case LimitOrderSimulation.QuoteThrough:
+							ProcessBuyLimitQuoteThrough(order, tick);
+							break;
+						default:
+							throw new ApplicationException("Unknown LimitOrderSimulation: " + limitOrderSimulation);
+					}
 					break;
 			}
 		}
@@ -380,13 +410,42 @@ namespace TickZoom.Interceptors
 			return isFilled;
 		}
 
-		private bool ProcessSellMarket(PhysicalOrder order, Tick tick)
+		private bool ProcessBuyLimitMM(PhysicalOrder order, Tick tick)
 		{
-			double price = tick.IsQuote ? tick.Bid : tick.Price;
-			CreatePhysicalFillHelper(-order.Size, price, tick.Time, tick.UtcTime, order);
-			return true;
+			long orderPrice = order.Price.ToLong();
+			long price = tick.IsQuote ? tick.lBid : tick.lPrice;
+			bool isFilled = false;
+			if (price <= orderPrice) {
+				isFilled = true;
+				price = orderPrice;
+			} else if (tick.IsTrade && tick.lPrice < orderPrice) {
+				price = orderPrice;
+				isFilled = true;
+			}
+			if (isFilled) {
+				CreatePhysicalFillHelper(order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
+			}
+			return isFilled;
 		}
-
+		
+		private bool ProcessBuyLimitQuoteThrough(PhysicalOrder order, Tick tick)
+		{
+			long orderPrice = order.Price.ToLong();
+			long price = tick.IsQuote ? tick.lBid : tick.lPrice;
+			bool isFilled = false;
+			if (price <= orderPrice) {
+				isFilled = true;
+				price = orderPrice;
+			} else if (tick.IsTrade && tick.lPrice < orderPrice) {
+				price = orderPrice;
+				isFilled = true;
+			}
+			if (isFilled) {
+				CreatePhysicalFillHelper(order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
+			}
+			return isFilled;
+		}
+		
 		private bool ProcessSellLimit(PhysicalOrder order, Tick tick)
 		{
 			long orderPrice = order.Price.ToLong();
@@ -404,6 +463,49 @@ namespace TickZoom.Interceptors
 			return isFilled;
 		}
 		
+		private bool ProcessSellLimitMM(PhysicalOrder order, Tick tick)
+		{
+			long orderPrice = order.Price.ToLong();
+			long price = tick.IsQuote ? tick.lAsk : tick.lPrice;
+			bool isFilled = false;
+			if (price >= orderPrice) {
+				isFilled = true;
+				price = orderPrice;
+			} else if (tick.IsTrade && tick.lPrice > orderPrice) {
+				price = orderPrice;
+				isFilled = true;
+			}
+			if (isFilled) {
+				CreatePhysicalFillHelper(-order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
+			}
+			return isFilled;
+		}
+		
+		private bool ProcessSellLimitQuoteThrough(PhysicalOrder order, Tick tick)
+		{
+			long orderPrice = order.Price.ToLong();
+			long price = tick.IsQuote ? tick.lAsk : tick.lPrice;
+			bool isFilled = false;
+			if (price > orderPrice) {
+				isFilled = true;
+				price = orderPrice;
+			} else if (tick.IsTrade && tick.lPrice > orderPrice) {
+				price = orderPrice;
+				isFilled = true;
+			}
+			if (isFilled) {
+				CreatePhysicalFillHelper(-order.Size, price.ToDouble(), tick.Time, tick.UtcTime, order);
+			}
+			return isFilled;
+		}
+		
+		private bool ProcessSellMarket(PhysicalOrder order, Tick tick)
+		{
+			double price = tick.IsQuote ? tick.Bid : tick.Price;
+			CreatePhysicalFillHelper(-order.Size, price, tick.Time, tick.UtcTime, order);
+			return true;
+		}
+
 		private int maxPartialFillsPerOrder = 10;
 		private void CreatePhysicalFillHelper(int totalSize, double price, TimeStamp time, TimeStamp utcTime, PhysicalOrder order) {
 			if( debug) log.Debug("Filling order: " + order );

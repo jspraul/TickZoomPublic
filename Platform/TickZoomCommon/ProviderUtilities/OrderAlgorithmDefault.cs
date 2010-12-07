@@ -256,6 +256,9 @@ namespace TickZoom.Common
 					if( strategyPosition > 0 && logicalPosition < 0) {
 						side = OrderSide.Sell;
 						delta = strategyPosition;
+						if( delta == physical.Size) {
+							return;
+						}
 					} else {
 						side = OrderSide.SellShort;
 					}
