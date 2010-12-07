@@ -39,7 +39,7 @@ namespace TickZoom.TickUtil
 	public class TickReaderDefault : Reader, TickReader
 	{
 		static readonly Log log = Factory.SysLog.GetLogger(typeof(TickReader));
-		static readonly bool debug = log.IsDebugEnabled;
+		readonly bool debug = log.IsDebugEnabled;
 		int startCount = 0;
 		TimeStamp startTime = TimeStamp.MinValue;
 		TimeStamp endTime = TimeStamp.MaxValue;

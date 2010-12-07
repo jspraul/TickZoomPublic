@@ -43,7 +43,7 @@ namespace TickZoom.Starters
 	public abstract class StarterCommon : Starter
 	{
 		static readonly Log log = Factory.SysLog.GetLogger(typeof(StarterCommon));
-		static readonly bool debug = log.IsDebugEnabled;
+		readonly bool debug = log.IsDebugEnabled;
 		BackgroundWorker backgroundWorker;
 	    ShowChartCallback showChartCallback;
 	    CreateChartCallback createChartCallback;

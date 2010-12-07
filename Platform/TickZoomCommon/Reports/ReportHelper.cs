@@ -38,8 +38,8 @@ namespace TickZoom.Reports
 {
 	public class ReportHelper { 
 		public static readonly Log log = Factory.SysLog.GetLogger(typeof(ReportHelper));
-		public static readonly bool debug = log.IsDebugEnabled;
-		public static readonly bool trace = log.IsTraceEnabled;
+		public readonly bool debug = log.IsDebugEnabled;
+		public readonly bool trace = log.IsTraceEnabled;
 			
 		protected StreamWriter fwriter;
 		

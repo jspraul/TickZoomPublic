@@ -32,7 +32,7 @@ namespace TickZoom.Api
 	public class SimpleLock : IDisposable {
 		private static Log log = Factory.SysLog.GetLogger(typeof(SimpleLock));
 		private string lastLock = "";
-		private static bool debug = log.IsDebugEnabled;
+		private bool debug = log.IsDebugEnabled;
 	    private int isLocked = 0;
 	    
 		public bool IsLocked {

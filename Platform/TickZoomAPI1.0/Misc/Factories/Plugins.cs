@@ -41,7 +41,7 @@ namespace TickZoom.Api
 		List<Type> serializers;
 		int errorCount = 0;
 		static readonly Log log = Factory.SysLog.GetLogger(typeof(Plugins));
-		static readonly bool debug = log.IsDebugEnabled;
+		readonly bool debug = log.IsDebugEnabled;
 		[ThreadStatic]
 		static Plugins plugins;
 		

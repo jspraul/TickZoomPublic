@@ -37,8 +37,8 @@ namespace TickZoom.Presentation
     {
         private static Log log;
         private bool isVisible;
-        private static bool debug;
-        private static bool trace;
+        private bool debug;
+        private bool trace;
         private object chartRenderLock = new Object();
         
         private readonly SynchronizationContext context;

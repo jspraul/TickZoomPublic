@@ -34,8 +34,8 @@ namespace TickZoom.Interceptors
 	public class FillHandlerDefault : FillHandler
 	{
 		private static readonly Log Log = Factory.SysLog.GetLogger(typeof(FillHandlerDefault));
-		private static readonly bool trace = Log.IsTraceEnabled;
-		private static readonly bool debug = Log.IsDebugEnabled;
+		private readonly bool trace = Log.IsTraceEnabled;
+		private readonly bool debug = Log.IsDebugEnabled;
 		private static readonly bool notice = Log.IsNoticeEnabled;
 		private Action<SymbolInfo, LogicalFill> changePosition;
 		private Func<LogicalOrder, double, double, int> drawTrade;

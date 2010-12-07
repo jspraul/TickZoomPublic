@@ -36,7 +36,7 @@ namespace TickZoom.Common
 	public class VerifyFeedDefault : Receiver, VerifyFeed, IDisposable
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(VerifyFeed));
-		private static readonly bool debug = log.IsDebugEnabled;
+		private readonly bool debug = log.IsDebugEnabled;
 		private TickQueue tickQueue = Factory.TickUtil.TickQueue(typeof(VerifyFeed));
 		private volatile bool isRealTime = false;
 		private TickSync tickSync;

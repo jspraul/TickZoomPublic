@@ -43,8 +43,8 @@ namespace TickZoom.Common
 		bool firstSession = false;
 		Elapsed sessionStart = new Elapsed(8,0,0);
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(RandomCommon));
-		private static readonly bool debug = log.IsDebugEnabled;
-		private static readonly bool trace = log.IsTraceEnabled;		
+		private readonly bool debug = log.IsDebugEnabled;
+		private readonly bool trace = log.IsTraceEnabled;		
 		
 		public RandomCommon()
 		{

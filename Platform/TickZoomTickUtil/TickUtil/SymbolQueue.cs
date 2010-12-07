@@ -37,7 +37,7 @@ namespace TickZoom.TickUtil
 {
 	public class SymbolQueue : Receiver {
 		static readonly Log log = Factory.SysLog.GetLogger(typeof(SymbolQueue));
-		static readonly bool debug = log.IsDebugEnabled;
+		readonly bool debug = log.IsDebugEnabled;
 		private SymbolInfo symbol;
 		private Provider provider;
 		private TickQueue tickQueue;

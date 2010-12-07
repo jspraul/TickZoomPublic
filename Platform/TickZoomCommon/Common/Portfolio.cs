@@ -37,8 +37,8 @@ namespace TickZoom.Common
 	public class Portfolio : Model, PortfolioInterface
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Portfolio));
-		private static readonly bool debug = log.IsDebugEnabled;
-		private static readonly bool trace = log.IsTraceEnabled;
+		private readonly bool debug = log.IsDebugEnabled;
+		private readonly bool trace = log.IsTraceEnabled;
 		private List<Strategy> strategies = new List<Strategy>();
 		private List<Portfolio> portfolios = new List<Portfolio>();
 		private Dictionary<ModelInterface,StrategyWatcher> watchers = new Dictionary<ModelInterface,StrategyWatcher>();

@@ -40,8 +40,8 @@ namespace TickZoom.TickUtil
 		List<SymbolQueue> symbolQueues = new List<SymbolQueue>();
 		Receiver receiver;
 		static readonly Log log = Factory.SysLog.GetLogger(typeof(TickAggregator));
-		static readonly bool debug = log.IsDebugEnabled;
-		static readonly bool trace = log.IsTraceEnabled;
+		readonly bool debug = log.IsDebugEnabled;
+		readonly bool trace = log.IsTraceEnabled;
 		private int id;
 		private static int staticId;
 		private static object locker = new object();

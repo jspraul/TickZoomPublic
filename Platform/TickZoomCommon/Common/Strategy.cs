@@ -40,8 +40,8 @@ namespace TickZoom.Common
 	{
 		PositionInterface position;
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Strategy));
-		private static readonly bool debug = log.IsDebugEnabled;
-		private static readonly bool trace = log.IsTraceEnabled;
+		private readonly bool debug = log.IsDebugEnabled;
+		private readonly bool trace = log.IsTraceEnabled;
 		private readonly Log instanceLog;
 		private readonly bool instanceDebug;
 		private readonly bool instanceTrace;

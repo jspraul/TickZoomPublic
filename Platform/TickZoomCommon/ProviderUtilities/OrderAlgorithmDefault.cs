@@ -37,8 +37,8 @@ namespace TickZoom.Common
 {
 	public class OrderAlgorithmDefault : OrderAlgorithm {
 		private static readonly Log staticLog = Factory.SysLog.GetLogger(typeof(OrderAlgorithmDefault));
-		private static readonly bool debug = staticLog.IsDebugEnabled;
-		private static readonly bool trace = staticLog.IsTraceEnabled;
+		private readonly bool debug = staticLog.IsDebugEnabled;
+		private readonly bool trace = staticLog.IsTraceEnabled;
 		private Log log;
 		private SymbolInfo symbol;
 		private PhysicalOrderHandler physicalOrderHandler;

@@ -51,8 +51,8 @@ namespace TickZoom.Common
 		Context context;
 		Formula formula;
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Model));
-		private static readonly bool debug = log.IsDebugEnabled;
-		private static readonly bool trace = log.IsTraceEnabled;
+		private readonly bool debug = log.IsDebugEnabled;
+		private readonly bool trace = log.IsTraceEnabled;
 		bool isOptimizeMode = false;
 		private Dictionary<int,ActiveList<ModelInterface>> eventListeners = new Dictionary<int,ActiveList<ModelInterface>>();
 		

@@ -49,8 +49,8 @@ namespace TickZoom
 	public partial class ChartControl : UserControl, TickZoom.Api.Chart
 	{
 		private static Log log;
-		private static bool debug;
-		private static bool trace;
+		private bool debug;
+		private bool trace;
 		private object chartRenderLock = new object();
 	    TimeStamp firstTime;
 		StockPointList stockPointList;

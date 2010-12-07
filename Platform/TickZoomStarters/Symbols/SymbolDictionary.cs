@@ -44,8 +44,8 @@ namespace TickZoom.Symbols
 	public class SymbolDictionary : IEnumerable<SymbolProperties>
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(SymbolDictionary));
-		private static readonly bool trace = log.IsTraceEnabled;
-		private static readonly bool debug = log.IsDebugEnabled;
+		private readonly bool trace = log.IsTraceEnabled;
+		private readonly bool debug = log.IsDebugEnabled;
 		private static object locker = new object();
 		private SymbolProperties @default;
 		private List<SymbolCategory> categories = new List<SymbolCategory>();

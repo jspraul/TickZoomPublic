@@ -42,7 +42,7 @@ namespace Other
 	public class GUITest
 	{
 		private static Log log = Factory.SysLog.GetLogger(typeof(GUITest));
-		private static bool debug = log.IsDebugEnabled;
+		private bool debug = log.IsDebugEnabled;
 		private ushort servicePort = 6490;
 		private StarterConfig config;
 		[SetUp]

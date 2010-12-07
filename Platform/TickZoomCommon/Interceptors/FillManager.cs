@@ -34,7 +34,7 @@ namespace TickZoom.Interceptors
 	internal class FillManager : StrategyInterceptor
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger("FillManager");
-		private static readonly bool trace = log.IsTraceEnabled;
+		private readonly bool trace = log.IsTraceEnabled;
 		private bool postProcess = false;
 		private FillHandler fillHandler;
 		private StrategyInterface Strategy;

@@ -49,7 +49,7 @@ namespace Loaders
 	public class StrategyTest
 	{
 		static readonly Log log = Factory.SysLog.GetLogger(typeof(StrategyTest));
-		static readonly bool debug = log.IsDebugEnabled;
+		readonly bool debug = log.IsDebugEnabled;
 		private ModelLoaderInterface loader;
 		private string testFileName;
 		string dataFolder = "Test\\DataCache";

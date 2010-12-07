@@ -33,7 +33,7 @@ namespace TickZoom.TickUtil
 {
 	public class DataReceiverDefault : Receiver {
 	   	static readonly Log log = Factory.SysLog.GetLogger(typeof(DataReceiverDefault));
-	   	static readonly bool debug = log.IsDebugEnabled;
+	   	readonly bool debug = log.IsDebugEnabled;
 		TickQueue readQueue = Factory.TickUtil.TickQueue(typeof(DataReceiverDefault));
         Provider sender;
         Pool<TickBinaryBox> tickPool = Factory.TickUtil.TickPool();

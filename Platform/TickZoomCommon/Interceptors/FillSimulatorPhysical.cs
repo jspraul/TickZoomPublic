@@ -41,8 +41,8 @@ namespace TickZoom.Interceptors
 	public class FillSimulatorPhysical : FillSimulator
 	{
 		private static readonly Log staticLog = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical));
-		private static readonly bool trace = staticLog.IsTraceEnabled;
-		private static readonly bool debug = staticLog.IsDebugEnabled;
+		private readonly bool trace = staticLog.IsTraceEnabled;
+		private readonly bool debug = staticLog.IsDebugEnabled;
 		private static readonly bool notice = staticLog.IsNoticeEnabled;
 		private Log log;
 

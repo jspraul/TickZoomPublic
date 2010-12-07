@@ -31,8 +31,8 @@ namespace TickZoom.Common
 {
 	public class SymbolHandlerDefault : SymbolHandler {
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(SymbolHandlerDefault));
-		private static readonly bool debug = log.IsDebugEnabled;
-		private static readonly bool trace = log.IsTraceEnabled;
+		private readonly bool debug = log.IsDebugEnabled;
+		private readonly bool trace = log.IsTraceEnabled;
 		private TickIO tickIO = Factory.TickUtil.TickIO();
 		private Receiver receiver;
 		private SymbolInfo symbol;

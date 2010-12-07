@@ -41,8 +41,8 @@ namespace TickZoom.TickUtil
 		SymbolInfo symbol = null;
 		long lSymbol = 0;
 		static readonly Log log = Factory.SysLog.GetLogger("TickZoom.TickUtil.Reader");
-		static readonly bool debug = log.IsDebugEnabled;
-		static readonly bool trace = log.IsDebugEnabled;
+		readonly bool debug = log.IsDebugEnabled;
+		readonly bool trace = log.IsDebugEnabled;
 		bool quietMode = false;
 		long progressDivisor = 1;
 		private Elapsed sessionStart = new Elapsed(8, 0, 0);

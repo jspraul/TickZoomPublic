@@ -41,8 +41,8 @@ namespace TickZoom.Statistics
 	public class Performance : StrategyInterceptor
 	{
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(Performance));
-		private static readonly bool trace = log.IsTraceEnabled;
-		private static readonly bool debug = log.IsDebugEnabled;
+		private readonly bool trace = log.IsTraceEnabled;
+		private readonly bool debug = log.IsDebugEnabled;
 		private static readonly Log barDataLog = Factory.SysLog.GetLogger("BarDataLog");
 		private static readonly bool barDataDebug = barDataLog.IsDebugEnabled;
 		private static readonly Log tradeLog = Factory.SysLog.GetLogger("TradeLog");
