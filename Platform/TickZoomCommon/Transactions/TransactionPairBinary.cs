@@ -44,9 +44,11 @@ namespace TickZoom.Transactions
 		private long postedEntryTime;
 		private long exitTime;
 		private long postedExitTime;
-		private int direction;
-		private int volume;
+		private int currentPosition;
+		private int shortVolume;
+		private int longVolume;
 		private double entryPrice;
+		private double averageEntryPrice;
 		private double exitPrice;
 		private double maxPrice;
 		private double minPrice;
@@ -58,11 +60,12 @@ namespace TickZoom.Transactions
 			TransactionPairBinary pair = new TransactionPairBinary();
 			string[] fields = value.Split(',');
 			int field = 0;
-			pair.direction = int.Parse(fields[field++]);
+			pair.currentPosition = int.Parse(fields[field++]);
 			pair.entryOrderId = int.Parse(fields[field++]);
 			pair.entrySerialNumber = long.Parse(fields[field++]);
 			pair.entryBar = int.Parse(fields[field++]);
 			pair.entryPrice = double.Parse(fields[field++]);
+			pair.averageEntryPrice = double.Parse(fields[field++]);
 			pair.entryTime = TimeStamp.Parse(fields[field++]).Internal;
 			pair.postedEntryTime = TimeStamp.Parse(fields[field++]).Internal;
 			pair.exitOrderId = int.Parse(fields[field++]);
@@ -73,13 +76,14 @@ namespace TickZoom.Transactions
 			pair.postedExitTime = TimeStamp.Parse(fields[field++]).Internal;
 			pair.maxPrice = double.Parse(fields[field++]);
 			pair.minPrice = double.Parse(fields[field++]);
-			pair.volume = int.Parse(fields[field++]);
+			pair.longVolume = int.Parse(fields[field++]);
+			pair.shortVolume = int.Parse(fields[field++]);
 			return pair;
 		}
 	
 		public override string ToString() {
-			return direction + "," + entryOrderId + "," + entrySerialNumber + "," + entryBar + "," + entryPrice + "," + new TimeStamp(entryTime) + "," + new TimeStamp(postedEntryTime) + "," +
-				exitOrderId + "," + exitSerialNumber + "," + exitBar + "," + exitPrice + "," + new TimeStamp(exitTime) + "," + new TimeStamp(postedExitTime) + "," + maxPrice + "," + minPrice + "," + volume;
+			return currentPosition + "," + entryOrderId + "," + entrySerialNumber + "," + entryBar + "," + entryPrice + "," + averageEntryPrice + "," + new TimeStamp(entryTime) + "," + new TimeStamp(postedEntryTime) + "," +
+				exitOrderId + "," + exitSerialNumber + "," + exitBar + "," + exitPrice + "," + new TimeStamp(exitTime) + "," + new TimeStamp(postedExitTime) + "," + maxPrice + "," + minPrice + "," + longVolume + "," + shortVolume;
 		}
 		
 		
@@ -91,30 +95,33 @@ namespace TickZoom.Transactions
 			return new TransactionPairBinary();
 		}
 		
-		public void SetProperties(string parameters)
-		{
-			string[] strings = parameters.Split(new char[] {','});
-			direction = Convert.ToInt32(strings[0]);
-			entryPrice = Convert.ToDouble(strings[1]);
-			entryTime = new TimeStamp(strings[2]).Internal;
-			exitPrice = Convert.ToDouble(strings[3]);
-			exitTime = new TimeStamp(strings[4]).Internal;
-		}
+//		public void SetProperties(string parameters)
+//		{
+//			string[] strings = parameters.Split(new char[] {','});
+//			currentPosition = Convert.ToInt32(strings[0]);
+//			entryPrice = Convert.ToDouble(strings[1]);
+//			averageEntryPrice = Convert.ToDouble(strings[2]);
+//			entryTime = new TimeStamp(strings[3]).Internal;
+//			exitPrice = Convert.ToDouble(strings[4]);
+//			exitTime = new TimeStamp(strings[5]).Internal;
+//		}
 		
 		public TransactionPairBinary(TransactionPairBinary other) {
 			entryTime = other.entryTime;
 			postedEntryTime = other.postedEntryTime;
 			exitTime = other.exitTime;
 			postedExitTime = other.postedExitTime;
-			direction = other.direction;
+			currentPosition = other.currentPosition;
 			entryPrice = other.entryPrice;
+			averageEntryPrice = other.averageEntryPrice;
 			exitPrice = other.exitPrice;
 			minPrice = other.minPrice;
 			maxPrice = other.maxPrice;
 			exitBar = other.exitBar;
 			entryBar = other.entryBar;
 			completed = other.completed;
-			volume = other.volume;
+			longVolume = other.longVolume;
+			shortVolume = other.shortVolume;
 			entryOrderId = other.entryOrderId;
 			entrySerialNumber = other.entrySerialNumber;
 			exitOrderId = other.exitOrderId;
@@ -123,7 +130,7 @@ namespace TickZoom.Transactions
 		
 		public void TryUpdate(Tick tick) {
 			if( !completed) {
-				if( direction > 0) {
+				if( currentPosition > 0) {
 					UpdatePrice(tick.IsQuote ? tick.Bid : tick.Price);
 				} else {
 					UpdatePrice(tick.IsQuote ? tick.Ask : tick.Price);
@@ -145,10 +152,16 @@ namespace TickZoom.Transactions
 		}
 		
 		public void Enter( int direction, double price, TimeStamp time, TimeStamp postedTime, int bar, int entryOrderId, long entrySerialNumber) {
-			this.direction = direction;
-			this.volume = Math.Abs(direction);
+			this.currentPosition = direction;
+			if( currentPosition > 0) {
+				this.longVolume = Math.Abs(direction);
+			} else {
+				this.shortVolume = Math.Abs(direction);
+			}
+			if( trace) log.Trace("Enter long volume = " + this.longVolume + ", short volume = " + this.shortVolume);
 			this.entryPrice = price;
-			this.maxPrice = this.minPrice = entryPrice;
+			this.averageEntryPrice = price;
+			this.maxPrice = this.minPrice = averageEntryPrice;
 			this.entryTime = time.Internal;
 			this.postedEntryTime = postedTime.Internal;
 			this.entryBar = bar;
@@ -157,7 +170,12 @@ namespace TickZoom.Transactions
 		}
 		
 		public void Exit( double price, TimeStamp time, TimeStamp postedTime, int bar, int exitOrderId, long exitSerialNumber) {
-			this.volume += Math.Abs( direction);
+			if( currentPosition < 0) {
+				this.longVolume += Math.Abs( currentPosition);
+			} else {
+				this.shortVolume += Math.Abs( currentPosition);
+			}
+			if( trace) log.Trace("Exit long volume = " + this.longVolume + ", short volume = " + shortVolume + ", Direction = " + this.Direction);
 			this.exitPrice = price;
 			this.exitTime = time.Internal;
 			this.postedExitTime = postedTime.Internal;
@@ -174,26 +192,24 @@ namespace TickZoom.Transactions
 		}
 		
 		public void ChangeSize( int newSize, double price) {
-			{
-				var sum = entryPrice.ToLong() * Direction; // 1951840000000000
-				var sizeChange = newSize - Direction;      // -6666
-				var sum2 = sizeChange * price.ToLong();    // -650394954000000
-				var newPrice = ((sum + sum2) / newSize).ToDouble();     // 97603498275
-//			}
-//			    //  97.603498275
-//			{   //  97.6207448252587
-//				double sum = entryPrice * Direction;
-//				double sizeChange = newSize - Direction;
-//				double sum2 = sizeChange * price;
-//				double newPrice = (sum + sum2) / newSize;
-				volume += (int) Math.Abs(sizeChange);
-				entryPrice = newPrice;
-				direction = newSize;
+			var sum = averageEntryPrice.ToLong() * currentPosition; // 1951840000000000
+			var sizeChange = newSize - currentPosition;      // -6666
+			var sum2 = sizeChange * price.ToLong();    // -650394954000000
+			var newPrice = ((sum + sum2) / newSize).ToDouble();     // 97603498275
+			if( sizeChange > 0) {
+				longVolume += Math.Abs(sizeChange);
+			} else {
+				shortVolume += Math.Abs(sizeChange);
 			}
+			averageEntryPrice = newPrice;
+			currentPosition = newSize;
+			if( trace) log.Trace("Price = " + price + ", averageEntryPrice = " + averageEntryPrice + ", CurrentPosition = " + currentPosition + ", NewSize = " + newSize + ", Direction = " + Direction + ", sizeChange = " + sizeChange + ", Long volume = " + this.longVolume + ", short volume = " + shortVolume);
 		}
 		
 		public int Direction {
-			get { return direction; }
+			get {
+				return Math.Max(longVolume,shortVolume) * Math.Sign(currentPosition);
+			}
 		}
 		
 		public double EntryPrice {
@@ -214,7 +230,7 @@ namespace TickZoom.Transactions
 		}
 		
 		public override int GetHashCode() {
-			string hash = direction + ":" + entryPrice + EntryTime + exitPrice + ExitTime;
+			string hash = Direction + ":" + EntryPrice + EntryTime + ExitPrice + ExitTime;
 			return hash.GetHashCode();
 		}
 		public override bool Equals(object obj) {
@@ -222,8 +238,9 @@ namespace TickZoom.Transactions
 				return false;
 			}
 			TransactionPairBinary trade = (TransactionPairBinary) obj;
-			var entryPriceMatch = this.direction == trade.direction ? this.entryPrice == trade.entryPrice : true;
-			return this.volume == trade.volume &&
+			var entryPriceMatch = this.currentPosition == trade.currentPosition ? this.averageEntryPrice == trade.averageEntryPrice : true;
+			return this.longVolume == trade.longVolume &&
+				this.shortVolume == trade.shortVolume &&
 				entryPriceMatch &&
 				this.EntryTime == trade.EntryTime &&
 				this.exitPrice == trade.exitPrice &&
@@ -254,8 +271,8 @@ namespace TickZoom.Transactions
 			get { return new TimeStamp(exitTime); }
 		}
 		
-		public double Volume {
-			get { return volume; }
+		public int Volume {
+			get { return longVolume + shortVolume; }
 		}
 		
 		public int EntryOrderId {
@@ -264,6 +281,14 @@ namespace TickZoom.Transactions
 		
 		public int ExitOrderId {
 			get { return exitOrderId; }
+		}
+		
+		public double AverageEntryPrice {
+			get { return averageEntryPrice; }
+		}
+		
+		public int CurrentPosition {
+			get { return currentPosition; }
 		}
 	}
 }

@@ -119,11 +119,6 @@ namespace TickZoom.Transactions
 			}
 		}
 		
-		public void SetProperties(string parameters)
-		{
-			binary.SetProperties(parameters);
-		}
-		
 		public void ChangeSize(int newSize, double price)
 		{
 			binary.ChangeSize(newSize, price);

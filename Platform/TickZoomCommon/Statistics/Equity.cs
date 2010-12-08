@@ -154,10 +154,18 @@ namespace TickZoom.Statistics
 		public bool OnIntervalOpen(Interval interval)
 		{
 			TimeStamp dt = model.Ticks[0].Time;
-			if( dailyBinary.Count == 0) CalcNew(dailyBinary);
-			if( weeklyBinary.Count == 0) CalcNew(weeklyBinary);
-			if( monthlyBinary.Count == 0) CalcNew(monthlyBinary);
-			if( yearlyBinary.Count == 0) CalcNew(yearlyBinary);
+			if( interval.Equals(Intervals.Day1)) {
+				if( dailyBinary.Count == 0) CalcNew(dailyBinary);
+			}
+			if( interval.Equals(Intervals.Week1)) {
+				if( weeklyBinary.Count == 0) CalcNew(weeklyBinary);
+			}
+			if( interval.Equals(Intervals.Month1)) {
+				if( monthlyBinary.Count == 0) CalcNew(monthlyBinary);
+			}
+			if( interval.Equals(Intervals.Year1)) {
+				if( yearlyBinary.Count == 0) CalcNew(yearlyBinary);
+			}
 			return true;
 		}
 
@@ -194,14 +202,14 @@ namespace TickZoom.Statistics
 		}
 
 		void CalcNew(TransactionPairsBinary periodTrades) {
-			TransactionPairBinary trade = TransactionPairBinary.Create();
+			var trade = TransactionPairBinary.Create();
 			trade.Enter(1, CurrentEquity, model.Ticks[0].Time, model.Ticks[0].Time, 0, 0, 0);
 			periodTrades.Add(trade);
 		}
 
 		void CalcEnd(TransactionPairsBinary periodTrades) {
 			if( periodTrades.Count>0) {
-				TransactionPairBinary pair = periodTrades[periodTrades.Count - 1];
+				var pair = periodTrades[periodTrades.Count - 1];
 				pair.Exit(CurrentEquity, model.Ticks[0].Time, model.Ticks[0].Time, 0, 0, 0);
 				periodTrades[periodTrades.Count - 1] = pair;
 			}

@@ -525,6 +525,7 @@ namespace TickZoom.MBTFIX
 			rejectReason = packetFIX.Text.Contains("ORDER in pending state") ? true : rejectReason;
 			rejectReason = packetFIX.Text.Contains("Cancel request already pending") ? true : rejectReason;
 			rejectReason = packetFIX.Text.Contains("No such order") ? true : rejectReason;
+			rejectReason = packetFIX.Text.Contains("improper setting") ? true : rejectReason;			
 			RemoveOrder( packetFIX, packetFIX.ClientOrderId);
 			RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
 			if( !rejectReason && IsRecovered) {
