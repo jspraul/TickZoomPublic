@@ -77,5 +77,9 @@ namespace TickZoom.Api
 		object Tag {
 			get;
 		}
+		
+		object Reference {
+			get; set;
+		}
 	}
 }

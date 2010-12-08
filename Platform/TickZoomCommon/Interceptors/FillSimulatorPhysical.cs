@@ -119,7 +119,10 @@ namespace TickZoom.Interceptors
 		private PhysicalOrder CancelBrokerOrder(object origBrokerOrder) {
 			var oldOrderId = (string) origBrokerOrder;
 			var oldOrder = GetOrderById(oldOrderId);
-			RemoveActive( oldOrder);
+			var node = (LinkedListNode<PhysicalOrder>) oldOrder.Reference;
+			if( node.List != null) {
+				node.List.Remove(node);
+			}
 			lock( orderMapLocker) {
 				orderMap.Remove( oldOrderId);
 			}
@@ -225,32 +228,30 @@ namespace TickZoom.Interceptors
 			}
 		}
 		
-		private void RemoveActive(PhysicalOrder order) {
-			Remove( increaseOrders, order);
-			Remove( decreaseOrders, order);
-			Remove( marketOrders, order);
+		private void AssureNode(PhysicalOrder order) {
+			if( order.Reference == null) {
+				order.Reference = nodePool.Create(order);
+			}
 		}
 		
 		private void Adjust(ActiveList<PhysicalOrder> list, PhysicalOrder order) {
-			if( !list.Contains(order)) {
-				var node = nodePool.Create(order);
+			AssureNode(order);
+			var node = (LinkedListNode<PhysicalOrder>) order.Reference;
+			if( node.List == null ) {
+				list.AddLast(node);
+			} else if( !node.List.Equals(list)) {
+				node.List.Remove(node);
 				list.AddLast(node);
 			}
 		}
 		
-		private void Remove(ActiveList<PhysicalOrder> list, PhysicalOrder order) {
-			lock( list.Locker) {
-				var node = list.Find(order);
-				if( node != null) {
-					list.Remove(node);
-					nodePool.Free(node);
-				}
-			}
-		}
-		
 		private void SortAdjust(ActiveList<PhysicalOrder> list, PhysicalOrder order, Func<PhysicalOrder,PhysicalOrder,double> compare) {
-			if( !list.Contains(order)) {
-				var newNode = nodePool.Create(order);
+			AssureNode(order);
+			var orderNode = (LinkedListNode<PhysicalOrder>) order.Reference;
+			if( orderNode.List == null || !orderNode.List.Equals(list)) {
+				if( orderNode.List != null) {
+					orderNode.List.Remove(orderNode);
+				}
 				bool found = false;
 				var next = list.First;
 				for( var node = next; node != null; node = next) {
@@ -262,14 +263,14 @@ namespace TickZoom.Interceptors
 					} else {
 						var result = compare(order,other);
 						if( result < 0) {
-							list.AddBefore(node,newNode);
+							list.AddBefore(node,orderNode);
 							found = true;
 							break;
 						}
 					}
 				}
 				if( !found) {
-					list.AddLast(newNode);
+					list.AddLast(orderNode);
 				}
 			}
 		}
@@ -291,7 +292,10 @@ namespace TickZoom.Interceptors
 		
 		private void OrderSideWrongReject(PhysicalOrder order) {
 			var message = "Sorry, improper setting of a " + order.Side + " order when position is " + actualPosition;
-			RemoveActive(order);
+			var node = (LinkedListNode<PhysicalOrder>) order.Reference;
+			if( node.List != null) {
+				node.List.Remove(node);
+			}
 			if( onRejectOrder != null) {
 				onRejectOrder( order, message);
 			} else {

@@ -46,6 +46,7 @@ namespace TickZoom.Common
 		private long logicalSerialNumber;
 		private object brokerOrder;
 		private object tag;
+		private object reference;
 		
 		public override string ToString()
 		{
@@ -88,6 +89,7 @@ namespace TickZoom.Common
 			this.logicalOrderId = logical.Id;
 			this.logicalSerialNumber = logical.SerialNumber;
 			this.tag = logical.Tag;
+			this.reference = null;
 			this.brokerOrder = CreateBrokerOrderId(logicalOrderId);
 		}
 		
@@ -102,6 +104,7 @@ namespace TickZoom.Common
 			this.logicalSerialNumber = logicalSerialNumber;
 			this.tag = tag;
 			this.brokerOrder = brokerOrder;
+			this.reference = null;
 			if( this.brokerOrder == null) {
 				this.brokerOrder = CreateBrokerOrderId(logicalOrderId);
 			}
@@ -163,6 +166,11 @@ namespace TickZoom.Common
 		
 		public long LogicalSerialNumber {
 			get { return logicalSerialNumber; }
+		}
+		
+		public object Reference {
+			get { return reference; }
+			set { reference = value; }
 		}
 	}
 }
