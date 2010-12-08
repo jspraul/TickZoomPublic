@@ -37,7 +37,7 @@ namespace TickZoom.Test
 {
 	public abstract class BaseProviderTests {
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(BaseProviderTests));
-		private static readonly bool debug = log.IsDebugEnabled;		
+		private readonly bool debug = log.IsDebugEnabled;		
 		public abstract Provider ProviderFactory();
 		protected ActiveList<LogicalOrder> orders = new ActiveList<LogicalOrder>();
 		protected SymbolInfo symbol;

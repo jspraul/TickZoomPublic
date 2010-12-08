@@ -38,7 +38,7 @@ namespace TickZoom.Test
 	{
 		
 		private static readonly Log log = Factory.SysLog.GetLogger(typeof(TimeAndSales));
-		private static readonly bool debug = log.IsDebugEnabled;		
+		private readonly bool debug = log.IsDebugEnabled;		
 		private bool isTestSeperate = true;	
 		private int secondsDelay = 5;
 		

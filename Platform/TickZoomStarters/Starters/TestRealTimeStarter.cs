@@ -33,7 +33,7 @@ using TickZoom.Common;
 
 namespace TickZoom.Starters
 {
-	public class TestRealTimeStarter : RealTimeStarter {
+	public class TestRealTimeStarter : RealTimeStarterBase {
 		public TestRealTimeStarter() {
 			SyncTicks.Enabled = true;
 			PhysicalOrderDefault.ResetOrderId();
@@ -44,7 +44,6 @@ namespace TickZoom.Starters
 
         public override void Run(ModelLoaderInterface loader)
         {
-			IgnoreEndTime = false;
 			Config = "WarehouseTest.config";
 			var provider = "TickZoomCombinedMock";
 			AddProvider(provider);

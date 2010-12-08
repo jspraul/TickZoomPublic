@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -33,75 +33,20 @@ using TickZoom.Common;
 
 namespace TickZoom.Starters
 {
-	public class RealTimeStarter : HistoricalStarter
+	public class RealTimeStarter : RealTimeStarterBase
 	{
-		private bool ignoreEndTime = true;
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-		public override Provider[] SetupProviders(bool quietMode, bool singleLoad)
-		{
-			switch( Address) {
-				case "InProcess":
-					return base.SetupDataProviders("127.0.0.1",Port);
-				default:
-					return base.SetupDataProviders(Address,Port);
-			}
-		}
-		
+	
 		public override void Run(ModelInterface model)
 		{
-			if( ignoreEndTime) {
-				ProjectProperties.Starter.EndTime = TimeStamp.MaxValue;
-			}
-			ServiceConnection service = null;
-			switch( Address) {
-				case "InProcess":
-					service = Factory.Provider.ProviderService();
-					foreach( var provider in ProviderPlugins) {
-						service.AddProvider(provider);
-					}
-					if( Config != null) {
-						service.SetConfig(Config);
-					}
-					service.SetAddress("127.0.0.1",Port);
-					break;
-				default:
-					break;
-			}
-			runMode = RunMode.RealTime;
+			Factory.SysLog.Reconfigure("RealTime");
+			ProjectProperties.Starter.EndTime = TimeStamp.MaxValue;
 			try {
-				if( service != null) {
-					service.OnStart();
-				}
 				base.Run(model);
 			} finally {
-				if( service != null) {
-					service.OnStop();
-				}
-			}
-		}
-		public void SetupProviderServiceConfig(string providerAssembly, ushort servicePort)
-		{
-			try { 
-				string storageFolder = Factory.Settings["AppDataFolder"];
-				var providersFolder = Path.Combine(storageFolder,"Providers");
-				string configFolder = Path.Combine(providersFolder,"ProviderService");
-				string configFile = Path.Combine(configFolder,"WarehouseTest.config");
-				ConfigFile warehouseConfig = new ConfigFile(configFile);
-				warehouseConfig.SetValue("ServerCacheFolder","Test\\ServerCache");
-				warehouseConfig.SetValue("ServiceAddress","0.0.0.0");
-				warehouseConfig.SetValue("ServicePort",servicePort.ToString());
-				warehouseConfig.SetValue("ProviderAssembly",providerAssembly);
-	 			// Clear the history files
-			} catch( Exception ex) {
-				log.Error("Setup error.",ex);
-				throw ex;
+				Factory.SysLog.ResetConfiguration();
 			}
 		}
 		
-		public bool IgnoreEndTime {
-			get { return ignoreEndTime; }
-			set { ignoreEndTime = value; }
-		}
 	}
 }

@@ -31,7 +31,7 @@ using TickZoom.Common;
 
 namespace TickZoom.Starters
 {
-	public class FIXSimulatorStarter : RealTimeStarter {
+	public class FIXSimulatorStarter : RealTimeStarterBase {
 		private FIXSimulator fixServer;
 		public FIXSimulatorStarter() {
 			SyncTicks.Enabled = true;
@@ -43,7 +43,6 @@ namespace TickZoom.Starters
 		
 		public override void Run(ModelLoaderInterface loader)
 		{
-			IgnoreEndTime = false;
 			Config = "WarehouseTest.config";
 			var provider = "MBTFIXProvider/Simulate";
 			AddProvider(provider);

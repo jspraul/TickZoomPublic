@@ -110,7 +110,7 @@ namespace TickZoom.Api
 					lock(Locker) {
 						if( sysLogManager == null) {
 							sysLogManager = (LogManager) FactoryLoader.Load(typeof(LogManager), "TickZoomLogging" );
-							sysLogManager.Configure("TickZoom");
+							sysLogManager.Configure("SysLog");
 						}
 						
 					}
@@ -125,7 +125,7 @@ namespace TickZoom.Api
 					lock(Locker) {
 						if( logManager == null) {
 							logManager = (LogManager) FactoryLoader.Load(typeof(LogManager), "TickZoomLogging" );
-							logManager.Configure("Default");
+							logManager.Configure("Log");
 						}
 						
 					}

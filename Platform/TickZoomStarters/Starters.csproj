@@ -61,12 +61,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Starters\Chromosome.cs" />
     <Compile Include="Starters\FIXSimulatorStarter.cs" />
+    <Compile Include="Starters\RealTimeStarter.cs" />
     <Compile Include="Starters\StarterFactoryImpl.cs" />
     <Compile Include="Starters\DesignStarter.cs" />
     <Compile Include="Starters\GeneticStarter.cs" />
     <Compile Include="Starters\HistoricalStarter.cs" />
     <Compile Include="Starters\OptimizeStarter.cs" />
-    <Compile Include="Starters\RealTimeStarter.cs" />
+    <Compile Include="Starters\RealTimeStarterBase.cs" />
     <Compile Include="Starters\StarterCommon.cs" />
     <Compile Include="Starters\TestRealTimeStarter.cs" />
     <Compile Include="Symbols\SymbolCategory.cs" />
