@@ -217,12 +217,12 @@ namespace TickZoom.StarterTest
 			public override void OnLoad(ProjectProperties projectProperties)
 			{
 				var strategy = new ExampleReversalStrategy();
-				strategy.Performance.Equity.EnableYearlyStats = true;
-				strategy.Performance.Equity.EnableMonthlyStats = true;
-				strategy.Performance.Equity.EnableWeeklyStats = true;
-				strategy.Performance.Equity.EnableDailyStats = true;
 				var portfolio = new Portfolio();
 		    	portfolio.AddDependency(strategy);
+				portfolio.Performance.Equity.EnableYearlyStats = true;
+				portfolio.Performance.Equity.EnableMonthlyStats = true;
+				portfolio.Performance.Equity.EnableWeeklyStats = true;
+				portfolio.Performance.Equity.EnableDailyStats = true;
 		    	TopModel = portfolio;
 			}
 		}
@@ -242,12 +242,12 @@ namespace TickZoom.StarterTest
 			public override void OnLoad(ProjectProperties projectProperties)
 			{
 				var strategy = new ExampleReversalStrategy();
-				strategy.Performance.Equity.EnableYearlyStats = true;
-				strategy.Performance.Equity.EnableMonthlyStats = true;
-				strategy.Performance.Equity.EnableWeeklyStats = true;
-				strategy.Performance.Equity.EnableDailyStats = true;
 				var portfolio = new Portfolio();
 				portfolio.AddDependency( strategy);
+				portfolio.Performance.Equity.EnableYearlyStats = true;
+				portfolio.Performance.Equity.EnableMonthlyStats = true;
+				portfolio.Performance.Equity.EnableWeeklyStats = true;
+				portfolio.Performance.Equity.EnableDailyStats = true;
 		    	TopModel = portfolio;
 			}
 		}
