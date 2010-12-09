@@ -292,6 +292,9 @@ namespace TickZoom.Interceptors
 		
 		private void OrderSideWrongReject(PhysicalOrder order) {
 			var message = "Sorry, improper setting of a " + order.Side + " order when position is " + actualPosition;
+			lock( orderMapLocker) {
+				orderMap.Remove((string)order.BrokerOrder);
+			}
 			var node = (LinkedListNode<PhysicalOrder>) order.Reference;
 			if( node.List != null) {
 				node.List.Remove(node);
@@ -608,4 +611,3 @@ namespace TickZoom.Interceptors
 		}
 	}
 }
-
