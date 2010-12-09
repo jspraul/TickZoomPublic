@@ -35,4 +35,4 @@ using TickZoom.Api;
 //
 // You can specify all the values or you can use the default the Revision and 
 // Build Numbers by using the '*' as shown below:
-[assembly: AssemblyVersion("1.1.2.2313")]
+[assembly: AssemblyVersion("1.1.2.2696")]
