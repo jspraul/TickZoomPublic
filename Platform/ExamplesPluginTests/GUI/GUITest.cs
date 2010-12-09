@@ -123,7 +123,7 @@ namespace Other
 				config.DefaultPeriod = 10;
 				config.DefaultBarUnit = BarUnit.Tick.ToString();
 				config.ModelLoader = "Example: Reversal Multi-Symbol";
-				config.Starter = "RealTimeStarter";
+				config.Starter = "TestRealTimeStarter";
 				config.Start();
 				WaitComplete(10);
 				config.Stop();
@@ -157,60 +157,65 @@ namespace Other
 		[Test]
 		public void TestCapturedDataMatchesProvider()
 		{
-			using( config = CreateConfig()) {
-				config.SymbolList = "/ESZ9";
-				config.DefaultPeriod = 1;
-				config.DefaultBarUnit = BarUnit.Minute.ToString();
-				config.EndDateTime = DateTime.UtcNow;
-				config.ModelLoader = "Example: Reversal Multi-Symbol";
-				config.Starter = "RealTimeStarter";
-				config.Start();
-				WaitComplete(10);
-				config.Stop();
-				WaitComplete(120, () => { return !config.CommandWorker.IsBusy; } );
-				Assert.IsFalse(config.CommandWorker.IsBusy,"ProcessWorker.Busy");
-				string appData = Factory.Settings["AppDataFolder"];
-				string compareFile1 = appData + @"\Test\MockProviderData\ESZ9.tck";
-				string compareFile2 = appData + @"\Test\ServerCache\ESZ9.tck";
-				using ( TickReader reader1 = Factory.TickUtil.TickReader()) {
-					reader1.Initialize(compareFile1,config.SymbolList);
-					TickBinary tick1 = new TickBinary();
-					try {
-						int count = 0;
-						while(true) {
-							while(!reader1.ReadQueue.TryDequeue(ref tick1)) { Thread.Sleep(1); }
-							TimeStamp ts1 = new TimeStamp(tick1.UtcTime);
-							count++;
-						}
-					} catch( QueueException ex) {
-						Assert.AreEqual(ex.EntryType,EventType.EndHistorical);
-					}
-				}
-				using ( TickReader reader1 = Factory.TickUtil.TickReader())
-				using ( TickReader reader2 = Factory.TickUtil.TickReader()) {
-					reader1.Initialize(compareFile1,config.SymbolList);
-					reader2.Initialize(compareFile2,config.SymbolList);
-					TickBinary tick1 = new TickBinary();
-					TickBinary tick2 = new TickBinary();
-					bool result = true;
-					try {
-						int count = 0;
-						while(true) {
-							while(!reader1.ReadQueue.TryDequeue(ref tick1)) { Thread.Sleep(1); }
-							while(!reader2.ReadQueue.TryDequeue(ref tick2)) { Thread.Sleep(1); }
-							TimeStamp ts1 = new TimeStamp(tick1.UtcTime);
-							TimeStamp ts2 = new TimeStamp(tick2.UtcTime);
-							if( !ts1.Equals(ts2)) {
-								result = false;
-								log.Error("Tick# " + count + " failed. Expected: " + ts1 + ", But was:" + ts2);
+			try {
+				using( config = CreateConfig()) {
+					config.SymbolList = "/ESZ9";
+					config.DefaultPeriod = 1;
+					config.DefaultBarUnit = BarUnit.Minute.ToString();
+					config.EndDateTime = DateTime.UtcNow;
+					config.ModelLoader = "Example: Reversal Multi-Symbol";
+					config.Starter = "TestRealTimeStarter";
+					config.Start();
+					WaitComplete(10);
+					config.Stop();
+					WaitComplete(120, () => { return !config.CommandWorker.IsBusy; } );
+					Assert.IsFalse(config.CommandWorker.IsBusy,"ProcessWorker.Busy");
+					string appData = Factory.Settings["AppDataFolder"];
+					string compareFile1 = appData + @"\Test\MockProviderData\ESZ9.tck";
+					string compareFile2 = appData + @"\Test\ServerCache\ESZ9.tck";
+					using ( TickReader reader1 = Factory.TickUtil.TickReader()) {
+						reader1.Initialize(compareFile1,config.SymbolList);
+						TickBinary tick1 = new TickBinary();
+						try {
+							int count = 0;
+							while(true) {
+								while(!reader1.ReadQueue.TryDequeue(ref tick1)) { Thread.Sleep(1); }
+								TimeStamp ts1 = new TimeStamp(tick1.UtcTime);
+								count++;
 							}
-							count++;
+						} catch( QueueException ex) {
+							Assert.AreEqual(ex.EntryType,EventType.EndHistorical);
 						}
-					} catch( QueueException ex) {
-						Assert.AreEqual(ex.EntryType,EventType.EndHistorical);
 					}
-					Assert.IsTrue(result,"Tick mismatch errors. See log file.");
+					using ( TickReader reader1 = Factory.TickUtil.TickReader())
+					using ( TickReader reader2 = Factory.TickUtil.TickReader()) {
+						reader1.Initialize(compareFile1,config.SymbolList);
+						reader2.Initialize(compareFile2,config.SymbolList);
+						TickBinary tick1 = new TickBinary();
+						TickBinary tick2 = new TickBinary();
+						bool result = true;
+						try {
+							int count = 0;
+							while(true) {
+								while(!reader1.ReadQueue.TryDequeue(ref tick1)) { Thread.Sleep(1); }
+								while(!reader2.ReadQueue.TryDequeue(ref tick2)) { Thread.Sleep(1); }
+								TimeStamp ts1 = new TimeStamp(tick1.UtcTime);
+								TimeStamp ts2 = new TimeStamp(tick2.UtcTime);
+								if( !ts1.Equals(ts2)) {
+									result = false;
+									log.Error("Tick# " + count + " failed. Expected: " + ts1 + ", But was:" + ts2);
+								}
+								count++;
+							}
+						} catch( QueueException ex) {
+							Assert.AreEqual(ex.EntryType,EventType.EndHistorical);
+						}
+						Assert.IsTrue(result,"Tick mismatch errors. See log file.");
+					}
 				}
+			} catch( Exception ex) {
+				log.Error("Test failed with error: " + ex.Message, ex);
+				Environment.Exit(1);
 			}
 		}
 	}
