@@ -522,14 +522,18 @@ namespace TickZoom
 		}
 		private volatile bool isBusy = false;		
 		public void AddBar( Bars chartBars) {
+            if (trace) log.Trace("AddBar()");
 			if( !isBusy) {
 				isBusy = true;
 				CallbackAction(AddBarPrivate);
 			}
 		}
-		
-		private void AddBarPrivate() {			
-    		if( firstTime == TimeStamp.MinValue) {
+
+        private volatile bool addBarOccurred = false;
+		private void AddBarPrivate() {
+            if (trace) log.Trace("AddBarPrivate()");
+            if (firstTime == TimeStamp.MinValue)
+            {            	
     			firstTime = chartBars.Time[0];
     		}
 			// Set the default bar color
@@ -544,6 +548,7 @@ namespace TickZoom
 			    	UpdatePriceGraph(chartBars,chartBars);
 			    }
 	        }
+            addBarOccurred = true;
 			isBusy = false;
 		}
 		
@@ -1123,16 +1128,22 @@ namespace TickZoom
 		private void refreshTick(object sender, EventArgs e)
 		{
 			try {
-				if( Visible) {
+                //if (trace) log.Trace("refreshTick()");
+                if (Visible)
+                {
 					System.Windows.Forms.Timer timer = (System.Windows.Forms.Timer) sender;
 					if( layoutChange) {
 						setLayout();
 						layoutChange = false;
 					}
 					var barsBehind = chartBars.BarCount - stockPointList.Count;
-					if( stockPointList.Count > 0 && barsBehind < 5 && isDynamicUpdate ) {
-						if( !isScrolling && isAutoScroll ) {
-							timer.Interval = 20;
+                    if (trace) log.Trace("behind=" + barsBehind + ", count="+stockPointList.Count+",dynamic="+isDynamicUpdate);
+                    if (stockPointList.Count > 0 && barsBehind < 5 && isDynamicUpdate)
+                    {
+                        if (trace) log.Trace("dragging=" + isScrolling + ", AutoScroll = " + isAutoScroll);
+                        if (!isScrolling && isAutoScroll)
+                        {
+                            timer.Interval = 20;
 							bool reset = false;
 							if( KeepWithinScale()) {
 								reset = true;	
@@ -1140,8 +1151,16 @@ namespace TickZoom
 							if( SetCommonXScale()) {
 								reset = true;
 							}
-							if( reset ) {
-								dataGraph.AxisChange();
+                            if (addBarOccurred)
+                            {
+                                reset = true;
+                                addBarOccurred = false;
+                            }
+                            if (trace) log.Trace("reset=" + reset);
+                            if (reset)
+                            {
+                                if (trace) log.Trace("refreshing graph");
+                                dataGraph.AxisChange();
 								dataGraph.Refresh();
 							}
 						}

@@ -62,7 +62,7 @@ namespace TickZoom.MBTQuotes
 		public abstract Yield OnLogin();
 		private string providerName;
 		private long heartbeatTimeout;
-		private int heartbeatDelay = 30;
+		private int heartbeatDelay = 300;
 		private bool logRecovery = false;
 	    private string configFilePath;
 	    private string configSection;

@@ -263,8 +263,12 @@ namespace TickZoom.Common
 						side = OrderSide.SellShort;
 					}
 					side = (long) strategyPosition >= (long) Math.Abs(delta) ? OrderSide.Sell : OrderSide.SellShort;
-					physical = new PhysicalOrderDefault(OrderState.Active,symbol, logical, side, Math.Abs(delta));
-					TryChangeBrokerOrder(physical, origBrokerOrder);
+					if( side == physical.Side) {
+						physical = new PhysicalOrderDefault(OrderState.Active,symbol, logical, side, Math.Abs(delta));
+						TryChangeBrokerOrder(physical, origBrokerOrder);
+					} else {
+						TryCancelBrokerOrder(physical);
+					}
 				}
 			} else if( logical.Price.ToLong() != physical.Price.ToLong()) {
 				var origBrokerOrder = physical.BrokerOrder;
