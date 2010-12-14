@@ -161,7 +161,7 @@ namespace TickZoom.MBTQuotes
 		}
 		
 		private void OnDisconnect( Socket socket) {
-			if( this.socket != socket) {
+			if( !this.socket.Port.Equals(socket.Port)) {
 				log.Warn("OnDisconnect( " + this.socket + " != " + socket + " ) - Ignored.");
 				return;
 			}
