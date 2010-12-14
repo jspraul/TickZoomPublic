@@ -83,6 +83,7 @@
     <Compile Include="Indicators\SMATest.cs" />
     <Compile Include="Indicators\TEMATest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\MockContext.cs" />
     <Compile Include="Provider\OrderAlgorithmTest.cs" />
     <Compile Include="Startup\ChartThread.cs" />
     <Compile Include="Startup\DictionaryTest.cs" />

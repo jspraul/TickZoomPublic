@@ -36,25 +36,7 @@ using TickZoom.Interceptors;
 
 namespace Orders
 {
-	public class MockContext : Context {
-		int modelId = 0;
-		int logicalOrderId = 0;
-		long logicalOrderSerialNumber = 0;
-		public BinaryStore TradeData {
-			get { throw new NotImplementedException(); }
-		}
-		public void AddOrder(LogicalOrder order)
-		{ throw new NotImplementedException(); }
-		public int IncrementOrderId() {
-			return Interlocked.Increment(ref logicalOrderId);
-		}
-		public long IncrementOrderSerialNumber() {
-			return Interlocked.Increment(ref logicalOrderSerialNumber);
-		}
-		public int IncrementModelId() {
-			return Interlocked.Increment(ref modelId);
-		}
-	}
+
 	[TestFixture]
 	public class OrderAlgorithmTest {
 		SymbolInfo symbol = Factory.Symbol.LookupSymbol("CSCO");

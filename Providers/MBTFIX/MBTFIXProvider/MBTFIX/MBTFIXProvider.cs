@@ -374,14 +374,22 @@ namespace TickZoom.MBTFIX
 				if( debug && (LogRecovery || !IsRecovery) ) {
 					log.Debug("ExecutionReport: " + packetFIX);
 				}
+				PhysicalOrder order;
 				string orderStatus = packetFIX.OrderStatus;
 				switch( orderStatus) {
 					case "0": // New
-						var symbol = Factory.Symbol.LookupSymbol( packetFIX.Symbol);
-						var order = UpdateOrder( packetFIX, OrderState.Active, null);
-						if( IsRecovered) {
-							var algorithm = GetAlgorithm( symbol.BinaryIdentifier);
-							algorithm.OnCreateBrokerOrder( order);
+						SymbolInfo symbol = null;
+						try {
+							symbol = Factory.Symbol.LookupSymbol( packetFIX.Symbol);
+						} catch( ApplicationException) {
+							// symbol unknown.
+						}
+						if( symbol != null) {
+							order = UpdateOrder( packetFIX, OrderState.Active, null);
+							if( IsRecovered) {
+								var algorithm = GetAlgorithm( symbol.BinaryIdentifier);
+								algorithm.OnCreateBrokerOrder( order);
+							}
 						}
 						break;
 					case "1": // Partial
