@@ -581,7 +581,7 @@ namespace TickZoom.FIX
 			}
 			var packet = Socket.CreatePacket();
 			packet.DataOut.Write(fixString.ToCharArray());
-			var end = Factory.Parallel.TickCount + 2000;
+			var end = Factory.Parallel.TickCount + heartbeatDelay * 1000;
 			while( !Socket.TrySendPacket(packet)) {
 				if( IsInterrupted) return;
 				if( Factory.Parallel.TickCount > end) {
