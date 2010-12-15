@@ -11,10 +11,15 @@
   <property name="config.platform" value="Debug" />
   
   <target name="compile.all" >
+    <call target="clean" />
     <property name="config.platform" value="Debug" />
     <call target="compile" />
     <property name="config.platform" value="Release" />
     <call target="compile" />
+  </target>
+  
+  <target name="clean">
+    <delete dir="bin" />
   </target>
   
   <target name="compile">
