@@ -297,9 +297,14 @@ namespace TickZoom.Common
 				var origBrokerOrder = physical.BrokerOrder;
 				physicalOrders.Remove(physical);
 				var side = GetOrderSide(logical.Type);
-				physical = new PhysicalOrderDefault(OrderState.Active, symbol, logical, side, Math.Abs(delta));
-				if( debug) log.Debug("(Price) Changing " + origBrokerOrder + " to " + physical);
-				TryChangeBrokerOrder(physical, origBrokerOrder);
+				if( side == physical.Side) {
+					physical = new PhysicalOrderDefault(OrderState.Active, symbol, logical, side, Math.Abs(delta));
+					if( debug) log.Debug("(Price) Changing " + origBrokerOrder + " to " + physical);
+					TryChangeBrokerOrder(physical, origBrokerOrder);
+				} else {
+					if( debug) log.Debug("(Price) Canceling wrong side" + physical);
+					TryCancelBrokerOrder(physical);
+				}
 			} else {
 				VerifySide( logical, physical);
 			}
