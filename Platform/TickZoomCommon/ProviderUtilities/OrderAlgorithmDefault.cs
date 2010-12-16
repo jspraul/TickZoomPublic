@@ -213,6 +213,10 @@ namespace TickZoom.Common
 					if( strategyPosition > 0 && logicalPosition < 0) {
 						side = OrderSide.Sell;
 						delta = strategyPosition;
+						if( delta == physical.Size) {
+							ProcessMatchPhysicalChangePriceAndSide( logical, physical, delta);
+							return;
+						}
 					} else {
 						side = OrderSide.SellShort;
 					}
@@ -220,7 +224,13 @@ namespace TickZoom.Common
 					physical = new PhysicalOrderDefault(OrderState.Active,symbol, logical, side, Math.Abs(delta));
 					TryChangeBrokerOrder(physical, origBrokerOrder);
 				}
-			} else if( logical.Price.ToLong() != physical.Price.ToLong()) {
+			} else {
+				ProcessMatchPhysicalChangePriceAndSide( logical, physical, delta);
+			}
+		}
+		
+		private void ProcessMatchPhysicalReversePriceAndSide(LogicalOrder logical, PhysicalOrder physical, int delta) {
+			if( logical.Price.ToLong() != physical.Price.ToLong()) {
 				var origBrokerOrder = physical.BrokerOrder;
 				physicalOrders.Remove(physical);
 				var side = GetOrderSide(logical.Type);
@@ -244,7 +254,7 @@ namespace TickZoom.Common
 				physical.Size : - physical.Size;
 			var delta = logicalPosition - strategyPosition;
 			var difference = delta - physicalPosition;
-			if( debug) log.Debug("PhysicalChange() delta="+delta+", strategyPosition="+strategyPosition+", difference="+difference);
+			if( debug) log.Debug("PhysicalChange("+logical.SerialNumber+") delta="+delta+", strategyPosition="+strategyPosition+", difference="+difference);
 			if( delta == 0 || strategyPosition == 0) {
 				if( debug) log.Debug("(Flat) Canceling: " + physical);
 				TryCancelBrokerOrder(physical);
@@ -260,6 +270,8 @@ namespace TickZoom.Common
 						side = OrderSide.Sell;
 						delta = strategyPosition;
 						if( delta == physical.Size) {
+							if( debug) log.Debug("Delta same as size: Check Price and Side.");
+							ProcessMatchPhysicalChangePriceAndSide(logical,physical,delta);
 							return;
 						}
 					} else {
@@ -275,7 +287,13 @@ namespace TickZoom.Common
 						TryCancelBrokerOrder(physical);
 					}
 				}
-			} else if( logical.Price.ToLong() != physical.Price.ToLong()) {
+			} else {
+				ProcessMatchPhysicalChangePriceAndSide(logical,physical,delta);
+			}
+		}
+		
+		private void ProcessMatchPhysicalChangePriceAndSide(LogicalOrder logical, PhysicalOrder physical, int delta) {
+			if( logical.Price.ToLong() != physical.Price.ToLong()) {
 				var origBrokerOrder = physical.BrokerOrder;
 				physicalOrders.Remove(physical);
 				var side = GetOrderSide(logical.Type);
