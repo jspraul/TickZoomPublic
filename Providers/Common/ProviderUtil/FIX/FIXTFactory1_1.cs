@@ -64,9 +64,13 @@ namespace TickZoom.FIX
 			messageHistory.Add( fixMsg.Sequence, fixMsg);
 		}
 		public FIXTMessage1_1 GetHistory(int sequence) {
-			return messageHistory[sequence];
+			FIXTMessage1_1 result;
+			if( messageHistory.TryGetValue(sequence, out result)) {
+				return result;
+			} else {
+				throw new ApplicationException("Cannot get history for sequence: " + sequence);
+			}
 		}
-		
 		public int LastSequence {
 			get { return lastSequence; }
 		}
