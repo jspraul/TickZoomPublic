@@ -65,6 +65,7 @@
     <Compile Include="Logging\LogImpl.cs" />
     <Compile Include="Logging\LoggingQueue.cs" />
     <Compile Include="Logging\LogManagerImpl.cs" />
+    <Compile Include="Logging\RollingFileAppender.cs" />
     <Compile Include="Logging\SymbolFilter.cs" />
     <Compile Include="Logging\TimeStampFilter.cs" />
     <Compile Include="Logging\Wildcard.cs" />

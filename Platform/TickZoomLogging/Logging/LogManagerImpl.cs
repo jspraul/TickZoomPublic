@@ -228,9 +228,12 @@ namespace TickZoom.Logging
 			<conversionPattern value=""%date %-5level %logger %property{Symbol} %property{TimeStamp} - %message%newline"" />
 		</layout>
  	</appender>
-	<appender name=""FileAppender"" type=""TickZoom.Logging.FileAppender"" >
+	<appender name=""FileAppender"" type=""TickZoom.Logging.RollingFileAppender"" >
 		<file value=""LogFolder\TickZoom.log"" />
 		<appendToFile value=""false"" />
+	    <rollingStyle value=""Size"" />
+	    <maxSizeRollBackups value=""100"" />
+	    <maximumFileSize value=""100MB"" />
 		<layout type=""log4net.Layout.PatternLayout"">
 			<conversionPattern value=""%date %-5level %logger - %message%newline"" />
 		</layout>

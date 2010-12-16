@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 /*
  * Software: TickZoom Trading Platform
  * Copyright 2009 M. Wayne Walter
@@ -32,30 +32,29 @@ using TickZoom.Api;
 
 namespace TickZoom.Logging
 {
-
-    public class FileAppender : log4net.Appender.FileAppender
-    {
-        public override string File
-        {
-            get
-            {
-                return base.File;
-            }
-
-            set
-            {
-                try
-                {
-                    // get the log file name from the config file.
-                    string logFileName = value.Replace("LogFolder",Factory.SysLog.LogFolder);
-
-                    base.File = logFileName;
-                }
-                catch (Exception)
-                {
-                    base.File = value;
-                }
-            }
-        }
-    }
+	public class RollingFileAppender : log4net.Appender.RollingFileAppender
+	{
+	    public override string File
+	    {
+	        get
+	        {
+	            return base.File;
+	        }
+	
+	        set
+	        {
+	            try
+	            {
+	                // get the log file name from the config file.
+	                string logFileName = value.Replace("LogFolder",Factory.SysLog.LogFolder);
+	
+	                base.File = logFileName;
+	            }
+	            catch (Exception)
+	            {
+	                base.File = value;
+	            }
+	        }
+	    }
+	}
 }
