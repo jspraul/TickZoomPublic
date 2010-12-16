@@ -37,6 +37,11 @@ namespace TickZoom.Api
 			set;
 		}
 		
+		ConfigFile ConfigFile {
+			get;
+			set;
+		}
+		
 		ChartProperties Chart {
 			get;
 			set;

@@ -42,7 +42,7 @@ namespace TickZoom.Properties
 	public class ProjectPropertiesCommon : TickZoom.Api.ProjectProperties
 	{
 		TickZoom.Api.Log log = TickZoom.Api.Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-			
+		ConfigFile configFile = new ConfigFile();
 		ChartProperties chartProperties = new ChartProperties();
 		EngineProperties engineProperties = new EngineProperties();
 		TickZoom.Api.ModelProperties modelProperties = new ModelPropertiesCommon();
@@ -257,6 +257,11 @@ namespace TickZoom.Properties
 		public TickZoom.Api.ModelProperties Model {
 			get { return modelProperties; }
 			set { modelProperties = value.Clone(); }
+		}
+		
+		public ConfigFile ConfigFile {
+			get { return configFile; }
+			set { configFile = value; }
 		}
 	}
 }

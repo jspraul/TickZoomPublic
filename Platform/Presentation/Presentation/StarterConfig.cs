@@ -878,6 +878,7 @@ namespace TickZoom.Presentation
         {
             FlushCharts();
             IntervalsUpdate();
+            starterInstance.ProjectProperties.ConfigFile = projectConfig;
             starterInstance.ProjectProperties.Starter.StartTime = (TimeStamp) startDateTime;
             starterInstance.ProjectProperties.Starter.EndTime = (TimeStamp)endDateTime;
             starterInstance.BackgroundWorker = commandWorker;
@@ -901,7 +902,6 @@ namespace TickZoom.Presentation
             starterInstance.ProjectProperties.Chart.ChartType = chartType;
             starterInstance.ProjectProperties.Starter.SetSymbols(symbolList);
             starterInstance.ProjectProperties.Starter.IntervalDefault = intervalDefault;
-//            starterInstance.Address = projectConfig.GetValue("ServiceAddress");
             starterInstance.Config = serviceConfig;
             starterInstance.Port = servicePort;
             starterInstance.AddProvider(providerAssembly);
