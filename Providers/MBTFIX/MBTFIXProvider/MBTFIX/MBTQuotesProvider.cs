@@ -55,7 +55,7 @@ namespace TickZoom.MBTQuotes
 			if( SyncTicks.Enabled) {
 	  			HeartbeatDelay = 1500;
 			} else {
-	  			HeartbeatDelay = 30;
+	  			HeartbeatDelay = 300;
 			}
         }
 		
