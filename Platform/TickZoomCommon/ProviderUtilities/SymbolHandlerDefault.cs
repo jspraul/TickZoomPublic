@@ -74,6 +74,12 @@ namespace TickZoom.Common
 							log.Error( "Received " + QuoteType.Level1 + " quote but " + symbol + " is configured for QuoteType = " + symbol.QuoteType + " in the symbol dictionary.");
 							errorWrongLevel1Type = true;
 						}
+					} else if( Bid == 0D ) {
+						log.Error("Found quote bid was set to " + Bid + " so skipping this tick.");
+						return;
+					} else if( Ask == 0D ) {
+						log.Error("Found quote ask was set to " + Ask + " so skipping this tick.");
+						return;
 					} else {
 						tickIO.Initialize();
 						tickIO.SetSymbol(symbol.BinaryIdentifier);
@@ -139,6 +145,10 @@ namespace TickZoom.Common
 					errorNeverAnyLevel1Tick = false;
 				}
 			}
+			if( Last == 0D) {
+				log.Error("Found last trade price was set to " + Last + " so skipping this tick.");
+				return;
+			}
 			if( symbol.TimeAndSales == TimeAndSales.ActualTrades) {
 				tickIO.Initialize();
 				tickIO.SetSymbol(symbol.BinaryIdentifier);
@@ -198,7 +208,13 @@ namespace TickZoom.Common
 		
 		public double Last {
 			get { return last; }
-			set { last = value; }
+			set { if( last != value) {
+					if( double.IsNaN(value) || value == 0D) {
+						log.Error("Value was set to " + value + ".\n" + Environment.StackTrace);
+					}
+					last = value;
+				}
+			}
 		}
 		
 		public bool IsRunning {
