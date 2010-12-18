@@ -845,7 +845,8 @@ namespace TickZoom
 			if( xCurrent > xUpperLimit) {
 				resetXScale = true;
 			}
-			if( resetXScale && xCurrent > xLowerLimit) {
+			if( resetXScale && xCurrent > xLowerLimit &&
+			   !double.IsNaN(xScale.Min) && !double.IsNaN(xScale.Max)) {
 				if( xCurrent > xScale.Max) {
 					AutoZoom(dataGraph.GraphPane);
 					resetXScaleSpeed *= 1.5f;
