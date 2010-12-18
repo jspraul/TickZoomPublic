@@ -72,10 +72,12 @@ namespace TickZoom.Interceptors
 		// Randomly rotate the partial fills but using a fixed
 		// seed so that test results are reproducable.
 		private Random random = new Random(1234);
+		private long minimumTick;
 		
 		public FillSimulatorPhysical(string name, SymbolInfo symbol, bool createSimulatedFills)
 		{
 			this.symbol = symbol;
+			this.minimumTick = symbol.MinimumTick.ToLong();
 			this.tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			this.createSimulatedFills = createSimulatedFills;
 			this.log = Factory.SysLog.GetLogger(typeof(FillSimulatorPhysical).FullName + "." + symbol.Symbol.StripInvalidPathChars() + "." + name);
@@ -442,7 +444,7 @@ namespace TickZoom.Interceptors
 			bool isFilled = false;
 			if (price <= orderPrice) {
 				isFilled = true;
-				price = orderPrice;
+				price = Math.Min(orderPrice, tick.lBid - minimumTick * 4);
 			} else if (tick.IsTrade && tick.lPrice < orderPrice) {
 				price = orderPrice;
 				isFilled = true;
@@ -495,7 +497,7 @@ namespace TickZoom.Interceptors
 			bool isFilled = false;
 			if (price > orderPrice) {
 				isFilled = true;
-				price = orderPrice;
+				price = Math.Max(orderPrice, tick.lAsk - minimumTick * 4);
 			} else if (tick.IsTrade && tick.lPrice > orderPrice) {
 				price = orderPrice;
 				isFilled = true;
