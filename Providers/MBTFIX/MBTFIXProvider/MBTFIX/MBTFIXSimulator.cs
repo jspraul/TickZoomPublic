@@ -291,7 +291,7 @@ namespace TickZoom.MBTFIX
 				firstHearbeat = false;
 				return;
 			}
-			if( tick.Time > heartbeatTimer && fixSocket != null) {
+			if( tick.Time > heartbeatTimer && fixSocket != null && FixFactory != null) {
 				IncreaseHeartbeat(tick);
 				var writePacket = fixSocket.CreatePacket();
 				var mbtMsg = (FIXMessage4_4) FixFactory.Create();

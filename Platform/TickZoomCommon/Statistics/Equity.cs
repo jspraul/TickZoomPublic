@@ -388,7 +388,7 @@ namespace TickZoom.Statistics
 				if( isMultiSymbolPortfolio) {
 					return openEquity;
 				} else {
-					return performance.ComboTrades.OpenProfitLoss;
+					return performance.ComboTrades == null ? 0D : performance.ComboTrades.OpenProfitLoss;
 				}
 			}
 		}
