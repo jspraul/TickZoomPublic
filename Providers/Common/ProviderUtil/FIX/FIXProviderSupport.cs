@@ -636,7 +636,7 @@ namespace TickZoom.FIX
 		}
 		
 		public int HeartbeatDelay {
-			get { return heartbeatDelay; }
+	    	get { return heartbeatDelay; }
 			set { heartbeatDelay = value;
 				IncreaseRetryTimeout();
 			}

@@ -94,7 +94,7 @@ namespace TickZoom.MBTFIX
 					FIXCancelOrder( packetFIX);
 					break;
 				case "0":
-					// Ignore heartbeat.
+					if( debug) log.Debug("Received heartbeat response.");
 					break;
 				default: 
 					throw new ApplicationException("Unknown FIX message type '" + packetFIX.MessageType + "'\n" + packetFIX);
