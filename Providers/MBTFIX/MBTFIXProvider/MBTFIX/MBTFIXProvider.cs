@@ -63,7 +63,7 @@ namespace TickZoom.MBTFIX
 			}
   			ConfigSection = name;
   			if( SyncTicks.Enabled) {
-	  			HeartbeatDelay = 3500;
+	  			HeartbeatDelay = int.MaxValue;
   			} else {
 	  			HeartbeatDelay = 40;
   			}

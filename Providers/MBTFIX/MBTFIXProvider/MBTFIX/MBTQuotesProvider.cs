@@ -53,7 +53,7 @@ namespace TickZoom.MBTQuotes
 			RetryIncrease = 1;
 			RetryMaximum = 30;
 			if( SyncTicks.Enabled) {
-	  			HeartbeatDelay = 1500;
+	  			HeartbeatDelay = int.MaxValue;
 			} else {
 	  			HeartbeatDelay = 300;
 			}

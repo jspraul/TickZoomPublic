@@ -42,8 +42,6 @@ namespace TickZoom.MBTFIX
 		private bool isRecovered = false;
 		private string fixSender = typeof(MBTFIXFilter).Name;
 		private Dictionary<long,double> symbolPositionMap = new Dictionary<long,double>();
-		private FIXFactory4_4 fixFactory;
-		
 		public void Local(FIXContext context, Packet localPacket)
 		{
 			var packetFIX = (PacketFIX4_4) localPacket;

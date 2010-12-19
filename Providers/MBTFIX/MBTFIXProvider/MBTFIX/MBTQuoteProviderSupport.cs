@@ -291,7 +291,7 @@ namespace TickZoom.MBTQuotes
 	
 		protected void IncreaseRetryTimeout() {
 			retryTimeout = Factory.Parallel.TickCount + retryDelay * 1000;
-			heartbeatTimeout = Factory.Parallel.TickCount + heartbeatDelay * 1000;
+			heartbeatTimeout = Factory.Parallel.TickCount + (long)heartbeatDelay * 1000L;
 		}
 		
 		protected abstract void OnStartRecovery();
