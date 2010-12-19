@@ -255,8 +255,10 @@ namespace TickZoom.MBTFIX
 					PositionUpdate( packetFIX);
 					break;
 				case "8":
-				case "9":
 					ExecutionReport( packetFIX);
+					break;
+				case "9":
+					CancelRejected( packetFIX);
 					break;
 				case "1":
 					SendHeartbeat();
@@ -453,6 +455,36 @@ namespace TickZoom.MBTFIX
 					default:
 						throw new ApplicationException("Unknown order status: '" + orderStatus + "'");
 				}
+			}
+		}
+		
+		private void CancelRejected( PacketFIX4_4 packetFIX) {
+			if( debug && (LogRecovery || !IsRecovery) ) {
+				log.Debug("ExecutionReport: " + packetFIX);
+			}
+			string orderStatus = packetFIX.OrderStatus;
+			switch( orderStatus) {
+				case "8": // Rejected
+					var rejectReason = false;
+					rejectReason = packetFIX.Text.Contains("No such order") ? true : rejectReason;
+					rejectReason = packetFIX.Text.Contains("Cancel request already pending") ? true : rejectReason;
+					rejectReason = packetFIX.Text.Contains("ORDER in pending state") ? true : rejectReason;
+					RemoveOrder( packetFIX, packetFIX.ClientOrderId);
+					if( packetFIX.Text.Contains("No such order")) {
+						RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+					}
+					if( !rejectReason && IsRecovered) {
+						var message = "Order Rejected: " + packetFIX.Text + "\n" + packetFIX;
+						var ignore = "The cancel reject error message '" + packetFIX.Text + "' was unrecognized. So it is being ignored. ";
+						var handle = "If this reject causes any other problems please report it to have it added and properly handled.";
+						log.Warn( message);
+						log.Error( ignore + handle);
+					} else {
+						log.Info( "CancelReject(" + packetFIX.Text + ") Removed cancel order: " + packetFIX.ClientOrderId);
+					}
+					break;
+				default:
+					throw new ApplicationException("Unknown cancel rejected order status: '" + orderStatus + "'");
 			}
 		}
 		
