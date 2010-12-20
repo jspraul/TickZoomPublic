@@ -303,6 +303,7 @@ namespace TickZoom.MBTQuotes
 		}
 		
 		private void RequestStartSymbol(SymbolInfo symbol) {
+            var handler = GetSymbolHandler(symbol,receiver);
 			string quoteType = "";
 			switch( symbol.QuoteType) {
 				case QuoteType.Level1:
@@ -357,7 +358,6 @@ namespace TickZoom.MBTQuotes
 				}
 			}
 			
-            SymbolHandler handler = GetSymbolHandler(symbol,receiver);
             while( !receiver.OnEvent(symbol,(int)EventType.StartRealTime,null)) {
             	if( IsInterrupted) return;
             	Factory.Parallel.Yield();
