@@ -166,9 +166,9 @@ namespace TickZoom.MBTFIX
 				OnRejectOrder(origOrder,message);
 				return;     
 			}
-			SendExecutionReport( order, "E", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
+			SendExecutionReport( order, "E", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			SendExecutionReport( order, "5", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
+			SendExecutionReport( order, "5", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			ChangeOrder(order, packet.OriginalClientOrderId);
 		}
@@ -189,9 +189,9 @@ namespace TickZoom.MBTFIX
 			}
 //			log.Info( packet.Symbol + ": Canceling order for client id: " + packet.OriginalClientOrderId);
 			CancelOrder( symbol, order.BrokerOrder);
-			SendExecutionReport( order, "6", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
+			SendExecutionReport( order, "6", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			SendExecutionReport( order, "4", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet.OriginalClientOrderId);
+			SendExecutionReport( order, "4", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			return Yield.DidWork.Repeat;
 		}
@@ -203,9 +203,9 @@ namespace TickZoom.MBTFIX
 			if( string.IsNullOrEmpty(packet.ClientOrderId)) {
 				System.Diagnostics.Debugger.Break();
 			}
-			SendExecutionReport( order, "A", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
+			SendExecutionReport( order, "A", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
-			SendExecutionReport( order, "0", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, null);
+			SendExecutionReport( order, "0", 0.0, 0, 0, 0, (int) order.Size, TimeStamp.UtcNow, packet);
 			SendPositionUpdate( order.Symbol, GetPosition(order.Symbol));
 			CreateOrder( order);
 			return Yield.DidWork.Repeat;
@@ -354,7 +354,7 @@ namespace TickZoom.MBTFIX
 			fixPacketQueue.Enqueue(writePacket);
 		}	
 		
-		private void SendExecutionReport(PhysicalOrder order, string status, double price, int orderQty, int cumQty, int lastQty, int leavesQty, TimeStamp time, string origClientOrderId) {
+		private void SendExecutionReport(PhysicalOrder order, string status, double price, int orderQty, int cumQty, int lastQty, int leavesQty, TimeStamp time, PacketFIX4_4 packet) {
 			int orderType = 0;
 			switch( order.Type) {
 				case OrderType.BuyMarket:
@@ -396,9 +396,13 @@ namespace TickZoom.MBTFIX
 			mbtMsg.SetPositionEffect( "O");
 			mbtMsg.SetOrderType( orderType);
 			mbtMsg.SetSide( orderSide);
-			mbtMsg.SetClientOrderId( order.BrokerOrder.ToString());
-			if( origClientOrderId != null) {
-				mbtMsg.SetOriginalClientOrderId( origClientOrderId);
+			if( packet == null) {
+				mbtMsg.SetClientOrderId( order.BrokerOrder.ToString());
+			} else {
+				mbtMsg.SetClientOrderId( packet.ClientOrderId);
+				if( packet.OriginalClientOrderId != null) {
+					mbtMsg.SetOriginalClientOrderId( packet.OriginalClientOrderId);
+				}
 			}
 			mbtMsg.SetPrice( order.Price);
 			mbtMsg.SetSymbol( order.Symbol.Symbol);
