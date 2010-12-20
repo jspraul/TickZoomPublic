@@ -424,6 +424,7 @@ namespace TickZoom.MBTFIX
 						}
 						break;
 					case "4": // Canceled
+						order = RemoveOrder( packetFIX.ClientOrderId);
 						order = RemoveOrder( packetFIX.OriginalClientOrderId);
 						if( IsRecovered) {
 							if( order != null) {
