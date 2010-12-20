@@ -997,6 +997,7 @@ namespace TickZoom.MBTFIX
 				}
 				return;
 			}
+			physicalOrder.OrderState = OrderState.Pending;
 			if( debug) log.Debug( "OnCancelBrokerOrder " + physicalOrder);
 			
 			var fixMsg = (FIXMessage4_4) FixFactory.Create();
