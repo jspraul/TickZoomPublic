@@ -190,7 +190,10 @@ namespace TickZoom.Logging
 			return @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <configuration>
  <log4net>
- 	<appender name=""StatsLogAppender"" type=""TickZoom.Logging.FileAppender"">
+ 	<appender name=""StatsLogAppender"" type=""TickZoom.Logging.RollingFileAppender"">
+	    <rollingStyle value=""Size"" />
+	    <maxSizeRollBackups value=""10"" />
+	    <maximumFileSize value=""100MB"" />
 		<file value=""LogFolder\Stats.log"" />
 		<appendToFile value=""false"" />
 		<lockingModel type=""log4net.Appender.FileAppender+MinimalLock"" />
@@ -198,7 +201,10 @@ namespace TickZoom.Logging
 			<conversionPattern value=""%message%newline"" />
 		</layout>
  	</appender>
- 	<appender name=""BarDataLogAppender"" type=""TickZoom.Logging.FileAppender"">
+ 	<appender name=""BarDataLogAppender"" type=""TickZoom.Logging.RollingFileAppender"">
+	    <rollingStyle value=""Size"" />
+	    <maxSizeRollBackups value=""10"" />
+	    <maximumFileSize value=""100MB"" />
 		<file value=""LogFolder\BarData.log"" />
 		<appendToFile value=""false"" />
 		<lockingModel type=""log4net.Appender.FileAppender+MinimalLock"" />
@@ -206,7 +212,10 @@ namespace TickZoom.Logging
 			<conversionPattern value=""%message%newline"" />
 		</layout>
  	</appender>
- 	<appender name=""TradeLogAppender"" type=""TickZoom.Logging.FileAppender"">
+ 	<appender name=""TradeLogAppender"" type=""TickZoom.Logging.RollingFileAppender"">
+	    <rollingStyle value=""Size"" />
+	    <maxSizeRollBackups value=""10"" />
+	    <maximumFileSize value=""100MB"" />
 		<file value=""LogFolder\Trades.log"" />
 		<appendToFile value=""false"" />
 		<lockingModel type=""log4net.Appender.FileAppender+MinimalLock"" />
@@ -214,7 +223,10 @@ namespace TickZoom.Logging
 			<conversionPattern value=""%message%newline"" />
 		</layout>
  	</appender>
- 	<appender name=""TransactionLogAppender"" type=""TickZoom.Logging.FileAppender"">
+ 	<appender name=""TransactionLogAppender"" type=""TickZoom.Logging.RollingFileAppender"">
+	    <rollingStyle value=""Size"" />
+	    <maxSizeRollBackups value=""10"" />
+	    <maximumFileSize value=""100MB"" />
 		<file value=""LogFolder\Transactions.log"" />
 		<appendToFile value=""false"" />
 		<lockingModel type=""log4net.Appender.FileAppender+MinimalLock"" />
@@ -229,11 +241,12 @@ namespace TickZoom.Logging
 		</layout>
  	</appender>
 	<appender name=""FileAppender"" type=""TickZoom.Logging.RollingFileAppender"" >
-		<file value=""LogFolder\TickZoom.log"" />
-		<appendToFile value=""false"" />
 	    <rollingStyle value=""Size"" />
 	    <maxSizeRollBackups value=""100"" />
 	    <maximumFileSize value=""100MB"" />
+		<file value=""LogFolder\TickZoom.log"" />
+		<appendToFile value=""false"" />
+		<lockingModel type=""log4net.Appender.FileAppender+MinimalLock"" />
 		<layout type=""log4net.Layout.PatternLayout"">
 			<conversionPattern value=""%date %-5level %logger - %message%newline"" />
 		</layout>
