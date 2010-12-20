@@ -582,18 +582,17 @@ namespace TickZoom.MBTFIX
 			rejectReason = packetFIX.Text.Contains("not accepted this session") ? true : rejectReason;
 			rejectReason = packetFIX.Text.Contains("Pending live orders") ? true : rejectReason;
 			rejectReason = packetFIX.Text.Contains("Trading temporarily unavailable") ? true : rejectReason;
-			rejectReason = packetFIX.Text.Contains("ORDER in pending state") ? true : rejectReason;
-			rejectReason = packetFIX.Text.Contains("Cancel request already pending") ? true : rejectReason;
-			rejectReason = packetFIX.Text.Contains("No such order") ? true : rejectReason;
 			rejectReason = packetFIX.Text.Contains("improper setting") ? true : rejectReason;			
 			RemoveOrder( packetFIX.ClientOrderId);
 			RemoveOrder( packetFIX.OriginalClientOrderId);
 			if( !rejectReason && IsRecovered) {
 				var message = "Order Rejected: " + packetFIX.Text + "\n" + packetFIX;
-				var ignore = "The rejected error message was UNRECOGNIZED. So it is being ignored. ";
+				var ignore = "The reject error message '" + packetFIX.Text + "' was unrecognized. So it is being ignored. ";
 				var handle = "If this reject causes any other problems please report it to have it added and properly handled.";
 				log.Warn( message);
-				log.Warn( ignore + handle);
+				log.Error( ignore + handle);
+			} else {
+				log.Info( "RejectOrder(" + packetFIX.Text + ") Removed cancel order: " + packetFIX.ClientOrderId + " and original order: " + packetFIX.OriginalClientOrderId);
 			}
 		}
 		
