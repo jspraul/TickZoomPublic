@@ -584,6 +584,7 @@ namespace TickZoom.MBTFIX
 			rejectReason = packetFIX.Text.Contains("Pending live orders") ? true : rejectReason;
 			rejectReason = packetFIX.Text.Contains("Trading temporarily unavailable") ? true : rejectReason;
 			rejectReason = packetFIX.Text.Contains("improper setting") ? true : rejectReason;			
+			rejectReason = packetFIX.Text.Contains("No position to close") ? true : rejectReason;			
 			RemoveOrder( packetFIX.ClientOrderId);
 			RemoveOrder( packetFIX.OriginalClientOrderId);
 			if( !rejectReason && IsRecovered) {
