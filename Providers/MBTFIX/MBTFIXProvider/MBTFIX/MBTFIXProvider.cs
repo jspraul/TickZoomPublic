@@ -284,6 +284,8 @@ namespace TickZoom.MBTFIX
 			var errorOkay = false;
 			errorOkay = lower.Contains("order") && lower.Contains("server") ? true : errorOkay;
 			errorOkay = text.Contains("DEMOORDS") ? true : errorOkay;
+			errorOkay = text.Contains("FXORD1") ? true : errorOkay;
+			errorOkay = text.Contains("FXORD2") ? true : errorOkay;
 			if( errorOkay) {
 				log.Warn( packetFIX.Text + " -- Sending EndBroker event. \n" + packetFIX);
 				SendEndBroker();
@@ -434,6 +436,7 @@ namespace TickZoom.MBTFIX
 						break;
 					case "6": // Pending Cancel
 						UpdateOrder( packetFIX, OrderState.Pending, "PendingCancel");
+						TryHandlePiggyBackFill(packetFIX);
 						break;
 					case "8": // Rejected
 						RejectOrder( packetFIX);
@@ -447,6 +450,7 @@ namespace TickZoom.MBTFIX
 						break;
 					case "E": // Pending Replace
 						UpdateOrder( packetFIX, OrderState.Pending, "PendingReplace");
+						TryHandlePiggyBackFill(packetFIX);
 						break;
 					case "R": // Resumed.
 						UpdateOrder( packetFIX, OrderState.Active, null);
@@ -454,6 +458,22 @@ namespace TickZoom.MBTFIX
 						break;
 					default:
 						throw new ApplicationException("Unknown order status: '" + orderStatus + "'");
+				}
+			}
+		}
+
+		private void TryHandlePiggyBackFill(PacketFIX4_4 packetFIX) {
+			if( packetFIX.LastQuantity > 0 && IsRecovered) {
+				SendFill( packetFIX);
+			}
+			if( packetFIX.LeavesQuantity == 0) {
+				var order = RemoveOrder( packetFIX.ClientOrderId);
+				if( packetFIX.OriginalClientOrderId != null) {
+					order = RemoveOrder( packetFIX.OriginalClientOrderId);
+				}
+				if( IsRecovered) {
+					var algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
+					algorithm.PerformCompare();
 				}
 			}
 		}
