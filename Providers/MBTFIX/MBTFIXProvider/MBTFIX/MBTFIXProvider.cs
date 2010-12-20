@@ -404,7 +404,7 @@ namespace TickZoom.MBTFIX
 						if( IsRecovered) {
 							SendFill( packetFIX);
 						}
-						order = RemoveOrder( packetFIX, packetFIX.ClientOrderId);
+						order = RemoveOrder( packetFIX.ClientOrderId);
 						if( IsRecovered) {
 							var algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
 							algorithm.PerformCompare();
@@ -422,7 +422,7 @@ namespace TickZoom.MBTFIX
 						}
 						break;
 					case "4": // Canceled
-						order = RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+						order = RemoveOrder( packetFIX.OriginalClientOrderId);
 						if( IsRecovered) {
 							if( order != null) {
 								var algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
@@ -469,9 +469,9 @@ namespace TickZoom.MBTFIX
 					rejectReason = packetFIX.Text.Contains("No such order") ? true : rejectReason;
 					rejectReason = packetFIX.Text.Contains("Cancel request already pending") ? true : rejectReason;
 					rejectReason = packetFIX.Text.Contains("ORDER in pending state") ? true : rejectReason;
-					RemoveOrder( packetFIX, packetFIX.ClientOrderId);
+					RemoveOrder( packetFIX.ClientOrderId);
 					if( packetFIX.Text.Contains("No such order")) {
-						RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+						RemoveOrder( packetFIX.OriginalClientOrderId);
 					}
 					if( !rejectReason && IsRecovered) {
 						var message = "Order Rejected: " + packetFIX.Text + "\n" + packetFIX;
@@ -566,8 +566,8 @@ namespace TickZoom.MBTFIX
 			rejectReason = packetFIX.Text.Contains("Cancel request already pending") ? true : rejectReason;
 			rejectReason = packetFIX.Text.Contains("No such order") ? true : rejectReason;
 			rejectReason = packetFIX.Text.Contains("improper setting") ? true : rejectReason;			
-			RemoveOrder( packetFIX, packetFIX.ClientOrderId);
-			RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+			RemoveOrder( packetFIX.ClientOrderId);
+			RemoveOrder( packetFIX.OriginalClientOrderId);
 			if( !rejectReason && IsRecovered) {
 				var message = "Order Rejected: " + packetFIX.Text + "\n" + packetFIX;
 				var ignore = "The rejected error message was UNRECOGNIZED. So it is being ignored. ";
@@ -588,7 +588,7 @@ namespace TickZoom.MBTFIX
 		}
 		
 		private static readonly char[] DOT_SEPARATOR = new char[] { '.' };
-		public PhysicalOrder RemoveOrder( PacketFIX4_4 packetFIX, string clientOrderId) {
+		public PhysicalOrder RemoveOrder( string clientOrderId) {
 			if( string.IsNullOrEmpty(clientOrderId)) {
 				return null;
 			}
@@ -689,7 +689,7 @@ namespace TickZoom.MBTFIX
 			}
 			var order = UpdateOrReplaceOrder( packetFIX, packetFIX.OriginalClientOrderId, packetFIX.ClientOrderId, orderState, note);
 			if( order != null) {
-				RemoveOrder( packetFIX, packetFIX.OriginalClientOrderId);
+				RemoveOrder( packetFIX.OriginalClientOrderId);
 			}
 			return order;
 		}
