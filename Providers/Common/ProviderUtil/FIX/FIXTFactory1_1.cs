@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 using TickZoom.Api;
 
@@ -39,14 +40,14 @@ namespace TickZoom.FIX
 		private string destination;
 		private Dictionary<int,FIXTMessage1_1> messageHistory = new Dictionary<int,FIXTMessage1_1>();
 		public FIXTFactory1_1(int nextSequence, string sender, string destination) {
-			this.nextSequence = nextSequence;
+			// Decrement since first message will increment.
+			this.nextSequence = nextSequence - 1;
 			this.sender = sender;
 			this.destination = destination;
 		}
 		public virtual FIXTMessage1_1 Create() {
 			var message = new FIXTMessage1_1("FIXT1.1",sender,destination);
-			message.Sequence = nextSequence;
-			nextSequence ++;
+			message.Sequence = GetNextSequence();
 			return message;
 		}
 		public string Sender {
@@ -55,9 +56,8 @@ namespace TickZoom.FIX
 		public string Destination {
 			get { return destination; }
 		}
-		public int NextSequence {
-			get { return nextSequence; }
-			set { nextSequence = value; }
+		public int GetNextSequence() {
+			return Interlocked.Increment( ref nextSequence);
 		}
 		public void AddHistory(FIXTMessage1_1 fixMsg) {
 			lastSequence = fixMsg.Sequence;

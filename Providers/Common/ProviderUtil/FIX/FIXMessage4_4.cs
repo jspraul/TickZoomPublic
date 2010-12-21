@@ -37,8 +37,7 @@ namespace TickZoom.FIX
 		}
 		public override FIXTMessage1_1 Create() {
 			var message = new FIXMessage4_4(Sender,Destination);
-			message.Sequence = NextSequence;
-			NextSequence ++;
+			message.Sequence = GetNextSequence();
 			return message;
 		}
 	}

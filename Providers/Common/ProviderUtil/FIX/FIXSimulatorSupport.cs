@@ -266,7 +266,7 @@ namespace TickZoom.FIX
 			if (isFIXSimulationStarted) {
 				if (fixSocket.TryGetPacket(out fixReadPacket)) {
 					var packetFIX = (PacketFIXT1_1) fixReadPacket;
-					if( random.Next(10) == 1) {
+					if( fixFactory != null && random.Next(10) == 1) {
 						// Ignore this message. Pretend we never received it.
 						// This will test the message recovery.
 						if( debug) log.Debug("Ignoring fix message sequence " + packetFIX.Sequence);
