@@ -41,11 +41,7 @@ namespace TickZoom.Starters
 		{
 			Factory.SysLog.Reconfigure("RealTime");
 			ProjectProperties.Starter.EndTime = TimeStamp.MaxValue;
-			try {
-				base.Run(model);
-			} finally {
-				Factory.SysLog.ResetConfiguration();
-			}
+			base.Run(model);
 		}
 		
 	}

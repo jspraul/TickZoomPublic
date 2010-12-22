@@ -317,6 +317,60 @@ namespace TickZoom.TickUtil
 			pricePrecision = temp.ToLong();
 		}
 		
+		private unsafe void ToWriterVersion10(MemoryStream writer) {
+			dataVersion = 10;
+			writer.SetLength( writer.Position+minTickSize);
+			byte[] buffer = writer.GetBuffer();
+			fixed( byte *fptr = &buffer[writer.Position]) {
+				byte *ptr = fptr;
+				ptr++; // Save space for size header.
+				*(ptr) = dataVersion; ptr++;
+				ptr++; // Save space for checksum.
+				if( pricePrecision == 0L) {
+					SetPricePrecision();
+					if( debug) log.Debug("Writing decimal places use in price compression.");
+					WriteField( BinaryField.Precision, &ptr, pricePrecision);
+				}
+				if( !isCompressStarted) {
+					if( debug) log.Debug("Writing Reset token during tick compression.");
+					WriteField( BinaryField.Reset, &ptr, 1);
+					var ts = new TimeStamp( binary.UtcTime);
+					isCompressStarted = true;
+				}
+				WriteField( BinaryField.ContentMask, &ptr, binary.ContentMask - lastBinary.ContentMask);
+				var diff = (binary.UtcTime - lastBinary.UtcTime);
+				WriteField( BinaryField.Time, &ptr, diff);
+				if( IsQuote) {
+					WriteField( BinaryField.Bid, &ptr, (binary.Bid - lastBinary.Bid) / pricePrecision);
+					WriteField( BinaryField.Ask, &ptr, (binary.Ask - lastBinary.Ask) / pricePrecision);
+				}
+				if( IsTrade) {
+					WriteField( BinaryField.Price, &ptr, (binary.Price - lastBinary.Price) / pricePrecision);
+					WriteField( BinaryField.Size, &ptr, binary.Size - lastBinary.Size);
+				}
+				if( HasDepthOfMarket) {
+					var field = (byte) ((byte) BinaryField.BidSize << 3);
+					for( int i=0; i<TickBinary.DomLevels; i++) {
+						WriteBidSize( field, i, &ptr);
+					}
+					field = (byte) ((byte) BinaryField.AskSize << 3);
+					for( int i=0; i<TickBinary.DomLevels; i++) {
+						WriteAskSize( field, i, &ptr);
+					}
+				}
+				writer.Position += ptr - fptr;
+				writer.SetLength(writer.Position);
+				*fptr = (byte) (ptr - fptr);
+				byte checksum = 0;
+				for( var p = fptr+3; p < ptr; p++) {
+					checksum ^= *p;	
+				}
+				*(fptr+2) = (byte) (checksum ^ lastChecksum);
+				lastChecksum = checksum;
+				lastBinary = binary;
+			}
+		}
+		
 		private unsafe void ToWriterVersion9(MemoryStream writer) {
 			dataVersion = 9;
 			writer.SetLength( writer.Position+minTickSize);
@@ -374,7 +428,8 @@ namespace TickZoom.TickUtil
 		private byte lastChecksum;
 		
 		public unsafe void ToWriter(MemoryStream writer) {
-			ToWriterVersion9(writer);
+			ToWriterVersion10(writer);
+//			ToWriterVersion9(writer);
 //			ToWriterVersion8(writer);
 		}
 		
@@ -447,6 +502,75 @@ namespace TickZoom.TickUtil
 				*(p+index) = (ushort) (*(p+index) + *(short*)(*ptr));
 				(*ptr)+= sizeof(short);
 			}
+		}
+		
+		private unsafe int FromFileVersion10(byte *fptr, int length) {
+			// Backwards compatibility. The first iteration of version
+			// 9 never stored the price precision in the file.
+			if( pricePrecision == 0L) {
+				SetPricePrecision();
+			}
+			length --;
+			byte *ptr = fptr;
+			var checksum = *ptr; ptr++;
+//			var end = fptr + length;
+//			byte testchecksum = 0;
+//			for( var p = fptr+1; p<end; p++) {
+//				testchecksum ^= *p;	
+//			}
+			
+			while( (ptr - fptr) < length) {
+				var field = (BinaryField) (*ptr >> 3);
+				switch( field) {
+					case BinaryField.Precision:
+						if( debug) log.Debug("Processing decimal place precision during tick de-compression.");
+						pricePrecision = ReadField( &ptr);
+						break;
+					case BinaryField.Reset:
+						if( debug) log.Debug("Processing Reset during tick de-compression.");
+						ReadField( &ptr);
+						var symbol = binary.Symbol;
+						binary = default(TickBinary);
+						binary.Symbol = symbol;
+						lastChecksum = 0;
+						break;
+					case BinaryField.ContentMask:
+						binary.ContentMask += (byte) ReadField( &ptr);
+						break;
+					case BinaryField.Time:
+						binary.UtcTime += ReadField( &ptr);
+						break;
+					case BinaryField.Bid:
+						binary.Bid += ReadField( &ptr) * pricePrecision;
+						break;
+					case BinaryField.Ask:
+						binary.Ask += ReadField( &ptr) * pricePrecision;
+						break;
+					case BinaryField.Price:
+						binary.Price += ReadField( &ptr) * pricePrecision;
+						break;
+					case BinaryField.Size:
+						binary.Size += (int) ReadField( &ptr);
+						break;
+					case BinaryField.BidSize:
+						ReadBidSize( &ptr);
+						break;
+					case BinaryField.AskSize:
+						ReadAskSize( &ptr);
+						break;
+					default:
+						throw new ApplicationException("Unknown tick field type: " + field);
+				}
+			}
+			
+//			if( (byte) (testchecksum ^ lastChecksum) != checksum) {
+//				 System.Diagnostics.Debugger.Break();
+//				throw new ApplicationException("Checksum mismatch " + checksum + " vs. " + (byte) (testchecksum ^ lastChecksum) + ". This means integrity checking of tick compression failed.");
+//			}
+//			lastChecksum = testchecksum;
+
+			int len = (int) (ptr - fptr);
+			return len;
 		}
 		
 		private unsafe int FromFileVersion9(byte *fptr, int length) {
@@ -780,6 +904,9 @@ namespace TickZoom.TickUtil
 						break;
 					case 9:
 						ptr += FromFileVersion9(ptr,(short)(size-1));
+						break;
+					case 10:
+						ptr += FromFileVersion10(ptr,(short)(size-1));
 						break;
 					default:
 						throw new ApplicationException("Unknown Tick Version Number " + dataVersion);

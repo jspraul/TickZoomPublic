@@ -124,8 +124,8 @@ namespace TickZoom.TZData
 			if( quotesAndTrades > 0) {
 				stringBuilder.AppendLine("Quote and Trade: " + quotesAndTrades);
 			}
-			stringBuilder.AppendLine("From: " + firstTick.Time);
-			stringBuilder.AppendLine("To: " + lastTick.Time);
+			stringBuilder.AppendLine("From: " + firstTick.Time + "." + firstTick.Time.Microsecond);
+			stringBuilder.AppendLine("To: " + lastTick.Time + "." + lastTick.Time.Microsecond);
 			if( dups > 0) {
 				stringBuilder.AppendLine("Prices duplicates: " + dups);
 			}

@@ -73,7 +73,7 @@ namespace TickZoom.MBTQuotes
 			log = Factory.SysLog.GetLogger(typeof(MBTQuoteProviderSupport)+"."+GetType().Name);
 			debug = log.IsDebugEnabled;
 			trace = log.IsTraceEnabled;
-	        	log.Info(providerName+" Startup");
+	        log.Info(providerName+" Startup");
 			selector = Factory.Provider.Selector( OnException);
 			selector.OnDisconnect = OnDisconnect;
 			selector.Start();
