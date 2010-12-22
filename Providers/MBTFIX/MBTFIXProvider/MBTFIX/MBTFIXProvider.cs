@@ -308,6 +308,18 @@ namespace TickZoom.MBTFIX
 		
 		private bool isCancelingPendingOrders = false;
 		
+		private PhysicalOrder TryFindReplaceOrders(long logicalSerialNumber) {
+			lock( openOrdersLocker) {
+				foreach( var kvp in openOrders) {
+					var order = kvp.Value;
+					if( order.LogicalSerialNumber == logicalSerialNumber) {
+						return order;
+					}
+				}
+			}
+			return null;
+		}
+		
 		private bool TryCancelRejectedOrders() {
 			var pending = new List<PhysicalOrder>();
 			lock( openOrdersLocker) {
@@ -410,6 +422,11 @@ namespace TickZoom.MBTFIX
 						if( IsRecovered) {
 							var algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
 							algorithm.PerformCompare();
+						}
+						var replaceOrder = TryFindReplaceOrders( order.LogicalSerialNumber);
+						if( replaceOrder != null) {
+							RemoveOrder( replaceOrder.BrokerOrder.ToString());
+							if( debug) log.Debug("Found Replace Order for filled order with serial number " + order.LogicalSerialNumber + " so removing order " + order.BrokerOrder);
 						}
 						break;
 					case "5": // Replaced
