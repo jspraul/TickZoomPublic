@@ -33,7 +33,7 @@ using TickZoom.Common;
 
 namespace TickZoom.Starters
 {
-	public class RealTimeStarterBase : HistoricalStarter
+	public class RealTimeStarterBase : StarterCommon
 	{
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 

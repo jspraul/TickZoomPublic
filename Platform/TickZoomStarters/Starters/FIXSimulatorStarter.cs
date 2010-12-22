@@ -38,11 +38,11 @@ namespace TickZoom.Starters
 			PhysicalOrderDefault.ResetOrderId();
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			ProjectProperties.Engine.SimulateRealTime = true;
-//			ProjectProperties.Engine.RealtimeOutput = false;
 		}
 		
 		public override void Run(ModelLoaderInterface loader)
 		{
+			Factory.SysLog.Reconfigure("FIXSimulator");
 			Config = "WarehouseTest.config";
 			var provider = "MBTFIXProvider/Simulate";
 			AddProvider(provider);

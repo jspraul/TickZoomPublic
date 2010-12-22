@@ -63,6 +63,8 @@ namespace TickZoom.Starters
 		private List<string> providerPlugins = new List<string>();
 		protected int maxParallelPasses = 1000;
 		private string config;
+		private TickEngine engine;
+		protected RunMode runMode = RunMode.Historical;
 		
 		public StarterCommon() : this(true) {
     		storageFolder = Factory.Settings["AppDataFolder"];
@@ -155,7 +157,37 @@ namespace TickZoom.Starters
 			return queueList.ToArray();
 		}
 	    
-		public abstract void Run(ModelInterface model);
+		public virtual void Run(ModelInterface model)
+		{
+			engine = Factory.Engine.TickEngine;
+			ProjectProperties.Engine.CopyProperties(engine);
+			// Chaining of models.
+			engine.Model = model;
+			engine.ChartProperties = ProjectProperties.Chart;
+			engine.SymbolInfo = ProjectProperties.Starter.SymbolProperties;
+			
+			engine.IntervalDefault = ProjectProperties.Starter.IntervalDefault;
+			engine.EnableTickFilter = ProjectProperties.Engine.EnableTickFilter;
+			
+			engine.Providers = SetupProviders(false,false);
+			engine.BackgroundWorker = BackgroundWorker;
+			engine.RunMode = runMode;
+			engine.StartCount = StartCount;
+			engine.EndCount = EndCount;
+			engine.StartTime = ProjectProperties.Starter.StartTime;
+			engine.EndTime = ProjectProperties.Starter.EndTime;
+	
+			if(CancelPending) return;
+			
+	    	engine.TickReplaySpeed = ProjectProperties.Engine.TickReplaySpeed;
+	    	engine.BarReplaySpeed = ProjectProperties.Engine.BarReplaySpeed;
+	    	engine.ShowChartCallback = ShowChartCallback;
+			engine.CreateChartCallback = CreateChartCallback;
+			
+			engine.Run();
+
+			if(CancelPending) return;
+		}
 		
 		private static readonly string projectFileLoaderCategory = "TickZOOM";
 		private static readonly string projectFileLoaderName = "Project File";
@@ -457,7 +489,9 @@ namespace TickZoom.Starters
 			set { projectFile = value; }
 		}
 		
-		public abstract void Wait();
+		public virtual void Wait() {
+			// finishes during Run()
+		}
 		
 	    
 		public string FileName {

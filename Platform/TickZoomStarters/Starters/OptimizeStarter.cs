@@ -59,6 +59,7 @@ namespace TickZoom.Starters
 		List<TickEngine> engineIterations;
 		public override void Run(ModelLoaderInterface loader)
 		{
+			Factory.SysLog.ResetConfiguration();
 			try {
 				if( loader.OptimizeOutput == null) {
 					Directory.CreateDirectory( Path.GetDirectoryName(FileName));

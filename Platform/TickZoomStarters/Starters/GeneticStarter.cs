@@ -117,6 +117,7 @@ namespace TickZoom.Starters
 		
 		public override void Run(ModelLoaderInterface loader)
 		{
+			Factory.SysLog.ResetConfiguration();
 			this.loader = loader;
 
     		try {

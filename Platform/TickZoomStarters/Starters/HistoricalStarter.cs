@@ -62,8 +62,6 @@ namespace TickZoom.Starters
 	public class HistoricalStarter : StarterCommon
 	{
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-		TickEngine engine;
-		protected RunMode runMode = RunMode.Historical;
    		
 		public HistoricalStarter() 
 		{
@@ -74,49 +72,11 @@ namespace TickZoom.Starters
 		{
 		} 
 		
-		bool CancelPending {
-			get { if( BackgroundWorker != null) {
-					return BackgroundWorker.CancellationPending;
-				} else {
-					return false;
-				}
-			}
-		}
-
 		public override void Run(ModelInterface model)
 		{
-			engine = Factory.Engine.TickEngine;
-			ProjectProperties.Engine.CopyProperties(engine);
-			// Chaining of models.
-			engine.Model = model;
-			engine.ChartProperties = ProjectProperties.Chart;
-			engine.SymbolInfo = ProjectProperties.Starter.SymbolProperties;
-			
-			engine.IntervalDefault = ProjectProperties.Starter.IntervalDefault;
-			engine.EnableTickFilter = ProjectProperties.Engine.EnableTickFilter;
-			
-			engine.Providers = SetupProviders(false,false);
-			engine.BackgroundWorker = BackgroundWorker;
-			engine.RunMode = runMode;
-			engine.StartCount = StartCount;
-			engine.EndCount = EndCount;
-			engine.StartTime = ProjectProperties.Starter.StartTime;
-			engine.EndTime = ProjectProperties.Starter.EndTime;
-	
-			if(CancelPending) return;
-			
-	    	engine.TickReplaySpeed = ProjectProperties.Engine.TickReplaySpeed;
-	    	engine.BarReplaySpeed = ProjectProperties.Engine.BarReplaySpeed;
-	    	engine.ShowChartCallback = ShowChartCallback;
-			engine.CreateChartCallback = CreateChartCallback;
-			
-			engine.Run();
-
-			if(CancelPending) return;
+			Factory.SysLog.ResetConfiguration();
+			base.Run(model);
 		}
 
-		public override void Wait() {
-			// finishes during Run()
-		}
 	}
 }
