@@ -60,8 +60,8 @@ namespace TickZoom.FIX
 			return Interlocked.Increment( ref nextSequence);
 		}
 		public void AddHistory(FIXTMessage1_1 fixMsg) {
-			lastSequence = fixMsg.Sequence;
 			messageHistory.Add( fixMsg.Sequence, fixMsg);
+			lastSequence = fixMsg.Sequence;
 		}
 		public FIXTMessage1_1 GetHistory(int sequence) {
 			FIXTMessage1_1 result;
