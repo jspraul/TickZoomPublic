@@ -18,7 +18,7 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: Guid("9d690ef9-ce19-4c69-874c-e24d8eb36aff")]
 
-[assembly: AssemblyVersion("1.1.3.3613")]
+[assembly: AssemblyVersion("1.1.4.4450")]
 [assembly: AssemblyFileVersion("2.3.0.0")]
 
 [module: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", Scope = "namespace", Target = "WeifenLuo.WinFormsUI.Docking", MessageId = "Weifen")]
