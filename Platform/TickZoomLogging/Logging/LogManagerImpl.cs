@@ -51,18 +51,18 @@ namespace TickZoom.Logging
 		public void Configure(string repositoryName) {
 			this.repositoryName = repositoryName;
 			this.repository = LoggerManager.CreateRepository(repositoryName);
-			Reconfigure(null);
+			Reconfigure(null,null);
 		}
 		
 		public void ResetConfiguration() {
-			Reconfigure(null);
+			Reconfigure(null,null);
 		}
 		
-		public void Reconfigure(string extension) {
+		public void Reconfigure(string extension, string defaultConfig) {
 			if( repositoryName == "SysLog" && ConfigurationManager.GetSection("log4net") != null) {
 				log4net.Config.XmlConfigurator.Configure(repository);
 			} else {
-				var xml = GetConfigXML(repositoryName,extension);
+				var xml = GetConfigXML(repositoryName,extension,defaultConfig);
 				repository.ResetConfiguration();
 				log4net.Config.XmlConfigurator.Configure(repository,xml);
 			}
@@ -75,8 +75,8 @@ namespace TickZoom.Logging
 			}
 		}
 	
-		private XmlElement GetConfigXML(string repositoryName, string extension) {
-			var configBase = VerifyConfigPath(repositoryName);
+		private XmlElement GetConfigXML(string repositoryName, string extension, string defaultConfig) {
+			var configBase = VerifyConfigPath(repositoryName, GetSysLogDefault());
 			var xmlbase = File.OpenText(configBase);
 			var doc1 = new XmlDocument();
 			doc1.LoadXml(xmlbase.ReadToEnd());
@@ -90,7 +90,7 @@ namespace TickZoom.Logging
 			var doc1Config = doc1Configs[0];
 			
 			if( extension != null) {
-				var extensionFile = VerifyConfigPath(repositoryName+"."+extension);
+				var extensionFile = VerifyConfigPath(repositoryName+"."+extension,defaultConfig);
 				var xmlextension = File.OpenText(extensionFile);
 				var doc2 = new XmlDocument();
 				doc2.LoadXml(xmlextension.ReadToEnd());
@@ -122,23 +122,24 @@ namespace TickZoom.Logging
 			return (XmlElement) doc1Config;
 		}
 		
-		private string VerifyConfigPath(string repositoryName) {
+		private string VerifyConfigPath(string repositoryName, string defaultConfig) {
 			var path = GetConfigPath(repositoryName);
 			if( !File.Exists(path)) {
-				if( repositoryName == "SysLog") {
-					File.WriteAllText(path,GetSysLogDefault());
-				} else if( repositoryName == "Log") {
-					File.WriteAllText(path,GetLogDefault());
-				} else if( repositoryName == "SysLog.RealTime") {
-					File.WriteAllText(path,GetRealTimeDefault());
-				} else if( repositoryName == "SysLog.FIXSimulator") {
-					File.WriteAllText(path,GetFIXSimulatorDefault());
-				} else {
-					StringBuilder sb = new StringBuilder();
-					sb.AppendLine("Cannot find logging configuration file: " + path);
-					sb.AppendLine("Please create the file and put your custom log4net configuration in it.");
-					throw new ApplicationException(sb.ToString());
-				}
+				File.WriteAllText(path,defaultConfig);
+//				if( repositoryName == "SysLog") {
+//					File.WriteAllText(path,GetSysLogDefault());
+//				} else if( repositoryName == "Log") {
+//					File.WriteAllText(path,GetLogDefault());
+//				} else if( repositoryName == "SysLog.RealTime") {
+//					File.WriteAllText(path,GetRealTimeDefault());
+//				} else if( repositoryName == "SysLog.FIXSimulator") {
+//					File.WriteAllText(path,GetFIXSimulatorDefault());
+//				} else {
+//					StringBuilder sb = new StringBuilder();
+//					sb.AppendLine("Cannot find logging configuration file: " + path);
+//					sb.AppendLine("Please create the file and put your custom log4net configuration in it.");
+//					throw new ApplicationException(sb.ToString());
+//				}
 			}
 			return path;
 		}
@@ -284,149 +285,5 @@ namespace TickZoom.Logging
 ";
 		}
 
-		private string GetRealTimeDefault() {
-			return @"<?xml version=""1.0"" encoding=""utf-8"" ?>
-<configuration>
- <log4net>
-    <root>
-	<level value=""INFO"" />
-	<appender-ref ref=""FileAppender"" />
-	<appender-ref ref=""ConsoleAppender"" />
-    </root>
-    <logger name=""StatsLog"">
-        <level value=""DEBUG"" />
-    	<additivity value=""false"" />
-	<appender-ref ref=""StatsLogAppender"" />
-    </logger>
-    <logger name=""TradeLog"">
-        <level value=""DEBUG"" />
-    	<additivity value=""false"" />
-	<appender-ref ref=""TradeLogAppender"" />
-    </logger>
-    <logger name=""TransactionLog.Performance"">
-        <level value=""DEBUG"" />
-    	<additivity value=""false"" />
-	<appender-ref ref=""TransactionLogAppender"" />
-    </logger>
-    <logger name=""BarDataLog"">
-        <level value=""DEBUG"" />
-    	<additivity value=""false"" />
-	<appender-ref ref=""BarDataLogAppender"" />
-    </logger>
-    <logger name=""TickZoom.Common"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.FIX"">
-        <level value=""DEBUG"" />
-    </logger>
-    <logger name=""TickZoom.MBTFIX"">
-        <level value=""DEBUG"" />
-    </logger>
-    <logger name=""TickZoom.MBTQuotes"">
-        <level value=""DEBUG"" />
-    </logger>
-    <logger name=""TickZoom.Engine.SymbolReceiver"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.ProviderService"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Engine.EngineKernel"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Internals.OrderGroup"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Internals.OrderManager"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Engine.SymbolController"">
-        <level value=""DEBUG"" />
-    </logger>
-    <logger name=""TickZoom.Interceptors.FillSimulatorPhysical"">
-        <level value=""DEBUG"" />
-    </logger>
-    <logger name=""TickZoom.Interceptors.FillHandlerDefault"">
-        <level value=""DEBUG"" />
-    </logger>
-    <logger name=""TickZoom.Common.OrderAlgorithmDefault"">
-        <level value=""DEBUG"" />
-    </logger>
- </log4net>
-</configuration>
-";				
-		}
-		private string GetFIXSimulatorDefault() {
-			return @"<?xml version=""1.0"" encoding=""utf-8"" ?>
-<configuration>
- <log4net>
-    <root>
-	<level value=""INFO"" />
-	<appender-ref ref=""FileAppender"" />
-	<appender-ref ref=""ConsoleAppender"" />
-    </root>
-    <logger name=""StatsLog"">
-        <level value=""INFO"" />
-    	<additivity value=""false"" />
-	<appender-ref ref=""StatsLogAppender"" />
-    </logger>
-    <logger name=""TradeLog"">
-        <level value=""INFO"" />
-    	<additivity value=""false"" />
-	<appender-ref ref=""TradeLogAppender"" />
-    </logger>
-    <logger name=""TransactionLog.Performance"">
-        <level value=""INFO"" />
-    	<additivity value=""false"" />
-	<appender-ref ref=""TransactionLogAppender"" />
-    </logger>
-    <logger name=""BarDataLog"">
-        <level value=""INFO"" />
-    	<additivity value=""false"" />
-	<appender-ref ref=""BarDataLogAppender"" />
-    </logger>
-    <logger name=""TickZoom.Common"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.FIX"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.MBTFIX"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.MBTQuotes"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Engine.SymbolReceiver"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.ProviderService"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Engine.EngineKernel"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Internals.OrderGroup"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Internals.OrderManager"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Engine.SymbolController"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Interceptors.FillSimulatorPhysical"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Interceptors.FillHandlerDefault"">
-        <level value=""INFO"" />
-    </logger>
-    <logger name=""TickZoom.Common.OrderAlgorithmDefault"">
-        <level value=""INFO"" />
-    </logger>
- </log4net>
-</configuration>
-";				
-		}
 	}
 }

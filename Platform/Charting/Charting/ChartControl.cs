@@ -707,7 +707,7 @@ namespace TickZoom
 			if ( primaryPane != null )
 			{
 				
-				if( stockPointList == null || stockPointList.Count == 0) {
+				if( stockPointList == null || stockPointList.Count < 1) {
 					ZoomDefault(primaryPane);
 					return;
 				}
@@ -845,19 +845,18 @@ namespace TickZoom
 			if( xCurrent > xUpperLimit) {
 				resetXScale = true;
 			}
-			if( resetXScale && xCurrent > xLowerLimit &&
-			   !double.IsNaN(xScale.Min) && !double.IsNaN(xScale.Max)) {
-				if( xCurrent > xScale.Max) {
+			if( resetXScale && xCurrent > xLowerLimit) {
+				if( xCurrent > xScale.Max ) {
 					AutoZoom(dataGraph.GraphPane);
 					resetXScaleSpeed *= 1.5f;
 					log.Debug("resetXScaleSpeed = " + resetXScaleSpeed);
 				}
-				try {
+				if( !double.IsNaN(xScale.Min)) {
 					xScale.Min = MoveByPixels(xScale,xScale.Min,resetXScaleSpeed);
-				} catch( ApplicationException ex) {
-					throw new ApplicationException( "xScale.Min = " + xScale.Min + ", resetXScaleSpeed=" + resetXScaleSpeed);
 				}
-				xScale.Max = MoveByPixels(xScale,xScale.Max,resetXScaleSpeed);
+				if( !double.IsNaN(xScale.Mag)) {
+					xScale.Max = MoveByPixels(xScale,xScale.Max,resetXScaleSpeed);
+				}
 				reset = true;
 			} else {
 				resetXScale = false;
