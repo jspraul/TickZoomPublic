@@ -43,6 +43,7 @@ namespace TickZoom.Common
 		private SymbolInfo symbol;
 		private PhysicalOrderHandler physicalOrderHandler;
 		private ActiveList<PhysicalOrder> originalPhysicals;
+		private object bufferedLogicalsLocker = new object();
 		private ActiveList<LogicalOrder> bufferedLogicals;
 		private ActiveList<LogicalOrder> originalLogicals;
 		private ActiveList<LogicalOrder> logicalOrders;
@@ -553,8 +554,10 @@ namespace TickZoom.Common
 			}
 			var orderCache = Factory.Engine.LogicalOrderCache(symbol);
 			orderCache.SetActiveOrders(inputLogicals);
-			bufferedLogicals.Clear();
-			bufferedLogicals.AddLast(orderCache.ActiveOrders);
+			lock( bufferedLogicalsLocker) {
+				bufferedLogicals.Clear();
+				bufferedLogicals.AddLast(orderCache.ActiveOrders);
+			}
 		}
 		
 		public void SetDesiredPosition(	int position) {
@@ -794,12 +797,14 @@ namespace TickZoom.Common
 				return;
 			}
 			
-			if( CheckForFilledOrders(bufferedLogicals)) {
-				if( debug) log.Debug("Found already filled orders in position change event. Skipping compare.");
-			} else {
-				originalLogicals.Clear();
-				if(bufferedLogicals != null) {
-					originalLogicals.AddLast(bufferedLogicals);
+			lock( bufferedLogicalsLocker) {
+				if( CheckForFilledOrders(bufferedLogicals)) {
+					if( debug) log.Debug("Found already filled orders in position change event. Skipping compare.");
+				} else {
+					originalLogicals.Clear();
+					if(bufferedLogicals != null) {
+						originalLogicals.AddLast(bufferedLogicals);
+					}
 				}
 			}
 			
