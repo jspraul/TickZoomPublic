@@ -297,7 +297,7 @@ namespace TickZoom.MBTQuotes
 		
 		public override void OnStartSymbol(SymbolInfo symbol)
 		{
-			if( IsRecovered) {
+			if( IsRecovering || IsRecovered) {
 				RequestStartSymbol(symbol);
 			}
 		}

@@ -198,7 +198,7 @@ namespace TickZoom.MBTQuotes
 			if( trace) log.Trace("ConnectionStatus changed to: " + connectionStatus);
 		}
 		
-		public bool IsRecovery {
+		public bool IsRecovering {
 			get {
 				return connectionStatus == Status.PendingRecovery;
 			}
