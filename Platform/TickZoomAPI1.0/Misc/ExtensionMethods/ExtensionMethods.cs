@@ -38,7 +38,11 @@ namespace TickZoom.Api
 		public const int PricePrecision = 9;
 
 		public static long ToLong( this double value) {
-			return Convert.ToInt64(Math.Round(value,PricePrecision)*ConvertDouble);
+			try { 
+				return Convert.ToInt64(Math.Round(value,PricePrecision)*ConvertDouble);
+			} catch( OverflowException ex) {
+				throw new OverflowException( value + " created an overflow when converted to long with fixed precision 9.");
+			}
 		}
 		
 		public static double ToDouble( this long value) {
