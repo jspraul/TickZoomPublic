@@ -312,16 +312,26 @@ namespace TickZoom.Common
 			get { return instanceTrace; }
 		}
 		
+		public virtual void OnEnterTrade(LogicalFill fill, LogicalOrder filledOrder) {
+			OnEnterTrade();
+		}
+		
 		public virtual void OnEnterTrade() {
 			
 		}
 		
+		public virtual void OnChangeTrade(LogicalFill fill, LogicalOrder filledOrder) {
+			OnChangeTrade();
+		}
+		
 		public virtual void OnChangeTrade() {
-			
+		}		
+		
+		public virtual void OnExitTrade(LogicalFill fill, LogicalOrder filledOrder) {
+			OnExitTrade();
 		}
 		
 		public virtual void OnExitTrade() {
-			
 		}
 		
 		public PositionInterface Position {

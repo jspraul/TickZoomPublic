@@ -191,7 +191,7 @@ namespace TickZoom.Statistics
 				if( !strategy.TryGetOrderById( fill.OrderId, out filledOrder)) {
 					throw new ApplicationException("A fill for order id: " + fill.OrderId + " was incorrectly routed to: " + strategy.Name);
 				}
-				strategy.OnEnterTrade();
+				strategy.OnEnterTrade(fill,filledOrder);
 			}
 		}
 
@@ -205,7 +205,7 @@ namespace TickZoom.Statistics
 				if( !strategy.TryGetOrderById( fill.OrderId, out filledOrder)) {
 					throw new ApplicationException("A fill for order id: " + fill.OrderId + " was incorrectly routed to: " + strategy.Name);
 				}
-				strategy.OnChangeTrade();
+				strategy.OnChangeTrade(fill,filledOrder);
 			}
 		}
 		
@@ -226,7 +226,7 @@ namespace TickZoom.Statistics
 				if( !strategy.TryGetOrderById( fill.OrderId, out filledOrder)) {
 					throw new ApplicationException("A fill for order id: " + fill.OrderId + " was incorrectly routed to: " + strategy.Name);
 				}
-				strategy.OnExitTrade();
+				strategy.OnExitTrade(fill,filledOrder);
 			}
 			if( model is Portfolio) {
 				var portfolio = (Portfolio) model;
