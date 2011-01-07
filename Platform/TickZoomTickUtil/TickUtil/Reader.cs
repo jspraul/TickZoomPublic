@@ -516,7 +516,9 @@ namespace TickZoom.TickUtil
 						fileReaderTask.Join();
 					}
 					if (dataIn != null) {
-						dataIn.BaseStream.Close();
+						if( dataIn.BaseStream != null) {
+							dataIn.BaseStream.Close();
+						}
 						dataIn.Close();
 					}
 					lock( readerListLocker) {
