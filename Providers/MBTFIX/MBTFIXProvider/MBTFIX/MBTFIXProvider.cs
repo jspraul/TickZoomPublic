@@ -286,6 +286,8 @@ namespace TickZoom.MBTFIX
 			errorOkay = text.Contains("DEMOORDS") ? true : errorOkay;
 			errorOkay = text.Contains("FXORD1") ? true : errorOkay;
 			errorOkay = text.Contains("FXORD2") ? true : errorOkay;
+			errorOkay = text.Contains("FXORD01") ? true : errorOkay;
+			errorOkay = text.Contains("FXORD02") ? true : errorOkay;
 			if( errorOkay) {
 				log.Warn( packetFIX.Text + " -- Sending EndBroker event. \n" + packetFIX);
 				SendEndBroker();
