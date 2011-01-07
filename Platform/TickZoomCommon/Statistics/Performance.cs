@@ -194,6 +194,10 @@ namespace TickZoom.Statistics
 				Strategy strategy = (Strategy) model;
 				strategy.OnExitTrade();
 			}
+			if( model is Portfolio) {
+				var portfolio = (Portfolio) model;
+				portfolio.OnExitTrade();
+			}
 		}
 		
 		public bool OnIntervalClose()
