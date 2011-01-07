@@ -120,7 +120,7 @@ namespace TickZoom.Statistics
 			if( model is Portfolio) {
 				var portfolio = (Portfolio) model;
 				var portfolioPosition = portfolio.Result.Position;
-				fill = new LogicalFillBinary( portfolioPosition.Current, portfolioPosition.Price, fill.Time, fill.UtcTime, fill.OrderId, fill.OrderSerialNumber,false);
+				fill = new LogicalFillBinary( portfolioPosition.Current, portfolioPosition.Price, fill.Time, fill.UtcTime, fill.OrderId, fill.OrderSerialNumber,fill.OrderPosition,false);
 				if( debug) log.Debug("For portfolio, converted to fill: " + fill);
 			}
 			if( transactionDebug && !model.QuietMode && !(model is PortfolioInterface) ) {

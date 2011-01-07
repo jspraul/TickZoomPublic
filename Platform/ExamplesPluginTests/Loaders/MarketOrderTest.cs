@@ -41,7 +41,6 @@ namespace Loaders
 		Strategy strategy;
 		public MarketOrderTest() {
 			Symbols = "USD/JPY";
-			StoreKnownGood = false;
 			SyncTicks.Enabled = false;
 			ShowCharts = false;
 		}

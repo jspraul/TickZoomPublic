@@ -42,7 +42,6 @@ namespace Loaders
 		ExampleOrderStrategy strategy;
 		
 		public ExampleSimulatedTest() {
-			StoreKnownGood = false;
 			SyncTicks.Enabled = false;
 		}
 			

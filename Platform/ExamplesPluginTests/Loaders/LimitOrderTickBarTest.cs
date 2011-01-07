@@ -41,7 +41,6 @@ namespace Loaders
 		ExampleOrderStrategy strategy;
 		public LimitOrderTickBarTest() {
 			Symbols = "USD/JPY";
-			StoreKnownGood = false;
 			SyncTicks.Enabled = false;
 			ShowCharts = false;
 		}

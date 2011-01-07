@@ -43,7 +43,6 @@ namespace Loaders
 		ExampleOrderStrategy fullTicksStrategy;
 		Portfolio portfolio;
 		public ExampleDualSymbolTest() {
-			StoreKnownGood = false;
 			SyncTicks.Enabled = false;
 			Symbols = "FullTick,Daily4Sim";
 		}

@@ -68,7 +68,7 @@ namespace Loaders
 		Dictionary<string,List<TransactionInfo>> goodReconciliationMap = new Dictionary<string,List<TransactionInfo>>();
 		Dictionary<string,List<TransactionInfo>> testReconciliationMap = new Dictionary<string,List<TransactionInfo>>();
 		public bool ShowCharts = false;
-		public bool StoreKnownGood = false;
+		private bool storeKnownGood = false;
 		public CreateStarterCallback createStarterCallback;
 		protected bool testFailed = false;		
 		private TimeStamp startTime = new TimeStamp(1800,1,1);
@@ -81,7 +81,7 @@ namespace Loaders
 			this.autoTestMode = testSettings.Mode;
 			this.loader = testSettings.Loader;
 			this.symbols = testSettings.Symbols;
-			this.StoreKnownGood = testSettings.StoreKnownGood;
+			this.storeKnownGood = testSettings.StoreKnownGood;
 			this.ShowCharts = testSettings.ShowCharts;
 			this.startTime = testSettings.StartTime;
 			this.endTime = testSettings.EndTime;
@@ -355,7 +355,7 @@ namespace Loaders
 			string knownGoodPath = fileDir + testFileName + "FinalStats.log";
 			string newPath = Factory.SysLog.LogFolder + @"\FinalStats.log";
 			if( File.Exists(newPath)) {
-				if( StoreKnownGood) {
+				if( storeKnownGood) {
 					File.Copy(newPath,knownGoodPath,true);
 				}
 				testFinalStatsMap.Clear();
@@ -391,7 +391,7 @@ namespace Loaders
 			string knownGoodPath = fileDir + testFileName + "Trades.log";
 			string newPath = Factory.SysLog.LogFolder + @"\Trades.log";
 			if( File.Exists(newPath)) {
-				if( StoreKnownGood) {
+				if( storeKnownGood) {
 					File.Copy(newPath,knownGoodPath,true);
 				}
 				testTradeMap.Clear();
@@ -435,7 +435,7 @@ namespace Loaders
 			string knownGoodPath = fileDir + testFileName + "Transactions.log";
 			string newPath = Factory.SysLog.LogFolder + @"\Transactions.log";
 			if( File.Exists(newPath)) { 
-				if( StoreKnownGood) {
+				if( storeKnownGood) {
 					File.Copy(newPath,knownGoodPath,true);
 				}
 				testTransactionMap.Clear();
@@ -526,7 +526,7 @@ namespace Loaders
 			string newPath = Factory.SysLog.LogFolder + @"\BarData.log";
 			string knownGoodPath = fileDir + testFileName + "BarData.log";
 			if( File.Exists(newPath)) {
-				if( StoreKnownGood) {
+				if( storeKnownGood) {
 					File.Copy(newPath,knownGoodPath,true);
 				}
 				testBarDataMap.Clear();
@@ -571,7 +571,7 @@ namespace Loaders
 			string newPath = Factory.SysLog.LogFolder + @"\Stats.log";
 			string knownGoodPath = fileDir + testFileName + "Stats.log";
 			if( File.Exists(newPath)) {
-				if( StoreKnownGood) {
+				if( storeKnownGood) {
 					File.Copy(newPath,knownGoodPath,true);
 				}
 				testStatsMap.Clear();

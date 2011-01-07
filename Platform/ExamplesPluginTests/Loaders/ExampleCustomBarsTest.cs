@@ -42,7 +42,6 @@ namespace Loaders
 		ExampleReversalStrategy strategy;
 		
 		public ExampleCustomBarsTest() {
-			StoreKnownGood = false;
 			ShowCharts = false;
 			SyncTicks.Enabled = false;
 		}

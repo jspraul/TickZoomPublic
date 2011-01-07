@@ -42,10 +42,12 @@ namespace TickZoom.Api
 		private TimeStamp postedTime;
 		private int orderId;
 		private long orderSerialNumber;
+		private int orderPosition;
 		private bool isSimulated;
-		public LogicalFillBinary(int position, double price, TimeStamp time, TimeStamp utcTime, int orderId, long orderSerialNumber, bool isSimulated)
+		public LogicalFillBinary(int position, double price, TimeStamp time, TimeStamp utcTime, int orderId, long orderSerialNumber, int orderPosition, bool isSimulated)
 		{
 			this.position = position;
+			this.orderPosition = orderPosition;
 			this.price = price;
 			this.time = time;
 			this.utcTime = utcTime;
@@ -61,6 +63,10 @@ namespace TickZoom.Api
 		
 		public long OrderSerialNumber {
 			get { return orderSerialNumber; }
+		}
+		
+		public int OrderPosition {
+			get { return orderPosition; }
 		}
 		
 		public TimeStamp Time {
@@ -91,6 +97,8 @@ namespace TickZoom.Api
 			sb.Append( ",");
 			sb.Append( orderSerialNumber);
 			sb.Append( ",");
+			sb.Append( orderPosition);
+			sb.Append( ",");
 			sb.Append( price);
 			sb.Append( ",");
 			sb.Append( position);
@@ -110,12 +118,13 @@ namespace TickZoom.Api
 			int field = 0;
 			var orderId = int.Parse(fields[field++]);
 			var orderSerialNumber = long.Parse(fields[field++]);
+			var orderPosition = int.Parse(fields[field++]);
 			var price = double.Parse(fields[field++]);
 			var position = int.Parse(fields[field++]);
 			var time = TimeStamp.Parse(fields[field++]);
 			var utcTime = TimeStamp.Parse(fields[field++]);
 			var postedTime = TimeStamp.Parse(fields[field++]);
-			var fill = new LogicalFillBinary(position,price,time,utcTime,orderId,orderSerialNumber,false);
+			var fill = new LogicalFillBinary(position,price,time,utcTime,orderId,orderSerialNumber,orderPosition,false);
 			fill.postedTime = postedTime;
 			return fill;
 		}		
