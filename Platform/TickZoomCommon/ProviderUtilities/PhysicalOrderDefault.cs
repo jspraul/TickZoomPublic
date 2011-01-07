@@ -47,6 +47,7 @@ namespace TickZoom.Common
 		private object brokerOrder;
 		private object tag;
 		private object reference;
+		private PhysicalOrder replace;
 		
 		public override string ToString()
 		{
@@ -90,6 +91,7 @@ namespace TickZoom.Common
 			this.logicalSerialNumber = logical.SerialNumber;
 			this.tag = logical.Tag;
 			this.reference = null;
+			this.replace = null;
 			this.brokerOrder = CreateBrokerOrderId(logicalOrderId);
 		}
 		
@@ -105,15 +107,12 @@ namespace TickZoom.Common
 			this.tag = tag;
 			this.brokerOrder = brokerOrder;
 			this.reference = null;
+			this.replace = null;
 			if( this.brokerOrder == null) {
 				this.brokerOrder = CreateBrokerOrderId(logicalOrderId);
 			}
 		}
 
-//		private static long nextOrderId = 1000000000L;
-		public static void ResetOrderId() {
-//			nextOrderId = 1000000000L;
-		}
 		private static long lastId = TimeStamp.UtcNow.Internal;
 		private static string CreateBrokerOrderId(int logicalId) {
 			var longId = Interlocked.Increment(ref lastId);
@@ -166,6 +165,11 @@ namespace TickZoom.Common
 		public object Reference {
 			get { return reference; }
 			set { reference = value; }
+		}
+		
+		public PhysicalOrder Replace {
+			get { return replace; }
+			set { replace = value; }
 		}
 	}
 }

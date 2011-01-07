@@ -35,7 +35,6 @@ namespace TickZoom.Starters
 		private FIXSimulator fixServer;
 		public FIXSimulatorStarter() {
 			SyncTicks.Enabled = true;
-			PhysicalOrderDefault.ResetOrderId();
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			ProjectProperties.Engine.SimulateRealTime = true;
 		}

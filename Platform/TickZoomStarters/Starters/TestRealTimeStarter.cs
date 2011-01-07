@@ -36,7 +36,6 @@ namespace TickZoom.Starters
 	public class TestRealTimeStarter : RealTimeStarterBase {
 		public TestRealTimeStarter() {
 			SyncTicks.Enabled = true;
-			PhysicalOrderDefault.ResetOrderId();
 			ConfigurationManager.AppSettings.Set("ProviderAddress","InProcess");
 			ProjectProperties.Engine.SimulateRealTime = true;
 //			ProjectProperties.Engine.RealtimeOutput = false;

@@ -310,18 +310,6 @@ namespace TickZoom.MBTFIX
 		
 		private bool isCancelingPendingOrders = false;
 		
-		private PhysicalOrder TryFindReplaceOrders(long logicalSerialNumber) {
-			lock( openOrdersLocker) {
-				foreach( var kvp in openOrders) {
-					var order = kvp.Value;
-					if( order.LogicalSerialNumber == logicalSerialNumber) {
-						return order;
-					}
-				}
-			}
-			return null;
-		}
-		
 		private bool TryCancelRejectedOrders() {
 			var pending = new List<PhysicalOrder>();
 			lock( openOrdersLocker) {
@@ -425,10 +413,9 @@ namespace TickZoom.MBTFIX
 							var algorithm = GetAlgorithm( order.Symbol.BinaryIdentifier);
 							algorithm.PerformCompare();
 						}
-						var replaceOrder = TryFindReplaceOrders( order.LogicalSerialNumber);
-						if( replaceOrder != null) {
-							RemoveOrder( replaceOrder.BrokerOrder.ToString());
-							if( debug) log.Debug("Found Replace Order for filled order with serial number " + order.LogicalSerialNumber + " so removing order " + order.BrokerOrder);
+						if( order != null && order.Replace != null) {
+							if( debug) log.Debug( "Found this order in the replace property. Removing it also: " + order.Replace);
+							RemoveOrder( order.Replace.BrokerOrder.ToString());
 						}
 						break;
 					case "5": // Replaced
@@ -520,7 +507,9 @@ namespace TickZoom.MBTFIX
 						log.Warn( message);
 						log.Error( ignore + handle);
 					} else {
-						log.Info( "CancelReject(" + packetFIX.Text + ") Removed cancel order: " + packetFIX.ClientOrderId);
+						if( LogRecovery || !IsRecovery) {
+							log.Info( "CancelReject(" + packetFIX.Text + ") Removed cancel order: " + packetFIX.ClientOrderId);
+						}
 					}
 					break;
 				default:
@@ -750,7 +739,8 @@ namespace TickZoom.MBTFIX
 			} catch( ApplicationException) {
 				if( !IsRecovery ) {
 					log.Warn("Order ID# " + clientOrderId + " was not found for update or replace.");
-				}
+					return null;
+				}			
 			}
 			int quantity = packetFIX.LeavesQuantity;
 			PhysicalOrder order;
@@ -918,10 +908,16 @@ namespace TickZoom.MBTFIX
 			lock( openOrdersLocker) {
 				openOrders[(string)physicalOrder.BrokerOrder] = physicalOrder;
 			}
+			
 			if( debug) log.Debug( "Adding Order to open order list: " + physicalOrder);
 			if( isChange) {
 				fixMsg.SetClientOrderId((string)physicalOrder.BrokerOrder);
 				fixMsg.SetOriginalClientOrderId((string)origBrokerOrder);
+				var origOrder = GetPhysicalOrder( (string) origBrokerOrder);
+				if( origOrder != null) {
+					origOrder.Replace = physicalOrder;
+					if( debug) log.Debug("Setting replace property of " + origBrokerOrder + " to " + physicalOrder.BrokerOrder);
+				}
 			} else {
 				fixMsg.SetClientOrderId((string)physicalOrder.BrokerOrder);
 			}

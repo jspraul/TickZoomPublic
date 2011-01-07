@@ -32,7 +32,8 @@ namespace TickZoom.Api
 	public enum OrderState {
 		Pending,
 		Active,
-		Suspended
+		Suspended,
+		Filled
 	}
 	public interface PhysicalOrder {
 		OrderState OrderState {
@@ -68,8 +69,13 @@ namespace TickZoom.Api
 		long LogicalSerialNumber {
 			get;
 		}
-		
+
 		object BrokerOrder {
+			get;
+			set;
+		}
+		
+		PhysicalOrder Replace {
 			get;
 			set;
 		}
