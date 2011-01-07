@@ -2410,13 +2410,18 @@ namespace ZedGraph
 			double maxVal = _rangeMax;
 
 			// Make sure that minVal and maxVal are legitimate values
-			if ( Double.IsInfinity( minVal ) || Double.IsNaN( minVal ) || minVal == Double.MaxValue )
+			if ( Double.IsInfinity( minVal ) || Double.IsNaN( minVal ) || minVal == Double.MaxValue || minVal == double.MinValue)
 				minVal = 0.0;
-			if ( Double.IsInfinity( maxVal ) || Double.IsNaN( maxVal ) || maxVal == Double.MaxValue )
+			if ( Double.IsInfinity( maxVal ) || Double.IsNaN( maxVal ) || maxVal == Double.MaxValue || maxVal == double.MinValue)
 				maxVal = 0.0;
 
 			// if the scales are autoranged, use the actual data values for the range
 			double range = maxVal - minVal;
+			if( double.IsInfinity( range) || double.IsNaN( range) || range == double.MaxValue || range == double.MinValue) {
+				minVal = 0.0;
+				maxVal = 0.0;
+				range = 0.0;
+			}
 
 			// "Grace" is applied to the numeric axis types only
 			bool numType = !this.IsAnyOrdinal;
