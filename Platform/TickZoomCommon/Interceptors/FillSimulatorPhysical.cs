@@ -134,7 +134,12 @@ namespace TickZoom.Interceptors
 		
 		private void CreateBrokerOrder(PhysicalOrder order) {
 			lock( orderMapLocker) {
-				orderMap.Add((string)order.BrokerOrder,order);
+				try {
+					orderMap.Add((string)order.BrokerOrder,order);
+					if( trace) log.Trace("Added order " + order.BrokerOrder);
+				} catch( ArgumentException) {
+					throw new ApplicationException("An broker order id of " + order.BrokerOrder + " was already added.");
+				}
 			}
 			SortAdjust(order);
 			VerifySide(order);

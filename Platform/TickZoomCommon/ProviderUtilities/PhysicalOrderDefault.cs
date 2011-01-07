@@ -114,14 +114,9 @@ namespace TickZoom.Common
 		public static void ResetOrderId() {
 //			nextOrderId = 1000000000L;
 		}
-		private static long lastId;
+		private static long lastId = TimeStamp.UtcNow.Internal;
 		private static string CreateBrokerOrderId(int logicalId) {
-			var longId = 0L;
-		    longId = TimeStamp.UtcNow.Internal;
-		    if( longId == Interlocked.Read(ref lastId)) {
-		    	longId++;
-		    }
-		    Interlocked.Exchange(ref lastId, longId);
+			var longId = Interlocked.Increment(ref lastId);
 			return logicalId + "." + longId;
 		}
 		
