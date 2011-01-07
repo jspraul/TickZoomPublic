@@ -39,6 +39,9 @@ namespace TickZoom.Transactions
 		double Volume {
 			get;
 		}
+		double AverageEntryPrice {
+			get;
+		}
 		double EntryPrice {
 			get;
 		}

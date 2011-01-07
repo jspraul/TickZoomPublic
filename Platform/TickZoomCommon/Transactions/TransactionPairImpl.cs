@@ -77,6 +77,12 @@ namespace TickZoom.Transactions
 			get { return 0.0; }
 		}
 		
+		public double AverageEntryPrice {
+			get {
+				return binary.AverageEntryPrice;
+			}
+		}
+		
 		public double MaxFavorable {
 			get {
 				return binary.MaxPrice;
