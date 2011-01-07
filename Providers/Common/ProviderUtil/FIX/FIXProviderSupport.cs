@@ -264,7 +264,7 @@ namespace TickZoom.FIX
 								log.Info("(RetryDelay reset to " + retryDelay + " seconds.)");
 							}
 							if( Factory.Parallel.TickCount >= heartbeatTimeout) {
-								log.Warn("Heartbeat Timeout");
+								log.Warn("Heartbeat Timeout. Last Message UTC Time: " + lastMessage + ", current UTC Time: " + TimeStamp.UtcNow);
 								SyncTicks.LogStatus();
 								SetupRetry();
 								IncreaseRetryTimeout();
@@ -272,7 +272,10 @@ namespace TickZoom.FIX
 							}
 							Packet packet;
 							if( Socket.TryGetPacket(out packet)) {
-								if( debug) log.Debug( "Received FIX Message: " + packet);
+								lastMessage = TimeStamp.UtcNow;
+								if( debug && (LogRecovery || !IsRecovery)) {
+									log.Debug( "Received FIX Message: " + packet);
+								}
 								if( !CheckForResend(packet)) {
 									ReceiveMessage(packet);
 								}
@@ -314,6 +317,7 @@ namespace TickZoom.FIX
 					throw new ApplicationException(message);
 			}
 		}
+		private TimeStamp lastMessage;
 		
 		private bool CheckForResend(Packet packet) {
 			var packetFIX = (PacketFIXT1_1) packet;
