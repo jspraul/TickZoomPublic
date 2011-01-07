@@ -35,6 +35,10 @@ namespace TickZoom.Transactions
 	{
 		TransactionPairBinary binary;
 		
+		public TransactionPairBinary Binary {
+			get { return binary; }
+		}
+		
 		public TransactionPairImpl()
 		{
 		}
@@ -122,6 +126,12 @@ namespace TickZoom.Transactions
 		public bool Completed {
 			get {
 				return binary.Completed;
+			}
+		}
+		
+		public int CurrentPosition {
+			get {
+				return binary.CurrentPosition;
 			}
 		}
 		

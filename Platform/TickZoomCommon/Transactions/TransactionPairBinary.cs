@@ -195,6 +195,9 @@ namespace TickZoom.Transactions
 			var sum = averageEntryPrice.ToLong() * currentPosition; // 1951840000000000
 			var sizeChange = newSize - currentPosition;      // -6666
 			var sum2 = sizeChange * price.ToLong();    // -650394954000000
+			if( newSize == 0) {
+				throw new ApplicationException( "Sorry, but the size argument must be non-zero.");
+			}
 			var newPrice = ((sum + sum2) / newSize).ToDouble();     // 97603498275
 			if( sizeChange > 0) {
 				longVolume += Math.Abs(sizeChange);
@@ -252,7 +255,7 @@ namespace TickZoom.Transactions
 		}
 		
 		public double MinPrice {
-			get { return - minPrice; }
+			get { return minPrice; }
 		}
 		
 		public int EntryBar {

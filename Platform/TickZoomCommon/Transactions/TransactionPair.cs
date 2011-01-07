@@ -73,5 +73,8 @@ namespace TickZoom.Transactions
 		bool Completed {
 			get;
 		}
+		int CurrentPosition {
+			get;
+		}
 	}
 }
