@@ -131,11 +131,32 @@ namespace TickZoom.Statistics
 				if( position.IsFlat) {
 					EnterComboTrade(fill);
 				} else if( fill.Position == 0) {
-					ExitComboTrade(fill);
+					if( model is Strategy) {
+						var strategy = model as Strategy;
+						LogicalOrder filledOrder;
+						strategy.TryGetOrderById( fill.OrderId, out filledOrder);
+						if( filledOrder.TradeDirection != TradeDirection.Change) {
+							ExitComboTrade(fill);
+						}
+					} else {
+						ExitComboTrade(fill);
+					}
 				} else if( (fill.Position > 0 && position.IsShort) || (fill.Position < 0 && position.IsLong)) {
 					// The signal must be opposite. Either -1 / 1 or 1 / -1
-					ExitComboTrade(fill);
-					EnterComboTrade(fill);
+					if( model is Strategy) {
+						var strategy = model as Strategy;
+						LogicalOrder filledOrder;
+						strategy.TryGetOrderById( fill.OrderId, out filledOrder);
+						if( filledOrder.TradeDirection == TradeDirection.Change) {
+							ChangeComboSize(fill);
+						} else {
+							ExitComboTrade(fill);
+							EnterComboTrade(fill);
+						}
+					} else {
+						ExitComboTrade(fill);
+						EnterComboTrade(fill);
+					}
 				} else {
 					// Instead it has increased or decreased position size.
 					ChangeComboSize(fill);
@@ -144,15 +165,16 @@ namespace TickZoom.Statistics
 			position.Change(model.Data.SymbolInfo,fill);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
+				if( debug) log.Debug( "Changing strategy result position to " + position.Current);
 				strategy.Result.Position.Copy(position);
 			}
 
-			if( model is Portfolio) {
-				Portfolio portfolio = (Portfolio) model;
-				double tempNetPortfolioEquity = 0;
-				tempNetPortfolioEquity += portfolio.Performance.Equity.ClosedEquity;
-				tempNetPortfolioEquity -= portfolio.Performance.Equity.StartingEquity;
-			}
+//			if( model is Portfolio) {
+//				Portfolio portfolio = (Portfolio) model;
+//				double tempNetPortfolioEquity = 0;
+//				tempNetPortfolioEquity += portfolio.Performance.Equity.ClosedEquity;
+//				tempNetPortfolioEquity -= portfolio.Performance.Equity.StartingEquity;
+//			}
 			return true;
 		}
 		
@@ -165,6 +187,10 @@ namespace TickZoom.Statistics
 			}
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
+				LogicalOrder filledOrder;
+				if( !strategy.TryGetOrderById( fill.OrderId, out filledOrder)) {
+					throw new ApplicationException("A fill for order id: " + fill.OrderId + " was incorrectly routed to: " + strategy.Name);
+				}
 				strategy.OnEnterTrade();
 			}
 		}
@@ -175,6 +201,10 @@ namespace TickZoom.Statistics
 			comboTradesBinary.Tail = combo;
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
+				LogicalOrder filledOrder;
+				if( !strategy.TryGetOrderById( fill.OrderId, out filledOrder)) {
+					throw new ApplicationException("A fill for order id: " + fill.OrderId + " was incorrectly routed to: " + strategy.Name);
+				}
 				strategy.OnChangeTrade();
 			}
 		}
@@ -192,6 +222,10 @@ namespace TickZoom.Statistics
 			if( tradeDebug && !model.QuietMode) tradeLog.Debug( model.Name + "," + Equity.ClosedEquity + "," + pnl + "," + comboTrade);
 			if( model is Strategy) {
 				Strategy strategy = (Strategy) model;
+				LogicalOrder filledOrder;
+				if( !strategy.TryGetOrderById( fill.OrderId, out filledOrder)) {
+					throw new ApplicationException("A fill for order id: " + fill.OrderId + " was incorrectly routed to: " + strategy.Name);
+				}
 				strategy.OnExitTrade();
 			}
 			if( model is Portfolio) {

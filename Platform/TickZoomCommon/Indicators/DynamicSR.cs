@@ -48,7 +48,7 @@ namespace TickZoom.Common
         }
         #endregion
 
-		public override bool OnIntervalClose()
+		public override void Update()
 		{
             if (Bars.CurrentBar==0)
             {
@@ -94,7 +94,6 @@ namespace TickZoom.Common
             prevDynamicR = newDynamicR;
             prevDynamicS = newDynamicS;
             
-			return true;
         }
 		
 		private void CalcTrend() {

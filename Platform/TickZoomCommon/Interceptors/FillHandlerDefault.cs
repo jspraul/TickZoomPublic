@@ -76,7 +76,7 @@ namespace TickZoom.Interceptors
 					return;
 				}
 				TryDrawTrade(filledOrder, fill.Price, fill.Position);
-				if( debug) Log.Debug( "Changed strategy position because of fill.");
+				if( debug) Log.Debug( "Changed strategy position to " + fill.Position + " because of fill.");
 				changePosition(strategy.Data.SymbolInfo,fill);
 			} else {
 				throw new ApplicationException("A fill for order id: " + orderId + " was incorrectly routed to: " + strategyInterface.Name);
