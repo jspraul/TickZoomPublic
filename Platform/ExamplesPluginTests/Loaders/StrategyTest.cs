@@ -318,7 +318,8 @@ namespace Loaders
 		
 		public class BarInfo {
 			public TimeStamp Time;
-			public double Open;
+            public TimeStamp EndTime;
+            public double Open;
 			public double High;
 			public double Low;
 			public double Close;
@@ -326,7 +327,8 @@ namespace Loaders
 			{
 				StringBuilder sb = new StringBuilder();
 				sb.Append(Time + ", ");
-				sb.Append(Open + ", ");
+                sb.Append(EndTime + ", ");
+                sb.Append(Open + ", ");
 				sb.Append(High + ", ");
 				sb.Append(Low + ", ");
 				sb.Append(Close);
@@ -588,7 +590,8 @@ namespace Loaders
 					BarInfo barInfo = new BarInfo();
 					
 					barInfo.Time = new TimeStamp(fields[fieldIndex++]);
-					barInfo.Open = double.Parse(fields[fieldIndex++]);
+                    barInfo.EndTime = new TimeStamp(fields[fieldIndex++]);
+                    barInfo.Open = double.Parse(fields[fieldIndex++]);
 					barInfo.High = double.Parse(fields[fieldIndex++]);
 					barInfo.Low = double.Parse(fields[fieldIndex++]);
 					barInfo.Close = double.Parse(fields[fieldIndex++]);
@@ -902,7 +905,7 @@ namespace Loaders
 					goodInfo.Time += realTimeOffset;
 					var assertFlag = false;
 					AssertEqual(ref assertFlag, goodInfo.Time,testInfo.Time,"Time at bar " + i );
-					AssertEqual(ref assertFlag, goodInfo.Open,testInfo.Open,"Open at bar " + i + " " + testInfo.Time);
+                    AssertEqual(ref assertFlag, goodInfo.EndTime, testInfo.EndTime, "End Time at bar " + i);					AssertEqual(ref assertFlag, goodInfo.Open,testInfo.Open,"Open at bar " + i + " " + testInfo.Time);
 					AssertEqual(ref assertFlag, goodInfo.High,testInfo.High,"High at bar " + i + " " + testInfo.Time);
 					AssertEqual(ref assertFlag, goodInfo.Low,testInfo.Low,"Low at bar " + i + " " + testInfo.Time);
 					AssertEqual(ref assertFlag, goodInfo.Close,testInfo.Close,"Close at bar " + i + " " + testInfo.Time);

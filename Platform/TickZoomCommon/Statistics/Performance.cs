@@ -238,21 +238,25 @@ namespace TickZoom.Statistics
 		{
 			if( barDataDebug && !model.QuietMode) {
 				Bars bars = model.Bars;
-				TimeStamp time = bars.Time[0];
-				barHasher.Writer.Write(time.Internal);
-				barHasher.Writer.Write(bars.Open[0]);
+				var time = bars.Time[0];
+                var endTime = bars.EndTime[0];
+                barHasher.Writer.Write(time.Internal);
+                barHasher.Writer.Write(endTime.Internal);
+                barHasher.Writer.Write(bars.Open[0]);
 				barHasher.Writer.Write(bars.High[0]);
 				barHasher.Writer.Write(bars.Low[0]);
 				barHasher.Writer.Write(bars.Close[0]);
 				barHasher.Writer.Write(bars.Volume[0]);
 				barHasher.Update();
 				
-				StringBuilder sb = new StringBuilder();
+				var sb = new StringBuilder();
 				sb.Append(model.Name);
 				sb.Append(",");
 				sb.Append(time);
 				sb.Append(",");
-				sb.Append(bars.Open[0]);
+                sb.Append(endTime);
+                sb.Append(",");
+                sb.Append(bars.Open[0]);
 				sb.Append(",");
 				sb.Append(bars.High[0]);
 				sb.Append(",");
