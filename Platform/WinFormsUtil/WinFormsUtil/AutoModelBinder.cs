@@ -24,11 +24,16 @@ namespace TickZoom.GUI
 
         #region Methods
 
-        public static void Bind(object viewModel, object view)
+        public static void Bind(object viewModel, object view, Execute execute)
         {
             var viewModelType = viewModel.GetType();
             var properties = new List<PropertyInfo>(viewModelType.GetProperties());
             var methods = viewModelType.GetMethods();
+            
+            if( viewModel is AutoBindable) {
+            	var bindable = viewModel as AutoBindable;
+            	bindable.CallbackAction = execute.OnUIThread;
+            }
 
             BindCommands(viewModel, view, methods, properties);
             BindProperties(viewModel, view, properties);

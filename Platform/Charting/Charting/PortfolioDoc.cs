@@ -30,6 +30,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using TickZoom.Api;
+using TickZoom.GUI;
 
 namespace TickZoom
 {
@@ -40,15 +41,18 @@ namespace TickZoom
 	{
 		Log log = Factory.SysLog.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private SynchronizationContext context;
-        private Action<Action> callbackAction = (action) => { action(); };
+        private Execute execute;
         
-		public Action<Action> CallbackAction {
-			get { return callbackAction; }
-			set { callbackAction = value; }
-		}
+        public PortfolioDoc(Execute execute) {
+        	this.execute = execute;
+        	Initialize();
+        }
         
-		public PortfolioDoc()
-		{
+        public PortfolioDoc() {
+        	Initialize();
+        }
+        
+        private void Initialize() {
 			context = SynchronizationContext.Current;
             if(context == null)
             {
@@ -60,9 +64,6 @@ namespace TickZoom
 			//
 			InitializeComponent();
 			
-			//
-			// TODO: Add constructor code after the InitializeComponent() call.
-			//
 		}
 		
 		public ChartControl ChartControl {
@@ -84,32 +85,12 @@ namespace TickZoom
 			ShowInvoke();
 		}
 		
-//			if( InvokeRequired) {
-//				BeginInvoke(new MethodInvoker(Show));
-//			} else {
-//				base.Show();
-//			}
-
 		public void ShowInvoke() {
-       		context.Send(new SendOrPostCallback(
-       		delegate(object state)
-       	    {
-				base.Show();       		
-       		}), null);
+			execute.OnUIThread( () => { base.Show(); } );
 		}
 		
-//			if( InvokeRequired) {
-//				BeginInvoke(new MethodInvoker(Hide));
-//			} else {
-//				Hide();
-//			}
-		
 		public void HideInvoke() {
-       		context.Send(new SendOrPostCallback(
-       		delegate(object state)
-       	    {
-				base.Hide();       		
-       		}), null);
+			execute.OnUIThread( () => { base.Hide(); } );
 		}
 		
 	    public delegate void ShowDelegate();

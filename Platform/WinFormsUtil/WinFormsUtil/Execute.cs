@@ -9,37 +9,56 @@ namespace TickZoom.GUI
     using System.Windows;
     using System.Windows.Forms;
 
-    public static class Execute
+    public class Execute
     {
         #region Fields
 
-        private static long busycount = 0;
-        private static long loopcount = 0;
-        private static List<Task> tasks = new List<Task>();
-        private static List<Loop> loops = new List<Loop>();
-        private static object tasksLocker = new object();
-        private static Thread messageLoopThread;
+    	private volatile bool exit = false;
+        private long busycount = 0;
+        private long loopcount = 0;
+        private List<Task> tasks = new List<Task>();
+        private List<Loop> loops = new List<Loop>();
+        private object tasksLocker = new object();
+        private Thread messageLoopThread;
+        private string startStack;
         
-        public static void Initialize() {
+        public static Execute Create() {
+        	var execute = new Execute();
+        	execute.Initialize();
+        	return execute;
+        }
+        
+        public void Initialize() {
+        	exit = false;
         	messageLoopThread = Thread.CurrentThread;
+        	startStack = Environment.StackTrace;
+        }
+        
+        public void Flush() {
+        	while( tasks.Count > 0) {
+        		Thread.Sleep(1);
+        	}
         }
 
+        public void Exit() {
+        	exit = true;
+        }
         #endregion Fields
 
         #region Methods
 
-        public static bool AppIsIdle()
+        public bool AppIsIdle()
         {
             peek_message msg;
               return !PeekMessage(out msg, IntPtr.Zero, 0, 0, 0);
         }
 
-        public static void MessageLoop(object sender, EventArgs e)
+        public void MessageLoop(object sender, EventArgs e)
         {
         	if( messageLoopThread != Thread.CurrentThread) {
         		throw new ApplicationException("Must always call MessageLoop with same thread as Initialize().");
         	}
-            while( AppIsIdle()) {
+            while( !exit && AppIsIdle()) {
                 Interlocked.Increment( ref loopcount);
                 if( tasks.Count > 0) {
                     lock( tasksLocker) {
@@ -49,7 +68,7 @@ namespace TickZoom.GUI
                         Interlocked.Increment( ref busycount);
                     }
                 }
-                for( int i=0; i<loops.Count; i++) {
+                for( int i=0; !exit && i<loops.Count; i++) {
                 	var loop = loops[i];
                 	if( loop.Execute()) {
                         Interlocked.Increment( ref busycount);
@@ -59,24 +78,42 @@ namespace TickZoom.GUI
                     TrySleep();
                 }
             }
+        	if( exit) {
+        		Application.ExitThread();
+        	}
             Interlocked.Increment( ref busycount);
         }
 
-        public static void OnUIThread(Func<bool> function)
+        public void OnUIThreadLoop(Func<bool> loopMethod)
         {
             lock( tasksLocker) {
-                loops.Add( new Loop( function));
+                loops.Add( new Loop( loopMethod));
             }
         }
         
-        public static void OnUIThread(Action action)
+        public void OnUIThread(Action action)
         {
             lock( tasksLocker) {
                 tasks.Add( new SyncTask( action, () => { } ));
             }
         }
 
-        public static T OnUIThread<T>(Delegate action)
+        public void OnUIThreadSync(Action action)
+        {
+        	if( messageLoopThread == Thread.CurrentThread) {
+        		action();
+        	}
+            var isComplete = false;
+            var task = new SyncTask( action, () => isComplete = true );
+            lock( tasksLocker) {
+                tasks.Add( task);
+            }
+            while( !isComplete) {
+                Thread.Sleep(1);
+            }
+        }
+        
+        public T OnUIThread<T>(Delegate action)
         {
         	if( messageLoopThread == Thread.CurrentThread) {
         		return (T) action.DynamicInvoke();
@@ -102,7 +139,7 @@ namespace TickZoom.GUI
             uint flags
             );
 
-        public static void TrySleep()
+        public void TrySleep()
         {
         	if( busycount == 0) { // || loopcount * 100 / busycount < 10) {
                 Thread.Sleep(1);

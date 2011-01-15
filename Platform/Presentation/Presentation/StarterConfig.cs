@@ -314,6 +314,7 @@ namespace TickZoom.Presentation
             {
                 NotifyOfPropertyChange(() => CreateChart);
                 createChart = value;
+                log.Info("Setting createChart to " + createChart);
             }
         }
 
@@ -532,7 +533,7 @@ namespace TickZoom.Presentation
 
         public void Dispose()
         {
-            Stop();
+        	Stop();
             Factory.Engine.Dispose();
             Factory.Provider.Release();
             Factory.TickUtil.TickReader().CloseAll();
@@ -893,6 +894,7 @@ namespace TickZoom.Presentation
                 {
                     starterInstance.CreateChartCallback = new CreateChartCallback(CreateChart);
                     starterInstance.ShowChartCallback = new ShowChartCallback(ShowChart);
+                    log.Info("Starter create chart callback set to " + starterInstance.CreateChartCallback);
                 }
             }
             else

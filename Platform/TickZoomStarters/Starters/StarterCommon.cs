@@ -183,6 +183,7 @@ namespace TickZoom.Starters
 	    	engine.BarReplaySpeed = ProjectProperties.Engine.BarReplaySpeed;
 	    	engine.ShowChartCallback = ShowChartCallback;
 			engine.CreateChartCallback = CreateChartCallback;
+			log.Info("Setting engine create chart callback = " + engine.CreateChartCallback);
 			
 			engine.Run();
 
@@ -413,9 +414,11 @@ namespace TickZoom.Starters
 	
 			if( quietMode) {
 				engine.QuietMode = true;
+				log.Info("Setting engine for quiet mode.");
 			} else {
 		    	engine.ShowChartCallback = ShowChartCallback;
 				engine.CreateChartCallback = CreateChartCallback;
+				log.Info("Setting engine create chart callback = " + engine.CreateChartCallback);
 			}
 			return engine;
 		}

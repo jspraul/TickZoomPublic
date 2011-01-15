@@ -134,6 +134,7 @@ namespace TickZoom.FIX
 					if( filter != null) filter.Remote( fixContext, remotePacket);
 					return Yield.DidWork.Invoke( WriteToLocalMethod);
 				} catch( FilterException) {
+					CloseSockets();
 					return Yield.Terminate;
 				}
 			} else {
@@ -149,6 +150,7 @@ namespace TickZoom.FIX
 						if( filter != null) filter.Local( fixContext, localPacket);
 						return Yield.DidWork.Invoke( WriteToRemoteMethod);
 					} catch( FilterException) {
+						CloseSockets();
 						return Yield.Terminate;
 					}
 				} else {

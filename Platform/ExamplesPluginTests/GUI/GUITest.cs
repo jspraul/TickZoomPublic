@@ -34,17 +34,47 @@ using System.Windows.Forms;
 
 using NUnit.Framework;
 using TickZoom.Api;
+using TickZoom.GUI;
 using TickZoom.Presentation;
+using ZedGraph;
 
 namespace Other
 {
+	public static class StarterConfigTestExtensions {
+		public static void WaitComplete(this StarterConfig config, int seconds) {
+			config.WaitComplete(seconds,null);
+		}
+		
+		public static void WaitComplete(this StarterConfig config, int seconds, Func<bool> onCompleteCallback) {
+			long end = Factory.TickCount + (seconds * 1000);
+			while( Factory.TickCount < end) {
+				config.Catch();
+				if( onCompleteCallback != null && onCompleteCallback()) {
+					return;
+				}
+				Thread.Sleep(1);
+			}
+		}
+		
+		public static void Pause(this StarterConfig config, int seconds) {
+			long end = Factory.TickCount + (seconds * 1000);
+			long current;
+			while( (current = Factory.TickCount) < end) {
+				Application.DoEvents();
+				config.Catch();
+				Thread.Sleep(1);
+			}
+		}		
+	}
+		
 	[TestFixture]
 	public class GUITest
 	{
 		private static Log log = Factory.SysLog.GetLogger(typeof(GUITest));
 		private bool debug = log.IsDebugEnabled;
 		private ushort servicePort = 6490;
-		private StarterConfig config;
+		private Thread guiThread;
+		private Execute execute;
 		[SetUp]
 		public void Setup() {
 			DeleteFiles();
@@ -54,8 +84,8 @@ namespace Other
     		}
 		}
 		
-		private StarterConfig CreateConfig() {
-			config = new StarterConfig("test");
+		private StarterConfig CreateSimulateConfig() {
+			var config = new StarterConfig("test");
 			config.ServiceConfig = "WarehouseTest.config";
 			config.ServicePort = servicePort;
 			config.ProviderAssembly = "TickZoomCombinedMock";
@@ -64,50 +94,6 @@ namespace Other
 			return config;
 		}
 
-		private void WaitComplete(int seconds) {
-			WaitComplete(seconds,null);
-		}
-		
-		private void WaitComplete(int seconds, Func<bool> onCompleteCallback) {
-			long end = Factory.TickCount + (seconds * 1000);
-			while( Factory.TickCount < end) {
-				config.Catch();
-				if( onCompleteCallback != null && onCompleteCallback()) {
-					return;
-				}
-				Thread.Sleep(1);
-			}
-//			throw new ApplicationException(seconds + " seconds timeout expired waiting on application to complete.");
-		}
-		
-		private void Pause(int seconds) {
-			long end = Factory.TickCount + (seconds * 1000);
-			long current;
-			while( (current = Factory.TickCount) < end) {
-				Application.DoEvents();
-				config.Catch();
-				Thread.Sleep(1);
-			}
-		}
-#if TESTSTARTRUN
-		[Test]
-		public void TestStartRun()
-		{
-			using( config = CreateConfig()) {
-				config.SymbolList.Text = "USD/JPY";
-				config.DefaultBox.Text = "1";
-				config.DefaultCombo.Text = "Hour";
-				for( int i=0; i<3; i++) {
-					log.Notice("Processing #" + (i+1));
-					config.HistoricalButtonClick(null,null);
-					WaitComplete(120, () => { return !config.ProcessWorker.IsBusy && config.PortfolioDocs[i].Visible; } );
-					Assert.AreEqual(config.PortfolioDocs.Count,i+1,"Charts");
-					Assert.IsFalse(config.ProcessWorker.IsBusy,"ProcessWorker.Busy");
-					Assert.IsTrue(config.PortfolioDocs[i].Visible,"Chart visible failed at " + i);
-				}
-			}
-		}
-#endif
 		public void WaitForEngine(StarterConfig config) {
 			while( !config.IsEngineLoaded) {
 				Thread.Sleep(1);
@@ -116,18 +102,121 @@ namespace Other
 		}
 		
 		[Test]
-		public void TestRealTimeNoHistorical()
+		public void TestConfigRealTimeNoHistorical()
 		{
-			using( config = CreateConfig()) {
+			using( var config = CreateSimulateConfig()) {
 				config.SymbolList = "IBM,GBP/USD";
 				config.DefaultPeriod = 10;
 				config.DefaultBarUnit = BarUnit.Tick.ToString();
 				config.ModelLoader = "Example: Reversal Multi-Symbol";
 				config.Starter = "TestRealTimeStarter";
 				config.Start();
-				WaitComplete(10);
+				config.WaitComplete(120, () => { return config.CommandWorker.IsBusy; } );
 				config.Stop();
-				WaitComplete(120, () => { return !config.CommandWorker.IsBusy; } );
+				config.WaitComplete(120, () => { return !config.CommandWorker.IsBusy; } );
+				Assert.IsFalse(config.CommandWorker.IsBusy,"ProcessWorker.Busy");
+			}
+		}
+		
+		[Test]
+		public void TestGUIRealTimeNoHistorical()
+		{
+			using( var config = CreateSimulateConfig()) {
+				try {
+		            StarterConfigView form;
+		            StartGUI(config, out form);
+					config.SymbolList = "IBM,GBP/USD";
+					config.DefaultPeriod = 10;
+					config.DefaultBarUnit = BarUnit.Tick.ToString();
+					config.ModelLoader = "Example: Reversal Multi-Symbol";
+					config.Starter = "TestRealTimeStarter";
+					config.Start();
+					config.WaitComplete(120, () => { return config.CommandWorker.IsBusy; } );
+					config.Stop();
+					config.WaitComplete(120, () => { return !config.CommandWorker.IsBusy; } );
+					Assert.IsFalse(config.CommandWorker.IsBusy,"ProcessWorker.Busy");
+				} finally {
+					execute.Exit();
+					guiThread.Join();
+				}
+			}
+		}
+		
+		[Test]
+		public void TestGUIRealTimeDemo()
+		{
+			Assert.Ignore();
+			while( true) {
+				TestGUIIteration();
+			}
+		}
+
+		private void StartGUI( StarterConfig config, out StarterConfigView outForm) {
+			WaitForEngine(config);
+			var isRunning = false;
+			StarterConfigView form = null;
+			guiThread = new Thread( () => {
+			    Thread.CurrentThread.Name = "GUIThread";
+			    execute = Execute.Create();
+	            form = new StarterConfigView(execute,config);
+	            AutoModelBinder.Bind( config, form, execute);
+	            Application.Idle += execute.MessageLoop;
+	            form.Visible = false;
+	            isRunning = true;
+	            Application.Run();
+			});
+			guiThread.Start();
+			config.WaitComplete(30, () => { return isRunning; } );
+			outForm = form;
+		}
+		
+		public void TestGUIIteration() {
+			var appData = Factory.Settings["PriceDataFolder"];
+ 			File.Delete( appData + @"\ServerCache\IBM.tck");
+			using( var config = new StarterConfig()) {
+				StarterConfigView form = null;
+ 				StartGUI(config, out form);
+				try {
+					config.WaitComplete(2);
+					config.SymbolList = "IBM";
+					config.DefaultPeriod = 10;
+					config.DefaultBarUnit = BarUnit.Second.ToString();
+					config.ModelLoader = "Example: Breakout Reversal";
+					config.Starter = "Realtime Operation (Demo or Live)";
+					config.Start();
+					config.WaitComplete(30, () => { return form.PortfolioDocs.Count > 0; } );
+					Assert.Greater(form.PortfolioDocs.Count,0);
+					var chart = form.PortfolioDocs[0].ChartControl;
+					config.WaitComplete(30, () => { return chart.IsDrawn; } );
+		     		var pane = chart.DataGraph.MasterPane.PaneList[0];
+		    		Assert.IsNotNull(pane.CurveList);
+					config.WaitComplete(30, () => { return pane.CurveList.Count > 0; } );
+					Assert.Greater(pane.CurveList.Count,0);
+		    		var chartBars = (OHLCBarItem) pane.CurveList[0];
+					config.WaitComplete(60, () => { return chartBars.NPts >= 3; } );
+		    		Assert.GreaterOrEqual(chartBars.NPts,3);
+					config.Stop();
+					config.WaitComplete(30, () => { return !config.CommandWorker.IsBusy; } );
+					Assert.IsFalse(config.CommandWorker.IsBusy,"ProcessWorker.Busy");
+				} finally {
+					execute.Exit();
+					guiThread.Join();
+				}
+			}
+		}
+		
+		public void TestRealTimeNoHistorical()
+		{
+			using( var config = CreateSimulateConfig()) {
+				config.SymbolList = "IBM,GBP/USD";
+				config.DefaultPeriod = 10;
+				config.DefaultBarUnit = BarUnit.Tick.ToString();
+				config.ModelLoader = "Example: Reversal Multi-Symbol";
+				config.Starter = "TestRealTimeStarter";
+				config.Start();
+				config.WaitComplete(10);
+				config.Stop();
+				config.WaitComplete(120, () => { return !config.CommandWorker.IsBusy; } );
 				Assert.IsFalse(config.CommandWorker.IsBusy,"ProcessWorker.Busy");
 			}
 		}
@@ -158,7 +247,7 @@ namespace Other
 		public void TestCapturedDataMatchesProvider()
 		{
 			try {
-				using( config = CreateConfig()) {
+				using( var config = CreateSimulateConfig()) {
 					config.SymbolList = "/ESZ9";
 					config.DefaultPeriod = 1;
 					config.DefaultBarUnit = BarUnit.Minute.ToString();
@@ -166,9 +255,9 @@ namespace Other
 					config.ModelLoader = "Example: Reversal Multi-Symbol";
 					config.Starter = "TestRealTimeStarter";
 					config.Start();
-					WaitComplete(10);
+					config.WaitComplete(10);
 					config.Stop();
-					WaitComplete(120, () => { return !config.CommandWorker.IsBusy; } );
+					config.WaitComplete(120, () => { return !config.CommandWorker.IsBusy; } );
 					Assert.IsFalse(config.CommandWorker.IsBusy,"ProcessWorker.Busy");
 					string appData = Factory.Settings["AppDataFolder"];
 					string compareFile1 = appData + @"\Test\MockProviderData\ESZ9.tck";

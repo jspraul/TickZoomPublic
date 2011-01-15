@@ -54,17 +54,19 @@ namespace TickZoom.GUI
         private List<PortfolioDoc> portfolioDocs = new List<PortfolioDoc>();
         private bool stopMessages = false;
         private StarterConfig vm;
+        private Execute execute;
 
         #endregion Fields
 
         #region Constructors
 
-        public StarterConfigView(StarterConfig vm)
+        public StarterConfigView(Execute execute, StarterConfig vm)
         {
             log = Factory.SysLog.GetLogger(typeof(StarterConfig));
-               			this.vm = vm;
+            this.vm = vm;
+            this.execute = execute;
             InitializeComponent();
-            Execute.OnUIThread( (Func<bool>) ProcessMessages);
+            execute.OnUIThreadLoop( ProcessMessages);
         }
 
         #endregion Constructors
@@ -110,15 +112,14 @@ namespace TickZoom.GUI
         }
         
         public Chart CreateChart() {
-        	return Execute.OnUIThread<Chart>((Func<Chart>)CreateChartWork);
+        	return execute.OnUIThread<Chart>((Func<Chart>)CreateChartWork);
         }
 
         private Chart CreateChartWork()
         {
             Chart chart = null;
             try {
-                PortfolioDoc portfolioDoc = new PortfolioDoc();
-                portfolioDoc.CallbackAction = Execute.OnUIThread;
+                PortfolioDoc portfolioDoc = new PortfolioDoc(execute);
                 portfolioDocs.Add( portfolioDoc);
                 chart = portfolioDoc.ChartControl;
             } catch( Exception ex) {
@@ -127,12 +128,8 @@ namespace TickZoom.GUI
             return chart;
         }
         
-        public void CallbackAction(Action action) {
-        	Execute.OnUIThread(action);
-        }
-
         public void FlushCharts() {
-        	Execute.OnUIThread((Action)FlushChartsWork);
+        	execute.OnUIThread(FlushChartsWork);
         }
 
         private void FlushChartsWork()
@@ -171,7 +168,7 @@ namespace TickZoom.GUI
         }
         
         public void ShowChart() {
-        	Execute.OnUIThread((Action)ShowChartWork);
+        	execute.OnUIThread(ShowChartWork);
         }
 
         private void ShowChartWork()
@@ -182,7 +179,7 @@ namespace TickZoom.GUI
                     if( portfolioDoc.ChartControl.IsDisposed) {
                         portfolioDocs.RemoveAt(i);
                     } else {
-                        if( portfolioDoc.ChartControl.IsValid) {
+                        if( portfolioDoc.ChartControl.IsValid && this.Visible) {
                             portfolioDoc.Show();
                         }
                     }
@@ -222,19 +219,21 @@ namespace TickZoom.GUI
 
         private void Echo(string msg)
         {
-            logOutput.Text += msg + "\r\n";
-            int maxLines = 30;
-            var lines = logOutput.Lines;
-            int skipLines = lines.Length - maxLines;
-            if( skipLines > 0) {
-                var newLines = lines.Skip(skipLines);
-                logOutput.Lines = newLines.ToArray();
-            }
-            logOutput.SelectionStart = logOutput.Text.Length;
-            logOutput.ScrollToCaret();
+        	execute.OnUIThread( () => {
+	        	logOutput.Text += msg + "\r\n";
+	            int maxLines = 30;
+	            var lines = logOutput.Lines;
+	            int skipLines = lines.Length - maxLines;
+	            if( skipLines > 0) {
+	                var newLines = lines.Skip(skipLines);
+	                logOutput.Lines = newLines.ToArray();
+	            }
+	            logOutput.SelectionStart = logOutput.Text.Length;
+	            logOutput.ScrollToCaret();
+        	});
         }
 
-        void EndTimePickerCloseUp(object sender, System.EventArgs e)
+        private void EndTimePickerCloseUp(object sender, System.EventArgs e)
         {
             if( endDateTime.Value <= vm.StartDateTime) {
                 endDateTime.Value = vm.EndDateTime;

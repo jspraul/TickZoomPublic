@@ -127,10 +127,10 @@ namespace Loaders
 		public void VerifyChartData() {
 			Assert.AreEqual(1,ChartCount);
 			ChartControl chart = GetChart(0);
-	     		GraphPane pane = chart.DataGraph.MasterPane.PaneList[0];
-	    		Assert.IsNotNull(pane.CurveList);
-	    		Assert.Greater(pane.CurveList.Count,0);
-	    		Assert.AreEqual(11,pane.CurveList[0].Points.Count);
+     		GraphPane pane = chart.DataGraph.MasterPane.PaneList[0];
+    		Assert.IsNotNull(pane.CurveList);
+    		Assert.Greater(pane.CurveList.Count,0);
+    		Assert.AreEqual(11,pane.CurveList[0].Points.Count);
 		}
 		
 		[Test]

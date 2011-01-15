@@ -56,8 +56,7 @@ namespace TickZoom
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this.chartControl1 = new TickZoom.ChartControl();
-			this.chartControl1.CallbackAction = CallbackAction;
+			this.chartControl1 = new TickZoom.ChartControl(execute);
 			this.SuspendLayout();
 			// 
 			// chartControl1

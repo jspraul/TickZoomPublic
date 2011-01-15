@@ -38,9 +38,13 @@ using System.Windows.Forms;
 
 using TickZoom;
 using TickZoom.Api;
-//using TickZoom.GUI;
+using TickZoom.GUI;
 using ZedGraph;
 using ArrowDirection = TickZoom.Api.ArrowDirection;
+
+//using TickZoom.GUI;
+
+
 
 namespace TickZoom
 {
@@ -68,21 +72,17 @@ namespace TickZoom
 		ChartType chartType = ChartType.Bar;
 		Interval intervalChartBar;
 		string storageFolder;
-        private SynchronizationContext context;
         SymbolInfo symbol;
         bool showTradeTips = true;
+		private volatile bool isDrawn = false;
+		private Execute execute;
         
-	    public ChartControl()
+	    public ChartControl(Execute execute)
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
-			context = SynchronizationContext.Current;
-            if(context == null)
-            {
-                context = new SynchronizationContext();
-                SynchronizationContext.SetSynchronizationContext(context);
-            }
+			this.execute = execute;
 
 			InitializeComponent();
 		    stockPointList = new StockPointList();
@@ -179,6 +179,7 @@ namespace TickZoom
 			string[] yLables = 
 			{ "Fun 1", "Fun 2", "Fun 3" };
 			ColorSymbolRotator rotator = new ColorSymbolRotator();
+			DrawChartPrivate();
 		}
 		
 		void setLayout() {
@@ -525,7 +526,7 @@ namespace TickZoom
             if (trace) log.Trace("AddBar()");
 			if( !isBusy) {
 				isBusy = true;
-				CallbackAction(AddBarPrivate);
+				execute.OnUIThreadSync(AddBarPrivate);
 			}
 		}
 
@@ -670,15 +671,8 @@ namespace TickZoom
     		UpdateScaleCheck( displaySeries );
 		}
 		
-		private Action<Action> callbackAction = (action) => {action();};
-		
-		public Action<Action> CallbackAction {
-			get { return callbackAction; }
-			set { callbackAction = value; }
-		}
-		
 		public void OnInitialize() {
-			CallbackAction(OnInitializePrivate);
+			execute.OnUIThreadSync(OnInitializePrivate);
 		}
 		
 		private void OnInitializePrivate() {
@@ -905,7 +899,7 @@ namespace TickZoom
 		GraphPane priceGraphPane;
 		
 		public void DrawChart() {
-			CallbackAction(DrawChartPrivate);
+//			CallbackAction(DrawChartPrivate);
 		}
 		
 		private void DrawChartPrivate() {
@@ -932,15 +926,15 @@ namespace TickZoom
 				if( isDynamicUpdate) {
 					AutoZoom(dataGraph.GraphPane);
 				}
-				
 				setLayout();
 				// Calculate the Axis Scale Ranges
 				dataGraph.AxisChange();
+				isDrawn = true;		
    			} catch (Exception ex) {
    				log.Error("ERROR: DrawChart ", ex);
    			}
 		}
-		
+				
 	    Dictionary<string,GraphPane> signalPaneList = new Dictionary<string,GraphPane>();
 	    Dictionary<string,GraphPane> secondaryPaneList = new Dictionary<string,GraphPane>();
 	    
@@ -1351,7 +1345,7 @@ namespace TickZoom
 			set { throw new NotImplementedException();  }
 		}
 		
-		Bars chartBars;
+		private Bars chartBars;
 		public Bars ChartBars {
 			get { return chartBars; }
 			set { chartBars = value; }
@@ -1408,6 +1402,10 @@ namespace TickZoom
 		public object ChartRenderLock {
 			get { return chartRenderLock; }
 			set { chartRenderLock = value; }
+		}
+		
+		public bool IsDrawn {
+			get { return isDrawn; }
 		}
 	}
 }

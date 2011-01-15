@@ -31,11 +31,13 @@ using System.Configuration;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 
 using NUnit.Framework;
 using TickZoom;
 using TickZoom.Api;
 using TickZoom.Common;
+using TickZoom.GUI;
 using TickZoom.Presentation;
 using TickZoom.Starters;
 using TickZoom.Statistics;
@@ -54,7 +56,7 @@ namespace Loaders
 		private string testFileName;
 		string dataFolder = "Test\\DataCache";
 		string symbols;
-		List<ChartThread> chartThreads = new List<ChartThread>();
+		List<PortfolioDoc> portfolioDocs = new List<PortfolioDoc>();
 		Dictionary<string,List<StatsInfo>> goodStatsMap = new Dictionary<string,List<StatsInfo>>();
 		Dictionary<string,List<StatsInfo>> testStatsMap = new Dictionary<string,List<StatsInfo>>();
 		Dictionary<string,List<BarInfo>> goodBarDataMap = new Dictionary<string,List<BarInfo>>();
@@ -93,10 +95,34 @@ namespace Loaders
 		public StrategyTest() {
  			testFileName = GetType().Name;
 			createStarterCallback = CreateStarter;
+			StartGUIThread();
 		}
 		
 		private Starter CreateStarter() {
 			return new HistoricalStarter();			
+		}
+
+		private Thread guiThread;
+		private Execute execute;
+		public void StartGUIThread() {
+			var isRunning = false;
+			guiThread = new Thread( () => {
+			    Thread.CurrentThread.Name = "GUIThread";
+			    execute = Execute.Create();
+	            Application.Idle += execute.MessageLoop;
+	            isRunning = true;
+	            Application.Run();
+			});
+			guiThread.Start();
+			while( !isRunning) {
+				Thread.Sleep(1);
+			}
+		}
+		
+		public void StopGUIThread() {
+			execute.Exit();
+			guiThread.Join();
+			guiThread.Abort();
 		}
 		
 		public StarterConfig SetupConfigStarter(AutoTestMode autoTestMode) {
@@ -167,6 +193,8 @@ namespace Loaders
 		public virtual void RunStrategy() {
 			log.Notice("Beginning RunStrategy()");
 			CleanupFiles();
+			StartGUIThread();
+			
 			try {
 				// Run the loader.
 				try { 
@@ -251,13 +279,7 @@ namespace Loaders
 		
 		[TestFixtureTearDown]
 		public virtual void EndStrategy() {
-			if( !ShowCharts) {
-	   			HistoricalCloseCharts();
-			} else {
-				while( TryCloseCharts() == false) {
-					Thread.Sleep(100);
-				}
-			}
+			StopGUIThread();
 //			SocketDefault.LogBindErrors();
 
 //			if( testFailed) {
@@ -896,39 +918,24 @@ namespace Loaders
         {
        		log.Debug("HistoricalShowChart() start.");
 	       	try {
-				for( int i=chartThreads.Count-1; i>=0; i--) {
-					chartThreads[i].PortfolioDoc.ShowInvoke();
+				for( int i=portfolioDocs.Count-1; i>=0; i--) {
+					portfolioDocs[i].ShowInvoke();
 					if( !ShowCharts) {
-						chartThreads[i].PortfolioDoc.HideInvoke();
+						portfolioDocs[i].HideInvoke();
 					}
 				}
         	} catch( Exception ex) {
         		log.Debug(ex.ToString());
         	}
-        }
-		
-		public bool TryCloseCharts()
-        {
-	       	try {
-				for( int i=chartThreads.Count-1; i>=0; i--) {
-					if( chartThreads[i].IsAlive) {
-						return false;
-					}
-				}
-        	} catch( Exception ex) {
-        		log.Debug(ex.ToString());
-        	}
-			HistoricalCloseCharts();
-			return true;
         }
 		
 		public void HistoricalCloseCharts()
         {
 	       	try {
-				for( int i=chartThreads.Count-1; i>=0; i--) {
-					chartThreads[i].Stop();
-					chartThreads.RemoveAt(i);
+				foreach( var doc in portfolioDocs) {
+					execute.OnUIThread( () => doc.Visible = false);
 				}
+				portfolioDocs.Clear();
         	} catch( Exception ex) {
         		log.Debug(ex.ToString());
         	}
@@ -937,35 +944,38 @@ namespace Loaders
 		
    		public TickZoom.Api.Chart HistoricalCreateChart()
         {
- 			int oldCount = chartThreads.Count;
+   			PortfolioDoc doc = null;
         	try {
- 				ChartThread chartThread = new ChartThread();
-	        	chartThreads.Add( chartThread);
+   				execute.OnUIThreadSync( () => {
+	   				doc = new PortfolioDoc( execute);
+	   				portfolioDocs.Add(doc);
+   				});
+	 			return doc.ChartControl;
         	} catch( Exception ex) {
         		log.Notice(ex.ToString());
-        	}
- 			return chartThreads[oldCount].PortfolioDoc.ChartControl;
+   			}
+   			return null;
         }
    		
    		public int ChartCount {
-   			get { return chartThreads.Count; }
+   			get { return portfolioDocs.Count; }
 		}
    		
    		protected ChartControl GetChart( string symbol) {
    			ChartControl chart;
-   			for( int i=0; i<chartThreads.Count; i++) {
-				chart = GetChart(i);
+   			for( int i=0; i<portfolioDocs.Count; i++) {
+   				chart = portfolioDocs[i].ChartControl;
 				if( chart.Symbol.Symbol == symbol) {
 					return chart;
 				}
    			}
    			return null;
    		}
-
-   		protected ChartControl GetChart( int num) {
-   			return chartThreads[num].PortfolioDoc.ChartControl;
+   		
+   		public ChartControl GetChart(int i) {
+   			return portfolioDocs[i].ChartControl;
    		}
-		
+
 		public string DataFolder {
 			get { return dataFolder; }
 			set { dataFolder = value; }
@@ -995,13 +1005,14 @@ namespace Loaders
    		}
    		
 		public void CompareChart(StrategyInterface strategy) {
+   			execute.Flush();
    			if( strategy.SymbolDefault == "TimeSync") return;
    			var strategyBars = strategy.Bars;
    			var chart = GetChart(strategy.SymbolDefault);
-     		GraphPane pane = chart.DataGraph.MasterPane.PaneList[0];
+     		var pane = chart.DataGraph.MasterPane.PaneList[0];
     		Assert.IsNotNull(pane.CurveList);
     		Assert.Greater(pane.CurveList.Count,0);
-    		OHLCBarItem chartBars = (OHLCBarItem) pane.CurveList[0];
+    		var chartBars = (OHLCBarItem) pane.CurveList[0];
 			int firstMisMatch = int.MaxValue;
 			int i, j;
     		for( i=0; i<strategyBars.Count; i++) {

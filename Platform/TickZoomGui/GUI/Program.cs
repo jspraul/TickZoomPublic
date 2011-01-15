@@ -55,10 +55,10 @@ namespace TickZoom.GUI
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 var vm = new StarterConfig();
-                var form = new StarterConfigView(vm);
-                AutoModelBinder.Bind( vm, form);
-                Execute.Initialize();
-                Application.Idle += Execute.MessageLoop;
+                var execute = Execute.Create();
+                var form = new StarterConfigView(execute,vm);
+                AutoModelBinder.Bind( vm, form, execute);
+                Application.Idle += execute.MessageLoop;
                 Application.Run(form);
             } catch( Exception ex) {
                 Console.WriteLine(ex.GetType() + ": " + ex.Message + Environment.NewLine + ex.StackTrace);

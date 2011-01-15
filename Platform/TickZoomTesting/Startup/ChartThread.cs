@@ -77,6 +77,6 @@ namespace TickZoom.StarterTest
 		
 		public PortfolioDoc PortfolioDoc {
 			get { return portfolioDoc; }
-				}
+		}
 	}
 }

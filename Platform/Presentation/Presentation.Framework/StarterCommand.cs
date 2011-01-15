@@ -30,7 +30,7 @@ namespace TickZoom.Presentation.Framework
 {
     using System;
     using TickZoom.Api;
-
+    
     public class StarterCommand : Command
     {
         #region Fields

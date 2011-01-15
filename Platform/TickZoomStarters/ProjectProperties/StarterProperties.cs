@@ -44,6 +44,9 @@ namespace TickZoom.Properties
 	/// </summary>
 	public class StarterProperties : PropertiesBase, TickZoom.Api.StarterProperties
 	{
+		private readonly static Log log = Factory.Log.GetLogger(typeof(StarterProperties));
+		private readonly bool debug = log.IsDebugEnabled;
+		private readonly bool trace = log.IsTraceEnabled;
 		TickZoom.Api.TimeStamp startTime;
 		TickZoom.Api.TimeStamp endTime;
 		ChartProperties chartProperties;
@@ -73,6 +76,7 @@ namespace TickZoom.Properties
 				var tempSymbol = symbolArray[i].Trim();
 				SymbolProperties symbol = library.GetSymbolProperties(tempSymbol);
 				symbol.ChartGroup = i+1;
+				log.Info(symbol + " set to chart group " + symbol.ChartGroup);
 				symbolInfo.Add(symbol);
 				symbolList.Add(tempSymbol);
 			}

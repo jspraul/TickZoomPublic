@@ -35,8 +35,6 @@ using TickZoom.Starters;
 
 namespace Loaders
 {
-
-	
 	[TestFixture]
 	public class ExampleBreakoutReversalTest : StrategyTest
 	{
@@ -52,6 +50,7 @@ namespace Loaders
 		[TestFixtureSetUp]
 		public override void RunStrategy() {
 			CleanupFiles();
+			StartGUIThread();
 			try {
 				Starter starter = new HistoricalStarter();
 				

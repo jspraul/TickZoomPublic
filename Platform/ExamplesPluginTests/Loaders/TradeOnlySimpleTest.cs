@@ -53,6 +53,7 @@ namespace Loaders
 		public override void RunStrategy() {
    		Assert.Ignore();
 			CleanupFiles();
+			StartGUIThread();
 			Starter starter = new HistoricalStarter();
 			
 			// Set run properties as in the GUI.

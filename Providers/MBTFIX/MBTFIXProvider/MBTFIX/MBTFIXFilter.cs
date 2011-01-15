@@ -68,6 +68,9 @@ namespace TickZoom.MBTFIX
 		{
 			var packetFIX = (PacketFIX4_4) remotePacket;
 			switch( packetFIX.MessageType) {
+    // For simulating MBT Demo server failure.
+	//			case "A":
+	//				throw new FilterException();
 				case "AP":
 				case "AO":
 					PositionUpdate( context, packetFIX);
