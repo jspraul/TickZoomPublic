@@ -46,11 +46,14 @@ namespace Loaders
 			if( (modesToRun & AutoTestMode.Historical) == AutoTestMode.Historical) {
 				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.Historical);
 			}
-			if( (modesToRun & AutoTestMode.RealTime) == AutoTestMode.RealTime) {
-				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.RealTime);
+			if( (modesToRun & AutoTestMode.SimulateRealTime) == AutoTestMode.SimulateRealTime) {
+				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.SimulateRealTime);
 			}
 			if( (modesToRun & AutoTestMode.SimulateFIX) == AutoTestMode.SimulateFIX) {
 				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.SimulateFIX);
+			}
+			if( (modesToRun & AutoTestMode.RealTimePlayBack) == AutoTestMode.RealTimePlayBack) {
+				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.RealTimePlayBack);
 			}
 			return mainSuite;
 		}
@@ -66,7 +69,7 @@ namespace Loaders
 				fixture.TestName.Name = testSettings.Name;
 				suite.Add(fixture);
 				AddStrategyTestCases(fixture, testSettings);
-				if( testSettings.Mode == AutoTestMode.RealTime) {
+				if( testSettings.Mode == AutoTestMode.SimulateRealTime) {
 					AddSymbolTestCases(fixture, testSettings);
 				}
 			}
@@ -146,10 +149,13 @@ namespace Loaders
 				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.Historical)) {
 					result = true;
 				}
-				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.RealTime)) {
+				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.SimulateRealTime)) {
 					result = true;
 				}
 				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.SimulateFIX)) {
+					result = true;
+				}
+				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.RealTimePlayBack)) {
 					result = true;
 				}
 			}

@@ -31,6 +31,8 @@ using TickZoom.Common;
 
 namespace TickZoom.Starters
 {
+
+	
 	public class FIXSimulatorStarter : RealTimeStarterBase {
 		private FIXSimulator fixServer;
 		public FIXSimulatorStarter() {

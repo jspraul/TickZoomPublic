@@ -132,11 +132,14 @@ namespace Loaders
 				case AutoTestMode.Historical:
 					config.Starter = "HistoricalStarter";
 					break;
-				case AutoTestMode.RealTime:
+				case AutoTestMode.SimulateRealTime:
 					config.Starter = "TestRealTimeStarter";
                     break;
 				case AutoTestMode.SimulateFIX:
 					config.Starter = "FIXSimulatorStarter";
+                    break;			
+				case AutoTestMode.RealTimePlayBack:
+					config.Starter = "RealTimePlayBackStarter";
                     break;			
 				default:
 					throw new ApplicationException("AutoTestMode " + autoTestMode + " is unknown.");
@@ -161,12 +164,16 @@ namespace Loaders
 				case AutoTestMode.Historical:
 					starter = CreateStarterCallback();
 					break;
-				case AutoTestMode.RealTime:
+				case AutoTestMode.SimulateRealTime:
 					starter = new TestRealTimeStarter();
 					starter.Port = servicePort;
 					break;
 				case AutoTestMode.SimulateFIX:
 					starter = new FIXSimulatorStarter();
+					starter.Port = servicePort;
+					break;			
+				case AutoTestMode.RealTimePlayBack:
+					starter = new RealTimePlayBackStarter();
 					starter.Port = servicePort;
 					break;			
 				default:
@@ -228,7 +235,7 @@ namespace Loaders
 	    		LoadBarData();
 	    		LoadStats();
 	    		LoadFinalStats();
-	    		if( autoTestMode == AutoTestMode.RealTime) {
+	    		if( autoTestMode == AutoTestMode.SimulateRealTime) {
 		    		LoadReconciliation();
 	    		}
 			} catch( Exception ex) {

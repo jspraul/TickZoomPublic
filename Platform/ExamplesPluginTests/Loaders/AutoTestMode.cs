@@ -34,8 +34,9 @@ namespace Loaders
 	public enum AutoTestMode {
 		None = 0x0,
 		Historical = 0x1,
-		RealTime = 0x2,
+		SimulateRealTime = 0x2,
 		SimulateFIX = 0x4,
-		All = Historical | RealTime | SimulateFIX,
+		RealTimePlayBack = 0x8,
+		All = Historical | SimulateRealTime | SimulateFIX | RealTimePlayBack,
 	}
 }
