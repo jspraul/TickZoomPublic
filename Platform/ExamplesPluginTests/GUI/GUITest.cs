@@ -109,7 +109,7 @@ namespace Other
 				config.DefaultPeriod = 10;
 				config.DefaultBarUnit = BarUnit.Tick.ToString();
 				config.ModelLoader = "Example: Reversal Multi-Symbol";
-				config.Starter = "TestRealTimeStarter";
+				config.StarterName = "TestRealTimeStarter";
 				config.Start();
 				config.WaitComplete(120, () => { return config.CommandWorker.IsBusy; } );
 				config.Stop();
@@ -129,7 +129,7 @@ namespace Other
 					config.DefaultPeriod = 10;
 					config.DefaultBarUnit = BarUnit.Tick.ToString();
 					config.ModelLoader = "Example: Reversal Multi-Symbol";
-					config.Starter = "TestRealTimeStarter";
+					config.StarterName = "TestRealTimeStarter";
 					config.Start();
 					config.WaitComplete(120, () => { return config.CommandWorker.IsBusy; } );
 					config.Stop();
@@ -182,7 +182,7 @@ namespace Other
 					config.DefaultPeriod = 10;
 					config.DefaultBarUnit = BarUnit.Second.ToString();
 					config.ModelLoader = "Example: Breakout Reversal";
-					config.Starter = "Realtime Operation (Demo or Live)";
+					config.StarterName = "Realtime Operation (Demo or Live)";
 					config.Start();
 					config.WaitComplete(30, () => { return form.PortfolioDocs.Count > 0; } );
 					Assert.Greater(form.PortfolioDocs.Count,0);
@@ -212,7 +212,7 @@ namespace Other
 				config.DefaultPeriod = 10;
 				config.DefaultBarUnit = BarUnit.Tick.ToString();
 				config.ModelLoader = "Example: Reversal Multi-Symbol";
-				config.Starter = "TestRealTimeStarter";
+				config.StarterName = "TestRealTimeStarter";
 				config.Start();
 				config.WaitComplete(10);
 				config.Stop();
@@ -253,7 +253,7 @@ namespace Other
 					config.DefaultBarUnit = BarUnit.Minute.ToString();
 					config.EndDateTime = DateTime.UtcNow;
 					config.ModelLoader = "Example: Reversal Multi-Symbol";
-					config.Starter = "TestRealTimeStarter";
+					config.StarterName = "TestRealTimeStarter";
 					config.Start();
 					config.WaitComplete(10);
 					config.Stop();

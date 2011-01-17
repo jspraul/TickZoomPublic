@@ -216,11 +216,11 @@ namespace TickZoom.Update
 						}
 						LogMsg("Found the interface: " + type.Name);
 						try {
-							LogMsg("Creating an instance.");
+							LogMsg("Creating an instance with " + args.Length + " arguments.");
 							return Activator.CreateInstance(t, args);
 						} catch (MissingMethodException) {
 							errorCount++;
-							throw new ApplicationException("'" + t.Name + "' failed to load due to missing constructor");
+							throw new ApplicationException("'" + t.Name + "' failed to load due to missing constructor.");
 						} catch (Exception ex) {
 							LogMsg(ex.ToString());
 						}

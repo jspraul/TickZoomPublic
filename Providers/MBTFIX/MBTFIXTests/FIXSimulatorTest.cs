@@ -51,7 +51,7 @@ namespace Test
 		public override void Setup()
 		{
 			base.Setup();
-			fixServer = new MBTFIXSimulator();
+			fixServer = new MBTFIXSimulator("");
 		}
 		
 		

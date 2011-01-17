@@ -41,11 +41,9 @@ namespace TickZoom.MBTFIX
 		private static bool debug = log.IsDebugEnabled;
 		private ServerState fixState = ServerState.Startup;
 		private ServerState quoteState = ServerState.Startup;
-		private TimeStamp heartbeatTimer;
-		private bool firstHearbeat = true;
 		
-		public MBTFIXSimulator() : base( 6489, 6488, new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes()) {
-			
+		public MBTFIXSimulator(string mode) : base( mode, 6489, 6488, new PacketFactoryFIX4_4(), new PacketFactoryMBTQuotes()) {
+		    
 		}
 		
 		protected override void OnConnectFIX(Socket socket)
@@ -53,7 +51,6 @@ namespace TickZoom.MBTFIX
 			fixState = ServerState.Startup;
 			quoteState = ServerState.Startup;
 			base.OnConnectFIX(socket);
-			firstHearbeat = true;
 		}
 		
 		protected override void CloseSockets()
@@ -280,19 +277,8 @@ namespace TickZoom.MBTFIX
 			if(debug) log.Debug("Sending login response: " + login);
 		}
 		
-		private void IncreaseHeartbeat(Tick tick) {
-			heartbeatTimer = tick.Time;
-			heartbeatTimer.AddSeconds(30);
-		}
-		
-		private void TryRequestHeartbeat(Tick tick) {
-			if( firstHearbeat) {
-				IncreaseHeartbeat(tick);
-				firstHearbeat = false;
-				return;
-			}
-			if( tick.Time > heartbeatTimer && fixSocket != null && FixFactory != null) {
-				IncreaseHeartbeat(tick);
+		private Yield OnHeartbeat() {
+			if( fixSocket != null && FixFactory != null) {
 				var writePacket = fixSocket.CreatePacket();
 				var mbtMsg = (FIXMessage4_4) FixFactory.Create();
 				mbtMsg.AddHeader("1");
@@ -301,6 +287,7 @@ namespace TickZoom.MBTFIX
 				if( trace) log.Trace("Requesting heartbeat: " + message);
 				fixPacketQueue.Enqueue(writePacket);
 			}
+			return Yield.DidWork.Return;
 		}
 		
 		private void QuotesLogin(PacketMBTQuotes packet) {
@@ -430,7 +417,7 @@ namespace TickZoom.MBTFIX
 							var symbol = packet.GetString( ref ptr);
 							symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 							log.Info("Received symbol request for " + symbolInfo);
-							AddSymbol(symbol, OnTick, OnPhysicalFill, OnRejectOrder);
+							AddSymbol(symbol, OnHeartbeat, OnTick, OnPhysicalFill, OnRejectOrder);
 							break;
 						case 2000: // Type of data.
 							var feedType = packet.GetString( ref ptr);
@@ -469,7 +456,6 @@ namespace TickZoom.MBTFIX
 			if( quotePacketQueue.Count > 10) {
 				return Yield.NoWork.Repeat;
 			}
-			TryRequestHeartbeat( tick);
 			if( trace) log.Trace("Sending tick: " + tick);
 			var packet = quoteSocket.CreatePacket();
 			StringBuilder sb = new StringBuilder();
@@ -521,6 +507,8 @@ namespace TickZoom.MBTFIX
 			sb.Append("2013=20021;"); // Up/Down Tick
 			sb.Append("2014="); // Time
 			sb.Append(tick.UtcTime.TimeOfDay);
+			sb.Append(".");
+			sb.Append(tick.UtcTime.Microsecond);
 			sb.Append(';');
 			sb.Append("2015=");
 			sb.Append(tick.UtcTime.Month.ToString("00"));

@@ -30,5 +30,8 @@ namespace TickZoom.Api
 {
 	public interface FIXSimulator : IDisposable
 	{
+		long RealTimeOffset {
+			get;
+		}
 	}
 }

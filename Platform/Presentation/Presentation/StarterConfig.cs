@@ -60,6 +60,7 @@ namespace TickZoom.Presentation
         private string serviceConfig;
         private string providerAssembly;
         private bool autoUpdate;
+        private Starter starter;
         
 		public bool AutoUpdate {
 			get { return autoUpdate; }
@@ -157,7 +158,7 @@ namespace TickZoom.Presentation
             { "Realtime Operation (Demo or Live)", "RealTimeStarter"},
         };
 
-        private string starter;
+        private string starterName;
 
         public List<string> StarterValues
         {
@@ -171,11 +172,11 @@ namespace TickZoom.Presentation
             }
         }
 
-        public string Starter
+        public string StarterName
         {
-            get { return starter; }
-            set { NotifyOfPropertyChange(() => Starter);
-            	starter = value;
+            get { return starterName; }
+            set { NotifyOfPropertyChange(() => StarterName);
+            	starterName = value;
             }
         }
 
@@ -606,16 +607,16 @@ namespace TickZoom.Presentation
 
         public void Start()
         {
-        	string starterName;
-        	if( !starters.TryGetValue(starter, out starterName)) {
-        		starterName = starter;
+        	string starterClassName;
+        	if( !starters.TryGetValue(starterName, out starterClassName)) {
+        		starterClassName = starterName;
         	}
-            var starterInstance = Factory.Starter.CreateStarter( starterName);
-            if (starterName.Contains("RealTime"))
+            starter = Factory.Starter.CreateStarter( starterClassName);
+            if (starterClassName.Contains("RealTime"))
             {
                 enableAlarmSounds = true;
             }
-            SetupStarter(starterInstance);
+            SetupStarter(starter);
         }
 
         public void IntervalsUpdate()
@@ -738,7 +739,7 @@ namespace TickZoom.Presentation
             chartPeriod = int.Parse(CheckNull(projectConfig.GetValue("ChartPeriod")));
             chartBarUnit = projectConfig.GetValue("ChartInterval");
             var starterFactoryName = projectConfig.GetValue("Starter");
-            starter = GetStarterByFactoryName( starterFactoryName);
+            starterName = GetStarterByFactoryName( starterFactoryName);
         }
         
         private string GetStarterByFactoryName(string name) {
@@ -768,8 +769,8 @@ namespace TickZoom.Presentation
             projectConfig.SetValue("ChartPeriod", chartPeriod.ToString());
             projectConfig.SetValue("ChartInterval", chartBarUnit.ToString());
             string starterFactoryName;
-            if( starter == null || !starters.TryGetValue(starter, out starterFactoryName)) {
-               	starterFactoryName = starter;
+            if( starterName == null || !starters.TryGetValue(starterName, out starterFactoryName)) {
+               	starterFactoryName = starterName;
             }
             if( string.IsNullOrEmpty(starterFactoryName)) {
             	starterFactoryName = "";
@@ -924,6 +925,10 @@ namespace TickZoom.Presentation
             RunCommand(new StarterCommand(starterInstance, loaderInstance));
         }
 
-        #endregion Methods
+ 		public Starter Starter {
+			get { return starter; }
+		}
+        
+       #endregion Methods
     }
 }

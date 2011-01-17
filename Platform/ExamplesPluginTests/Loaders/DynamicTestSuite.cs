@@ -52,8 +52,8 @@ namespace Loaders
 			if( (modesToRun & AutoTestMode.SimulateFIX) == AutoTestMode.SimulateFIX) {
 				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.SimulateFIX);
 			}
-			if( (modesToRun & AutoTestMode.RealTimePlayBack) == AutoTestMode.RealTimePlayBack) {
-				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.RealTimePlayBack);
+			if( (modesToRun & AutoTestMode.FIXPlayBack) == AutoTestMode.FIXPlayBack) {
+				AddDynamicTestFixtures(mainSuite,autoTestFixture, AutoTestMode.FIXPlayBack);
 			}
 			return mainSuite;
 		}
@@ -155,7 +155,7 @@ namespace Loaders
 				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.SimulateFIX)) {
 					result = true;
 				}
-				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.RealTimePlayBack)) {
+				if( !result && CheckCanBuild(autoTestFixture, AutoTestMode.FIXPlayBack)) {
 					result = true;
 				}
 			}

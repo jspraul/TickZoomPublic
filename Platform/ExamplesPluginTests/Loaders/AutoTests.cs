@@ -34,7 +34,7 @@ namespace Loaders
 	[AutoTestFixture]
 	public class AutoTests : IAutoTestFixture {
 		public AutoTestMode GetModesToRun() {
-			return AutoTestMode.All;
+			return AutoTestMode.Default | AutoTestMode.FIXPlayBack;
 		}
 		public AutoTestSettings[] GetAutoTestSettings() {
 			var list = new System.Collections.Generic.List<AutoTestSettings>();
@@ -42,7 +42,7 @@ namespace Loaders
 			var primarySymbol = "USD/JPY";
 			try { 
 				list.Add( new AutoTestSettings {
-				    Mode = AutoTestMode.All,
+				    Mode = AutoTestMode.Default,
 				    Name = "ApexStrategyTest",
 				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
 					Symbols = primarySymbol + ",EUR/USD,USD/CHF",
@@ -60,7 +60,7 @@ namespace Loaders
 			
 			try { 
 				list.Add( new AutoTestSettings {
-				    Mode = AutoTestMode.All,
+				    Mode = AutoTestMode.Default,
 				    Name = "Apex_NQ_MeltdownTest",
 				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
 				    Symbols = "/NQU0",
@@ -78,7 +78,7 @@ namespace Loaders
 			
 			try { 
 				list.Add( new AutoTestSettings {
-				    Mode = AutoTestMode.All,
+				    Mode = AutoTestMode.Default,
 				    Name = "ApexMeltdownTest",
 				    Loader = Plugins.Instance.GetLoader("APX_Systems: APX Multi-Symbol Loader"),
 				    Symbols = "GE,INTC",
@@ -95,7 +95,7 @@ namespace Loaders
 			}
 			
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.All,
+			    Mode = AutoTestMode.Default,
 			    Name = "DualStrategyLimitOrder",
 			    Loader = new TestDualStrategyLoader(),
 				Symbols = primarySymbol + ",EUR/USD",
@@ -119,7 +119,7 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.All,
+			    Mode = AutoTestMode.Default,
 			    Name = "LimitOrderTest",
 			    Loader = new TestLimitOrderLoader(),
 				Symbols = primarySymbol,
@@ -131,7 +131,7 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.All,
+			    Mode = AutoTestMode.Default,
 			    Name = "MarketOrderTest",
 			    Loader = new MarketOrderLoader(),
 				Symbols = primarySymbol,
@@ -143,7 +143,7 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.All,
+			    Mode = AutoTestMode.Default,
 			    Name = "SyntheticMarketOrderTest",
 			    Loader = new MarketOrderLoader(),
 				Symbols = "USD/JPY_Synthetic",
@@ -179,7 +179,7 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.All,
+			    Mode = AutoTestMode.Default,
 			    Name = "ExampleMixedTest",
 			    Loader = new ExampleMixedLoader(),
 				Symbols = primarySymbol + ",EUR/USD,USD/CHF",
@@ -191,7 +191,7 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.All,
+			    Mode = AutoTestMode.Default,
 			    Name = "ExampleReversalTest",
 			    Loader = new ExampleReversalLoader(),
 				Symbols = primarySymbol,
@@ -203,7 +203,7 @@ namespace Loaders
 			});
 			
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.All,
+			    Mode = AutoTestMode.Default,
 			    Name = "LimitReversalTest",
 			    Loader = new LimitReversalLoader(),
 				Symbols = primarySymbol,
@@ -225,6 +225,31 @@ namespace Loaders
 				EndTime = new TimeStamp( 2009, 6, 10),
 				IntervalDefault = Intervals.Minute1,
 			});
+			
+			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.Default,
+			    Name = "RealTimeLimitOrderTest",
+			    Loader = new TestLimitOrderLoader(),
+				Symbols = "CSCO",
+				StoreKnownGood = storeKnownGood,
+				ShowCharts = false,
+				EndTime = new TimeStamp( 2011,1,15,1,30,0),
+				IntervalDefault = Intervals.Minute1,
+			});
+			
+			var endTime = TimeStamp.UtcNow;
+			endTime.AddHours(24);
+			list.Add( new AutoTestSettings {
+			    Mode = AutoTestMode.None,
+			    Name = "RealTimeLimitOrderTest",
+			    Loader = new TestLimitOrderLoader(),
+				Symbols = "CSCO",
+				StoreKnownGood = storeKnownGood,
+				ShowCharts = false,
+				EndTime = endTime,
+				IntervalDefault = Intervals.Minute1,
+			});
+			
 			return list.ToArray();
 		}
 	}

@@ -45,7 +45,7 @@ namespace Loaders
 		public bool StoreKnownGood;
 		public bool ShowCharts;
 		public TimeStamp StartTime;
-		public TimeStamp EndTime;
+		public TimeStamp EndTime = TimeStamp.MaxValue;
 		public Interval IntervalDefault;
 	}
 }

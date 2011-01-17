@@ -61,7 +61,8 @@ namespace TickZoom.Api
 		public const long SecondsPerDay = 86400L;
 		public const long MicrosecondsPerMillisecond =  1000L;
 		public const long MicrosecondsPerSecond =  1000000L;
-		public const long MicroecondsPerMinute =  60000000L;
+		public const long MillisecondsPerSecond =  1000L;
+		public const long MicrosecondsPerMinute =  60000000L;
 		public const long MicrosecondsPerHour = 3600000000L;
 		public const long MicrosecondsPerDay = 86400000000L;
 		public const long MillisecondsPerDay = 86400000L;
@@ -69,7 +70,7 @@ namespace TickZoom.Api
 		public const string DefaultFormatStr = "yyyy-MM-dd HH:mm:ss.fff";
 		
 		public void Assign( int year, int month, int day, int hour, int minute, int second, int millis) {
-			_timeStamp = CalendarDateTotimeStamp( year, month, day, hour, minute, second, millis );
+			_timeStamp = CalendarDateTotimeStamp( year, month, day, hour, minute, second, millis, 0);
 		}
 		
 		public static TimeStamp FromOADate(double value) {
@@ -100,7 +101,7 @@ namespace TickZoom.Api
 				  return new Elapsed(micros+
 				        millis*MicrosecondsPerMillisecond+
 				  		second*MicrosecondsPerSecond+
-				  		minute*MicroecondsPerMinute+
+				  		minute*MicrosecondsPerMinute+
 				  		hour*MicrosecondsPerHour);
 			}
 		}
@@ -254,7 +255,7 @@ namespace TickZoom.Api
 			}
 			string[] strings = dateTimeSeparator != null ? timeString.Split(dateTimeSeparator) : new string[] { timeString };
 			string date = strings[0];
-			int hour=0, minute=0, second=0, millis=0;
+			int hour=0, minute=0, second=0, millis=0, micros=0;
 			if( strings.Length > 1) {
 				string time = strings[1];
 				strings = time.Split(new char[] {':'});
@@ -264,6 +265,9 @@ namespace TickZoom.Api
 				second = ToInt32(strings[0]);
 				if( strings.Length>1) {
 					millis = ToInt32(strings[1]);
+				}
+				if( strings.Length>2) {
+					micros = ToInt32(strings[2]);
 				}
 			}
 			if( dateSeparator != null) {
@@ -286,7 +290,7 @@ namespace TickZoom.Api
 				day = ToInt32(strings[1]);
 				year = ToInt32(strings[2]);
 			}
-			_timeStamp = CalendarDateTotimeStamp( year, month, day, hour, minute, second, millis );
+			_timeStamp = CalendarDateTotimeStamp( year, month, day, hour, minute, second, millis, micros);
 			if( Month != month || Year != year || Day != day || Hour != hour || Minute != minute || Second != second || Millisecond != millis) {
 				throw new ApplicationException("Invalid date.");
 			}
@@ -322,7 +326,7 @@ namespace TickZoom.Api
 		{
 			_timeStamp = CalendarDateTotimeStamp( dateTime.Year, dateTime.Month,
 							dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second,
-							dateTime.Millisecond );
+							dateTime.Millisecond, 0);
 		}
 		public TimeStamp( int year, int month, int day )
 		{
@@ -338,7 +342,7 @@ namespace TickZoom.Api
 //		}
 		public TimeStamp( int year, int month, int day, int hour, int minute, int second, int millisecond )
 		{
-			_timeStamp = CalendarDateTotimeStamp( year, month, day, hour, minute, second, millisecond );
+			_timeStamp = CalendarDateTotimeStamp( year, month, day, hour, minute, second, millisecond, 0);
 		}
 		public TimeStamp( TimeStamp rhs )
 		{
@@ -432,17 +436,15 @@ namespace TickZoom.Api
 		}
 		
 		public static long CalendarDateTotimeStamp( int year, int month, int day,
-			int hour, int minute, int second, int millisecond )
+			int hour, int minute, int second, int millisecond, int microsecond )
 		{
 			// Normalize the data to allow for negative and out of range values
 			// In this way, setting month to zero would be December of the previous year,
 			// setting hour to 24 would be the first hour of the next day, etc.
 			//double dsec = second + (double) millisecond / MillisecondsPerSecond;
-			int ms = millisecond;
-			NormalizeCalendarDate( ref year, ref month, ref day, ref hour, ref minute, ref second,
-						ref ms );
+			NormalizeCalendarDate( ref year, ref month, ref day, ref hour, ref minute, ref second, ref millisecond, ref microsecond);
 		
-			return _CalendarDateTotimeStamp( year, month, day, hour, minute, second, ms );
+			return _CalendarDateTotimeStamp( year, month, day, hour, minute, second, millisecond, microsecond);
 		}
 		
 		public static long CalendarDateTotimeStamp( int year, int month, int day,
@@ -452,10 +454,11 @@ namespace TickZoom.Api
 			// In this way, setting month to zero would be December of the previous year,
 			// setting hour to 24 would be the first hour of the next day, etc.
 			int ms = 0;
+			int micros = 0;
 			NormalizeCalendarDate( ref year, ref month, ref day, ref hour, ref minute,
-					ref second, ref ms );
+					ref second, ref ms, ref micros );
 		
-			return _CalendarDateTotimeStamp( year, month, day, hour, minute, second, ms );
+			return _CalendarDateTotimeStamp( year, month, day, hour, minute, second, ms, micros );
 		}
 		
 //		public static long CalendarDateTotimeStamp( int year, int month, int day,
@@ -479,10 +482,11 @@ namespace TickZoom.Api
 			// In this way, setting month to zero would be December of the previous year,
 			// setting hour to 24 would be the first hour of the next day, etc.
 			int ms = 0;
+			int micros = 0;
 			NormalizeCalendarDate( ref year, ref month, ref day, ref hour, ref minute,
-				ref second, ref ms );
+				ref second, ref ms, ref micros );
 		
-			double value = _CalendarDateToJulianDay( year, month, day, hour, minute, second, ms );
+			double value = _CalendarDateToJulianDay( year, month, day, hour, minute, second, ms, micros);
 			return DoubleToLong(value);
 		}
 		
@@ -493,11 +497,11 @@ namespace TickZoom.Api
 			// In this way, setting month to zero would be December of the previous year,
 			// setting hour to 24 would be the first hour of the next day, etc.
 			int ms = millisecond;
-
+			int micros = 0;
 			NormalizeCalendarDate( ref year, ref month, ref day, ref hour, ref minute,
-						ref second, ref ms );
+						ref second, ref ms, ref micros );
 		
-			return _CalendarDateToJulianDay( year, month, day, hour, minute, second, ms );
+			return _CalendarDateToJulianDay( year, month, day, hour, minute, second, ms, micros );
 		}
 
 //		public void RoundTime()
@@ -508,15 +512,20 @@ namespace TickZoom.Api
 	    
 	    private static void NormalizeCalendarDate( ref int year, ref int month, ref int day,
 											ref int hour, ref int minute, ref int second,
-											ref int millisecond )
+											ref int millisecond, ref int microsecond )
 		{
 			// Normalize the data to allow for negative and out of range values
 			// In this way, setting month to zero would be December of the previous year,
 			// setting hour to 24 would be the first hour of the next day, etc.
 
 			// Normalize the milliseconds and carry over to seconds
-			long carry = millisecond / MicrosecondsPerSecond;
-			millisecond -= (int) (carry * MicrosecondsPerSecond);
+			long carry = microsecond / MicrosecondsPerMillisecond;
+			microsecond -= (int) (carry * MicrosecondsPerMillisecond);
+			millisecond += (int) carry;
+			
+			// Normalize the milliseconds and carry over to seconds
+			carry = millisecond / MillisecondsPerSecond;
+			millisecond -= (int) (carry * MillisecondsPerSecond);
 			second += (int) carry;
 
 			// Normalize the seconds and carry over to minutes
@@ -541,16 +550,16 @@ namespace TickZoom.Api
 		}
 		
 		private static long _CalendarDateTotimeStamp( int year, int month, int day, int hour,
-					int minute, int second, int millisecond )
+					int minute, int second, int millisecond, int microsecond)
 		{
 			var timeStamp = _CalendarDateToJulianDay( year, month, day, hour, minute,
-	                                          second, millisecond );
+	                                          second, millisecond, microsecond );
 			var value = JulianDayTotimeStamp( timeStamp  );
 			return value;
 		}
 		
 		private static long _CalendarDateToJulianDay( int year, int month, int day, int hour,
-					int minute, int second, int millisecond )
+					int minute, int second, int millisecond, int microsecond )
 		{
 			// Taken from http://www.srrb.noaa.gov/highlights/sunrise/program.txt
 			// routine calcJD()
@@ -567,8 +576,9 @@ namespace TickZoom.Api
 					Math.Floor( 30.6001 * (double) ( month + 1 ) ) +
 					(double) day + B - 1524.5;
 			var lvalue = (long) (value * MicrosecondsPerDay);
-			var lfday = hour * MicrosecondsPerHour + minute * MicroecondsPerMinute +
-				second * MicrosecondsPerSecond + millisecond * MicrosecondsPerMillisecond;
+			var lfday = hour * MicrosecondsPerHour + minute * MicrosecondsPerMinute +
+				second * MicrosecondsPerSecond + millisecond * MicrosecondsPerMillisecond +
+				microsecond;
 			var lresult = lvalue + lfday;
 			return lresult;
 		
@@ -648,8 +658,8 @@ namespace TickZoom.Api
 		
 			hour = (int) (lfday / MicrosecondsPerHour);
 			lfday -= hour * MicrosecondsPerHour;
-			minute = (int) (lfday / MicroecondsPerMinute);
-			lfday -= minute * MicroecondsPerMinute;
+			minute = (int) (lfday / MicrosecondsPerMinute);
+			lfday -= minute * MicrosecondsPerMinute;
 			second = (int) (lfday / MicrosecondsPerSecond);
 			lfday -= second * MicrosecondsPerSecond;
 			millisecond = (int) (lfday / MicrosecondsPerMillisecond);
@@ -719,7 +729,7 @@ namespace TickZoom.Api
 		public static long DateTimeToTimeStamp( DateTime dt )
 		{
 			return CalendarDateTotimeStamp( dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second,
-										dt.Millisecond );
+										dt.Millisecond, 0 );
 		}
 
 		public void Sync() {
@@ -741,7 +751,7 @@ namespace TickZoom.Api
 
 		public void AddMinutes( long dMinutes )
 		{
-			_timeStamp += dMinutes * MicroecondsPerMinute;
+			_timeStamp += dMinutes * MicrosecondsPerMinute;
 		}
 		
 		public void AddHours( long dHours )

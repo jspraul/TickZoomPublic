@@ -39,6 +39,8 @@ namespace TickZoom.FIX
 		private static bool debug = log.IsDebugEnabled;
 		private SimpleLock symbolHandlersLocker = new SimpleLock();
 		private FIXTFactory1_1 fixFactory;
+		private long realTimeOffset;
+		private object realTimeOffsetLocker = new object();
 
 		// FIX fields.
 		private ushort fixPort = 0;
@@ -60,11 +62,12 @@ namespace TickZoom.FIX
 		private PacketFactory quotePacketFactory;
 		protected Queue fixPacketQueue = Queue.Synchronized(new Queue());
 		protected Queue quotePacketQueue = Queue.Synchronized(new Queue());
-
 		private Dictionary<long, FIXServerSymbolHandler> symbolHandlers = new Dictionary<long, FIXServerSymbolHandler>();
+		private bool isPlayBack = false;
 
-		public FIXSimulatorSupport(ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory)
+		public FIXSimulatorSupport(string mode, ushort fixPort, ushort quotesPort, PacketFactory fixPacketFactory, PacketFactory quotePacketFactory)
 		{
+			isPlayBack = !string.IsNullOrEmpty(mode) && mode == "PlayBack";
 			this.fixPacketFactory = fixPacketFactory;
 			this.quotePacketFactory = quotePacketFactory;
 			ListenToFIX(fixPort);
@@ -286,12 +289,31 @@ namespace TickZoom.FIX
 			}
 			return false;
 		}
+		
+		public long GetRealTimeOffset( long utcTime) {
+			lock( realTimeOffsetLocker) {
+				if( realTimeOffset == 0L) {
+					var currentTime = TimeStamp.UtcNow;
+					var tickUTCTime = new TimeStamp(utcTime);
+				   	log.Info("First historical playback tick UTC tick time is " + tickUTCTime);
+				   	log.Info("Current tick UTC time is " + currentTime);
+				   	realTimeOffset = currentTime.Internal - utcTime;
+				   	var microsecondsInMinute = 1000L * 1000L * 60L;
+				   	var extra = realTimeOffset % microsecondsInMinute;
+				   	realTimeOffset -= extra;
+				   	realTimeOffset += microsecondsInMinute;
+				   	var elapsed = new Elapsed( realTimeOffset);
+				   	log.Info("Setting real time offset to " + elapsed);
+				}
+			}
+			return realTimeOffset;
+		}
 
-		public void AddSymbol(string symbol, Func<SymbolInfo, Tick, Yield> onTick, Action<PhysicalFill,int,int,int> onPhysicalFill, Action<PhysicalOrder,string> onOrderReject)
+		public void AddSymbol(string symbol, Func<Yield> onHeartbeat, Func<SymbolInfo, Tick, Yield> onTick, Action<PhysicalFill,int,int,int> onPhysicalFill, Action<PhysicalOrder,string> onOrderReject)
 		{
 			var symbolInfo = Factory.Symbol.LookupSymbol(symbol);
 			if (!symbolHandlers.ContainsKey(symbolInfo.BinaryIdentifier)) {
-				var symbolHandler = new FIXServerSymbolHandler(symbol, onTick, onPhysicalFill, onOrderReject);
+				var symbolHandler = new FIXServerSymbolHandler(this, isPlayBack, symbol, onHeartbeat, onTick, onPhysicalFill, onOrderReject);
 				symbolHandlers.Add(symbolInfo.BinaryIdentifier, symbolHandler);
 			}
 		}
@@ -439,6 +461,10 @@ namespace TickZoom.FIX
 		public FIXTFactory1_1 FixFactory {
 			get { return fixFactory; }
 			set { fixFactory = value; }
+		}
+				
+		public long RealTimeOffset {
+			get { return realTimeOffset; }
 		}
 	}
 }

@@ -31,8 +31,6 @@ using TickZoom.Common;
 
 namespace TickZoom.Starters
 {
-
-	
 	public class FIXSimulatorStarter : RealTimeStarterBase {
 		private FIXSimulator fixServer;
 		public FIXSimulatorStarter() {
@@ -50,7 +48,7 @@ namespace TickZoom.Starters
             SetupProviderServiceConfig(provider, (ushort)Port);
             try
             { 
-				fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider");
+				fixServer = (FIXSimulator) Factory.FactoryLoader.Load(typeof(FIXSimulator),"MBTFIXProvider","Simulate");
 				base.Run(loader);
 			} finally {
             	if( fixServer != null) {

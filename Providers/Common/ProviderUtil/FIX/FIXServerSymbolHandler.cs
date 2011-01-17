@@ -36,12 +36,26 @@ namespace TickZoom.FIX
 		private FillSimulator fillSimulator;
 		private TickReader reader;
 		private Func<SymbolInfo,Tick,Yield> onTick;
+		private Func<Yield> onHeartbeat;
 		private Task queueTask;
 		private TickSync tickSync;
 		private SymbolInfo symbol;
 		private TickIO nextTick = Factory.TickUtil.TickIO();
+		private bool isFirstTick = true;
+		private bool isPlayBack = false;
+		private long playbackOffset;
+		private TimeStamp heartbeatTimer;
+		private bool firstHearbeat = true;
+		private FIXSimulatorSupport fixSimulatorSupport;
 		
-		public FIXServerSymbolHandler( string symbolString, Func<SymbolInfo,Tick,Yield> onTick, Action<PhysicalFill,int,int,int> onPhysicalFill, Action<PhysicalOrder,string> onRejectOrder) {
+		public FIXServerSymbolHandler( FIXSimulatorSupport fixSimulatorSupport, 
+			    bool isPlayBack, string symbolString,
+			    Func<Yield> onHeartbeat, Func<SymbolInfo,Tick,Yield> onTick,
+			    Action<PhysicalFill, int,int,int> onPhysicalFill,
+			    Action<PhysicalOrder,string> onRejectOrder) {
+			this.fixSimulatorSupport = fixSimulatorSupport;
+			this.isPlayBack = isPlayBack;
+			this.onHeartbeat = onHeartbeat;
 			this.onTick = onTick;
 			this.symbol = Factory.Symbol.LookupSymbol(symbolString);
 			reader = Factory.TickUtil.TickReader();
@@ -52,6 +66,7 @@ namespace TickZoom.FIX
 			tickSync = SyncTicks.GetTickSync(symbol.BinaryIdentifier);
 			tickSync.ForceClear();
 			queueTask = Factory.Parallel.Loop("FIXServerSymbol-"+symbolString, OnException, ProcessQueue);
+			firstHearbeat = true;
 		}
 		
 	    private void TryCompleteTick() {
@@ -96,12 +111,18 @@ namespace TickZoom.FIX
 			return Yield.DidWork.Invoke(DequeueTick);
 		}
 
-		private bool isFirstTick = true;
 		private Yield DequeueTick() {
 			var result = Yield.NoWork.Repeat;
 			var binary = new TickBinary();
+			
 			try { 
 				if( reader.ReadQueue.TryDequeue( ref binary)) {
+				   	if( isPlayBack) {
+						if( isFirstTick) {
+							playbackOffset = fixSimulatorSupport.GetRealTimeOffset(binary.UtcTime);
+						}
+						binary.UtcTime += playbackOffset;
+					}
 				   	nextTick.Inject( binary);
 				   	tickSync.AddTick();
 				   	if( isFirstTick) {
@@ -120,8 +141,31 @@ namespace TickZoom.FIX
 			return result;
 		}
 		
+		private void IncreaseHeartbeat(TimeStamp currentTime) {
+			heartbeatTimer = currentTime;
+			heartbeatTimer.AddSeconds(30);
+		}		
+
+		private void TryRequestHeartbeat(TimeStamp currentTime) {
+			if( firstHearbeat) {
+				IncreaseHeartbeat(currentTime);
+				firstHearbeat = false;
+				return;
+			}
+			if( currentTime > heartbeatTimer) {
+				IncreaseHeartbeat(currentTime);
+				onHeartbeat();
+			}
+		}
+		
 		private Yield ProcessTick() {
-			return onTick( symbol, nextTick);
+			var currentTime = TimeStamp.UtcNow;
+			if( isPlayBack && currentTime < nextTick.UtcTime) {
+				TryRequestHeartbeat(currentTime);
+				return Yield.NoWork.Repeat;
+			} else {
+				return onTick( symbol, nextTick);
+			}
 		}
 		
 		private void OnException( Exception ex) {
@@ -153,5 +197,9 @@ namespace TickZoom.FIX
     		}
 	    }    
 	        
+		public bool IsPlayBack {
+			get { return isPlayBack; }
+			set { isPlayBack = value; }
+		}
 	}
 }

@@ -68,7 +68,7 @@ namespace TickZoom.GUI
         	this.timeFrameTxt = new System.Windows.Forms.Label();
         	this.periodTxt = new System.Windows.Forms.Label();
         	this.disableCharting = new System.Windows.Forms.CheckBox();
-        	this.starter = new System.Windows.Forms.ComboBox();
+        	this.starterName = new System.Windows.Forms.ComboBox();
         	this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
         	this.modelLoader = new System.Windows.Forms.ComboBox();
         	this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -434,11 +434,11 @@ namespace TickZoom.GUI
         	// 
         	// starter
         	// 
-        	this.starter.FormattingEnabled = true;
-        	this.starter.Location = new System.Drawing.Point(15, 120);
-        	this.starter.Name = "starter";
-        	this.starter.Size = new System.Drawing.Size(292, 21);
-        	this.starter.TabIndex = 55;
+        	this.starterName.FormattingEnabled = true;
+        	this.starterName.Location = new System.Drawing.Point(15, 120);
+        	this.starterName.Name = "starter";
+        	this.starterName.Size = new System.Drawing.Size(292, 21);
+        	this.starterName.TabIndex = 55;
         	// 
         	// modelLoader
         	// 
@@ -493,7 +493,7 @@ namespace TickZoom.GUI
         	this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         	this.ClientSize = new System.Drawing.Size(782, 371);
         	this.Controls.Add(this.replayLabel);
-        	this.Controls.Add(this.starter);
+        	this.Controls.Add(this.starterName);
         	this.Controls.Add(this.stopAlarm);
         	this.Controls.Add(this.label2);
         	this.Controls.Add(this.replaySpeedTextBox);
@@ -663,12 +663,12 @@ namespace TickZoom.GUI
         	UpdateCheckBoxes();
         }
 
-        private System.Windows.Forms.ComboBox starter;
+        private System.Windows.Forms.ComboBox starterName;
         private Label replayLabel;
 
-	    public ComboBox Starter
+	    public ComboBox StarterName
 	    {
-	        get { return starter; }
+	        get { return starterName; }
 	    }
 
 	    public System.Windows.Forms.TextBox SymbolList {

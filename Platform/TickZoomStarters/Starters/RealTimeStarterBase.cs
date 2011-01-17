@@ -94,6 +94,5 @@ namespace TickZoom.Starters
 				throw ex;
 			}
 		}
-		
 	}
 }

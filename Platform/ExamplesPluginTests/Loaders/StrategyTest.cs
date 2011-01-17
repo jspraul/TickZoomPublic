@@ -78,6 +78,7 @@ namespace Loaders
 		private Interval intervalDefault = Intervals.Minute1;
 		private ModelInterface topModel = null;
 		private AutoTestMode autoTestMode = AutoTestMode.Historical;
+		private long realTimeOffset;
 
 		public StrategyTest( AutoTestSettings testSettings ) {
 			this.autoTestMode = testSettings.Mode;
@@ -130,16 +131,16 @@ namespace Loaders
 			config.ServicePort = 6490;
 			switch( autoTestMode) {
 				case AutoTestMode.Historical:
-					config.Starter = "HistoricalStarter";
+					config.StarterName = "HistoricalStarter";
 					break;
 				case AutoTestMode.SimulateRealTime:
-					config.Starter = "TestRealTimeStarter";
+					config.StarterName = "TestRealTimeStarter";
                     break;
 				case AutoTestMode.SimulateFIX:
-					config.Starter = "FIXSimulatorStarter";
+					config.StarterName = "FIXSimulatorStarter";
                     break;			
-				case AutoTestMode.RealTimePlayBack:
-					config.Starter = "RealTimePlayBackStarter";
+				case AutoTestMode.FIXPlayBack:
+					config.StarterName = "FIXPlayBackStarter";
                     break;			
 				default:
 					throw new ApplicationException("AutoTestMode " + autoTestMode + " is unknown.");
@@ -172,8 +173,8 @@ namespace Loaders
 					starter = new FIXSimulatorStarter();
 					starter.Port = servicePort;
 					break;			
-				case AutoTestMode.RealTimePlayBack:
-					starter = new RealTimePlayBackStarter();
+				case AutoTestMode.FIXPlayBack:
+					starter = new FIXPlayBackStarter();
 					starter.Port = servicePort;
 					break;			
 				default:
@@ -217,6 +218,12 @@ namespace Loaders
 							Thread.Sleep(10);
 						}
 			    		topModel = config.TopModel;
+			    		if( config.Starter is FIXPlayBackStarter) {
+			    			var starter = config.Starter as FIXPlayBackStarter;
+			    			realTimeOffset = starter.FixServer.RealTimeOffset;
+			    			var realTimeOffsetElapsed = new Elapsed(realTimeOffset);
+			    			log.Info("Real time offset is " + realTimeOffset + " or " + realTimeOffsetElapsed);
+			    		}
 					}
 				} catch( ApplicationException ex) {
 					if( ex.Message.Contains("not found")) {
@@ -229,7 +236,6 @@ namespace Loaders
 				WriteHashes();
 				WriteFinalStats();
 	
-	    		// Get the stategy
 	    		LoadTransactions();
 	    		LoadTrades();
 	    		LoadBarData();
@@ -800,8 +806,13 @@ namespace Loaders
 				b = Math.Round((double)b ,2);
 			}
 			if( !a.Equals(b)) {
-				assertFlag = true;
-				log.Error("Trade mismatch:\nExpected '" + a + "'\n but was '" + b + "': " + message);
+				assertFlag = true;				
+				log.Error("Mismatch:\nExpected '" + a + "'\n but was '" + b + "': " + message);
+				if( a is TimeStamp) {
+					var ats = (TimeStamp) a;
+					var bts = (TimeStamp) b;
+					log.Info("Expected: " + ats.Internal + " but was " + bts.Internal);
+				}
 			}
 		}
 		
@@ -850,6 +861,7 @@ namespace Loaders
 				for( int i=0; i<testStats.Count && i<goodStats.Count; i++) {
 					StatsInfo testInfo = testStats[i];
 					StatsInfo goodInfo = goodStats[i];
+					goodInfo.Time += realTimeOffset;
 					AssertEqual(goodInfo.Time,testInfo.Time,strategyName + " - [" + i + "] Stats time at " + testInfo.Time);
 					AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,strategyName + " - [" + i + "] Closed Equity time at " + testInfo.Time);
 					AssertEqual(goodInfo.OpenEquity,testInfo.OpenEquity,strategyName + " - [" + i + "] Open Equity time at " + testInfo.Time);
@@ -881,18 +893,29 @@ namespace Loaders
 				for( ; i<testBarData.Count && i<goodBarData.Count; i++) {
 					BarInfo testInfo = testBarData[i];
 					BarInfo goodInfo = goodBarData[i];
+					goodInfo.Time += realTimeOffset;
 					AssertEqual(goodInfo.Time,testInfo.Time,"Time at bar " + i );
 					AssertEqual(goodInfo.Open,testInfo.Open,"Open at bar " + i + " " + testInfo.Time);
 					AssertEqual(goodInfo.High,testInfo.High,"High at bar " + i + " " + testInfo.Time);
 					AssertEqual(goodInfo.Low,testInfo.Low,"Low at bar " + i + " " + testInfo.Time);
 					AssertEqual(goodInfo.Close,testInfo.Close,"Close at bar " + i + " " + testInfo.Time);
 				}
-				for( ; i<testBarData.Count; i++) {
+				var extraTestBars = (testBarData.Count-i);
+				if( extraTestBars > 0) {
+					log.Error( extraTestBars + " extra test bars. Listing first 10.");
+				}
+				for( var j=0; i<testBarData.Count && j<10; i++, j++) {
 					BarInfo testInfo = testBarData[i];
 					log.Error("Extra test bar: #"+i+" " + testInfo);
 				}
-				for( ; i<goodBarData.Count; i++) {
+				
+				var extraGoodBars = (goodBarData.Count-i);
+				if( extraGoodBars > 0) {
+					log.Error( extraGoodBars + " extra good bars. Listing first 10.");
+				}
+				for( var j=0; i<goodBarData.Count && j<10; i++, j++) {
 					BarInfo goodInfo = goodBarData[i];
+					goodInfo.Time += realTimeOffset;
 					log.Error("Extra good bar: #"+i+" " + goodInfo);
 				}
 				Assert.IsFalse(assertFlag,"Checking for bar data errors.");
