@@ -160,7 +160,7 @@ namespace TickZoom.Presentation
 
         private string starterName;
 
-        public List<string> StarterValues
+        public List<string> StarterNameValues
         {
             get {
                 var labels = new List<string>();

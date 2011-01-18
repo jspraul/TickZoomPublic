@@ -40,9 +40,9 @@ namespace Loaders
 			/// <summary>
 			/// IMPORTANT: You can personalize the name of each model loader.
 			/// </summary>
-			category = "Example";
+			category = "Test";
 			name = "Limit Order";
-			this.IsVisibleInGUI = false;
+			this.IsVisibleInGUI = true;
 		}
 		
 		public override void OnInitialize(ProjectProperties properties) {

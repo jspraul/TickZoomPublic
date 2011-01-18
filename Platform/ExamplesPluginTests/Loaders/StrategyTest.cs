@@ -149,6 +149,8 @@ namespace Loaders
 			// Set run properties as in the GUI.
 			config.StartDateTime = startTime.DateTime;
     		config.EndDateTime = endTime.DateTime;
+    		config.CreateChart = HistoricalCreateChart;
+    		config.ShowChart = HistoricalShowChart;
     		
     		config.DataSubFolder = "Test\\DataCache";
     		config.SymbolList = Symbols;
@@ -947,16 +949,15 @@ namespace Loaders
 		public void HistoricalShowChart()
         {
        		log.Debug("HistoricalShowChart() start.");
-	       	try {
-				for( int i=portfolioDocs.Count-1; i>=0; i--) {
-					portfolioDocs[i].ShowInvoke();
-					if( !ShowCharts) {
-						portfolioDocs[i].HideInvoke();
+			if( ShowCharts) {
+		       	try {
+					for( int i=portfolioDocs.Count-1; i>=0; i--) {
+						portfolioDocs[i].ShowInvoke();
 					}
-				}
-        	} catch( Exception ex) {
-        		log.Debug(ex.ToString());
-        	}
+	        	} catch( Exception ex) {
+	        		log.Debug(ex.ToString());
+	        	}
+       		}
         }
 		
 		public void HistoricalCloseCharts()
