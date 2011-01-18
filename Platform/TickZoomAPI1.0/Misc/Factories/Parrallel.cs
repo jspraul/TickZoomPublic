@@ -121,6 +121,7 @@ namespace TickZoom.Api
 		void Yield();
 		void Sleep(int millis);
 		string GetStats();
+		void NextTimer(Action<Exception> onException, TimeStamp nextTimer, Action timerAction);
 		Task CurrentTask {
 			get;
 		}
