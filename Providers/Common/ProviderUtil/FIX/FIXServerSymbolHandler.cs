@@ -174,7 +174,8 @@ namespace TickZoom.FIX
 				TryRequestHeartbeat(currentTime);
 				switch( tickStatus) {
 					case TickStatus.None:
-						if( currentTime <= nextTick.UtcTime) {
+						var overlapp = 5000L;
+						if( currentTime.Internal + overlapp <= nextTick.UtcTime.Internal) {
 							Factory.Parallel.NextTimer(OnException,nextTick.UtcTime,PlayBackTick);
 							if( trace) log.Trace("Set next timer for " + nextTick.UtcTime  + "." + nextTick.UtcTime.Microsecond + " at " + currentTime  + "." + currentTime.Microsecond);
 							tickStatus = TickStatus.Timer;

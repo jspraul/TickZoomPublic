@@ -39,7 +39,7 @@ namespace Loaders
 		public AutoTestSettings[] GetAutoTestSettings() {
 			var list = new System.Collections.Generic.List<AutoTestSettings>();
 			var storeKnownGood = false;
-			var showCharts = true;
+			var showCharts = false;
 			var primarySymbol = "USD/JPY";
 			try { 
 				list.Add( new AutoTestSettings {
@@ -241,7 +241,7 @@ namespace Loaders
 			var endTime = TimeStamp.UtcNow;
 			endTime.AddHours(24);
 			list.Add( new AutoTestSettings {
-			    Mode = AutoTestMode.FIXPlayBack,
+			    Mode = AutoTestMode.None,
 			    Name = "RealTimeLimitOrderTest",
 			    Loader = new TestLimitOrderLoader(),
 				Symbols = "CSCO",

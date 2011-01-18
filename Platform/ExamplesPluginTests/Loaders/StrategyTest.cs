@@ -149,8 +149,10 @@ namespace Loaders
 			// Set run properties as in the GUI.
 			config.StartDateTime = startTime.DateTime;
     		config.EndDateTime = endTime.DateTime;
-    		config.CreateChart = HistoricalCreateChart;
-    		config.ShowChart = HistoricalShowChart;
+    		if( ShowCharts) {
+	    		config.CreateChart = HistoricalCreateChart;
+	    		config.ShowChart = HistoricalShowChart;
+    		}
     		
     		config.DataSubFolder = "Test\\DataCache";
     		config.SymbolList = Symbols;
@@ -693,7 +695,7 @@ namespace Loaders
 		public void DynamicTrades(string strategyName) {
 			if( string.IsNullOrEmpty(strategyName)) return;
 			try {
-				assertFlag = false;
+				var assertFlag = false;
 				List<TradeInfo> goodTrades = null;
 				goodTradeMap.TryGetValue(strategyName,out goodTrades);
 				List<TradeInfo> testTrades = null;
@@ -708,9 +710,9 @@ namespace Loaders
 					TradeInfo goodInfo = goodTrades[i];
 					TransactionPairBinary goodTrade = goodInfo.Trade;
 					TransactionPairBinary testTrade = testInfo.Trade;
-					AssertEqual(goodTrade,testTrade,strategyName + " Trade at " + i);
-					AssertEqual(goodInfo.ProfitLoss,testInfo.ProfitLoss,"ProfitLoss at " + i);
-					AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,"ClosedEquity at " + i);
+					AssertEqual(ref assertFlag, goodTrade,testTrade,strategyName + " Trade at " + i);
+					AssertEqual(ref assertFlag, goodInfo.ProfitLoss,testInfo.ProfitLoss,"ProfitLoss at " + i);
+					AssertEqual(ref assertFlag, goodInfo.ClosedEquity,testInfo.ClosedEquity,"ClosedEquity at " + i);
 				}
 				Assert.IsFalse(assertFlag,"Checking for trade errors.");
 			} catch {
@@ -761,7 +763,7 @@ namespace Loaders
 		public void PerformReconciliation(SymbolInfo symbolInfo) {
 			try {
 				var symbol = symbolInfo.Symbol;
-				assertFlag = false;
+				var assertFlag = false;
 				List<TransactionInfo> goodTransactions = null;
 				goodReconciliationMap.TryGetValue(symbol,out goodTransactions);
 				List<TransactionInfo> testTransactions = null;
@@ -776,8 +778,8 @@ namespace Loaders
 					var goodInfo = goodTransactions[i];
 					var goodFill = goodInfo.Fill;
 					var testFill = testInfo.Fill;
-					AssertReconcile(goodFill,testFill,symbol + " transaction Fill at " + i);
-					AssertEqual(goodInfo.Symbol,testInfo.Symbol,symbol + " transaction symbol at " + i);
+					AssertReconcile(ref assertFlag, goodFill,testFill,symbol + " transaction Fill at " + i);
+					AssertEqual(ref assertFlag, goodInfo.Symbol,testInfo.Symbol,symbol + " transaction symbol at " + i);
 				}
 				Assert.IsFalse(assertFlag,"Checking for transaction fill errors.");
 			} catch( Exception ex) {
@@ -797,9 +799,7 @@ namespace Loaders
 			Assert.AreEqual(goodStats.Count,testStats.Count,"Stats count");
 		}
 		
-		private bool assertFlag = false;
-		
-		private void AssertEqual(object a, object b, string message) {
+		private void AssertEqual(ref bool assertFlag, object a, object b, string message) {
 			if( a.GetType() != b.GetType()) {
 				throw new ApplicationException("Expected type " + a.GetType() + " but was " + b.GetType() + ": " + message);
 			}
@@ -818,7 +818,7 @@ namespace Loaders
 			}
 		}
 		
-		private void AssertReconcile(LogicalFillBinary a, LogicalFillBinary b, string message) {
+		private void AssertReconcile(ref bool assertFlag, LogicalFillBinary a, LogicalFillBinary b, string message) {
 			if( a.GetType() != b.GetType()) {
 				throw new ApplicationException("Expected type " + a.GetType() + " but was " + b.GetType() + ": " + message);
 			}
@@ -835,13 +835,13 @@ namespace Loaders
 		public void DynamicFinalStats(string strategyName) {
 			if( string.IsNullOrEmpty(strategyName)) return;
 			try {
-				assertFlag = false;
+				var assertFlag = false;
 				FinalStatsInfo goodInfo = goodFinalStatsMap[strategyName];
 				FinalStatsInfo testInfo = testFinalStatsMap[strategyName];
-				AssertEqual(goodInfo.StartingEquity,testInfo.StartingEquity,strategyName + " Starting Equity");
-				AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,strategyName + " Closed Equity");
-				AssertEqual(goodInfo.OpenEquity,testInfo.OpenEquity,strategyName + " Open Equity");
-				AssertEqual(goodInfo.CurrentEquity,testInfo.CurrentEquity,strategyName + " Current Equity");
+				AssertEqual(ref assertFlag, goodInfo.StartingEquity,testInfo.StartingEquity,strategyName + " Starting Equity");
+				AssertEqual(ref assertFlag, goodInfo.ClosedEquity,testInfo.ClosedEquity,strategyName + " Closed Equity");
+				AssertEqual(ref assertFlag, goodInfo.OpenEquity,testInfo.OpenEquity,strategyName + " Open Equity");
+				AssertEqual(ref assertFlag, goodInfo.CurrentEquity,testInfo.CurrentEquity,strategyName + " Current Equity");
 				Assert.IsFalse(assertFlag,"Checking for final statistics errors.");
 			} catch { 
 				log.Error( strategyName + " was not found in at least one of the lists.");
@@ -857,19 +857,23 @@ namespace Loaders
 		public void DynamicStats(string strategyName) {
 			if( string.IsNullOrEmpty(strategyName)) return;
 			try {
-				assertFlag = false;
 				List<StatsInfo> goodStats = goodStatsMap[strategyName];
 				List<StatsInfo> testStats = testStatsMap[strategyName];
-				for( int i=0; i<testStats.Count && i<goodStats.Count; i++) {
+				var errorCount=0;
+				for( int i=0; i<testStats.Count && i<goodStats.Count && errorCount<10; i++) {
 					StatsInfo testInfo = testStats[i];
 					StatsInfo goodInfo = goodStats[i];
 					goodInfo.Time += realTimeOffset;
-					AssertEqual(goodInfo.Time,testInfo.Time,strategyName + " - [" + i + "] Stats time at " + testInfo.Time);
-					AssertEqual(goodInfo.ClosedEquity,testInfo.ClosedEquity,strategyName + " - [" + i + "] Closed Equity time at " + testInfo.Time);
-					AssertEqual(goodInfo.OpenEquity,testInfo.OpenEquity,strategyName + " - [" + i + "] Open Equity time at " + testInfo.Time);
-					AssertEqual(goodInfo.CurrentEquity,testInfo.CurrentEquity,strategyName + " - [" + i + "] Current Equity time at " + testInfo.Time);
+					var assertFlag = false;
+					AssertEqual(ref assertFlag, goodInfo.Time,testInfo.Time,strategyName + " - [" + i + "] Stats time at " + testInfo.Time);
+					AssertEqual(ref assertFlag, goodInfo.ClosedEquity,testInfo.ClosedEquity,strategyName + " - [" + i + "] Closed Equity time at " + testInfo.Time);
+					AssertEqual(ref assertFlag, goodInfo.OpenEquity,testInfo.OpenEquity,strategyName + " - [" + i + "] Open Equity time at " + testInfo.Time);
+					AssertEqual(ref assertFlag, goodInfo.CurrentEquity,testInfo.CurrentEquity,strategyName + " - [" + i + "] Current Equity time at " + testInfo.Time);
+					if( assertFlag) {
+						errorCount++;
+					}
 				}
-				Assert.IsFalse(assertFlag,"Checking for stats errors.");
+				Assert.AreEqual(errorCount,0,"Checking for stats errors.");
 			} catch { 
 				testFailed = true;
 				throw;
@@ -883,7 +887,6 @@ namespace Loaders
 		public void DynamicBarData(string strategyName) {
 			if( string.IsNullOrEmpty(strategyName)) return;
 			try {
-				assertFlag = false;
 				List<BarInfo> goodBarData = goodBarDataMap[strategyName];
 				List<BarInfo> testBarData = testBarDataMap[strategyName];
 				if( goodBarData == null) {
@@ -891,16 +894,21 @@ namespace Loaders
 					return;
 				}
 				Assert.IsNotNull(testBarData, "test test data");
-				int i=0;
-				for( ; i<testBarData.Count && i<goodBarData.Count; i++) {
+				var i=0;
+				var errorCount = 0;
+				for( ; i<testBarData.Count && i<goodBarData.Count && errorCount < 10; i++) {
 					BarInfo testInfo = testBarData[i];
 					BarInfo goodInfo = goodBarData[i];
 					goodInfo.Time += realTimeOffset;
-					AssertEqual(goodInfo.Time,testInfo.Time,"Time at bar " + i );
-					AssertEqual(goodInfo.Open,testInfo.Open,"Open at bar " + i + " " + testInfo.Time);
-					AssertEqual(goodInfo.High,testInfo.High,"High at bar " + i + " " + testInfo.Time);
-					AssertEqual(goodInfo.Low,testInfo.Low,"Low at bar " + i + " " + testInfo.Time);
-					AssertEqual(goodInfo.Close,testInfo.Close,"Close at bar " + i + " " + testInfo.Time);
+					var assertFlag = false;
+					AssertEqual(ref assertFlag, goodInfo.Time,testInfo.Time,"Time at bar " + i );
+					AssertEqual(ref assertFlag, goodInfo.Open,testInfo.Open,"Open at bar " + i + " " + testInfo.Time);
+					AssertEqual(ref assertFlag, goodInfo.High,testInfo.High,"High at bar " + i + " " + testInfo.Time);
+					AssertEqual(ref assertFlag, goodInfo.Low,testInfo.Low,"Low at bar " + i + " " + testInfo.Time);
+					AssertEqual(ref assertFlag, goodInfo.Close,testInfo.Close,"Close at bar " + i + " " + testInfo.Time);
+					if( assertFlag) {
+						errorCount++;
+					}
 				}
 				var extraTestBars = (testBarData.Count-i);
 				if( extraTestBars > 0) {
@@ -909,6 +917,7 @@ namespace Loaders
 				for( var j=0; i<testBarData.Count && j<10; i++, j++) {
 					BarInfo testInfo = testBarData[i];
 					log.Error("Extra test bar: #"+i+" " + testInfo);
+					errorCount++;
 				}
 				
 				var extraGoodBars = (goodBarData.Count-i);
@@ -919,8 +928,9 @@ namespace Loaders
 					BarInfo goodInfo = goodBarData[i];
 					goodInfo.Time += realTimeOffset;
 					log.Error("Extra good bar: #"+i+" " + goodInfo);
+					errorCount++;
 				}
-				Assert.IsFalse(assertFlag,"Checking for bar data errors.");
+				Assert.AreEqual(errorCount,0,"Checking for bar data errors.");
 			} catch { 
 				testFailed = true;
 				throw;
