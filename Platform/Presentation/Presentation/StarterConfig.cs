@@ -154,7 +154,8 @@ namespace TickZoom.Presentation
             { "Optimization a.k.a. Brute Force", "OptimizeStarter"},
             { "Genetic Optimization", "GeneticStarter"},
             { "Realtime Simulation", "TestRealTimeStarter"},
-            { "FIX Server Simulation", "FIXSimulatorStarter"},
+            { "FIX Realtime Simulation", "FIXSimulatorStarter"},
+            { "FIX Realtime Playback", "FIXPlayBackStarter"},
             { "Realtime Operation (Demo or Live)", "RealTimeStarter"},
         };
 

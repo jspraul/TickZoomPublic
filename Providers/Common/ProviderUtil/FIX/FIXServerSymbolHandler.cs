@@ -103,11 +103,14 @@ namespace TickZoom.FIX
 		}
 		
 		private Yield ProcessQueue() {
-			if( SyncTicks.Enabled && !tickSync.TryLock()) {
-				TryCompleteTick();
-				return Yield.NoWork.Repeat;
+			if( SyncTicks.Enabled) {
+				if( !tickSync.TryLock()) {
+					TryCompleteTick();
+					return Yield.NoWork.Repeat;
+				} else {
+					if( trace) log.Trace("Locked tickSync for " + symbol);
+				}
 			}
-			if( trace) log.Trace("Locked tickSync for " + symbol);
 			return Yield.DidWork.Invoke(DequeueTick);
 		}
 
@@ -158,14 +161,58 @@ namespace TickZoom.FIX
 			}
 		}
 		
+		public enum TickStatus {
+			None,
+			Timer,
+			Sent,
+		}
+
+		private volatile TickStatus tickStatus = TickStatus.None;
 		private Yield ProcessTick() {
-			var currentTime = TimeStamp.UtcNow;
-			if( isPlayBack && currentTime < nextTick.UtcTime) {
+			if( isPlayBack ) {
+				var currentTime = TimeStamp.UtcNow;
 				TryRequestHeartbeat(currentTime);
+				switch( tickStatus) {
+					case TickStatus.None:
+						if( currentTime <= nextTick.UtcTime) {
+							Factory.Parallel.NextTimer(OnException,nextTick.UtcTime,PlayBackTick);
+							if( trace) log.Trace("Set next timer for " + nextTick.UtcTime  + "." + nextTick.UtcTime.Microsecond + " at " + currentTime  + "." + currentTime.Microsecond);
+							tickStatus = TickStatus.Timer;
+						} else {
+							if( trace) log.Trace("Current time " + currentTime + " was greater than tick time " + nextTick.UtcTime + "." + nextTick.UtcTime.Microsecond);
+							onTick( symbol, nextTick);
+							try { 
+								var binary = new TickBinary();
+								if( reader.ReadQueue.TryDequeue( ref binary)) {
+									binary.UtcTime += playbackOffset;
+								   	nextTick.Inject( binary);
+									if( trace) log.Trace("Found another tick on the queue at " + nextTick.UtcTime + "." + nextTick.UtcTime.Microsecond);
+								   	tickSync.AddTick();
+							   		fillSimulator.ProcessOrders();
+									return Yield.DidWork.Repeat;
+								}
+							} catch( QueueException ex) {
+								if( ex.EntryType != EventType.EndHistorical) {
+									throw;
+								}
+							}
+							return Yield.DidWork.Return;
+						}		
+						break;
+					case TickStatus.Sent:
+						tickStatus = TickStatus.None;
+						return Yield.DidWork.Return;
+				}
 				return Yield.NoWork.Repeat;
 			} else {
 				return onTick( symbol, nextTick);
 			}
+		}
+		
+		private void PlayBackTick() {
+			onTick( symbol, nextTick);
+			tickStatus = TickStatus.Sent;
+			queueTask.Boost();
 		}
 		
 		private void OnException( Exception ex) {
