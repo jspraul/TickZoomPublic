@@ -1,6 +1,6 @@
 //============================================================================
 //ZedGraph Class Library - A Flexible Line Graph/Bar Graph Library in C#
-//Copyright © 2004  John Champion
+//Copyright ï¿½ 2004  John Champion
 //
 //This library is free software; you can redistribute it and/or
 //modify it under the terms of the GNU Lesser General Public
@@ -1999,7 +1999,7 @@ namespace ZedGraph
 				if ( saveZOrder <= ZOrder.E_BehindCurves && FindNearestPoint( mousePt, out curve, out index ) )
 				{
 					nearestObj = curve;
-					if( predicate!=null && predicate( curve)) {
+					if(predicate == null || predicate(curve)) {
 						return true;
 					}
 				}
